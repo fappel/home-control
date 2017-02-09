@@ -13,14 +13,14 @@ import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.types.Command;
 
 import com.codeaffine.home.control.Item;
-import com.codeaffine.home.control.ItemStateChangeListener;
+import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 
 public class ItemAdapter<T extends Status> implements Item<T> {
 
-  private final Map<ItemStateChangeListener<T>, StateChangeAdapter<T>> listeners;
-  private final Map<ItemStateChangeListener<T>, Runnable> shutdownHooks;
+  private final Map<StatusChangeListener<T>, StateChangeAdapter<T>> listeners;
+  private final Map<StatusChangeListener<T>, Runnable> shutdownHooks;
   private final ShutdownDispatcher shutdownDispatcher;
   private final EventPublisher eventPublisher;
   private final ItemRegistryAdapter registry;
@@ -55,7 +55,7 @@ public class ItemAdapter<T extends Status> implements Item<T> {
   }
 
   @Override
-  public void addItemStateChangeListener( ItemStateChangeListener<T> listener ) {
+  public void addItemStateChangeListener( StatusChangeListener<T> listener ) {
     if( !listeners.containsKey( listener ) ) {
       registerStateChangeListener( listener );
       registerShutdownHook( listener );
@@ -63,7 +63,7 @@ public class ItemAdapter<T extends Status> implements Item<T> {
   }
 
   @Override
-  public void removeItemStateChangeListener( ItemStateChangeListener<T> listener ) {
+  public void removeItemStateChangeListener( StatusChangeListener<T> listener ) {
     if( listeners.containsKey( listener ) ) {
       StateChangeAdapter<T> remove = listeners.remove( listener );
       item.removeStateChangeListener( remove );
@@ -97,13 +97,13 @@ public class ItemAdapter<T extends Status> implements Item<T> {
     return item;
   }
 
-  private void registerStateChangeListener( ItemStateChangeListener<T> listener ) {
+  private void registerStateChangeListener( StatusChangeListener<T> listener ) {
     StateChangeAdapter<T> stateChangeAdapter = new StateChangeAdapter<>( this, listener, executor );
     listeners.put( listener, stateChangeAdapter );
     item.addStateChangeListener( stateChangeAdapter );
   }
 
-  private void registerShutdownHook( ItemStateChangeListener<T> listener ) {
+  private void registerShutdownHook( StatusChangeListener<T> listener ) {
     Runnable shutdownHook = () -> removeItemStateChangeListener( listener );
     shutdownHooks.put( listener, shutdownHook );
     shutdownDispatcher.addShutdownHook( shutdownHook );

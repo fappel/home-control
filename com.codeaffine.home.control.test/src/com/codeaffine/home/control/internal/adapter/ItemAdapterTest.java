@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.ItemStateChangeListener;
+import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.type.OpenClosedType;
 
@@ -55,7 +55,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void addItemStateChangeListener() {
-    ItemStateChangeListener<OpenClosedType> expected = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
 
     adapter.addItemStateChangeListener( expected );
 
@@ -67,7 +67,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void addItemStateChangeListenerTwice() {
-    ItemStateChangeListener<OpenClosedType> expected = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
 
     adapter.addItemStateChangeListener( expected );
     adapter.addItemStateChangeListener( expected );
@@ -80,7 +80,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void removeItemStateChangeListener() {
-    ItemStateChangeListener<OpenClosedType> expected = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
     adapter.addItemStateChangeListener( expected );
 
     adapter.removeItemStateChangeListener( expected );
@@ -93,7 +93,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void removeItemStateChangeListenerTwice() {
-    ItemStateChangeListener<OpenClosedType> expected = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
     adapter.addItemStateChangeListener( expected );
     adapter.removeItemStateChangeListener( expected );
 
@@ -107,7 +107,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void shutdownDispatch() {
-    ItemStateChangeListener<OpenClosedType> listener = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
 
     adapter.addItemStateChangeListener( listener );
     shutdownDispatcher.dispatch();
@@ -121,7 +121,7 @@ public class ItemAdapterTest {
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void shutdownDispatchAfterItemStateChangeListenerRemoval() {
-    ItemStateChangeListener<OpenClosedType> listener = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
 
     adapter.addItemStateChangeListener( listener );
     adapter.removeItemStateChangeListener( listener );
@@ -137,20 +137,20 @@ public class ItemAdapterTest {
   @SuppressWarnings("unchecked")
   public void triggerStateChangeIfExecutorIsBlocked() {
     blockExecutor( executor );
-    ItemStateChangeListener<OpenClosedType> listener = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
     adapter.addItemStateChangeListener( listener );
     ArgumentCaptor<StateChangeListener> captor = forClass( StateChangeListener.class );
     verify( item ).addStateChangeListener( captor.capture() );
 
     captor.getValue().stateUpdated( item, null );
 
-    verify( listener, never() ).stateUpdated( any( ItemAdapter.class ), any( Optional.class ) );
+    verify( listener, never() ).statusUpdated( any( ItemAdapter.class ), any( Optional.class ) );
   }
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void triggerResetHook() {
-    ItemStateChangeListener<OpenClosedType> listener = mock( ItemStateChangeListener.class );
+    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
     adapter.addItemStateChangeListener( listener );
     GenericItem replacement = stubItemRegistryAdapter( registry, stubGenericItem() );
 

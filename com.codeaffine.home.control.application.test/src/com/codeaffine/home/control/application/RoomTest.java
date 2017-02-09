@@ -15,7 +15,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.ItemStateChangeListener;
+import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.item.ContactItem;
 
 @RunWith(Parameterized.class)
@@ -43,7 +43,7 @@ public class RoomTest {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void registerSensorItems() {
     ContactItem contact = mock( ContactItem.class );
-    ArgumentCaptor<ItemStateChangeListener> captor = forClass( ItemStateChangeListener.class );
+    ArgumentCaptor<StatusChangeListener> captor = forClass( StatusChangeListener.class );
 
     room.registerSensorItems( contact );
 

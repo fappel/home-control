@@ -7,11 +7,11 @@ import java.util.Optional;
 import org.slf4j.LoggerFactory;
 
 import com.codeaffine.home.control.Item;
-import com.codeaffine.home.control.ItemStateChangeListener;
+import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.type.OpenClosedType;
 
-public enum Room implements ItemStateChangeListener<OpenClosedType> {
+public enum Room implements StatusChangeListener<OpenClosedType> {
 
   HALL( "Flur", "hall" ),
   KITCHEN( "Küche", "kitchen" ),
@@ -44,12 +44,12 @@ public enum Room implements ItemStateChangeListener<OpenClosedType> {
   }
 
   @Override
-  public void stateUpdated( Item<OpenClosedType> item, Optional<OpenClosedType> status ) {
+  public void statusUpdated( Item<OpenClosedType> item, Optional<OpenClosedType> status ) {
     status.ifPresent( state -> getLogger( Room.class ).error( "motion state updated: " + label + " to state " + state + " [Thread " + Thread.currentThread().getName() + "]" ) );
   }
 
   @Override
-  public void stateChanged( Item<OpenClosedType> item,
+  public void statusChanged( Item<OpenClosedType> item,
                             Optional<OpenClosedType> oldStatus,
                             Optional<OpenClosedType> newStatus )
   {

@@ -14,21 +14,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.ItemStateChangeListener;
+import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.type.OpenClosedType;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class StateChangeAdapterTest {
 
-  private ItemStateChangeListener listener;
+  private StatusChangeListener listener;
   private StateChangeAdapter adapter;
   private ItemAdapter itemAdapter;
   private SystemExecutor executor;
 
   @Before
   public void setUp() {
-    listener = mock( ItemStateChangeListener.class );
+    listener = mock( StatusChangeListener.class );
     itemAdapter = stubItemAdapter( OpenClosedType.class );
     executor = stubInThreadExecutor();
     adapter = new StateChangeAdapter( itemAdapter, listener, executor );
@@ -40,7 +40,7 @@ public class StateChangeAdapterTest {
 
     ArgumentCaptor<ItemAdapter> itemCaptor = forClass( ItemAdapter.class );
     ArgumentCaptor<Optional> stateCaptor = forClass( Optional.class );
-    verify( listener ).stateUpdated( itemCaptor.capture(), stateCaptor.capture() );
+    verify( listener ).statusUpdated( itemCaptor.capture(), stateCaptor.capture() );
     assertThat( itemCaptor.getValue() ).isSameAs( itemAdapter );
     assertThat( stateCaptor.getValue().get() ).isSameAs( OpenClosedType.OPEN );
   }
@@ -51,7 +51,7 @@ public class StateChangeAdapterTest {
 
     adapter.stateUpdated( null, mock( State.class ) );
 
-    verify( listener, never() ).stateUpdated( eq( itemAdapter ), any( Optional.class ) );
+    verify( listener, never() ).statusUpdated( eq( itemAdapter ), any( Optional.class ) );
   }
 
   @Test
@@ -63,7 +63,7 @@ public class StateChangeAdapterTest {
     ArgumentCaptor<ItemAdapter> itemCaptor = forClass( ItemAdapter.class );
     ArgumentCaptor<Optional> oldStateCaptor = forClass( Optional.class );
     ArgumentCaptor<Optional> newStateCaptor = forClass( Optional.class );
-    verify( listener ).stateChanged( itemCaptor.capture(), oldStateCaptor.capture(), newStateCaptor.capture() );
+    verify( listener ).statusChanged( itemCaptor.capture(), oldStateCaptor.capture(), newStateCaptor.capture() );
     assertThat( itemCaptor.getValue() ).isSameAs( itemAdapter );
     assertThat( oldStateCaptor.getValue().get() ).isSameAs( OpenClosedType.OPEN );
     assertThat( newStateCaptor.getValue().get() ).isSameAs( OpenClosedType.CLOSED );
@@ -76,12 +76,12 @@ public class StateChangeAdapterTest {
     adapter.stateChanged( mock( GenericItem.class ), mock( State.class ), mock( State.class ) );
 
     verify( listener, never() )
-      .stateChanged( eq( itemAdapter ), any( Optional.class ), any( Optional.class ) );
+      .statusChanged( eq( itemAdapter ), any( Optional.class ), any( Optional.class ) );
   }
 
   @Test
   public void getListener() {
-    ItemStateChangeListener actual = adapter.getListener();
+    StatusChangeListener actual = adapter.getListener();
 
     assertThat( actual ).isSameAs( listener );
   }
