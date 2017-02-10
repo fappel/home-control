@@ -18,13 +18,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.Context;
+import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.item.NumberItem;
+import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.util.Disposable;
 
 public class SystemWiringTest {
 
+  private static final String ITEM_NAME = "itemName";
   private static final long PERIOD = 0;
 
   private com.codeaffine.util.inject.Context context;
@@ -32,15 +39,21 @@ public class SystemWiringTest {
   private ContextFactory contextFactory;
   private SystemExecutor executor;
   private SystemWiring wiring;
-  @SuppressWarnings("rawtypes")
+  private NumberItem item;
+  @SuppressWarnings( "rawtypes" )
   private ScheduledFuture scheduledFuture;
 
   static class Bean {
+
     @Schedule( period = PERIOD )
     private void method(){}
+
+    @Observe( ITEM_NAME )
+    private void onEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
   }
 
   static class Configuration implements SystemConfiguration {
+
     @Override
     public void configureSystem( Context context ) {
       context.create( Bean.class );
@@ -55,17 +68,20 @@ public class SystemWiringTest {
     scheduledFuture = mock( ScheduledFuture.class );
     executor = stubInThreadExecutor();
     stubWithFutureForFixedRateScheduling( executor, scheduledFuture );
-    wiring = new SystemWiring( contextFactory, executor );
+    item = mock( NumberItem.class );
+    wiring = new SystemWiring( contextFactory, stubRegistry( ITEM_NAME, item ), executor );
   }
 
   @Test
+  @SuppressWarnings( "unchecked" )
   public void initialize() {
     wiring.initialize( configuration );
 
     ArgumentCaptor<Context> captor = forClass( Context.class );
-    InOrder order = inOrder( contextFactory, configuration, executor );
+    InOrder order = inOrder( contextFactory, configuration, executor, item );
     order.verify( contextFactory ).create();
     order.verify( configuration ).configureSystem( captor.capture() );
+    order.verify( item ).addChangeListener( any( ChangeListener.class ) );
     order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
     order.verifyNoMoreInteractions();
     assertThat( context ).isSameAs( captor.getValue().get( com.codeaffine.util.inject.Context.class ) );
@@ -164,6 +180,12 @@ public class SystemWiringTest {
   private static ContextFactory stubContextFactory( com.codeaffine.util.inject.Context context ) {
     ContextFactory result = mock( ContextFactory.class );
     when( result.create() ).thenReturn( context );
+    return result;
+  }
+
+  private static Registry stubRegistry( String itemName, NumberItem numberItem ) {
+    Registry result = mock( Registry.class );
+    when( result.getItem( itemName, NumberItem.class ) ).thenReturn( numberItem );
     return result;
   }
 }

@@ -5,6 +5,7 @@ import static java.lang.String.format;
 
 import java.util.function.Predicate;
 
+import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.util.inject.Context;
@@ -13,13 +14,15 @@ public class SystemWiring {
 
   private final ContextFactory contextFactory;
   private final SystemExecutor executor;
+  private final Registry registry;
 
   private volatile SystemConfiguration configuration;
   private volatile ContextAdapter contextAdapter;
   private volatile Context context;
 
-  public SystemWiring( ContextFactory contextFactory, SystemExecutor executor ) {
+  public SystemWiring( ContextFactory contextFactory, Registry registry, SystemExecutor executor ) {
     this.contextFactory = contextFactory;
+    this.registry = registry;
     this.executor = executor;
   }
 
@@ -58,7 +61,7 @@ public class SystemWiring {
 
   private void doInitialize() {
     context = contextFactory.create();
-    contextAdapter = new ContextAdapter( context, executor );
+    contextAdapter = new ContextAdapter( context, registry, executor );
     configuration.configureSystem( contextAdapter );
   }
 

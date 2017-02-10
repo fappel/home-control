@@ -47,7 +47,7 @@ public class Activator implements BundleActivator {
   {
     ItemRegistryAdapter registry = new ItemRegistryAdapter( context, shutdownDispatcher, executor );
     ContextFactory contextFactory = new SystemContextFactory( registry );
-    return new SystemWiring( contextFactory, executor );
+    return new SystemWiring( contextFactory, registry, executor );
   }
 
   private static SystemConfigurationTracker trackSystemConfiguration( BundleContext ctx, SystemLifeCycle lifeCycle ) {
