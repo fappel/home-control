@@ -5,6 +5,7 @@ import static java.lang.String.format;
 
 import org.eclipse.smarthome.core.events.EventPublisher;
 
+import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.internal.adapter.ItemAdapter;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
@@ -18,12 +19,13 @@ import com.codeaffine.home.control.item.SwitchItem;
 
 public class ItemAdapterFactory {
 
-  public static ItemAdapter<? extends Status> createAdapter( String key,
-                                                             Class<?> type,
-                                                             ItemRegistryAdapter registry,
-                                                             EventPublisher publisher,
-                                                             ShutdownDispatcher shutdownDispatcher,
-                                                             SystemExecutor executor )
+  public static ItemAdapter<? extends Item<?,?>, ? extends Status>
+    createAdapter( String key,
+                   Class<?> type,
+                   ItemRegistryAdapter registry,
+                   EventPublisher publisher,
+                   ShutdownDispatcher shutdownDispatcher,
+                   SystemExecutor executor )
   {
     if( type == NumberItem.class ) {
       return new NumberItemAdapter( key, registry, publisher, shutdownDispatcher, executor );

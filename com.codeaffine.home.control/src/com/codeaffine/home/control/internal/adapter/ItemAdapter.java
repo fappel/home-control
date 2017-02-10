@@ -13,19 +13,21 @@ import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.types.Command;
 
 import com.codeaffine.home.control.Item;
-import com.codeaffine.home.control.StatusChangeListener;
 import com.codeaffine.home.control.Status;
+import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.ItemListener;
+import com.codeaffine.home.control.event.UpdateListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 
-public class ItemAdapter<T extends Status> implements Item<T> {
+public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item<I, S> {
 
-  private final Map<StatusChangeListener<T>, StateChangeAdapter<T>> listeners;
-  private final Map<StatusChangeListener<T>, Runnable> shutdownHooks;
+  private final Map<ItemListener<I, S>, StateChangeAdapter<I, S>> listeners;
+  private final Map<ItemListener<I, S>, Runnable> shutdownHooks;
   private final ShutdownDispatcher shutdownDispatcher;
   private final EventPublisher eventPublisher;
   private final ItemRegistryAdapter registry;
   private final SystemExecutor executor;
-  private final Class<T> statusType;
+  private final Class<S> statusType;
   private final String key;
 
   private GenericItem item;
@@ -35,7 +37,7 @@ public class ItemAdapter<T extends Status> implements Item<T> {
                          EventPublisher eventPublisher,
                          ShutdownDispatcher shutdownDispatcher,
                          SystemExecutor executor,
-                         Class<T> statusType )
+                         Class<S> statusType )
   {
     verifyNotNull( key, "key" );
     verifyNotNull( registry, "registry" );
@@ -55,41 +57,44 @@ public class ItemAdapter<T extends Status> implements Item<T> {
   }
 
   @Override
-  public void addItemStateChangeListener( StatusChangeListener<T> listener ) {
-    if( !listeners.containsKey( listener ) ) {
-      registerStateChangeListener( listener );
-      registerShutdownHook( listener );
-    }
+  public void addChangeListener( ChangeListener<I, S> listener ) {
+    addStatusListener( listener );
   }
 
   @Override
-  public void removeItemStateChangeListener( StatusChangeListener<T> listener ) {
-    if( listeners.containsKey( listener ) ) {
-      StateChangeAdapter<T> remove = listeners.remove( listener );
-      item.removeStateChangeListener( remove );
-      shutdownHooks.remove( listener );
-    }
+  public void removeChangeListener( ChangeListener<I, S> listener ) {
+    removeStatusListener( listener );
   }
 
   @Override
-  public Optional<T> getStatus() {
+  public void addUpdateListener( UpdateListener<I, S> listener ) {
+    addStatusListener( listener );
+  }
+
+  @Override
+  public void removeUpdateListener( UpdateListener<I, S> listener ) {
+    removeStatusListener( listener );
+  }
+
+  @Override
+  public Optional<S> getStatus() {
     return convert( item.getState(), getStatusType() );
   }
 
-  protected void setStatusInternal( T status ) {
+  protected void setStatusInternal( S status ) {
     verifyNotNull( status, "status" );
 
     item.setState( convert( status, getStatusType() ) );
   }
 
-  protected void sendStatusInternal( T status ) {
+  protected void updateStatusInternal( S status ) {
     verifyNotNull( status, "status" );
 
     Command command = ( Command )convert( status, getStatusType() );
     eventPublisher.post( createCommandEvent( item.getName(), command ) );
   }
 
-  public Class<T> getStatusType() {
+  public Class<S> getStatusType() {
     return statusType;
   }
 
@@ -97,14 +102,29 @@ public class ItemAdapter<T extends Status> implements Item<T> {
     return item;
   }
 
-  private void registerStateChangeListener( StatusChangeListener<T> listener ) {
-    StateChangeAdapter<T> stateChangeAdapter = new StateChangeAdapter<>( this, listener, executor );
+  private void addStatusListener( ItemListener<I, S> listener ) {
+    if( !listeners.containsKey( listener ) ) {
+      registerStateListener( listener );
+      registerShutdownHook( listener );
+    }
+  }
+
+  private void removeStatusListener( ItemListener<I, S> listener ) {
+    if( listeners.containsKey( listener ) ) {
+      StateChangeAdapter<I, S> remove = listeners.remove( listener );
+      item.removeStateChangeListener( remove );
+      shutdownHooks.remove( listener );
+    }
+  }
+
+  private void registerStateListener( ItemListener<I, S> listener ) {
+    StateChangeAdapter<I, S> stateChangeAdapter = new StateChangeAdapter<>( this, listener, executor );
     listeners.put( listener, stateChangeAdapter );
     item.addStateChangeListener( stateChangeAdapter );
   }
 
-  private void registerShutdownHook( StatusChangeListener<T> listener ) {
-    Runnable shutdownHook = () -> removeItemStateChangeListener( listener );
+  private void registerShutdownHook( ItemListener<I, S> listener ) {
+    Runnable shutdownHook = () -> removeStatusListener( listener );
     shutdownHooks.put( listener, shutdownHook );
     shutdownDispatcher.addShutdownHook( shutdownHook );
   }

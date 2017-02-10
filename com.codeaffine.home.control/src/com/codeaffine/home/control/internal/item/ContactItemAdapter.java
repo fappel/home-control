@@ -9,7 +9,7 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.type.OpenClosedType;
 
-public class ContactItemAdapter extends ItemAdapter<OpenClosedType> implements ContactItem {
+public class ContactItemAdapter extends ItemAdapter<ContactItem, OpenClosedType> implements ContactItem {
 
   protected ContactItemAdapter( String key,
                                 ItemRegistryAdapter registry,

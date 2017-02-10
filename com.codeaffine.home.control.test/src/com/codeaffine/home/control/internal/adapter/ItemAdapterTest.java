@@ -17,8 +17,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.StatusChangeListener;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.UpdateEvent;
+import com.codeaffine.home.control.event.UpdateListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.type.OpenClosedType;
 
 public class ItemAdapterTest {
@@ -26,7 +30,7 @@ public class ItemAdapterTest {
   private static final String KEY = "key";
 
   private ShutdownDispatcher shutdownDispatcher;
-  private ItemAdapter<OpenClosedType> adapter;
+  private ItemAdapter<ContactItem, OpenClosedType> adapter;
   private ItemRegistryAdapter registry;
   private EventPublisher eventPublisher;
   private SystemExecutor executor;
@@ -54,50 +58,36 @@ public class ItemAdapterTest {
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void addItemStateChangeListener() {
-    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
+  public void addChangeListener() {
+    ChangeListener<ContactItem, OpenClosedType> expected = mock( ChangeListener.class );
 
-    adapter.addItemStateChangeListener( expected );
+    adapter.addChangeListener( expected );
 
     ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
     verify( item ).addStateChangeListener( captor.capture() );
-    assertThat( captor.getValue().getListener() ).isSameAs( expected );
+    assertThat( captor.getValue().getChangeListener() ).isSameAs( expected );
   }
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void addItemStateChangeListenerTwice() {
-    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
+  public void addChangeListenerTwice() {
+    ChangeListener<ContactItem, OpenClosedType> expected = mock( ChangeListener.class );
 
-    adapter.addItemStateChangeListener( expected );
-    adapter.addItemStateChangeListener( expected );
+    adapter.addChangeListener( expected );
+    adapter.addChangeListener( expected );
 
     ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
     verify( item ).addStateChangeListener( captor.capture() );
-    assertThat( captor.getValue().getListener() ).isSameAs( expected );
+    assertThat( captor.getValue().getChangeListener() ).isSameAs( expected );
   }
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void removeItemStateChangeListener() {
-    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
-    adapter.addItemStateChangeListener( expected );
+  public void removeChangeListener() {
+    ChangeListener<ContactItem, OpenClosedType> expected = mock( ChangeListener.class );
+    adapter.addChangeListener( expected );
 
-    adapter.removeItemStateChangeListener( expected );
-
-    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
-    verify( item ).addStateChangeListener( captor.capture() );
-    verify( item ).removeStateChangeListener( captor.getValue() );
-  }
-
-  @Test
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void removeItemStateChangeListenerTwice() {
-    StatusChangeListener<OpenClosedType> expected = mock( StatusChangeListener.class );
-    adapter.addItemStateChangeListener( expected );
-    adapter.removeItemStateChangeListener( expected );
-
-    adapter.removeItemStateChangeListener( expected );
+    adapter.removeChangeListener( expected );
 
     ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
     verify( item ).addStateChangeListener( captor.capture() );
@@ -106,10 +96,24 @@ public class ItemAdapterTest {
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void shutdownDispatch() {
-    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
+  public void removeChangeListenerTwice() {
+    ChangeListener<ContactItem, OpenClosedType> expected = mock( ChangeListener.class );
+    adapter.addChangeListener( expected );
+    adapter.removeChangeListener( expected );
 
-    adapter.addItemStateChangeListener( listener );
+    adapter.removeChangeListener( expected );
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    verify( item ).removeStateChangeListener( captor.getValue() );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void shutdownDispatchOnChangeListener() {
+    ChangeListener<ContactItem, OpenClosedType> listener = mock( ChangeListener.class );
+
+    adapter.addChangeListener( listener );
     shutdownDispatcher.dispatch();
 
     ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
@@ -120,11 +124,11 @@ public class ItemAdapterTest {
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void shutdownDispatchAfterItemStateChangeListenerRemoval() {
-    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
+  public void shutdownDispatchAfterChangeListenerRemoval() {
+    ChangeListener<ContactItem, OpenClosedType> listener = mock( ChangeListener.class );
 
-    adapter.addItemStateChangeListener( listener );
-    adapter.removeItemStateChangeListener( listener );
+    adapter.addChangeListener( listener );
+    adapter.removeChangeListener( listener );
     shutdownDispatcher.dispatch();
 
     ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
@@ -135,23 +139,136 @@ public class ItemAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void triggerStateChangeIfExecutorIsBlocked() {
+  public void triggerItemChangeIfExecutorIsBlocked() {
     blockExecutor( executor );
-    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
-    adapter.addItemStateChangeListener( listener );
+    ChangeListener<ContactItem, OpenClosedType> listener = mock( ChangeListener.class );
+    adapter.addChangeListener( listener );
     ArgumentCaptor<StateChangeListener> captor = forClass( StateChangeListener.class );
     verify( item ).addStateChangeListener( captor.capture() );
 
     captor.getValue().stateUpdated( item, null );
 
-    verify( listener, never() ).statusUpdated( any( ItemAdapter.class ), any( Optional.class ) );
+    verify( listener, never() ).itemChanged( any( ChangeEvent.class ) );
   }
 
   @Test
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void triggerResetHook() {
-    StatusChangeListener<OpenClosedType> listener = mock( StatusChangeListener.class );
-    adapter.addItemStateChangeListener( listener );
+  public void triggerResetHookWithChangeListener() {
+    ChangeListener<ContactItem, OpenClosedType> listener = mock( ChangeListener.class );
+    adapter.addChangeListener( listener );
+    GenericItem replacement = stubItemRegistryAdapter( registry, stubGenericItem() );
+
+    resetHook.run();
+
+    InOrder order = inOrder( item, replacement );
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    order.verify( item ).addStateChangeListener( captor.capture() );
+    StateChangeAdapter stateChangeAdapter = captor.getValue();
+    order.verify( item ).removeStateChangeListener( stateChangeAdapter );
+    order.verify( replacement ).addStateChangeListener( stateChangeAdapter );
+    assertThat( adapter.getItem() ).isSameAs( replacement );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void addUpdateListener() {
+    UpdateListener<ContactItem, OpenClosedType> expected = mock( UpdateListener.class );
+
+    adapter.addUpdateListener( expected );
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    assertThat( captor.getValue().getUpdateListener() ).isSameAs( expected );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void addUpdateListenerTwice() {
+    UpdateListener<ContactItem, OpenClosedType> expected = mock( UpdateListener.class );
+
+    adapter.addUpdateListener( expected );
+    adapter.addUpdateListener( expected );
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    assertThat( captor.getValue().getUpdateListener() ).isSameAs( expected );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void removeUpdateListener() {
+    UpdateListener<ContactItem, OpenClosedType> expected = mock( UpdateListener.class );
+    adapter.addUpdateListener( expected );
+
+    adapter.removeUpdateListener( expected );
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    verify( item ).removeStateChangeListener( captor.getValue() );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void removeUpdateListenerTwice() {
+    UpdateListener<ContactItem, OpenClosedType> expected = mock( UpdateListener.class );
+    adapter.addUpdateListener( expected );
+    adapter.removeUpdateListener( expected );
+
+    adapter.removeUpdateListener( expected );
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    verify( item ).removeStateChangeListener( captor.getValue() );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void shutdownDispatchOnUpdateListener() {
+    UpdateListener<ContactItem, OpenClosedType> listener = mock( UpdateListener.class );
+
+    adapter.addUpdateListener( listener );
+    shutdownDispatcher.dispatch();
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    verify( item ).removeStateChangeListener( captor.getValue() );
+    verify( registry ).removeResetHook( resetHook );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void shutdownDispatchAfterUpdateListenerRemoval() {
+    UpdateListener<ContactItem, OpenClosedType> listener = mock( UpdateListener.class );
+
+    adapter.addUpdateListener( listener );
+    adapter.removeUpdateListener( listener );
+    shutdownDispatcher.dispatch();
+
+    ArgumentCaptor<StateChangeAdapter> captor = forClass( StateChangeAdapter.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+    verify( item ).removeStateChangeListener( captor.getValue() );
+    verify( registry ).removeResetHook( resetHook );
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void triggerItemUpdateIfExecutorIsBlocked() {
+    blockExecutor( executor );
+    UpdateListener<ContactItem, OpenClosedType> listener = mock( UpdateListener.class );
+    adapter.addUpdateListener( listener );
+    ArgumentCaptor<StateChangeListener> captor = forClass( StateChangeListener.class );
+    verify( item ).addStateChangeListener( captor.capture() );
+
+    captor.getValue().stateUpdated( item, null );
+
+    verify( listener, never() ).itemUpdated( any( UpdateEvent.class ) );
+  }
+
+  @Test
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void triggerResetHookWithUpdateListener() {
+    UpdateListener<ContactItem, OpenClosedType> listener = mock( UpdateListener.class );
+    adapter.addUpdateListener( listener );
     GenericItem replacement = stubItemRegistryAdapter( registry, stubGenericItem() );
 
     resetHook.run();
@@ -187,18 +304,18 @@ public class ItemAdapterTest {
   }
 
   @Test
-  public void sendStatusInternal() {
-    adapter.sendStatusInternal( OpenClosedType.OPEN );
+    public void updateStatusInternal() {
+      adapter.updateStatusInternal( OpenClosedType.OPEN );
 
-    ArgumentCaptor<Event> captor = forClass( Event.class );
-    verify( eventPublisher ).post( captor.capture() );
-    assertThat( captor.getValue().getPayload() ).isEqualTo( "{\"type\":\"OpenClosedType\",\"value\":\"OPEN\"}" );
-  }
+      ArgumentCaptor<Event> captor = forClass( Event.class );
+      verify( eventPublisher ).post( captor.capture() );
+      assertThat( captor.getValue().getPayload() ).isEqualTo( "{\"type\":\"OpenClosedType\",\"value\":\"OPEN\"}" );
+    }
 
   @Test(expected = IllegalArgumentException.class)
-  public void sendStatusInternalWithNullArgument() {
-    adapter.sendStatusInternal( null );
-  }
+    public void updateStatusInternalWithNullArgument() {
+      adapter.updateStatusInternal( null );
+    }
 
   private static GenericItem stubGenericItem() {
     GenericItem result = mock( GenericItem.class );

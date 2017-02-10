@@ -6,10 +6,10 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 class ContextAdapter implements Context {
 
   private final com.codeaffine.util.inject.Context delegate;
-  private final Timer timer;
+  private final TimerWiring timer;
 
   ContextAdapter( com.codeaffine.util.inject.Context delegate, SystemExecutor executor ) {
-    this.timer = new Timer( executor );
+    this.timer = new TimerWiring( executor );
     this.delegate = delegate;
     set( Context.class, this );
   }

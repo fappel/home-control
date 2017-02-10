@@ -33,8 +33,8 @@ public class ItemRegistryAdapter implements Registry {
   }
 
   @Override
-  public <T extends Item<? extends Status>> T getItem( String key, Class<T> itemType ) {
-    ItemAdapter<? extends Status> adapter
+  public <I extends Item<I, ? extends Status>> I getItem( String key, Class<I> itemType ) {
+    ItemAdapter<? extends Item<?,?>, ? extends Status> adapter
       = createAdapter( key, itemType, this, eventPublisher, shutdownDispatcher, executor );
     adapter.initialize();
     return itemType.cast( adapter );

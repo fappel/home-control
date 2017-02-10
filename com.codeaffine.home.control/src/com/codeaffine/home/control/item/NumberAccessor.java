@@ -20,11 +20,11 @@ public interface NumberAccessor<T extends DecimalType> {
   void setStatus( double value );
   void setStatus( String value );
 
-  void sendStatus( T status );
-  void sendStatus( BigDecimal value );
-  void sendStatus( int value );
-  void sendStatus( long value );
-  void sendStatus( float value );
-  void sendStatus( double value );
-  void sendStatus( String value );
+  void updateStatus( T status );
+  void updateStatus( BigDecimal value );
+  void updateStatus( int value );
+  void updateStatus( long value );
+  void updateStatus( float value );
+  void updateStatus( double value );
+  void updateStatus( String value );
 }

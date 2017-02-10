@@ -11,7 +11,7 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.type.PercentType;
 
-public class DimmerItemAdapter extends ItemAdapter<PercentType> implements DimmerItem {
+public class DimmerItemAdapter extends ItemAdapter<DimmerItem, PercentType> implements DimmerItem {
 
   protected DimmerItemAdapter( String key,
                                ItemRegistryAdapter registry,
@@ -83,37 +83,37 @@ public class DimmerItemAdapter extends ItemAdapter<PercentType> implements Dimme
   }
 
   @Override
-  public void sendStatus( PercentType status ) {
-    super.sendStatusInternal( status );
+  public void updateStatus( PercentType status ) {
+    super.updateStatusInternal( status );
   }
 
   @Override
-  public void sendStatus( BigDecimal value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( BigDecimal value ) {
+    updateStatus( new PercentType( value ) );
   }
 
   @Override
-  public void sendStatus( int value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( int value ) {
+    updateStatus( new PercentType( value ) );
   }
 
   @Override
-  public void sendStatus( long value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( long value ) {
+    updateStatus( new PercentType( value ) );
   }
 
   @Override
-  public void sendStatus( float value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( float value ) {
+    updateStatus( new PercentType( value ) );
   }
 
   @Override
-  public void sendStatus( double value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( double value ) {
+    updateStatus( new PercentType( value ) );
   }
 
   @Override
-  public void sendStatus( String value ) {
-    sendStatus( new PercentType( value ) );
+  public void updateStatus( String value ) {
+    updateStatus( new PercentType( value ) );
   }
 }

@@ -10,7 +10,7 @@ import com.codeaffine.home.control.item.StringItem;
 import com.codeaffine.home.control.type.StringType;
 
 
-public class StringItemAdapter extends ItemAdapter<StringType> implements StringItem {
+public class StringItemAdapter extends ItemAdapter<StringItem, StringType> implements StringItem {
 
   protected StringItemAdapter( String key,
                                ItemRegistryAdapter registry,
@@ -37,13 +37,13 @@ public class StringItemAdapter extends ItemAdapter<StringType> implements String
   }
 
   @Override
-  public void sendStatus( StringType status ) {
-    super.sendStatusInternal( status );
+  public void updateStatus( StringType status ) {
+    super.updateStatusInternal( status );
   }
 
   @Override
-  public void sendStatus( String status ) {
-    super.sendStatusInternal( asStringType( status ) );
+  public void updateStatus( String status ) {
+    super.updateStatusInternal( asStringType( status ) );
   }
 
   private static StringType asStringType( String status ) {

@@ -1,5 +1,5 @@
 package com.codeaffine.home.control;
 
 public interface Registry {
-  <T extends Item<? extends Status>> T getItem( String key, Class<T> itemType );
+  <I extends Item<I,? extends Status>> I getItem( String key, Class<I> itemType );
 }

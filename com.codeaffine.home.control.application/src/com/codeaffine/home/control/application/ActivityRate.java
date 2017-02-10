@@ -11,10 +11,14 @@ import java.util.Queue;
 
 import org.slf4j.LoggerFactory;
 
-import com.codeaffine.home.control.ItemByName;
+import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Schedule;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.Observe;
+import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.item.SwitchItem;
+import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.home.control.type.OnOffType;
 
 public class ActivityRate {
@@ -28,8 +32,8 @@ public class ActivityRate {
   private final NumberItem activityRate;
   private final SwitchItem switchItem;
 
-  public ActivityRate( @ItemByName( "activityRate" ) NumberItem activityRate,
-                       @ItemByName( "switchWindowUplight" ) SwitchItem switchItem )
+  public ActivityRate( @ByName( "activityRate" ) NumberItem activityRate,
+                       @ByName( "switchWindowUplight" ) SwitchItem switchItem )
   {
     this.activityRate = activityRate;
     this.switchItem = switchItem;
@@ -37,12 +41,22 @@ public class ActivityRate {
     this.rooms = asList( Room.values() );
   }
 
+  @Observe( "activityRate" )
+  void onChange( ChangeEvent<NumberItem, DecimalType> event ) {
+    LoggerFactory.getLogger( ActivityRate.class ).info( "activityRate status change: " + event.getSource().getStatus( -1 ) );
+  }
+
+  @Observe( "switchWindowUplight" )
+  void onUpdate( UpdateEvent<SwitchItem, OnOffType> event ) {
+    LoggerFactory.getLogger( ActivityRate.class ).info( "switchWindowUplight status update: " + event.getSource().getStatus() );
+  }
+
   @Schedule( period = SCAN_RATE )
   private void calculateRate() {
     LoggerFactory.getLogger( ActivityRate.class ).info( "calculate Rate: " + activityRate.getStatus( -1 ) );
 
     OnOffType status = switchItem.getStatus( OFF );
-    switchItem.sendStatus( flip( status ) );
+    switchItem.updateStatus( flip( status ) );
     activityRate.setStatus( 10 );
 //
 //    if( activityRate.getStatus().isPresent() ) {

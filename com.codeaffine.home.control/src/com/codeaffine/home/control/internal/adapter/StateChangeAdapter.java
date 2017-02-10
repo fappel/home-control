@@ -1,44 +1,54 @@
 package com.codeaffine.home.control.internal.adapter;
 
-import static com.codeaffine.home.control.internal.type.TypeConverter.convert;
-
-import java.util.Optional;
-
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.StateChangeListener;
 import org.eclipse.smarthome.core.types.State;
 
-import com.codeaffine.home.control.StatusChangeListener;
+import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Status;
+import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.ItemListener;
+import com.codeaffine.home.control.event.UpdateListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 
-class StateChangeAdapter<T extends Status> implements StateChangeListener {
+class StateChangeAdapter<I extends Item<I, S>, S extends Status>
+  implements StateChangeListener
+{
 
-  private final StatusChangeListener<T> listener;
-  private final ItemAdapter<T> itemAdapter;
+  private final ChangeListener<I, S> changeListener;
+  private final UpdateListener<I ,S> updateListener;
+  private final ItemAdapter<I, S> itemAdapter;
   private final SystemExecutor executor;
 
-  StateChangeAdapter( ItemAdapter<T> itemAdapter, StatusChangeListener<T> listener, SystemExecutor executor ) {
+  StateChangeAdapter( ItemAdapter<I, S> itemAdapter, ItemListener<I, S> listener, SystemExecutor executor ) {
+    this.changeListener = ensureChangeListener( listener );
+    this.updateListener = ensureUpdateListener( listener );
     this.itemAdapter = itemAdapter;
-    this.listener = listener;
     this.executor = executor;
   }
 
   @Override
-  public void stateUpdated( Item item, State state ) {
-    executor.execute( () -> listener.statusUpdated( itemAdapter, convertTo( state ) ) );
+  public void stateUpdated( org.eclipse.smarthome.core.items.Item item, State state ) {
+    executor.execute( () -> updateListener.itemUpdated( new UpdateEventImpl<>( itemAdapter, state ) ) );
   }
 
   @Override
-  public void stateChanged( Item item, State oldState, State newState ) {
-    executor.execute( () -> listener.statusChanged( itemAdapter, convertTo( oldState ), convertTo( newState ) ) );
+  public void stateChanged( org.eclipse.smarthome.core.items.Item item, State oldState, State newState ) {
+    executor.execute( () -> changeListener.itemChanged( new ChangeEventImpl<>( itemAdapter, oldState, newState )  ) );
   }
 
-  StatusChangeListener<T> getListener() {
-    return listener;
+  ChangeListener<I,S> getChangeListener() {
+    return changeListener;
   }
 
-  private Optional<T> convertTo( State source ) {
-    return convert( source, itemAdapter.getStatusType() );
+  UpdateListener<I,S> getUpdateListener() {
+    return updateListener;
+  }
+
+  private ChangeListener<I, S> ensureChangeListener( ItemListener<I, S> lsnr ) {
+    return lsnr instanceof ChangeListener ? ( com.codeaffine.home.control.event.ChangeListener<I, S> )lsnr : evt -> {};
+  }
+
+  private UpdateListener<I, S> ensureUpdateListener( ItemListener<I, S> lsnr ) {
+    return lsnr instanceof UpdateListener ? ( com.codeaffine.home.control.event.UpdateListener<I, S> )lsnr : evt -> {};
   }
 }

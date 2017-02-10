@@ -5,10 +5,8 @@ import java.lang.reflect.Parameter;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-import com.codeaffine.home.control.Item;
-import com.codeaffine.home.control.ItemByName;
+import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.Status;
 import com.codeaffine.util.inject.Context;
 
 public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Object[]> {
@@ -21,17 +19,17 @@ public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Ob
   }
 
   private static Object getParameter( Context context, Parameter parameter ) {
-    ItemByName itemByNameAnnotation = parameter.getAnnotation( ItemByName.class );
-    if( itemByNameAnnotation != null ) {
-      return getFromRegistry( context, parameter, itemByNameAnnotation );
+    ByName annotation = parameter.getAnnotation( ByName.class );
+    if( annotation != null ) {
+      return getFromRegistry( context, parameter, annotation );
     }
     return context.get( parameter.getType() );
   }
 
-  @SuppressWarnings("unchecked")
-  private static Object getFromRegistry( Context context, Parameter parameter, ItemByName itemByName ) {
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private static Object getFromRegistry( Context context, Parameter parameter, ByName itemByName ) {
     String itemName = itemByName.value();
-    Class<Item<? extends Status>> itemType = ( Class<Item<? extends Status>> ) parameter.getType();
+    Class itemType = parameter.getType();
     return context.get( Registry.class ).getItem( itemName, itemType );
   }
 }

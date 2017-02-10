@@ -11,7 +11,7 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.type.DecimalType;
 
-public class NumberItemAdapter extends ItemAdapter<DecimalType> implements NumberItem {
+public class NumberItemAdapter extends ItemAdapter<NumberItem, DecimalType> implements NumberItem {
 
   protected NumberItemAdapter( String key,
                                ItemRegistryAdapter registry,
@@ -83,37 +83,37 @@ public class NumberItemAdapter extends ItemAdapter<DecimalType> implements Numbe
   }
 
   @Override
-  public void sendStatus( DecimalType status ) {
-    super.sendStatusInternal( status );
+  public void updateStatus( DecimalType status ) {
+    super.updateStatusInternal( status );
   }
 
   @Override
-  public void sendStatus( BigDecimal value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( BigDecimal value ) {
+    updateStatus( new DecimalType( value ) );
   }
 
   @Override
-  public void sendStatus( int value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( int value ) {
+    updateStatus( new DecimalType( value ) );
   }
 
   @Override
-  public void sendStatus( long value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( long value ) {
+    updateStatus( new DecimalType( value ) );
   }
 
   @Override
-  public void sendStatus( float value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( float value ) {
+    updateStatus( new DecimalType( value ) );
   }
 
   @Override
-  public void sendStatus( double value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( double value ) {
+    updateStatus( new DecimalType( value ) );
   }
 
   @Override
-  public void sendStatus( String value ) {
-    sendStatus( new DecimalType( value ) );
+  public void updateStatus( String value ) {
+    updateStatus( new DecimalType( value ) );
   }
 }

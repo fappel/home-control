@@ -1,17 +1,13 @@
 package com.codeaffine.home.control.application;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Optional;
-
 import org.slf4j.LoggerFactory;
 
-import com.codeaffine.home.control.Item;
-import com.codeaffine.home.control.StatusChangeListener;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.type.OpenClosedType;
 
-public enum Room implements StatusChangeListener<OpenClosedType> {
+public enum Room {
 
   HALL( "Flur", "hall" ),
   KITCHEN( "Küche", "kitchen" ),
@@ -39,22 +35,18 @@ public enum Room implements StatusChangeListener<OpenClosedType> {
 
   public void registerSensorItems( ContactItem motion ) {
     this.motion = motion;
-    motion.addItemStateChangeListener( this );
+    motion.addUpdateListener( evt -> statusUpdated( evt ) );
+    motion.addChangeListener( evt -> statusChanged( evt ) );
     LoggerFactory.getLogger( Room.class ).error( "motion sensor registered: " + label + " [Thread " + Thread.currentThread().getName() + "]" );
   }
 
-  @Override
-  public void statusUpdated( Item<OpenClosedType> item, Optional<OpenClosedType> status ) {
-    status.ifPresent( state -> getLogger( Room.class ).error( "motion state updated: " + label + " to state " + state + " [Thread " + Thread.currentThread().getName() + "]" ) );
+  private void statusUpdated( UpdateEvent<ContactItem, OpenClosedType> event ) {
+    event.getUpdatedStatus().ifPresent( state -> LoggerFactory.getLogger( Room.class ).error( "motion state updated: " + label + " to state " + state + " [Thread " + Thread.currentThread().getName() + "]" ) );
   }
 
-  @Override
-  public void statusChanged( Item<OpenClosedType> item,
-                            Optional<OpenClosedType> oldStatus,
-                            Optional<OpenClosedType> newStatus )
-  {
-    if( oldStatus.isPresent() && newStatus.isPresent() ) {
-      LoggerFactory.getLogger( Room.class ).error( "motion state changed: " + label + " from " + oldStatus.get() + " to " + newStatus.get() + " [Thread " + Thread.currentThread().getName() + "]" );
+  public void statusChanged( ChangeEvent<ContactItem, OpenClosedType> event ) {
+    if( event.getOldStatus().isPresent() && event.getNewStatus().isPresent() ) {
+      LoggerFactory.getLogger( Room.class ).error( "motion state changed: " + label + " from " + event.getOldStatus().get() + " to " + event.getNewStatus().get() + " [Thread " + Thread.currentThread().getName() + "]" );
     }
   }
 }

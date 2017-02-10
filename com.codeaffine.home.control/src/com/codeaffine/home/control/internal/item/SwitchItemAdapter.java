@@ -9,7 +9,7 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.type.OnOffType;
 
-public class SwitchItemAdapter extends ItemAdapter<OnOffType> implements SwitchItem {
+public class SwitchItemAdapter extends ItemAdapter<SwitchItem, OnOffType> implements SwitchItem {
 
   protected SwitchItemAdapter( String key,
                                ItemRegistryAdapter registry,
@@ -31,7 +31,7 @@ public class SwitchItemAdapter extends ItemAdapter<OnOffType> implements SwitchI
   }
 
   @Override
-  public void sendStatus( OnOffType status ) {
-    sendStatusInternal( status );
+  public void updateStatus( OnOffType status ) {
+    updateStatusInternal( status );
   }
 }

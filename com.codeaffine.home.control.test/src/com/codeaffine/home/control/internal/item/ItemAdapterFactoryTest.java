@@ -10,6 +10,7 @@ import org.eclipse.smarthome.core.events.EventPublisher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.internal.adapter.ItemAdapter;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
@@ -60,12 +61,13 @@ public class ItemAdapterFactoryTest {
     ShutdownDispatcher shutdownDispatcher = mock( ShutdownDispatcher.class );
     SystemExecutor executor = mock( SystemExecutor.class );
 
-    ItemAdapter<? extends Status> actual = ItemAdapterFactory.createAdapter( ITEM_NAME,
-                                                                             mapEntry.interfaceType,
-                                                                             registry,
-                                                                             publisher,
-                                                                             shutdownDispatcher,
-                                                                             executor );
+    ItemAdapter<? extends Item<?, ?>, ? extends Status> actual
+      = ItemAdapterFactory.createAdapter( ITEM_NAME,
+                                          mapEntry.interfaceType,
+                                          registry,
+                                          publisher,
+                                          shutdownDispatcher,
+                                          executor );
 
     assertThat( actual ).isInstanceOf( mapEntry.adapterType );
   }

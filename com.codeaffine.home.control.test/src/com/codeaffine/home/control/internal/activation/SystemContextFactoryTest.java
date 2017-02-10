@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.ItemByName;
+import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.util.inject.Context;
@@ -22,7 +22,7 @@ public class SystemContextFactoryTest {
 
     private final NumberItem item;
 
-    ItemHandler( @ItemByName( ITEM_NAME ) NumberItem item ) {
+    ItemHandler( @ByName( ITEM_NAME ) NumberItem item ) {
       this.item = item;
     }
 

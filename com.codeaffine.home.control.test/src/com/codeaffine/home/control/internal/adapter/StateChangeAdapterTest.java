@@ -3,10 +3,8 @@ package com.codeaffine.home.control.internal.adapter;
 import static com.codeaffine.home.control.internal.adapter.ExecutorHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.Optional;
 
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.types.State;
@@ -14,76 +12,109 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.StatusChangeListener;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.UpdateEvent;
+import com.codeaffine.home.control.event.UpdateListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.type.OpenClosedType;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class StateChangeAdapterTest {
 
-  private StatusChangeListener listener;
-  private StateChangeAdapter adapter;
+  private ChangeListener changeListener;
+  private UpdateListener updateListener;
   private ItemAdapter itemAdapter;
   private SystemExecutor executor;
 
   @Before
   public void setUp() {
-    listener = mock( StatusChangeListener.class );
+    changeListener = mock( ChangeListener.class );
+    updateListener = mock( UpdateListener.class );
     itemAdapter = stubItemAdapter( OpenClosedType.class );
     executor = stubInThreadExecutor();
-    adapter = new StateChangeAdapter( itemAdapter, listener, executor );
   }
 
   @Test
   public void stateUpdated() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, updateListener, executor );
+
     adapter.stateUpdated( null, org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN );
 
-    ArgumentCaptor<ItemAdapter> itemCaptor = forClass( ItemAdapter.class );
-    ArgumentCaptor<Optional> stateCaptor = forClass( Optional.class );
-    verify( listener ).statusUpdated( itemCaptor.capture(), stateCaptor.capture() );
-    assertThat( itemCaptor.getValue() ).isSameAs( itemAdapter );
-    assertThat( stateCaptor.getValue().get() ).isSameAs( OpenClosedType.OPEN );
+    ArgumentCaptor<UpdateEvent> evt = forClass( UpdateEvent.class );
+    verify( updateListener ).itemUpdated( evt.capture() );
+    assertThat( evt.getValue().getSource() ).isSameAs( itemAdapter );
+    assertThat( evt.getValue().getUpdatedStatus().get() ).isSameAs( OpenClosedType.OPEN );
+  }
+
+  @Test
+  public void stateUpdatedOnChangeListener() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, changeListener, executor );
+
+    adapter.stateUpdated( null, org.eclipse.smarthome.core.library.types.OpenClosedType.CLOSED );
+
+    verify( changeListener, never() ).itemChanged( any( ChangeEvent.class ) );
+    verify( updateListener, never() ).itemUpdated( any( UpdateEvent.class ) );
   }
 
   @Test
   public void stateUpdatedIfExecutorIsBlocked() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, updateListener, executor );
     blockExecutor( executor );
 
     adapter.stateUpdated( null, mock( State.class ) );
 
-    verify( listener, never() ).statusUpdated( eq( itemAdapter ), any( Optional.class ) );
+    verify( updateListener, never() ).itemUpdated( any( UpdateEvent.class ) );
   }
 
   @Test
   public void stateChanged() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, changeListener, executor );
+
     adapter.stateChanged( null,
                           org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN,
                           org.eclipse.smarthome.core.library.types.OpenClosedType.CLOSED );
 
-    ArgumentCaptor<ItemAdapter> itemCaptor = forClass( ItemAdapter.class );
-    ArgumentCaptor<Optional> oldStateCaptor = forClass( Optional.class );
-    ArgumentCaptor<Optional> newStateCaptor = forClass( Optional.class );
-    verify( listener ).statusChanged( itemCaptor.capture(), oldStateCaptor.capture(), newStateCaptor.capture() );
-    assertThat( itemCaptor.getValue() ).isSameAs( itemAdapter );
-    assertThat( oldStateCaptor.getValue().get() ).isSameAs( OpenClosedType.OPEN );
-    assertThat( newStateCaptor.getValue().get() ).isSameAs( OpenClosedType.CLOSED );
+    ArgumentCaptor<ChangeEvent> evt = forClass( ChangeEvent.class );
+    verify( changeListener ).itemChanged( evt.capture() );
+    assertThat( evt.getValue().getSource() ).isSameAs( itemAdapter );
+    assertThat( evt.getValue().getOldStatus().get() ).isSameAs( OpenClosedType.OPEN );
+    assertThat( evt.getValue().getNewStatus().get() ).isSameAs( OpenClosedType.CLOSED );
   }
 
   @Test
   public void stateChangedIfExecutorIsBlocked() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, changeListener, executor );
     blockExecutor( executor );
 
     adapter.stateChanged( mock( GenericItem.class ), mock( State.class ), mock( State.class ) );
 
-    verify( listener, never() )
-      .statusChanged( eq( itemAdapter ), any( Optional.class ), any( Optional.class ) );
+    verify( changeListener, never() ).itemChanged( any( ChangeEvent.class ) );
+    blockExecutor( executor );
+  }
+
+  @Test
+  public void stateChangedOnUpdateListener() {
+    StateChangeAdapter adapter = new StateChangeAdapter( itemAdapter, updateListener, executor );
+
+    adapter.stateChanged( null,
+                          org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN,
+                          org.eclipse.smarthome.core.library.types.OpenClosedType.CLOSED );
+
+    verify( changeListener, never() ).itemChanged( any( ChangeEvent.class ) );
+    verify( updateListener, never() ).itemUpdated( any( UpdateEvent.class ) );
   }
 
   @Test
   public void getListener() {
-    StatusChangeListener actual = adapter.getListener();
+    StateChangeAdapter changeAdapter = new StateChangeAdapter( itemAdapter, changeListener, executor );
+    StateChangeAdapter updateAdapter = new StateChangeAdapter( itemAdapter, updateListener, executor );
 
-    assertThat( actual ).isSameAs( listener );
+    ChangeListener actualChangeListener = changeAdapter.getChangeListener();
+    UpdateListener actualUpdateListener = updateAdapter.getUpdateListener();
+
+    assertThat( actualChangeListener ).isSameAs( changeListener );
+    assertThat( actualUpdateListener ).isSameAs( updateListener );
   }
 
   private static ItemAdapter stubItemAdapter( Class statusType ) {
