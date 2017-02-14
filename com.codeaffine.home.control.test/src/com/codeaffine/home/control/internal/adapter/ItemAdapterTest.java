@@ -23,7 +23,9 @@ import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.event.UpdateListener;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.ContactItem;
+import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.OpenClosedType;
+import com.codeaffine.test.util.lang.EqualsTester;
 
 public class ItemAdapterTest {
 
@@ -156,7 +158,7 @@ public class ItemAdapterTest {
   public void triggerResetHookWithChangeListener() {
     ChangeListener<ContactItem, OpenClosedType> listener = mock( ChangeListener.class );
     adapter.addChangeListener( listener );
-    GenericItem replacement = stubItemRegistryAdapter( registry, stubGenericItem() );
+    GenericItem replacement = stubItemRegistryAdapter( registry, KEY, stubGenericItem() );
 
     resetHook.run();
 
@@ -269,7 +271,7 @@ public class ItemAdapterTest {
   public void triggerResetHookWithUpdateListener() {
     UpdateListener<ContactItem, OpenClosedType> listener = mock( UpdateListener.class );
     adapter.addUpdateListener( listener );
-    GenericItem replacement = stubItemRegistryAdapter( registry, stubGenericItem() );
+    GenericItem replacement = stubItemRegistryAdapter( registry, KEY, stubGenericItem() );
 
     resetHook.run();
 
@@ -304,18 +306,41 @@ public class ItemAdapterTest {
   }
 
   @Test
-    public void updateStatusInternal() {
-      adapter.updateStatusInternal( OpenClosedType.OPEN );
+  public void updateStatusInternal() {
+    adapter.updateStatusInternal( OpenClosedType.OPEN );
 
-      ArgumentCaptor<Event> captor = forClass( Event.class );
-      verify( eventPublisher ).post( captor.capture() );
-      assertThat( captor.getValue().getPayload() ).isEqualTo( "{\"type\":\"OpenClosedType\",\"value\":\"OPEN\"}" );
-    }
+    ArgumentCaptor<Event> captor = forClass( Event.class );
+    verify( eventPublisher ).post( captor.capture() );
+    assertThat( captor.getValue().getPayload() ).isEqualTo( "{\"type\":\"OpenClosedType\",\"value\":\"OPEN\"}" );
+  }
 
   @Test(expected = IllegalArgumentException.class)
-    public void updateStatusInternalWithNullArgument() {
-      adapter.updateStatusInternal( null );
-    }
+  public void updateStatusInternalWithNullArgument() {
+    adapter.updateStatusInternal( null );
+  }
+
+  @Test
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void equalsAndHashcode() {
+    String key = "other";
+    GenericItem otherItem = mock( GenericItem.class );
+    stubItemRegistryAdapter( registry, key, otherItem );
+    ItemAdapter differentAdapter1
+      = new ItemAdapter( KEY, registry, eventPublisher, shutdownDispatcher, executor, OnOffType.class );
+    differentAdapter1.initialize();
+    ItemAdapter differentAdapter2
+      = new ItemAdapter( key, registry, eventPublisher, shutdownDispatcher, executor, OpenClosedType.class );
+    differentAdapter2.initialize();
+    ItemAdapter equalAdapter
+      = new ItemAdapter( KEY, registry, eventPublisher, shutdownDispatcher, executor, OpenClosedType.class );
+    equalAdapter.initialize();
+
+    EqualsTester<ItemAdapter<ContactItem, OpenClosedType>> tester = EqualsTester.newInstance( adapter );
+    tester.assertImplementsEqualsAndHashCode();
+    tester.assertEqual( adapter, equalAdapter );
+    tester.assertNotEqual( adapter, differentAdapter1 );
+    tester.assertNotEqual( adapter, differentAdapter2 );
+  }
 
   private static GenericItem stubGenericItem() {
     GenericItem result = mock( GenericItem.class );
@@ -325,12 +350,12 @@ public class ItemAdapterTest {
 
   private static ItemRegistryAdapter stubItemRegistryAdapter( GenericItem item ) {
     ItemRegistryAdapter result = mock( ItemRegistryAdapter.class );
-    stubItemRegistryAdapter( result, item );
+    stubItemRegistryAdapter( result, KEY, item );
     return result;
   }
 
-  private static GenericItem stubItemRegistryAdapter( ItemRegistryAdapter registry, GenericItem item ) {
-    when( registry.getGenericItem( KEY ) ).thenReturn( item );
+  private static GenericItem stubItemRegistryAdapter( ItemRegistryAdapter registry, String key, GenericItem item ) {
+    when( registry.getGenericItem( key ) ).thenReturn( item );
     return item;
   }
 

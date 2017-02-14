@@ -1,5 +1,8 @@
 package com.codeaffine.home.control;
 
-public interface SystemConfiguration {
+import com.codeaffine.home.control.entity.EntityProvider.EntityProviderConfiguration;
+import com.codeaffine.home.control.entity.EntityRelationProvider.EntityRelationConfiguration;
+
+public interface SystemConfiguration extends EntityRelationConfiguration, EntityProviderConfiguration {
   void configureSystem( Context context );
 }

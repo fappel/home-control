@@ -12,7 +12,6 @@ public interface NumberAccessor<T extends DecimalType> {
   float getStatus( float defaultValue );
   double getStatus( double defaultValue );
 
-  void setStatus( T status );
   void setStatus( BigDecimal value );
   void setStatus( int value );
   void setStatus( long value );

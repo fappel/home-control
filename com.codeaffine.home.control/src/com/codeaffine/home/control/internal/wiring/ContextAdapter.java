@@ -14,7 +14,7 @@ class ContextAdapter implements Context {
     this.eventWiring = new EventWiring( registry );
     this.timer = new TimerWiring( executor );
     this.delegate = delegate;
-    set( Context.class, this );
+    initialize();
   }
 
   @Override
@@ -37,5 +37,9 @@ class ContextAdapter implements Context {
 
   void clearSchedules() {
     timer.reset();
+  }
+
+  private void initialize() {
+    set( Context.class, this );
   }
 }

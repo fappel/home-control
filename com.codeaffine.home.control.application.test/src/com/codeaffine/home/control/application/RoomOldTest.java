@@ -18,14 +18,14 @@ import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.item.ContactItem;
 
 @RunWith(Parameterized.class)
-public class RoomTest {
+public class RoomOldTest {
 
   @Parameter
-  public Room room;
+  public RoomOld room;
 
   @Parameters
-  public static Collection<Room> data() {
-    return asList( Room.values() );
+  public static Collection<RoomOld> data() {
+    return asList( RoomOld.values() );
   }
 
   @Test

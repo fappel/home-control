@@ -57,6 +57,32 @@ public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item
   }
 
   @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + item.hashCode();
+    result = prime * result + statusType.hashCode();
+    return result;
+  }
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public boolean equals( Object obj ) {
+    if( this == obj )
+      return true;
+    if( obj == null )
+      return false;
+    if( getClass() != obj.getClass() )
+      return false;
+    ItemAdapter other = ( ItemAdapter )obj;
+    if( !item.equals( other.item ) )
+      return false;
+    if( !statusType.equals( other.statusType ) )
+      return false;
+    return true;
+  }
+
+  @Override
   public void addChangeListener( ChangeListener<I, S> listener ) {
     addStatusListener( listener );
   }

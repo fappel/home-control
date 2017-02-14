@@ -1,7 +1,12 @@
 package com.codeaffine.home.control.internal.adapter;
 
+import static com.codeaffine.home.control.internal.adapter.Messages.ERROR_UNKNOWN_ITEM_KEY;
 import static com.codeaffine.home.control.internal.item.ItemAdapterFactory.createAdapter;
 import static com.codeaffine.home.control.internal.util.ServiceCollector.collectServices;
+import static java.lang.String.format;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -16,28 +21,33 @@ import com.codeaffine.home.control.internal.util.SystemExecutor;
 
 public class ItemRegistryAdapter implements Registry {
 
+  private final Map<String, Item<? extends Item<?, ?>, ? extends Status>> referencedItemAdapters;
   private final ShutdownDispatcher shutdownDispatcher;
   private final ResetHookTrigger resetHookTrigger;
   private final SystemExecutor executor;
   private final EventPublisher eventPublisher;
   private final ItemRegistry registry;
 
-  public ItemRegistryAdapter( BundleContext bundleContext, ShutdownDispatcher shutdownDispatcher, SystemExecutor executor ) {
+  public ItemRegistryAdapter(
+    BundleContext bundleContext, ShutdownDispatcher shutdownDispatcher, SystemExecutor executor )
+  {
     this.shutdownDispatcher = shutdownDispatcher;
     this.executor = executor;
     this.resetHookTrigger = new ResetHookTrigger( executor );
     this.registry = collectServices( ItemRegistry.class, bundleContext ).get( 0 );
     this.eventPublisher = collectServices( EventPublisher.class, bundleContext ).get( 0 );
+    this.referencedItemAdapters = new HashMap<>();
     registry.addRegistryChangeListener( resetHookTrigger );
     shutdownDispatcher.addShutdownHook( () -> registry.removeRegistryChangeListener( resetHookTrigger ) );
   }
 
   @Override
   public <I extends Item<I, ? extends Status>> I getItem( String key, Class<I> itemType ) {
-    ItemAdapter<? extends Item<?,?>, ? extends Status> adapter
-      = createAdapter( key, itemType, this, eventPublisher, shutdownDispatcher, executor );
-    adapter.initialize();
-    return itemType.cast( adapter );
+    I result = itemType.cast( referencedItemAdapters.get( key ) );
+    if( result == null ) {
+      result = createItemAdapter( key, itemType );
+    }
+    return result;
   }
 
   void addResetHook( Runnable resetHook ) {
@@ -52,7 +62,15 @@ public class ItemRegistryAdapter implements Registry {
     try {
       return ( GenericItem )registry.getItem( key );
     } catch( ItemNotFoundException e ) {
-      throw new IllegalStateException( e );
+      throw new IllegalArgumentException( format( ERROR_UNKNOWN_ITEM_KEY, key ), e );
     }
+  }
+
+  private <I extends Item<I, ? extends Status>> I createItemAdapter( String key, Class<I> itemType ) {
+    ItemAdapter<? extends Item<?,?>, ? extends Status> adapter
+      = createAdapter( key, itemType, this, eventPublisher, shutdownDispatcher, executor );
+    adapter.initialize();
+    referencedItemAdapters.put( key, adapter );
+    return itemType.cast( adapter );
   }
 }

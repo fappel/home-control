@@ -1,7 +1,10 @@
 package com.codeaffine.home.control.item;
 
-import com.codeaffine.home.control.Item;
+import com.codeaffine.home.control.AdjustableItem;
 import com.codeaffine.home.control.type.DecimalType;
 
-public interface NumberItem extends Item<NumberItem, DecimalType>, NumberAccessor<DecimalType> {
+public interface NumberItem
+  extends AdjustableItem<NumberItem, DecimalType>,
+          NumberAccessor<DecimalType>
+{
 }

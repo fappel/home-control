@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.internal.wiring;
 
+import static com.codeaffine.home.control.entity.MyEntityProvider.MY_ENTITY_DEFINITIONS;
 import static com.codeaffine.home.control.internal.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.internal.wiring.Messages.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
@@ -21,6 +22,11 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import com.codeaffine.home.control.entity.EntityRelationProvider;
+import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
+import com.codeaffine.home.control.entity.MyEntityDefinition;
+import com.codeaffine.home.control.entity.MyEntityProvider;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.Observe;
@@ -31,6 +37,8 @@ import com.codeaffine.util.Disposable;
 
 public class SystemWiringTest {
 
+  private static final MyEntityDefinition CHILD_ENTITY = MY_ENTITY_DEFINITIONS.get( 1 );
+  private static final MyEntityDefinition PARENT_ENTITY = MY_ENTITY_DEFINITIONS.get( 0 );
   private static final String ITEM_NAME = "itemName";
   private static final long PERIOD = 0;
 
@@ -52,7 +60,18 @@ public class SystemWiringTest {
     private void onEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
   }
 
+
   static class Configuration implements SystemConfiguration {
+
+    @Override
+    public void registerEntities( EntityRegistry entityRegistry ) {
+      entityRegistry.register( MyEntityProvider.class );
+    }
+
+    @Override
+    public void configureFacility( Facility facility ) {
+      facility.equip( PARENT_ENTITY ).with( CHILD_ENTITY );
+    }
 
     @Override
     public void configureSystem( Context context ) {
@@ -77,15 +96,18 @@ public class SystemWiringTest {
   public void initialize() {
     wiring.initialize( configuration );
 
-    ArgumentCaptor<Context> captor = forClass( Context.class );
+    ArgumentCaptor<Context> contextCaptor = forClass( Context.class );
     InOrder order = inOrder( contextFactory, configuration, executor, item );
     order.verify( contextFactory ).create();
-    order.verify( configuration ).configureSystem( captor.capture() );
+    order.verify( configuration ).registerEntities( any( EntityRegistry.class ) );
+    order.verify( configuration ).configureFacility( any( Facility.class ) );
+    order.verify( configuration ).configureSystem( contextCaptor.capture() );
     order.verify( item ).addChangeListener( any( ChangeListener.class ) );
     order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
     order.verifyNoMoreInteractions();
-    assertThat( context ).isSameAs( captor.getValue().get( com.codeaffine.util.inject.Context.class ) );
+    assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( wiring.getConfiguration() ).isNotNull();
+    verifyEntitySetup();
   }
 
   @Test
@@ -175,6 +197,14 @@ public class SystemWiringTest {
     Throwable actual = thrownBy( () -> wiring.dispose() );
 
     assertThat( actual ).isNull();
+  }
+
+  private void verifyEntitySetup() {
+    EntityRelationProvider relationProvider = context.get( EntityRelationProvider.class );
+    EntityRegistry entityRegistration = context.get( EntityRegistry.class );
+    assertThat( relationProvider.getChildren( PARENT_ENTITY, MyEntityDefinition.class ) ).contains( CHILD_ENTITY );
+    assertThat( entityRegistration.findByDefinition( CHILD_ENTITY ) ).isNotNull();
+    assertThat( entityRegistration.findByDefinition( PARENT_ENTITY ) ).isNotNull();
   }
 
   private static ContextFactory stubContextFactory( com.codeaffine.util.inject.Context context ) {

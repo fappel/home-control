@@ -28,7 +28,7 @@ public class ActivityRate {
   private static final long SCAN_RATE = 2L; // Seconds
 
   private final Queue<LocalDateTime> motionActivations;
-  private final List<Room> rooms;
+  private final List<RoomOld> rooms;
   private final NumberItem activityRate;
   private final SwitchItem switchItem;
 
@@ -38,26 +38,26 @@ public class ActivityRate {
     this.activityRate = activityRate;
     this.switchItem = switchItem;
     this.motionActivations = new LinkedList<>();
-    this.rooms = asList( Room.values() );
+    this.rooms = asList( RoomOld.values() );
   }
 
   @Observe( "activityRate" )
   void onChange( ChangeEvent<NumberItem, DecimalType> event ) {
-    LoggerFactory.getLogger( ActivityRate.class ).info( "activityRate status change: " + event.getSource().getStatus( -1 ) );
+//    LoggerFactory.getLogger( ActivityRate.class ).info( "activityRate status change: " + event.getSource().getStatus( -1 ) );
   }
 
   @Observe( "switchWindowUplight" )
   void onUpdate( UpdateEvent<SwitchItem, OnOffType> event ) {
-    LoggerFactory.getLogger( ActivityRate.class ).info( "switchWindowUplight status update: " + event.getSource().getStatus() );
+//    LoggerFactory.getLogger( ActivityRate.class ).info( "switchWindowUplight status update: " + event.getSource().getStatus() );
   }
 
   @Schedule( period = SCAN_RATE )
   private void calculateRate() {
-    LoggerFactory.getLogger( ActivityRate.class ).info( "calculate Rate: " + activityRate.getStatus( -1 ) );
+//    LoggerFactory.getLogger( ActivityRate.class ).info( "calculate Rate: " + activityRate.getStatus( -1 ) );
 
-    OnOffType status = switchItem.getStatus( OFF );
-    switchItem.updateStatus( flip( status ) );
-    activityRate.setStatus( 10 );
+//    OnOffType status = switchItem.getStatus( OFF );
+//    switchItem.updateStatus( flip( status ) );
+//    activityRate.setStatus( 10 );
 //
 //    if( activityRate.getStatus().isPresent() ) {
 //      activityRate.getStatus().get().intValue();
@@ -70,7 +70,7 @@ public class ActivityRate {
 
   @Schedule( initialDelay = 10, period = CALCULATION_INTERVAL_DURATION )
   private void updateMotionActivations() {
-    LoggerFactory.getLogger( ActivityRate.class ).info( "updateMotionActivations: " + activityRate.getStatus( -1 ) );
+//    LoggerFactory.getLogger( ActivityRate.class ).info( "updateMotionActivations: " + activityRate.getStatus( -1 ) );
 //    Boolean isOpen = rooms
 //      .stream()
 //      .map( room -> /* room.getMotionState() == OPEN */Boolean.TRUE )
