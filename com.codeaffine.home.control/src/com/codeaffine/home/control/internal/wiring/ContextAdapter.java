@@ -2,17 +2,22 @@ package com.codeaffine.home.control.internal.wiring;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 
 class ContextAdapter implements Context {
 
   private final com.codeaffine.util.inject.Context delegate;
-  private final EventWiring eventWiring;
+  private final EventBus eventBus;
+  private final ItemEventWiring eventWiring;
   private final TimerWiring timer;
 
-  ContextAdapter( com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutor executor ) {
-    this.eventWiring = new EventWiring( registry );
+  ContextAdapter(
+    com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutor executor, EventBus eventBus )
+  {
+    this.eventWiring = new ItemEventWiring( registry );
     this.timer = new TimerWiring( executor );
+    this.eventBus = eventBus;
     this.delegate = delegate;
     initialize();
   }
@@ -31,6 +36,7 @@ class ContextAdapter implements Context {
   public <T> T create( Class<T> type ) {
     T result = delegate.create( type );
     eventWiring.wire( result );
+    eventBus.register( result );
     timer.schedule( result );
     return result;
   }
@@ -41,5 +47,6 @@ class ContextAdapter implements Context {
 
   private void initialize() {
     set( Context.class, this );
+    set( EventBus.class, eventBus );
   }
 }

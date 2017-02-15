@@ -19,11 +19,11 @@ import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.type.DecimalType;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class EventWiringTest {
+public class ItemEventWiringTest {
 
   private static final String ITEM_NAME = "itemName";
 
-  private EventWiring eventWiring;
+  private ItemEventWiring eventWiring;
   private Registry registry;
 
   static class Bean {
@@ -59,7 +59,7 @@ public class EventWiringTest {
   @Before
   public void setUp() {
     registry = mock( Registry.class );
-    eventWiring = new EventWiring( registry );
+    eventWiring = new ItemEventWiring( registry );
   }
 
   @Test

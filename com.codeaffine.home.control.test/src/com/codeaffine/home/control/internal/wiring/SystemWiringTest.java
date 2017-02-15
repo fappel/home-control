@@ -22,6 +22,9 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.entity.AllocationEvent;
+import com.codeaffine.home.control.entity.AllocationProvider;
+import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
@@ -29,7 +32,9 @@ import com.codeaffine.home.control.entity.MyEntityDefinition;
 import com.codeaffine.home.control.entity.MyEntityProvider;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Observe;
+import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.type.DecimalType;
@@ -53,11 +58,18 @@ public class SystemWiringTest {
 
   static class Bean {
 
+    Entity<?> allocated;
+
     @Schedule( period = PERIOD )
     private void method(){}
 
     @Observe( ITEM_NAME )
-    private void onEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
+    void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
+
+    @Subscribe
+    void onBusEvent( AllocationEvent event ) {
+      allocated = event.getAdded().get();
+    }
   }
 
 
@@ -75,7 +87,7 @@ public class SystemWiringTest {
 
     @Override
     public void configureSystem( Context context ) {
-      context.create( Bean.class );
+      context.set( Bean.class, context.create( Bean.class ) );
     }
   }
 
@@ -106,6 +118,8 @@ public class SystemWiringTest {
     order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
     order.verifyNoMoreInteractions();
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
+    assertThat( context.get( EventBus.class ) ).isNotNull();
+    assertThat( context.get( AllocationProvider.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
     verifyEntitySetup();
   }
@@ -197,6 +211,19 @@ public class SystemWiringTest {
     Throwable actual = thrownBy( () -> wiring.dispose() );
 
     assertThat( actual ).isNull();
+  }
+
+  @Test
+  public void busEventWiring() {
+    wiring.initialize( configuration );
+    ArgumentCaptor<Context> contextCaptor = forClass( Context.class );
+    verify( configuration ).configureSystem( contextCaptor.capture() );
+    Entity<?> expected = mock( Entity.class );
+
+    context.get( AllocationProvider.class ).allocate( expected );
+    Entity<?> actual = context.get( Bean.class ).allocated;
+
+    assertThat( actual ).isSameAs( expected );
   }
 
   private void verifyEntitySetup() {

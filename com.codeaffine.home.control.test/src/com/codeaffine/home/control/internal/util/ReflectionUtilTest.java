@@ -5,16 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.junit.Test;
 
+import com.codeaffine.home.control.event.Subscribe;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ReflectionUtilTest {
 
   private static class MyCommand {
-    @SuppressWarnings("unused")
+    @Subscribe
     private void execute() {}
   }
 
@@ -65,6 +68,15 @@ public class ReflectionUtilTest {
     assertThat( actual )
       .isInstanceOf( IllegalStateException.class )
       .hasCause( expected );
+  }
+
+  @Test
+  public void getAnnotatedMethod() {
+    Collection<Method> actual = ReflectionUtil.getAnnotatedMethods( new MyCommand(), Subscribe.class );
+
+    assertThat( actual )
+      .hasSize( 1 )
+      .allMatch( method -> "execute".equals( method.getName() ) );
   }
 
   private static Function stubFunctionObject( Object returnValue, Object argument ) {

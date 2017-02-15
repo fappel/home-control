@@ -130,6 +130,9 @@ public class BulbImplTest {
 
     String actual = bulb.toString();
 
-    assertThat( actual ).contains( COLOR_TEMPERATUR.toString(), BRIGHTNESS.toString(), ON.toString() );
+    assertThat( actual ).contains( BathRoomCeiling.toString(),
+                                   COLOR_TEMPERATUR.toString(),
+                                   BRIGHTNESS.toString(),
+                                   ON.toString() );
   }
 }

@@ -7,9 +7,12 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.entity.AllocationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
+import com.codeaffine.home.control.internal.entity.AllocationProviderImpl;
 import com.codeaffine.home.control.internal.entity.EntityRegistryImpl;
 import com.codeaffine.home.control.internal.entity.EntityRelationProviderImpl;
+import com.codeaffine.home.control.internal.event.EventBusImpl;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.util.inject.Context;
 
@@ -64,7 +67,8 @@ public class SystemWiring {
 
   private void doInitialize() {
     context = contextFactory.create();
-    contextAdapter = new ContextAdapter( context, registry, executor );
+    contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
+    contextAdapter.set( AllocationProvider.class, contextAdapter.create( AllocationProviderImpl.class ) );
     EntityRelationProviderImpl entityRelationProvider = contextAdapter.create( EntityRelationProviderImpl.class );
     contextAdapter.set( EntityRelationProvider.class, entityRelationProvider );
     configuration.registerEntities( new EntityRegistryImpl( contextAdapter ) );

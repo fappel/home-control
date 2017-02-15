@@ -14,6 +14,7 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.NumberItem;
@@ -28,6 +29,7 @@ public class ContextAdapterTest {
   private SystemExecutor executor;
   private ContextAdapter adapter;
   private Registry registry;
+  private EventBus eventBus;
   private Context context;
   private NumberItem item;
 
@@ -37,9 +39,8 @@ public class ContextAdapterTest {
     private void method(){}
 
     @Observe( ITEM_NAME )
-    private void onEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
+    private void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
   }
-
 
   @Before
   public void setUp() {
@@ -48,7 +49,8 @@ public class ContextAdapterTest {
     registry = stubRegistry( ITEM_NAME, item );
     context.set( Registry.class, registry );
     executor = mock( SystemExecutor.class );
-    adapter = new ContextAdapter( context, registry, executor );
+    eventBus = mock( EventBus.class );
+    adapter = new ContextAdapter( context, registry, executor, eventBus );
   }
 
   @Test
@@ -66,6 +68,7 @@ public class ContextAdapterTest {
     assertThat( actual ).isNotNull();
     verify( executor ).scheduleAtFixedRate( any( Runnable.class ), eq( 0L ), eq( PERIOD ), eq( SECONDS ) );
     verify( item ).addChangeListener( any( ChangeListener.class ) );
+    verify( eventBus ).register( actual );
   }
 
   @Test

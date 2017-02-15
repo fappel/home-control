@@ -1,7 +1,12 @@
 package com.codeaffine.home.control.internal.util;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 public class ReflectionUtil {
 
@@ -18,5 +23,12 @@ public class ReflectionUtil {
     } catch( IllegalAccessException | IllegalArgumentException shouldNotHappen ) {
       throw new IllegalStateException( shouldNotHappen );
     }
+  }
+
+  public static Collection<Method> getAnnotatedMethods( Object object, Class<? extends Annotation> annotationType ) {
+    return Stream.of( object.getClass().getDeclaredMethods() )
+      .filter( method -> method.getAnnotation( annotationType ) != null )
+      .map( method  -> method )
+      .collect( toSet() );
   }
 }

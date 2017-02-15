@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.application.internal.bulb;
 
+import static com.codeaffine.home.control.type.OnOffType.ON;
 import static java.lang.String.format;
 
 import java.util.Optional;
@@ -13,7 +14,7 @@ import com.codeaffine.home.control.type.PercentType;
 
 public class BulbImpl implements Bulb {
 
-  static final String TO_STRING_PATTERN = "Bulb [colorTemperature=%s, brightness=%s, onOff=%s]";
+  static final String TO_STRING_PATTERN = "%s [colorTemperature=%s, brightness=%s, onOff=%s]";
 
   private final DimmerItem colorTemperature;
   private final BulbDefinition definition;
@@ -74,7 +75,11 @@ public class BulbImpl implements Bulb {
 
   @Override
   public String toString() {
-    return format( TO_STRING_PATTERN, colorTemperature.getStatus(), brightness.getStatus(), onOff.getStatus() );
+    return format( TO_STRING_PATTERN,
+                   getDefinition(),
+                   colorTemperature.getStatus(),
+                   brightness.getStatus(),
+                   onOff.getStatus() );
   }
 
   public void ensure() {
@@ -88,7 +93,8 @@ public class BulbImpl implements Bulb {
       if( colorTemperatureBuffer.isPresent() ) {
         colorTemperature.setStatus( colorTemperatureBuffer.get() );
       }
-      onOff.setStatus( OnOffType.ON );
+      onOffBuffer = Optional.of( ON );
+      onOff.setStatus( ON );
     }
   }
 }

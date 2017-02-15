@@ -17,11 +17,11 @@ import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.event.UpdateEvent;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-class EventWiring {
+class ItemEventWiring {
 
   private final Registry registry;
 
-  EventWiring( Registry registry ) {
+  ItemEventWiring( Registry registry ) {
     this.registry = registry;
   }
 
