@@ -1,24 +1,22 @@
 package com.codeaffine.home.control.application.internal.room;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toSet;
 
-import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import java.util.Collection;
+
 import com.codeaffine.home.control.application.RoomProvider.Room;
 import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
+import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomImpl implements Room {
 
   private final EntityRelationProvider relationProvider;
-  private final EntityRegistry entityRegistry;
   private final RoomDefinition definition;
 
-  RoomImpl( RoomDefinition definition, EntityRelationProvider relationProvider, EntityRegistry entityRegistry ) {
+  RoomImpl( RoomDefinition definition, EntityRelationProvider relationProvider ) {
     this.relationProvider = relationProvider;
-    this.entityRegistry = entityRegistry;
     this.definition = definition;
   }
 
@@ -31,11 +29,16 @@ public class RoomImpl implements Room {
   public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<E> getChildren( Class<D> childType ) {
     return relationProvider.getChildren( definition, childType )
       .stream()
-      .map( child -> findChildEntity( child ) )
-      .collect( Collectors.toSet() );
+      .map( child -> relationProvider.findByDefinition( child ) )
+      .collect( toSet() );
   }
 
-  private <E extends Entity<D>, D extends EntityDefinition<E>> E findChildEntity( D child ) {
-    return entityRegistry.findByDefinition( child );
+  @Override
+  @SuppressWarnings("unchecked")
+  public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<Entity<?>> getChildren() {
+    return relationProvider.getChildren( definition )
+      .stream()
+      .map( child -> relationProvider.findByDefinition( ( D )child ) )
+      .collect( toSet() );
   }
 }

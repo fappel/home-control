@@ -4,15 +4,16 @@ import static com.codeaffine.home.control.entity.MyEntityProvider.MY_ENTITY_DEFI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.MyEntity;
 import com.codeaffine.home.control.entity.MyEntityDefinition;
 import com.codeaffine.home.control.entity.MyEntityProvider;
-import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
 public class EntityRegistryImplTest {
 
@@ -26,10 +27,12 @@ public class EntityRegistryImplTest {
   }
 
   @Test
-  public void initialization() {
-    EntityRegistry actual = context.get( EntityRegistry.class );
+  public void name() {
+    entityRegistry.register( MyEntityProvider.class );
 
-    assertThat( actual ).isSameAs( entityRegistry );
+    Collection<Entity<?>> actual = entityRegistry.findAll();
+
+    assertThat( actual ).hasSize( MY_ENTITY_DEFINITIONS.size() );
   }
 
   @Test

@@ -8,7 +8,10 @@ import java.util.function.Predicate;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.entity.AllocationProvider;
+import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
+import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
+import com.codeaffine.home.control.internal.entity.AllocationControlFactoryImpl;
 import com.codeaffine.home.control.internal.entity.AllocationProviderImpl;
 import com.codeaffine.home.control.internal.entity.EntityRegistryImpl;
 import com.codeaffine.home.control.internal.entity.EntityRelationProviderImpl;
@@ -68,10 +71,14 @@ public class SystemWiring {
   private void doInitialize() {
     context = contextFactory.create();
     contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
-    contextAdapter.set( AllocationProvider.class, contextAdapter.create( AllocationProviderImpl.class ) );
+    AllocationProviderImpl allocationProvider = contextAdapter.create( AllocationProviderImpl.class );
+    contextAdapter.set( AllocationProvider.class, allocationProvider );
+    contextAdapter.set( AllocationControlFactory.class, new AllocationControlFactoryImpl( allocationProvider ) );
+    EntityRegistry entityRegistry = contextAdapter.create( EntityRegistryImpl.class );
+    contextAdapter.set( EntityRegistry.class, entityRegistry );
     EntityRelationProviderImpl entityRelationProvider = contextAdapter.create( EntityRelationProviderImpl.class );
     contextAdapter.set( EntityRelationProvider.class, entityRelationProvider );
-    configuration.registerEntities( new EntityRegistryImpl( contextAdapter ) );
+    configuration.registerEntities( entityRegistry );
     entityRelationProvider.establishRelations( configuration );
     configuration.configureSystem( contextAdapter );
   }

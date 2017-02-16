@@ -24,6 +24,8 @@ import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.entity.AllocationEvent;
 import com.codeaffine.home.control.entity.AllocationProvider;
+import com.codeaffine.home.control.entity.AllocationProvider.AllocationControl;
+import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
@@ -68,7 +70,7 @@ public class SystemWiringTest {
 
     @Subscribe
     void onBusEvent( AllocationEvent event ) {
-      allocated = event.getAdded().get();
+      allocated = event.getAdditions().iterator().next();
     }
   }
 
@@ -216,22 +218,29 @@ public class SystemWiringTest {
   @Test
   public void busEventWiring() {
     wiring.initialize( configuration );
-    ArgumentCaptor<Context> contextCaptor = forClass( Context.class );
-    verify( configuration ).configureSystem( contextCaptor.capture() );
     Entity<?> expected = mock( Entity.class );
 
-    context.get( AllocationProvider.class ).allocate( expected );
+    triggerAllocationEvent( expected );
     Entity<?> actual = context.get( Bean.class ).allocated;
 
     assertThat( actual ).isSameAs( expected );
+    assertThat( context.get( AllocationProvider.class ).getAllocations() ).contains( expected );
+  }
+
+  private void triggerAllocationEvent( Entity<?> allocatable ) {
+    Entity<?> actor = mock( Entity.class );
+    AllocationControl factory = context.get( AllocationControlFactory.class ).create( actor );
+    factory.registerAllocatable( allocatable );
+    factory.allocate();
   }
 
   private void verifyEntitySetup() {
     EntityRelationProvider relationProvider = context.get( EntityRelationProvider.class );
-    EntityRegistry entityRegistration = context.get( EntityRegistry.class );
+    EntityRegistry entityRegistry = context.get( EntityRegistry.class );
     assertThat( relationProvider.getChildren( PARENT_ENTITY, MyEntityDefinition.class ) ).contains( CHILD_ENTITY );
-    assertThat( entityRegistration.findByDefinition( CHILD_ENTITY ) ).isNotNull();
-    assertThat( entityRegistration.findByDefinition( PARENT_ENTITY ) ).isNotNull();
+    assertThat( relationProvider.findByDefinition( PARENT_ENTITY ) ).isNotNull();
+    assertThat( entityRegistry.findByDefinition( CHILD_ENTITY ) ).isNotNull();
+    assertThat( entityRegistry.findByDefinition( PARENT_ENTITY ) ).isNotNull();
   }
 
   private static ContextFactory stubContextFactory( com.codeaffine.util.inject.Context context ) {

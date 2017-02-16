@@ -7,4 +7,5 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public interface CompositeEntity {
   <E extends Entity<D>, D extends EntityDefinition<E>> Collection<E> getChildren( Class<D> childType );
+  <E extends Entity<D>, D extends EntityDefinition<E>> Collection<Entity<?>> getChildren();
 }

@@ -2,8 +2,7 @@ package com.codeaffine.home.control.application.internal.room;
 
 import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.BathRoom;
-import static com.codeaffine.home.control.application.internal.room.EntityRegistryHelper.stubRegistryWithEntityInstanceForDefinition;
-import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.stubEntityRelation;
+import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -15,20 +14,17 @@ import org.junit.Test;
 import com.codeaffine.home.control.application.BulbProvider.Bulb;
 import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
-import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomImplTest {
 
   private EntityRelationProvider entityRelationProvider;
-  private EntityRegistry entityRegistry;
   private RoomImpl room;
 
   @Before
   public void setUp() {
-    entityRegistry = mock( EntityRegistry.class );
     entityRelationProvider = mock( EntityRelationProvider.class );
-    room = new RoomImpl( BathRoom, entityRelationProvider, entityRegistry );
+    room = new RoomImpl( BathRoom, entityRelationProvider );
   }
 
   @Test
@@ -42,7 +38,7 @@ public class RoomImplTest {
   public void getChildren() {
     Bulb expected = mock( Bulb.class );
     stubEntityRelation( entityRelationProvider, BathRoom, BathRoomCeiling );
-    stubRegistryWithEntityInstanceForDefinition( entityRegistry, BathRoomCeiling, expected );
+    stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 
     Collection<Bulb> actual = room.getChildren( BulbDefinition.class );
 

@@ -2,8 +2,7 @@ package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.BathRoom;
-import static com.codeaffine.home.control.application.internal.room.EntityRegistryHelper.stubRegistryWithEntityInstanceForDefinition;
-import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.stubEntityRelation;
+import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -16,20 +15,17 @@ import com.codeaffine.home.control.application.BulbProvider.Bulb;
 import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.RoomProvider.Room;
 import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
-import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomProviderTest {
 
   private EntityRelationProvider entityRelationProvider;
-  private EntityRegistry entityRegistry;
   private RoomProvider roomProvider;
 
   @Before
   public void setUp() {
-    entityRegistry = mock( EntityRegistry.class );
     entityRelationProvider = mock( EntityRelationProvider.class );
-    roomProvider = new RoomProvider( entityRelationProvider, entityRegistry );
+    roomProvider = new RoomProvider( entityRelationProvider );
   }
 
   @Test
@@ -58,7 +54,7 @@ public class RoomProviderTest {
   public void getChildrenOnProvidedRoom() {
     Bulb expected = mock( Bulb.class );
     stubEntityRelation( entityRelationProvider, BathRoom, BathRoomCeiling );
-    stubRegistryWithEntityInstanceForDefinition( entityRegistry, BathRoomCeiling, expected );
+    stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 
     Room room = roomProvider.findByDefinition( RoomDefinition.BathRoom );
     Collection<Bulb> actual = room.getChildren( BulbDefinition.class );

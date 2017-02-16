@@ -1,5 +1,8 @@
 package com.codeaffine.home.control.internal.entity;
 
+import static com.codeaffine.home.control.internal.entity.AllocationEventAssert.assertThat;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -13,8 +16,11 @@ import com.codeaffine.home.control.internal.event.EventBusImpl;
 
 public class AllocationProviderImplTest {
 
-  private static final Entity<?> ENTITY_1 = mock( Entity.class );
-  private static final Entity<?> ENTITY_2 = mock( Entity.class );
+  private static final Entity<?> ALLOCATABLE_1 = mock( Entity.class );
+  private static final Entity<?> ALLOCATABLE_2 = mock( Entity.class );
+  private static final Entity<?> ALLOCATABLE_3 = mock( Entity.class );
+  private static final Entity<?> ACTOR_1 = mock( Entity.class );
+  private static final Entity<?> ACTOR_2 = mock( Entity.class );
 
   private AllocationProviderImpl provider;
   private EventBusImpl eventBus;
@@ -38,91 +44,137 @@ public class AllocationProviderImplTest {
 
   @Test
   public void allocate() {
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     eventBus.register( captor );
-    provider.allocate( ENTITY_2 );
+    provider.allocate( ACTOR_2, asList( ALLOCATABLE_2, ALLOCATABLE_3 ) );
 
-    assertThat( captor.event.getActual() ).contains( ENTITY_1, ENTITY_2 );
-    assertThat( captor.event.getAdded() ).contains( ENTITY_2 );
-    assertThat( captor.event.getRemoved() ).isEmpty();
-    assertThat( provider.getAllocations() ).contains( ENTITY_1, ENTITY_2 );
+    assertThat( captor.event )
+      .hasActor( ACTOR_2 )
+      .hasAllocations(  ALLOCATABLE_1, ALLOCATABLE_2, ALLOCATABLE_3 )
+      .hasAdditions( ALLOCATABLE_2, ALLOCATABLE_3 )
+      .hasNoRemovals();
+    assertThat( provider.getAllocations() )
+      .contains( ALLOCATABLE_1, ALLOCATABLE_2 );
   }
 
   @Test
   public void allocateIfEmpty() {
     eventBus.register( captor );
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
-    assertThat( captor.event.getActual() ).contains( ENTITY_1 );
-    assertThat( captor.event.getAdded() ).contains( ENTITY_1 );
-    assertThat( captor.event.getRemoved() ).isEmpty();
-    assertThat( provider.getAllocations() ).contains( ENTITY_1 );
+    assertThat( captor.event )
+      .hasActor( ACTOR_1 )
+      .hasAllocations( ALLOCATABLE_1 )
+      .hasAdditions( ALLOCATABLE_1 )
+      .hasNoRemovals();
+    assertThat( provider.getAllocations() )
+      .contains( ALLOCATABLE_1 );
   }
 
   @Test
   public void allocateIfEntityIsAlreadyAllocated() {
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     eventBus.register( captor );
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     assertThat( captor.event ).isNull();
-    assertThat( provider.getAllocations() ).contains( ENTITY_1 );
+    assertThat( provider.getAllocations() ).contains( ALLOCATABLE_1 );
+  }
+
+  @Test
+  public void allocateSameAllocatableByDifferentActors() {
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
+
+    eventBus.register( captor );
+    provider.allocate( ACTOR_2, asList( ALLOCATABLE_1 ) );
+
+    assertThat( captor.event ).isNull();
+    assertThat( provider.getAllocations() ).contains( ALLOCATABLE_1 );
+  }
+
+  @Test
+  public void allocateIfWithoutAllocatable() {
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
+
+    eventBus.register( captor );
+    provider.allocate( ACTOR_2, emptySet() );
+
+    assertThat( captor.event ).isNull();
+    assertThat( provider.getAllocations() ).contains( ALLOCATABLE_1 );
   }
 
   @Test
   public void deallocate() {
-    provider.allocate( ENTITY_1 );
-    provider.allocate( ENTITY_2 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
+    provider.allocate( ACTOR_2, asList( ALLOCATABLE_2, ALLOCATABLE_3 ) );
 
     eventBus.register( captor );
-    provider.deallocate( ENTITY_2 );
+    provider.deallocate( ACTOR_2, asList( ALLOCATABLE_2, ALLOCATABLE_3 ) );
 
-    assertThat( captor.event.getActual() ).contains( ENTITY_1 );
-    assertThat( captor.event.getAdded() ).isEmpty();
-    assertThat( captor.event.getRemoved() ).contains( ENTITY_2 );
-    assertThat( provider.getAllocations() ).contains( ENTITY_1 );
+    assertThat( captor.event )
+      .hasActor( ACTOR_2 )
+      .hasAllocations( ALLOCATABLE_1 )
+      .hasNoAdditions()
+      .hasRemovals( ALLOCATABLE_2, ALLOCATABLE_3 );
+    assertThat( provider.getAllocations() )
+      .contains( ALLOCATABLE_1 );
   }
 
   @Test
   public void deallocateLastElement() {
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     eventBus.register( captor );
-    provider.deallocate( ENTITY_1 );
+    provider.deallocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
-    assertThat( captor.event.getActual() ).isEmpty();
-    assertThat( captor.event.getAdded() ).isEmpty();
-    assertThat( captor.event.getRemoved() ).contains( ENTITY_1 );
-    assertThat( provider.getAllocations() ).isEmpty();
+    assertThat( captor.event )
+      .hasActor( ACTOR_1 )
+      .hasNoAllocations()
+      .hasNoAdditions()
+      .hasRemovals( ALLOCATABLE_1 );
+    assertThat( provider.getAllocations() )
+      .isEmpty();
   }
 
   @Test
   public void deallocateIfEntityIsNotAllocated() {
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     eventBus.register( captor );
-    provider.deallocate( ENTITY_2 );
+    provider.deallocate( ACTOR_2, asList( ALLOCATABLE_2 ) );
 
     assertThat( captor.event ).isNull();
-    assertThat( provider.getAllocations() ).contains( ENTITY_1 );
+    assertThat( provider.getAllocations() ).contains( ALLOCATABLE_1 );
+  }
+
+  @Test
+  public void deallocateByOneOfManyActors() {
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
+    provider.allocate( ACTOR_2, asList( ALLOCATABLE_1 ) );
+
+    eventBus.register( captor );
+    provider.deallocate( ACTOR_2, asList( ALLOCATABLE_1 ) );
+
+    assertThat( captor.event ).isNull();
+    assertThat( provider.getAllocations() ).contains( ALLOCATABLE_1 );
   }
 
   @Test
   public void changeAllocationsReturnValue() {
     eventBus.register( captor );
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
-    provider.getAllocations().add( ENTITY_2 );
-    captor.event.getActual().add( ENTITY_2 );
+    provider.getAllocations().add( ALLOCATABLE_2 );
+    captor.event.getAllocations().add( ALLOCATABLE_2 );
 
     assertThat( provider.getAllocations() ).hasSize( 1 );
   }
 
   @Test
   public void dispose() {
-    provider.allocate( ENTITY_1 );
+    provider.allocate( ACTOR_1, asList( ALLOCATABLE_1 ) );
 
     provider.dispose();
 

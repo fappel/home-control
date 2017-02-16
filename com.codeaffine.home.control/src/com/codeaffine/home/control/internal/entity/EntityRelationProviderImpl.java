@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.internal.entity;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
@@ -10,14 +11,17 @@ import java.util.Map;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.util.Disposable;
 
 public class EntityRelationProviderImpl implements EntityRelationProvider, Disposable {
 
   private final Map<EntityDefinition<?>, Collection<EntityDefinition<?>>> entityRelations;
+  private final EntityRegistry entityRegistry;
 
-  public EntityRelationProviderImpl() {
+  public EntityRelationProviderImpl( EntityRegistry entityRegistry ) {
+    this.entityRegistry = entityRegistry;
     entityRelations = new HashMap<>();
   }
 
@@ -27,7 +31,34 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
   }
 
   public void establishRelations( EntityRelationConfiguration configuration ) {
+    verifyNotNull( configuration, "configuration" );
+
     configuration.configureFacility( parent -> children -> this.entityRelations.put( parent, asList( children ) ) );
+  }
+
+  @Override
+  public <E extends Entity<D>, D extends EntityDefinition<E>> E findByDefinition( D definition ) {
+    verifyNotNull( definition, "definition" );
+
+    return entityRegistry.findByDefinition( definition );
+  }
+
+  @Override
+  public Collection<Entity<?>> findAll() {
+    return entityRegistry.findAll();
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <E extends Entity<?>, C extends EntityDefinition<E>, P extends EntityDefinition<?>>
+    Collection<C> getChildren( P parentDefinition )
+  {
+    verifyNotNull( parentDefinition, "parentDefinition" );
+
+    if( entityRelations.containsKey( parentDefinition ) ) {
+      return ( Collection<C> )entityRelations.get( parentDefinition );
+    }
+    return emptySet();
   }
 
   @Override
@@ -35,6 +66,9 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
   public <E extends Entity<D>, D extends EntityDefinition<E>, P extends EntityDefinition<?>>
     Collection<D> getChildren( P parentDefinition, Class<D> childDefinitionType )
   {
+    verifyNotNull( childDefinitionType, "childDefinitionType" );
+    verifyNotNull( parentDefinition, "parentDefinition" );
+
     if( entityRelations.containsKey( parentDefinition ) ) {
       return doGetChildren( parentDefinition, childDefinitionType );
     }

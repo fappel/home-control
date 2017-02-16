@@ -6,9 +6,19 @@ import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 public interface AllocationProvider {
 
-  void allocate( Entity<?> entity );
+  interface AllocationActor {
+    void registerAllocatable( Entity<?> allocatable );
+    void unregisterAllocatable( Entity<?> allocatable );
+  }
 
-  void deallocate( Entity<?> entity );
+  interface AllocationControlFactory {
+    AllocationControl create( Entity<?> actor );
+  }
+
+  interface AllocationControl extends AllocationActor {
+    void allocate();
+    void deallocate();
+  }
 
   Collection<Entity<?>> getAllocations();
 }

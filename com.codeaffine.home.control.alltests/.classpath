@@ -5,5 +5,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.application.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.application"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

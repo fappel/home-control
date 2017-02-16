@@ -19,8 +19,8 @@ public class RoomProvider extends BaseEntityProvider<Room, RoomDefinition> {
 
   public interface Room extends Entity<RoomDefinition>, CompositeEntity {}
 
-  public RoomProvider( EntityRelationProvider entityRelationProvider, EntityRegistry entityRegistry ) {
-    super( new RoomFactory( entityRelationProvider, entityRegistry ) );
+  public RoomProvider( EntityRelationProvider entityRelationProvider ) {
+    super( new RoomFactory( entityRelationProvider ) );
   }
 
   @Override

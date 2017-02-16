@@ -3,37 +3,50 @@ package com.codeaffine.home.control.internal.entity;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import com.codeaffine.home.control.entity.AllocationEvent;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 public class AllocationEventImpl implements AllocationEvent {
 
-  private final Collection<Entity<?>> actual;
-  private final Optional<Entity<?>> removed;
-  private final Optional<Entity<?>> added;
+  private final Collection<Entity<?>> allocations;
+  private final Collection<Entity<?>> additions;
+  private final Collection<Entity<?>> removals;
+  private final Entity<?> actor;
 
-  public AllocationEventImpl( Collection<Entity<?>> actual, Entity<?> added, Entity<?> removed ) {
-    verifyNotNull( actual, "actual" );
+  public AllocationEventImpl( Entity<?> actor,
+                              Collection<Entity<?>> allocations,
+                              Collection<Entity<?>> additions,
+                              Collection<Entity<?>> removals )
+  {
+    verifyNotNull( allocations, "allocations" );
+    verifyNotNull( additions, "additions" );
+    verifyNotNull( removals, "removals" );
+    verifyNotNull( actor, "actor" );
 
-    this.removed = Optional.ofNullable( removed );
-    this.added = Optional.ofNullable( added );
-    this.actual = actual;
+    this.allocations = allocations;
+    this.removals = removals;
+    this.additions = additions;
+    this.actor = actor;
   }
 
   @Override
-  public Collection<Entity<?>> getActual() {
-    return actual;
+  public Entity<?> getActor() {
+    return actor;
   }
 
   @Override
-  public Optional<Entity<?>> getRemoved() {
-    return removed;
+  public Collection<Entity<?>> getAllocations() {
+    return allocations;
   }
 
   @Override
-  public Optional<Entity<?>> getAdded() {
-    return added;
+  public Collection<Entity<?>> getRemovals() {
+    return removals;
+  }
+
+  @Override
+  public Collection<Entity<?>> getAdditions() {
+    return additions;
   }
 }

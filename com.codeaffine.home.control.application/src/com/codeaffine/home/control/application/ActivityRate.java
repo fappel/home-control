@@ -28,7 +28,6 @@ public class ActivityRate {
   private static final long SCAN_RATE = 2L; // Seconds
 
   private final Queue<LocalDateTime> motionActivations;
-  private final List<RoomOld> rooms;
   private final NumberItem activityRate;
   private final SwitchItem switchItem;
 
@@ -38,7 +37,6 @@ public class ActivityRate {
     this.activityRate = activityRate;
     this.switchItem = switchItem;
     this.motionActivations = new LinkedList<>();
-    this.rooms = asList( RoomOld.values() );
   }
 
   @Observe( "activityRate" )
