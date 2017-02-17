@@ -50,19 +50,6 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
 
   @Override
   @SuppressWarnings("unchecked")
-  public <E extends Entity<?>, C extends EntityDefinition<E>, P extends EntityDefinition<?>>
-    Collection<C> getChildren( P parentDefinition )
-  {
-    verifyNotNull( parentDefinition, "parentDefinition" );
-
-    if( entityRelations.containsKey( parentDefinition ) ) {
-      return ( Collection<C> )entityRelations.get( parentDefinition );
-    }
-    return emptySet();
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
   public <E extends Entity<D>, D extends EntityDefinition<E>, P extends EntityDefinition<?>>
     Collection<D> getChildren( P parentDefinition, Class<D> childDefinitionType )
   {

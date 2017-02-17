@@ -13,8 +13,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
-import com.codeaffine.home.control.entity.EntityRelationProvider.EntityRelationConfiguration;
-import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.MyEntity;
 import com.codeaffine.home.control.entity.MyEntityDefinition;
 import com.codeaffine.home.control.entity.MyEntityProvider;
@@ -27,47 +26,49 @@ public class EntityRelationProviderImplTest {
   private EntityRelationProviderImpl provider;
   private EntityRegistry registry;
 
-  static class Configuration implements EntityRelationConfiguration {
-
-    @Override
-    public void configureFacility( Facility facility ) {
-      facility.equip( PARENT_ENTITY ).with( CHILD_ENTITY );
-    }
-  }
+  static class SomeEntityDefinition<T extends Entity<?>> implements EntityDefinition<T> {}
 
   @Before
   public void setUp() {
     registry = mock( EntityRegistry.class );
     provider = new EntityRelationProviderImpl( registry );
-    provider.establishRelations( new Configuration() );
+    provider.establishRelations( facility -> facility.equip( PARENT_ENTITY ).with( CHILD_ENTITY ) );
   }
 
   @Test
   public void getChildren() {
-    assertThat( provider.getChildren( PARENT_ENTITY ) )
+    Collection<MyEntityDefinition> actual = provider.getChildren( PARENT_ENTITY, MyEntityDefinition.class );
+
+    assertThat( actual )
       .hasSize( 1 )
       .contains( CHILD_ENTITY );
+  }
+
+  @Test
+  public void getChildrenWithSuperType() {
+    @SuppressWarnings("unchecked")
+    Collection<EntityDefinition<?>> actual = provider.getChildren( PARENT_ENTITY, EntityDefinition.class );
+
+    assertThat( actual )
+      .hasSize( 1 )
+      .contains( CHILD_ENTITY );
+  }
+
+  @Test
+  public void getChildrenForUnknownType() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    Collection<SomeEntityDefinition> actual = provider.getChildren( PARENT_ENTITY, SomeEntityDefinition.class );
+
+    assertThat( actual ).isEmpty();
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void getChildrenWithNullAsParentDefinitionArgument() {
-    provider.getChildren( null );
-  }
-
-  @Test
-  public void getChildren2() {
-    assertThat( provider.getChildren( PARENT_ENTITY, MyEntityDefinition.class ) )
-      .hasSize( 1 )
-      .contains( CHILD_ENTITY );
-  }
-
-  @Test( expected = IllegalArgumentException.class )
-  public void getChildren2WithNullAsParentDefinitionArgument() {
     provider.getChildren( null, MyEntityDefinition.class );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void getChildren2WithNullAsChildDefinitionTypeArgument() {
+  public void getChildrenWithNullAsChildDefinitionTypeArgument() {
     provider.getChildren( PARENT_ENTITY, null );
   }
 

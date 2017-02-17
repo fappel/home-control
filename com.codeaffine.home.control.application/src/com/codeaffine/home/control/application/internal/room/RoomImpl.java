@@ -1,7 +1,5 @@
 package com.codeaffine.home.control.application.internal.room;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.Collection;
 
 import com.codeaffine.home.control.application.RoomProvider.Room;
@@ -9,14 +7,15 @@ import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
+import com.codeaffine.home.control.entity.EntityRelationResolver;
 
 public class RoomImpl implements Room {
 
-  private final EntityRelationProvider relationProvider;
+  private final EntityRelationResolver entityRelationResolver;
   private final RoomDefinition definition;
 
   RoomImpl( RoomDefinition definition, EntityRelationProvider relationProvider ) {
-    this.relationProvider = relationProvider;
+    this.entityRelationResolver = new EntityRelationResolver( definition, relationProvider );
     this.definition = definition;
   }
 
@@ -27,18 +26,16 @@ public class RoomImpl implements Room {
 
   @Override
   public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<E> getChildren( Class<D> childType ) {
-    return relationProvider.getChildren( definition, childType )
-      .stream()
-      .map( child -> relationProvider.findByDefinition( child ) )
-      .collect( toSet() );
+    return entityRelationResolver.getChildren( childType );
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<Entity<?>> getChildren() {
-    return relationProvider.getChildren( definition )
-      .stream()
-      .map( child -> relationProvider.findByDefinition( ( D )child ) )
-      .collect( toSet() );
+    return entityRelationResolver.getChildren();
+  }
+
+  @Override
+  public String toString() {
+    return "Room [definition=" + definition + "]";
   }
 }

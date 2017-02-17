@@ -1,12 +1,12 @@
-package com.codeaffine.home.control.internal.entity;
+package com.codeaffine.home.control;
 
 import com.codeaffine.home.control.Context;
 
-class TestContext implements Context {
+public class TestContext implements Context {
 
   private final com.codeaffine.util.inject.Context delegate;
 
-  TestContext() {
+  public TestContext() {
     delegate = new com.codeaffine.util.inject.Context();
   }
 
