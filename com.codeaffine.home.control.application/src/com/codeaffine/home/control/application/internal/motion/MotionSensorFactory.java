@@ -3,24 +3,24 @@ package com.codeaffine.home.control.application.internal.motion;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
-import com.codeaffine.home.control.item.ContactItem;
+import com.codeaffine.home.control.item.SwitchItem;
 
 
 public class MotionSensorFactory implements EntityFactory<MotionSensor, MotionSensorDefinition> {
 
-  private final AllocationControlFactory allocationControlFactory;
+  private final SensorControlFactory allocationControlFactory;
   private final Registry registry;
 
-  public MotionSensorFactory( Registry registry, AllocationControlFactory allocationControlFactory ) {
+  public MotionSensorFactory( Registry registry, SensorControlFactory allocationControlFactory ) {
     this.registry = registry;
     this.allocationControlFactory = allocationControlFactory;
   }
 
   @Override
   public MotionSensor create( MotionSensorDefinition definition ) {
-    ContactItem item = registry.getItem( definition.toString(), ContactItem.class );
+    SwitchItem item = registry.getItem( definition.toString(), SwitchItem.class );
     return new MotionSensorImpl( definition, item, allocationControlFactory );
   }
 }

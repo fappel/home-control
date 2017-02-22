@@ -5,32 +5,38 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 
+import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
-public class EntityRelationResolver implements CompositeEntity {
+public class EntityRelationResolver<D extends EntityDefinition<?>> implements CompositeEntity<D> {
 
   private final EntityRelationProvider relationProvider;
-  private final EntityDefinition<?> definition;
+  private final D definition;
 
-  public EntityRelationResolver( EntityDefinition<?> definition, EntityRelationProvider relationProvider ) {
+  public EntityRelationResolver( D definition, EntityRelationProvider relationProvider ) {
     this.relationProvider = relationProvider;
     this.definition = definition;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<Entity<?>> getChildren() {
+  public <R extends Entity<C>, C extends EntityDefinition<R>> Collection<Entity<?>> getChildren() {
     return getChildren( EntityDefinition.class );
   }
 
   @Override
-  public <E extends Entity<D>, D extends EntityDefinition<E>> Collection<E> getChildren( Class<D> childType ) {
+  public <R extends Entity<C>, C extends EntityDefinition<R>> Collection<R> getChildren( Class<C> childType ) {
     verifyNotNull( childType, "childType" );
 
     return relationProvider.getChildren( definition, childType )
         .stream()
         .map( child -> relationProvider.findByDefinition( child ) )
         .collect( toSet() );
+  }
+
+  @Override
+  public D getDefinition() {
+    return definition;
   }
 }

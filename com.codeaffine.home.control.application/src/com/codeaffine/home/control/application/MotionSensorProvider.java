@@ -8,21 +8,21 @@ import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor
 import com.codeaffine.home.control.application.internal.motion.MotionSensorFactory;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationActor;
+import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 
 public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, MotionSensorDefinition> {
 
   public enum MotionSensorDefinition implements EntityDefinition<MotionSensor> {
-    kitchenMotion, livingRoomMotion, bedRoomMotion, hallMotion, bathRoomMotion;
+    kitchenMotion1, livingRoomMotion1, bedRoomMotion1, hallMotion1, bathRoomMotion1;
   };
 
-  public interface MotionSensor extends Entity<MotionSensorDefinition>, AllocationActor {
+  public interface MotionSensor extends Entity<MotionSensorDefinition>, Sensor {
 
   }
 
-  public MotionSensorProvider( Registry registry, AllocationControlFactory allocationControlFactory ) {
+  public MotionSensorProvider( Registry registry, SensorControlFactory allocationControlFactory ) {
     super( new MotionSensorFactory( registry, allocationControlFactory ) );
   }
 

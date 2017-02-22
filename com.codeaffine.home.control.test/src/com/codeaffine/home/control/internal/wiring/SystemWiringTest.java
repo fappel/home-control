@@ -22,16 +22,17 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.entity.AllocationEvent;
-import com.codeaffine.home.control.entity.AllocationProvider;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControl;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 import com.codeaffine.home.control.entity.MyEntityDefinition;
 import com.codeaffine.home.control.entity.MyEntityProvider;
+import com.codeaffine.home.control.entity.ZoneEvent;
+import com.codeaffine.home.control.entity.ZoneProvider;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.EventBus;
@@ -60,7 +61,7 @@ public class SystemWiringTest {
 
   static class Bean {
 
-    Entity<?> allocated;
+    Entity<EntityDefinition<?>> allocated;
 
     @Schedule( period = PERIOD )
     private void method(){}
@@ -69,7 +70,7 @@ public class SystemWiringTest {
     void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
 
     @Subscribe
-    void onBusEvent( AllocationEvent event ) {
+    void onBusEvent( ZoneEvent event ) {
       allocated = event.getAdditions().iterator().next();
     }
   }
@@ -121,7 +122,7 @@ public class SystemWiringTest {
     order.verifyNoMoreInteractions();
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( context.get( EventBus.class ) ).isNotNull();
-    assertThat( context.get( AllocationProvider.class ) ).isNotNull();
+    assertThat( context.get( ZoneProvider.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
     verifyEntitySetup();
   }
@@ -216,22 +217,22 @@ public class SystemWiringTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void busEventWiring() {
     wiring.initialize( configuration );
-    Entity<?> expected = mock( Entity.class );
+    Entity<EntityDefinition<?>> expected = mock( Entity.class );
 
     triggerAllocationEvent( expected );
-    Entity<?> actual = context.get( Bean.class ).allocated;
+    Entity<EntityDefinition<?>> actual = context.get( Bean.class ).allocated;
 
     assertThat( actual ).isSameAs( expected );
-    assertThat( context.get( AllocationProvider.class ).getAllocations() ).contains( expected );
+    assertThat( context.get( ZoneProvider.class ).getEngagedZones() ).contains( expected );
   }
 
-  private void triggerAllocationEvent( Entity<?> allocatable ) {
-    Entity<?> actor = mock( Entity.class );
-    AllocationControl factory = context.get( AllocationControlFactory.class ).create( actor );
-    factory.registerAllocatable( allocatable );
-    factory.allocate();
+  private void triggerAllocationEvent( Entity<EntityDefinition<?>> allocatable ) {
+    SensorControl factory = context.get( SensorControlFactory.class ).create( mock( Entity.class ) );
+    factory.registerZone( allocatable );
+    factory.engage();
   }
 
   private void verifyEntitySetup() {

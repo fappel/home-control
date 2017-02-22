@@ -13,6 +13,11 @@ public interface EntityProvider<E extends Entity<D>, D extends EntityDefinition<
     D getDefinition();
   }
 
+  interface CompositeEntity<D> extends Entity<D> {
+    <R extends Entity<C>, C extends EntityDefinition<R>> Collection<R> getChildren( Class<C> childType );
+    <R extends Entity<C>, C extends EntityDefinition<R>> Collection<Entity<?>> getChildren();
+  }
+
   interface EntityFactory<E, D> {
     E create( D definition );
   }

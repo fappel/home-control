@@ -20,7 +20,7 @@ public class EntityRelationResolverTest {
 
   private EntityRelationProviderImpl relationProvider;
   private EntityRegistryImpl entityRegistry;
-  private EntityRelationResolver resolver;
+  private EntityRelationResolver<MyEntityDefinition> resolver;
 
   static class SomeEntityDefinition<T extends Entity<?>> implements EntityDefinition<T> {}
 
@@ -29,7 +29,7 @@ public class EntityRelationResolverTest {
     entityRegistry = new EntityRegistryImpl( new TestContext() );
     entityRegistry.register( MyEntityProvider.class );
     relationProvider = new EntityRelationProviderImpl( entityRegistry );
-    resolver = new EntityRelationResolver( PARENT_DEFINITION, relationProvider );
+    resolver = new EntityRelationResolver<>( PARENT_DEFINITION, relationProvider );
   }
 
   @Test
@@ -81,5 +81,12 @@ public class EntityRelationResolverTest {
   @Test( expected = IllegalArgumentException.class )
   public void getChildren2WithNullAsChildTypeArgument() {
     resolver.getChildren( null );
+  }
+
+  @Test
+  public void getDefinition() {
+    MyEntityDefinition actual = resolver.getDefinition();
+
+    assertThat( actual ).isSameAs( PARENT_DEFINITION );
   }
 }

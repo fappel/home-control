@@ -1,28 +1,28 @@
 package com.codeaffine.home.control.application.internal.motion;
 
-import static com.codeaffine.home.control.type.OpenClosedType.CLOSED;
+import static com.codeaffine.home.control.type.OnOffType.OFF;
 
 import java.util.Optional;
 
 import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControl;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationControlFactory;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
-import com.codeaffine.home.control.item.ContactItem;
-import com.codeaffine.home.control.type.OpenClosedType;
+import com.codeaffine.home.control.item.SwitchItem;
+import com.codeaffine.home.control.type.OnOffType;
 
 public class MotionSensorImpl implements MotionSensor {
 
-  private final AllocationControl allocationControl;
+  private final SensorControl sensorControl;
   private final MotionSensorDefinition definition;
-  private final ContactItem item;
+  private final SwitchItem item;
 
   public MotionSensorImpl(
-    MotionSensorDefinition definition, ContactItem item, AllocationControlFactory allocationControlFactory )
+    MotionSensorDefinition definition, SwitchItem item, SensorControlFactory sensorControlFactory )
   {
-    this.allocationControl = allocationControlFactory.create( this );
+    this.sensorControl = sensorControlFactory.create( this );
     this.definition = definition;
     this.item = item;
     initialize();
@@ -34,24 +34,24 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   @Override
-  public void registerAllocatable( Entity<?> allocatable ) {
-    allocationControl.registerAllocatable( allocatable );
+  public void registerZone( Entity<?> zone ) {
+    sensorControl.registerZone( zone );
   }
 
   @Override
-  public void unregisterAllocatable( Entity<?> allocatable ) {
-    allocationControl.unregisterAllocatable( allocatable );
+  public void unregisterZone( Entity<?> zone ) {
+    sensorControl.unregisterZone( zone );
   }
 
   private void initialize() {
     item.addChangeListener( evt -> handleEntityAllocation( evt ) );
   }
 
-  private void handleEntityAllocation( ChangeEvent<ContactItem, OpenClosedType> evt ) {
-    if( evt.getNewStatus().equals( Optional.of( CLOSED ) ) ) {
-      allocationControl.deallocate();
+  private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {
+    if( evt.getNewStatus().equals( Optional.of( OFF ) ) ) {
+      sensorControl.release();
     } else {
-      allocationControl.allocate();
+      sensorControl.engage();
     }
   }
 }

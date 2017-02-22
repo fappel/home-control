@@ -3,15 +3,17 @@ package com.codeaffine.home.control.application;
 import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.*;
 import static com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition.*;
 import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.*;
+import static java.util.Arrays.asList;
 
+import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.entity.CompositeEntity;
+import com.codeaffine.home.control.application.internal.allocation.AdjacencyDefinition;
+import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
-import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.AllocationProvider.AllocationActor;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
+import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
 
 public class Configuration implements SystemConfiguration {
 
@@ -24,12 +26,12 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureFacility( Facility facility ) {
-    facility.equip( BedRoom ).with( BedStand, BedRoomCeiling, bedRoomMotion );
-    facility.equip( Hall ).with( HallCeiling, hallMotion );
-    facility.equip( Kitchen ).with( KitchenCeiling, SinkUplight, kitchenMotion );
-    facility.equip( BathRoom ).with( BathRoomCeiling, bathRoomMotion );
+    facility.equip( BedRoom ).with( BedStand, BedRoomCeiling, bedRoomMotion1 );
+    facility.equip( Hall ).with( HallCeiling, hallMotion1 );
+    facility.equip( Kitchen ).with( KitchenCeiling, SinkUplight, kitchenMotion1 );
+    facility.equip( BathRoom ).with( BathRoomCeiling, bathRoomMotion1 );
     facility.equip( LivingRoom )
-      .with( FanLight1, FanLight2, ChimneyUplight, DeskUplight, WindowUplight, livingRoomMotion );
+      .with( FanLight1, FanLight2, ChimneyUplight, DeskUplight, WindowUplight, livingRoomMotion1 );
   }
 
   @Override
@@ -38,16 +40,25 @@ public class Configuration implements SystemConfiguration {
       .findAll()
       .stream()
       .filter( entity -> entity instanceof CompositeEntity )
-      .map( entity -> ( CompositeEntity )entity )
+      .map( entity -> ( CompositeEntity<?> )entity )
       .forEach( composite -> {
         composite.getChildren()
           .stream()
-          .filter( child -> child instanceof AllocationActor )
-          .map( child -> ( AllocationActor )child )
-          .forEach( actor -> actor.registerAllocatable( ( Entity<?> )composite ) );
-      });
+          .filter( child -> child instanceof Sensor )
+          .map( child -> ( Sensor )child )
+          .forEach( sensor -> sensor.registerZone( composite ) );
+      } );
 
-    context.create( Allocation.class );
+    AdjacencyDefinition adjacencyDefinition = new AdjacencyDefinition( new HashSet<>( asList( BedRoom, Hall, Kitchen, BathRoom, LivingRoom ) ) );
+    context.set( AdjacencyDefinition.class, adjacencyDefinition );
+    adjacencyDefinition
+      .link( BedRoom, LivingRoom )
+      .link( LivingRoom, Kitchen )
+      .link( LivingRoom, Hall )
+      .link( Kitchen, Hall )
+      .link( Kitchen, BathRoom );
+
+    context.create( ZoneActivation.class );
     context.create( ActivityRate.class );
   }
 }

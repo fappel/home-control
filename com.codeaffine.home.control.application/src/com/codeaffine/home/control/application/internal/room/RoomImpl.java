@@ -11,17 +11,15 @@ import com.codeaffine.home.control.entity.EntityRelationResolver;
 
 public class RoomImpl implements Room {
 
-  private final EntityRelationResolver entityRelationResolver;
-  private final RoomDefinition definition;
+  private final EntityRelationResolver<RoomDefinition> entityRelationResolver;
 
   RoomImpl( RoomDefinition definition, EntityRelationProvider relationProvider ) {
-    this.entityRelationResolver = new EntityRelationResolver( definition, relationProvider );
-    this.definition = definition;
+    this.entityRelationResolver = new EntityRelationResolver<>( definition, relationProvider );
   }
 
   @Override
   public RoomDefinition getDefinition() {
-    return definition;
+    return entityRelationResolver.getDefinition();
   }
 
   @Override
@@ -36,6 +34,6 @@ public class RoomImpl implements Room {
 
   @Override
   public String toString() {
-    return "Room [definition=" + definition + "]";
+    return "Room [definition=" + getDefinition() + "]";
   }
 }
