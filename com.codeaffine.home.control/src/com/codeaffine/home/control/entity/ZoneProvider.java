@@ -21,5 +21,5 @@ public interface ZoneProvider {
     void release();
   }
 
-  Set<Entity<EntityDefinition<?>>> getEngagedZones();
+  Set<Entity<?>> getEngagedZones();
 }

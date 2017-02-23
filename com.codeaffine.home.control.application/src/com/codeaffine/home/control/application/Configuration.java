@@ -10,10 +10,8 @@ import java.util.HashSet;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.application.internal.allocation.AdjacencyDefinition;
-import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
-import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
 
 public class Configuration implements SystemConfiguration {
 
@@ -36,20 +34,8 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureSystem( Context context ) {
-    context.get( EntityRegistry.class )
-      .findAll()
-      .stream()
-      .filter( entity -> entity instanceof CompositeEntity )
-      .map( entity -> ( CompositeEntity<?> )entity )
-      .forEach( composite -> {
-        composite.getChildren()
-          .stream()
-          .filter( child -> child instanceof Sensor )
-          .map( child -> ( Sensor )child )
-          .forEach( sensor -> sensor.registerZone( composite ) );
-      } );
-
-    AdjacencyDefinition adjacencyDefinition = new AdjacencyDefinition( new HashSet<>( asList( BedRoom, Hall, Kitchen, BathRoom, LivingRoom ) ) );
+    AdjacencyDefinition adjacencyDefinition
+      = new AdjacencyDefinition( new HashSet<>( asList( BedRoom, Hall, Kitchen, BathRoom, LivingRoom ) ) );
     context.set( AdjacencyDefinition.class, adjacencyDefinition );
     adjacencyDefinition
       .link( BedRoom, LivingRoom )

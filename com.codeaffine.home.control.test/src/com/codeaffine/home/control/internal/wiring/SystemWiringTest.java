@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.internal.wiring;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.MY_ENTITY_DEFINITIONS;
+import static com.codeaffine.home.control.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.internal.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.internal.wiring.Messages.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
@@ -45,8 +45,6 @@ import com.codeaffine.util.Disposable;
 
 public class SystemWiringTest {
 
-  private static final MyEntityDefinition CHILD_ENTITY = MY_ENTITY_DEFINITIONS.get( 1 );
-  private static final MyEntityDefinition PARENT_ENTITY = MY_ENTITY_DEFINITIONS.get( 0 );
   private static final String ITEM_NAME = "itemName";
   private static final long PERIOD = 0;
 
@@ -85,7 +83,7 @@ public class SystemWiringTest {
 
     @Override
     public void configureFacility( Facility facility ) {
-      facility.equip( PARENT_ENTITY ).with( CHILD_ENTITY );
+      facility.equip( PARENT ).with( CHILD );
     }
 
     @Override
@@ -238,10 +236,10 @@ public class SystemWiringTest {
   private void verifyEntitySetup() {
     EntityRelationProvider relationProvider = context.get( EntityRelationProvider.class );
     EntityRegistry entityRegistry = context.get( EntityRegistry.class );
-    assertThat( relationProvider.getChildren( PARENT_ENTITY, MyEntityDefinition.class ) ).contains( CHILD_ENTITY );
-    assertThat( relationProvider.findByDefinition( PARENT_ENTITY ) ).isNotNull();
-    assertThat( entityRegistry.findByDefinition( CHILD_ENTITY ) ).isNotNull();
-    assertThat( entityRegistry.findByDefinition( PARENT_ENTITY ) ).isNotNull();
+    assertThat( relationProvider.getChildren( PARENT, MyEntityDefinition.class ) ).contains( CHILD );
+    assertThat( relationProvider.findByDefinition( PARENT ) ).isNotNull();
+    assertThat( entityRegistry.findByDefinition( CHILD ) ).isNotNull();
+    assertThat( entityRegistry.findByDefinition( PARENT ) ).isNotNull();
   }
 
   private static ContextFactory stubContextFactory( com.codeaffine.util.inject.Context context ) {

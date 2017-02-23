@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.entity;
 
+import static com.codeaffine.home.control.entity.MyEntityProvider.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
@@ -15,9 +16,6 @@ import com.codeaffine.home.control.internal.entity.EntityRelationProviderImpl;
 
 public class EntityRelationResolverTest {
 
-  private static final MyEntityDefinition PARENT_DEFINITION = MyEntityProvider.MY_ENTITY_DEFINITIONS.get( 0 );
-  private static final MyEntityDefinition CHILD_DEFINITION = MyEntityProvider.MY_ENTITY_DEFINITIONS.get( 1 );
-
   private EntityRelationProviderImpl relationProvider;
   private EntityRegistryImpl entityRegistry;
   private EntityRelationResolver<MyEntityDefinition> resolver;
@@ -29,18 +27,18 @@ public class EntityRelationResolverTest {
     entityRegistry = new EntityRegistryImpl( new TestContext() );
     entityRegistry.register( MyEntityProvider.class );
     relationProvider = new EntityRelationProviderImpl( entityRegistry );
-    resolver = new EntityRelationResolver<>( PARENT_DEFINITION, relationProvider );
+    resolver = new EntityRelationResolver<>( PARENT, relationProvider );
   }
 
   @Test
   public void getChildren() {
-    relationProvider.establishRelations( facility -> facility.equip( PARENT_DEFINITION ).with( CHILD_DEFINITION ) );
+    relationProvider.establishRelations( facility -> facility.equip( PARENT ).with( CHILD ) );
 
     Collection<Entity<?>> actual = resolver.getChildren();
 
     assertThat( actual )
       .hasSize( 1 )
-      .contains( entityRegistry.findByDefinition( CHILD_DEFINITION ) );
+      .contains( entityRegistry.findByDefinition( CHILD ) );
   }
 
   @Test
@@ -52,18 +50,18 @@ public class EntityRelationResolverTest {
 
   @Test
   public void getChildren2() {
-    relationProvider.establishRelations( facility -> facility.equip( PARENT_DEFINITION ).with( CHILD_DEFINITION ) );
+    relationProvider.establishRelations( facility -> facility.equip( PARENT ).with( CHILD ) );
 
     Collection<MyEntity> actual = resolver.getChildren( MyEntityDefinition.class );
 
     assertThat( actual )
       .hasSize( 1 )
-      .contains( entityRegistry.findByDefinition( CHILD_DEFINITION ) );
+      .contains( entityRegistry.findByDefinition( CHILD ) );
   }
 
   @Test
   public void getChildren2WithNoMatchingFilterCriteria() {
-    relationProvider.establishRelations( facility -> facility.equip( PARENT_DEFINITION ).with( CHILD_DEFINITION ) );
+    relationProvider.establishRelations( facility -> facility.equip( PARENT ).with( CHILD ) );
 
     @SuppressWarnings("unchecked")
     Collection<Entity<?>> actual = resolver.getChildren( SomeEntityDefinition.class );
@@ -87,6 +85,6 @@ public class EntityRelationResolverTest {
   public void getDefinition() {
     MyEntityDefinition actual = resolver.getDefinition();
 
-    assertThat( actual ).isSameAs( PARENT_DEFINITION );
+    assertThat( actual ).isSameAs( PARENT );
   }
 }

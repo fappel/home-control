@@ -1,12 +1,15 @@
 package com.codeaffine.home.control.entity;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.MY_ENTITY_DEFINITIONS;
+import static com.codeaffine.home.control.entity.MyEntityProvider.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.codeaffine.home.control.internal.entity.ZoneProviderImpl;
 
 public class BaseEntityProviderTest {
 
@@ -14,7 +17,7 @@ public class BaseEntityProviderTest {
 
   @Before
   public void setUp() {
-    provider = new MyEntityProvider();
+    provider = new MyEntityProvider( mock( ZoneProviderImpl.class ) );
   }
 
   @Test
@@ -26,9 +29,9 @@ public class BaseEntityProviderTest {
 
   @Test
   public void findByDefinition() {
-    MyEntity actual = provider.findByDefinition( MY_ENTITY_DEFINITIONS.iterator().next() );
+    MyEntity actual = provider.findByDefinition( PARENT );
 
-    assertThat( actual.getDefinition() ).isSameAs( MY_ENTITY_DEFINITIONS.iterator().next() );
+    assertThat( actual.getDefinition() ).isSameAs( PARENT );
   }
 
   @Test
@@ -36,6 +39,6 @@ public class BaseEntityProviderTest {
     provider.dispose();
 
     assertThat( provider.findAll() ).isEmpty();
-    assertThat( provider.findByDefinition( MY_ENTITY_DEFINITIONS.iterator().next() ) ).isNull();
+    assertThat( provider.findByDefinition( PARENT ) ).isNull();
   }
 }

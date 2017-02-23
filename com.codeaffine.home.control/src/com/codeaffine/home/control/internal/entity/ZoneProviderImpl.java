@@ -2,6 +2,7 @@ package com.codeaffine.home.control.internal.entity;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class ZoneProviderImpl implements ZoneProvider, Disposable {
     Set<Entity<EntityDefinition<?>>> additions = new HashSet<>();
     zones.forEach( zone -> updateOnEngage( sensor, zone, additions ) );
     if( !additions.isEmpty() ) {
-      eventBus.post( new ZoneEvent( sensor, getEngagedZones(), additions, emptySet() ) );
+      eventBus.post( new ZoneEvent( sensor, getEngaged(), additions, emptySet() ) );
     }
   }
 
@@ -42,12 +43,16 @@ public class ZoneProviderImpl implements ZoneProvider, Disposable {
     Set<Entity<EntityDefinition<?>>> removals = new HashSet<>();
     zones.forEach( zone -> updateOnDeallocate( sensor, zone, removals ) );
     if( !removals.isEmpty() ) {
-      eventBus.post( new ZoneEvent( sensor, getEngagedZones(), emptySet(), removals ) );
+      eventBus.post( new ZoneEvent( sensor, getEngaged(), emptySet(), removals ) );
     }
   }
 
   @Override
-  public Set<Entity<EntityDefinition<?>>> getEngagedZones() {
+  public Set<Entity<?>> getEngagedZones() {
+    return getEngaged().stream().map( entity -> ( Entity<?> )entity ).collect( toSet() );
+  }
+
+  private Set<Entity<EntityDefinition<?>>> getEngaged() {
     return defensiveCopy( engagedZones.keySet() );
   }
 

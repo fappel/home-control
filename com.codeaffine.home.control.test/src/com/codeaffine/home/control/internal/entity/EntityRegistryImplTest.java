@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.internal.entity;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.MY_ENTITY_DEFINITIONS;
+import static com.codeaffine.home.control.entity.MyEntityProvider.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -40,9 +40,9 @@ public class EntityRegistryImplTest {
   public void findByDefinition() {
     entityRegistry.register( MyEntityProvider.class );
 
-    MyEntity actual = entityRegistry.findByDefinition( MY_ENTITY_DEFINITIONS.get( 0 ) );
+    MyEntity actual = entityRegistry.findByDefinition( PARENT );
 
-    assertThat( actual ).isNotNull();
+    assertThat( actual.getDefinition() ).isSameAs( PARENT );
   }
 
   @Test( expected = NoSuchElementException.class )
@@ -54,7 +54,7 @@ public class EntityRegistryImplTest {
 
   @Test( expected = NoSuchElementException.class )
   public void findByDefinitionIfNotRegistered() {
-    entityRegistry.findByDefinition( MY_ENTITY_DEFINITIONS.get( 0 ) );
+    entityRegistry.findByDefinition( PARENT );
   }
 
 

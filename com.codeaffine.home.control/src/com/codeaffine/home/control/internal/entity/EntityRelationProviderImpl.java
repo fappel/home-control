@@ -9,9 +9,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.util.Disposable;
 
@@ -22,7 +24,7 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
 
   public EntityRelationProviderImpl( EntityRegistry entityRegistry ) {
     this.entityRegistry = entityRegistry;
-    entityRelations = new HashMap<>();
+    this.entityRelations = new HashMap<>();
   }
 
   @Override
@@ -33,7 +35,8 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
   public void establishRelations( EntityRelationConfiguration configuration ) {
     verifyNotNull( configuration, "configuration" );
 
-    configuration.configureFacility( parent -> children -> this.entityRelations.put( parent, asList( children ) ) );
+    configuration.configureFacility( parent -> children -> entityRelations.put( parent, asList( children ) ) );
+    registerZonesAtSensorChildren();
   }
 
   @Override
@@ -71,5 +74,20 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
       .stream()
       .filter( definition -> childDefinitionType.isInstance( definition ) )
       .collect( toSet() );
+  }
+
+  private void registerZonesAtSensorChildren() {
+    entityRegistry
+      .findAll()
+      .stream()
+      .filter( entity -> entity instanceof CompositeEntity )
+      .map( entity -> ( CompositeEntity<?> )entity )
+      .forEach( composite -> {
+        composite.getChildren()
+        .stream()
+        .filter( child -> child instanceof Sensor )
+        .map( child -> ( Sensor )child )
+        .forEach( sensor -> sensor.registerZone( composite ) );
+      } );
   }
 }
