@@ -52,6 +52,15 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
   }
 
   @Override
+  public <E extends Entity<D>, D extends EntityDefinition<E>>
+    Collection<E> findByDefinitionType( Class<D> definitionType )
+  {
+    verifyNotNull( definitionType, "definitionType" );
+
+    return entityRegistry.findByDefinitionType( definitionType );
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public <E extends Entity<D>, D extends EntityDefinition<E>, P extends EntityDefinition<?>>
     Collection<D> getChildren( P parentDefinition, Class<D> childDefinitionType )

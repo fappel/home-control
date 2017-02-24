@@ -23,9 +23,10 @@ public interface EntityProvider<E extends Entity<D>, D extends EntityDefinition<
   }
 
   interface EntityRegistry {
-    <E extends Entity<D>, D extends EntityDefinition<E>> E findByDefinition( D child );
-    <T extends EntityProvider<?,?>> void register( Class<T> providerType );
     Collection<Entity<?>> findAll();
+    <E extends Entity<D>, D extends EntityDefinition<E>> Collection<E> findByDefinitionType( Class<D> definitionType );
+    <E extends Entity<D>, D extends EntityDefinition<E>> E findByDefinition( D definition );
+    <T extends EntityProvider<?,?>> void register( Class<T> providerType );
   }
 
   interface EntityProviderConfiguration {

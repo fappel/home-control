@@ -3,12 +3,11 @@ package com.codeaffine.home.control.internal.activation;
 import static com.codeaffine.home.control.internal.activation.Messages.*;
 import static java.lang.String.format;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.internal.wiring.SystemWiring;
+import com.codeaffine.home.control.logger.Logger;
 
 class SystemLifeCycle {
 
@@ -17,7 +16,7 @@ class SystemLifeCycle {
   private final Logger logger;
 
   SystemLifeCycle( SystemWiring systemWiring, ShutdownDispatcher shutdownDispatcher ) {
-    this( systemWiring, shutdownDispatcher, LoggerFactory.getLogger( SystemLifeCycle.class ) );
+    this( systemWiring, shutdownDispatcher, new LoggerFactoryAdapter().getLogger( SystemLifeCycle.class ) );
   }
 
   SystemLifeCycle( SystemWiring systemWiring, ShutdownDispatcher shutdownDispatcher, Logger logger ) {

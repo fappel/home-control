@@ -6,18 +6,18 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.internal.wiring.ContextFactory;
 import com.codeaffine.home.control.internal.wiring.SystemWiring;
+import com.codeaffine.home.control.logger.Logger;
 
 public class Activator implements BundleActivator {
 
-  private final Logger logger = LoggerFactory.getLogger( Activator.class );
+  private final Logger logger = new LoggerFactoryAdapter().getLogger( Activator.class );
 
   private SystemConfigurationTracker configurationTracker;
   private ShutdownDispatcher shutdownDispatcher;

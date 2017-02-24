@@ -32,7 +32,7 @@ public class BulbItemHelper {
   public static <T extends AdjustableItem> T stubItem( Class<T> itemType ) {
     T result = mock( itemType );
     when( result.getStatus() ).thenReturn( empty() );
-    doAnswer( invocation -> stubStatus( invocation, result ) ).when( result ).setStatus( any( Status.class ) );
+    doAnswer( invocation -> stubStatus( invocation, result ) ).when( result ).updateStatus( any( Status.class ) );
     return result;
   }
 

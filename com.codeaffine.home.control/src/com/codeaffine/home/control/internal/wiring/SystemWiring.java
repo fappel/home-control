@@ -7,16 +7,18 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.entity.ZoneProvider;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
-import com.codeaffine.home.control.internal.entity.SensorControlFactoryImpl;
-import com.codeaffine.home.control.internal.entity.ZoneProviderImpl;
+import com.codeaffine.home.control.entity.ZoneProvider;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.internal.entity.EntityRegistryImpl;
 import com.codeaffine.home.control.internal.entity.EntityRelationProviderImpl;
+import com.codeaffine.home.control.internal.entity.SensorControlFactoryImpl;
+import com.codeaffine.home.control.internal.entity.ZoneProviderImpl;
 import com.codeaffine.home.control.internal.event.EventBusImpl;
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.util.inject.Context;
 
 public class SystemWiring {
@@ -71,6 +73,7 @@ public class SystemWiring {
   private void doInitialize() {
     context = contextFactory.create();
     contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
+    contextAdapter.set( LoggerFactory.class, contextAdapter.create( LoggerFactoryAdapter.class ) );
     ZoneProviderImpl zoneProvider = contextAdapter.create( ZoneProviderImpl.class );
     contextAdapter.set( ZoneProvider.class, zoneProvider );
     contextAdapter.set( SensorControlFactory.class, new SensorControlFactoryImpl( zoneProvider ) );

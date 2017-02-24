@@ -4,8 +4,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.logger.Logger;
 
 public class SystemExecutor {
 
@@ -13,7 +13,7 @@ public class SystemExecutor {
   private final Logger logger;
 
   public SystemExecutor( ScheduledExecutorService delegate ) {
-    this( delegate, LoggerFactory.getLogger( ScheduledExecutorService.class ) );
+    this( delegate, new LoggerFactoryAdapter().getLogger( ScheduledExecutorService.class ) );
   }
 
   SystemExecutor( ScheduledExecutorService delegate, Logger logger ) {

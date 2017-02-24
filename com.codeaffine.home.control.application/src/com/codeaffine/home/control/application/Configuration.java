@@ -9,7 +9,8 @@ import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.application.internal.allocation.AdjacencyDefinition;
+import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
+import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 
@@ -44,7 +45,8 @@ public class Configuration implements SystemConfiguration {
       .link( Kitchen, Hall )
       .link( Kitchen, BathRoom );
 
-    context.create( ZoneActivation.class );
-    context.create( ActivityRate.class );
+    context.set( ZoneActivation.class, context.create( ZoneActivationImpl.class ) );
+    context.set( ActivityRate.class, context.create( ActivityRate.class ) );
+    context.set( ControlCenter.class, context.create( ControlCenter.class ) );
   }
 }

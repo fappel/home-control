@@ -13,7 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
+
+import com.codeaffine.home.control.logger.Logger;
 
 public class SystemExecutorTest {
 

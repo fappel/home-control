@@ -92,7 +92,7 @@ public class EntityRelationProviderImplTest {
   }
 
   @Test
-  public void findEntityByDefinition() {
+  public void findByDefinition() {
     MyEntity actual = provider.findByDefinition( CHILD );
 
     assertThat( actual.getDefinition() ).isSameAs( CHILD );
@@ -101,6 +101,18 @@ public class EntityRelationProviderImplTest {
   @Test( expected = IllegalArgumentException.class )
   public void findByDefinitionWithNullAsChildArgument() {
     provider.findByDefinition( null );
+  }
+
+  @Test
+  public void findByDefinitionType() {
+    Collection<MyEntity> actual = provider.findByDefinitionType( MyEntityDefinition.class );
+
+    assertThat( actual ).hasSize( MY_ENTITY_DEFINITIONS.size() );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void findByDefinitionTypeWithNullAsChildArgument() {
+    provider.findByDefinitionType( null );
   }
 
   @Test

@@ -4,7 +4,8 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
+
+import com.codeaffine.home.control.logger.Logger;
 
 public class SafeRunnableTest {
 

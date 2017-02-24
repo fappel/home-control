@@ -1,7 +1,8 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.internal.zone;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
 
 import java.util.HashSet;
@@ -9,13 +10,16 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.internal.allocation.AdjacencyDefinition;
+import com.codeaffine.home.control.application.Event;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
+import com.codeaffine.home.control.event.EventBus;
+import com.codeaffine.home.control.logger.Logger;
 
-public class ZoneActivationTest {
+public class ZoneActivationImplTest {
 
   private static final EntityDefinition<?> ZONE_DEFINITION_1 = stubEntityDefinition( "Zone1" );
   private static final EntityDefinition<?> ZONE_DEFINITION_2 = stubEntityDefinition( "Zone2" );
@@ -25,13 +29,26 @@ public class ZoneActivationTest {
   private static final Entity<EntityDefinition<?>> ZONE_3 = stubEntity( ZONE_DEFINITION_3 );
 
   private AdjacencyDefinition adjacency;
-  private ZoneActivation activation;
+  private ZoneActivationImpl activation;
+  private EventBus eventBus;
+  private Logger logger;
 
   @Before
   public void setUp() {
     adjacency = new AdjacencyDefinition( asSet( ZONE_DEFINITION_1, ZONE_DEFINITION_2, ZONE_DEFINITION_3 ) );
     adjacency.link( ZONE_DEFINITION_1, ZONE_DEFINITION_2 ).link( ZONE_DEFINITION_2, ZONE_DEFINITION_3 );
-    activation = new ZoneActivation( adjacency );
+    eventBus = mock( EventBus.class );
+    logger = mock( Logger.class );
+    activation = new ZoneActivationImpl( adjacency, eventBus, logger );
+  }
+
+  @Test
+  public void engageZonesChanged() {
+    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
+
+    ArgumentCaptor<Event> captor = forClass( Event.class );
+    verify( eventBus ).post( captor.capture() );
+    assertThat( captor.getValue().getSource() ).isSameAs( activation );
   }
 
   @Test

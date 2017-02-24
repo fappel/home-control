@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.internal.bulb;
 
 import static com.codeaffine.home.control.application.internal.bulb.BulbItemHelper.*;
+import static com.codeaffine.home.control.application.test.LoggerHelper.stubLoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
@@ -20,7 +21,7 @@ public class BulbFactoryTest {
     DimmerItem colorTemperatureItem = stubItem( DimmerItem.class );
     DimmerItem brightnessItem = stubItem( DimmerItem.class );
     SwitchItem onOffItem = stubItem( SwitchItem.class );
-    bulbFactory = new BulbFactory( stubRegistry( onOffItem, brightnessItem, colorTemperatureItem ) );
+    bulbFactory = new BulbFactory( stubRegistry( onOffItem, brightnessItem, colorTemperatureItem ), stubLoggerFactory() );
   }
 
   @Test

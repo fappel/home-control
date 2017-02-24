@@ -22,4 +22,5 @@ Export-Package: com.codeaffine.home.control,
  com.codeaffine.home.control.entity,
  com.codeaffine.home.control.event,
  com.codeaffine.home.control.item,
+ com.codeaffine.home.control.logger,
  com.codeaffine.home.control.type

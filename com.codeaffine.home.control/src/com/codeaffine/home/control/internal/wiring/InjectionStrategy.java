@@ -7,21 +7,33 @@ import java.util.stream.Stream;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.util.inject.Context;
 
 public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Object[]> {
 
+  private final LoggerFactory loggerFactory;
+
+  public InjectionStrategy() {
+    loggerFactory = new LoggerFactoryAdapter();
+  }
+
   @Override
   public Object[] apply( Constructor<?> constructor, Context context ) {
     return Stream.of( constructor.getParameters() )
-      .map( parameter -> getParameter( context, parameter ) )
+      .map( parameter -> getParameter( context, parameter, constructor.getDeclaringClass() ) )
       .toArray();
   }
 
-  private static Object getParameter( Context context, Parameter parameter ) {
+  private Object getParameter( Context context, Parameter parameter, Class<?> declaringClass ) {
     ByName annotation = parameter.getAnnotation( ByName.class );
     if( annotation != null ) {
       return getFromRegistry( context, parameter, annotation );
+    }
+    if( parameter.getType().isAssignableFrom( Logger.class ) ) {
+      return loggerFactory.getLogger( declaringClass );
     }
     return context.get( parameter.getType() );
   }

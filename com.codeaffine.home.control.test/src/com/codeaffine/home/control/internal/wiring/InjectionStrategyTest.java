@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.item.NumberItem;
+import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.util.inject.Context;
 
 public class InjectionStrategyTest {
@@ -22,10 +23,12 @@ public class InjectionStrategyTest {
 
     private final Registry registry;
     private final NumberItem item;
+    private final Logger logger;
 
-    ItemHandler( @ByName( ITEM_NAME ) NumberItem item, Registry registry ) {
-      this.item = item;
+    ItemHandler( @ByName( ITEM_NAME ) NumberItem item, Registry registry, Logger logger ) {
       this.registry = registry;
+      this.logger = logger;
+      this.item = item;
     }
 
     NumberItem getItem() {
@@ -34,6 +37,10 @@ public class InjectionStrategyTest {
 
     Registry getRegistry() {
       return registry;
+    }
+
+    Logger getLogger() {
+      return logger;
     }
   }
 
@@ -52,6 +59,7 @@ public class InjectionStrategyTest {
 
     assertThat( actual.getItem() ).isSameAs( item );
     assertThat( actual.getRegistry() ).isSameAs( registry );
+    assertThat( actual.getLogger() ).isNotNull();
   }
 
   private NumberItem stubRegistry( String itemName, NumberItem item ) {

@@ -11,8 +11,9 @@ import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.internal.bulb.BulbFactory;
 import com.codeaffine.home.control.application.internal.bulb.BulbImpl;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
@@ -32,8 +33,8 @@ public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
     Optional<PercentType> getColorTemperature();
   }
 
-  public BulbProvider( Registry registry ) {
-    super( new BulbFactory( registry ) );
+  public BulbProvider( Registry registry, LoggerFactory loggerFactory ) {
+    super( new BulbFactory( registry, loggerFactory ) );
   }
 
   @Schedule( period = 2 )

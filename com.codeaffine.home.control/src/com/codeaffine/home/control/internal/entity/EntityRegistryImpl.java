@@ -40,11 +40,25 @@ public class EntityRegistryImpl implements EntityRegistry {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <E extends Entity<D>, D extends EntityDefinition<E>> E findByDefinition( D child ) {
+  public <E extends Entity<D>, D extends EntityDefinition<E>>
+    Collection<E> findByDefinitionType( Class<D> definitionType )
+  {
+    verifyNotNull( definitionType, "definitionType" );
+
+    return ( Collection<E> )findAll()
+      .stream()
+      .filter( entity -> definitionType == entity.getDefinition().getClass()  )
+      .collect( toSet() );
+  }
+  @Override
+  @SuppressWarnings("unchecked")
+  public <E extends Entity<D>, D extends EntityDefinition<E>> E findByDefinition( D definition ) {
+    verifyNotNull( definition, "definition" );
+
     return providers
       .stream()
-      .filter( provider -> ( ( EntityProvider<E, D> )provider ).findByDefinition( child ) != null )
-      .map( provider -> ( ( EntityProvider<E, D> )provider ).findByDefinition( child ) )
+      .filter( provider -> ( ( EntityProvider<E, D> )provider ).findByDefinition( definition ) != null )
+      .map( provider -> ( ( EntityProvider<E, D> )provider ).findByDefinition( definition ) )
       .findFirst()
       .get();
   }

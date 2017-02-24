@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application.internal.allocation;
+package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.internal.allocation.Messages.ERROR_ENTITY_DEFINITION_NO_ELEMENT_ADJACENCY_DEFINITION;
+import static com.codeaffine.home.control.application.internal.zone.Messages.ERROR_ENTITY_DEFINITION_NO_ELEMENT_ADJACENCY_DEFINITION;
 import static com.codeaffine.util.ArgumentVerification.*;
 import static java.util.stream.Collectors.toMap;
 

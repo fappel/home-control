@@ -4,17 +4,18 @@ import static com.codeaffine.home.control.internal.activation.Messages.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
 import com.codeaffine.home.control.internal.wiring.SystemWiring;
+import com.codeaffine.home.control.logger.Logger;
 
 public class SystemLifeCycleTest {
 

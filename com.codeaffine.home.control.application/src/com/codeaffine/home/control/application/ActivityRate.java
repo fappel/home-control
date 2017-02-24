@@ -1,15 +1,10 @@
 package com.codeaffine.home.control.application;
 
-import static com.codeaffine.home.control.type.OnOffType.*;
 import static java.time.LocalDateTime.now;
-import static java.util.Arrays.asList;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-
-import org.slf4j.LoggerFactory;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Schedule;
@@ -18,6 +13,7 @@ import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.item.SwitchItem;
+import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.home.control.type.OnOffType;
 
@@ -30,13 +26,16 @@ public class ActivityRate {
   private final Queue<LocalDateTime> motionActivations;
   private final NumberItem activityRate;
   private final SwitchItem switchItem;
+  private final Logger logger;
 
   public ActivityRate( @ByName( "activityRate" ) NumberItem activityRate,
-                       @ByName( "switchWindowUplight" ) SwitchItem switchItem )
+                       @ByName( "switchWindowUplight" ) SwitchItem switchItem,
+                       Logger logger )
   {
+    this.motionActivations = new LinkedList<>();
     this.activityRate = activityRate;
     this.switchItem = switchItem;
-    this.motionActivations = new LinkedList<>();
+    this.logger = logger;
   }
 
   @Observe( "activityRate" )

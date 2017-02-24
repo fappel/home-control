@@ -40,6 +40,7 @@ import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.internal.util.SystemExecutor;
 import com.codeaffine.home.control.item.NumberItem;
+import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.util.Disposable;
 
@@ -121,6 +122,7 @@ public class SystemWiringTest {
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( context.get( EventBus.class ) ).isNotNull();
     assertThat( context.get( ZoneProvider.class ) ).isNotNull();
+    assertThat( context.get( LoggerFactory.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
     verifyEntitySetup();
   }

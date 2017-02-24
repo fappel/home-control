@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application.internal.allocation;
+package com.codeaffine.home.control.application.internal.zone;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public class AdjacencyDefinitionTest {

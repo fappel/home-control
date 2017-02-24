@@ -7,9 +7,8 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Method;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.logger.Logger;
 import com.google.common.eventbus.Subscribe;
 
 class ObserverAdapter {
@@ -19,7 +18,7 @@ class ObserverAdapter {
   private final Logger logger;
 
   public ObserverAdapter( Method method, Object observer ) {
-    this( method, observer, LoggerFactory.getLogger( ObserverAdapter.class ) );
+    this( method, observer, new LoggerFactoryAdapter().getLogger( ObserverAdapter.class ) );
   }
 
   public ObserverAdapter( Method method, Object observer, Logger logger ) {

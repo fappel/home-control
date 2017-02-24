@@ -3,10 +3,9 @@ package com.codeaffine.home.control.internal.activation;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.internal.util.SafeRunnable;
+import com.codeaffine.home.control.logger.Logger;
 
 class SystemThreadFactory implements ThreadFactory {
 
@@ -18,7 +17,7 @@ class SystemThreadFactory implements ThreadFactory {
   private final Logger logger;
 
   SystemThreadFactory() {
-    this( LoggerFactory.getLogger( Activator.class ) );
+    this( new LoggerFactoryAdapter().getLogger( Activator.class ) );
 
   }
   SystemThreadFactory( Logger logger ) {

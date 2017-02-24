@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.internal.util;
 
-import org.slf4j.Logger;
+import com.codeaffine.home.control.logger.Logger;
 
 public class SafeRunnable implements Runnable {
 
