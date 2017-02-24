@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.internal.motion;
 
-import static com.codeaffine.home.control.type.OnOffType.OFF;
+import static com.codeaffine.home.control.type.OnOffType.*;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
 
@@ -34,12 +35,21 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   @Override
+  public boolean isEngaged() {
+    return item.getStatus().orElse( OFF ).equals( ON );
+  }
+
+  @Override
   public void registerZone( Entity<?> zone ) {
+    verifyNotNull( zone, "zone" );
+
     sensorControl.registerZone( zone );
   }
 
   @Override
   public void unregisterZone( Entity<?> zone ) {
+    verifyNotNull( zone, "zone" );
+
     sensorControl.unregisterZone( zone );
   }
 
@@ -48,10 +58,14 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {
-    if( evt.getNewStatus().equals( Optional.of( OFF ) ) ) {
-      sensorControl.release();
-    } else {
+    if( mustEngage( evt ) ) {
       sensorControl.engage();
+    } else {
+      sensorControl.release();
     }
+  }
+
+  private static boolean mustEngage( ChangeEvent<SwitchItem, OnOffType> evt ) {
+    return evt.getNewStatus().equals( Optional.of( ON ) );
   }
 }

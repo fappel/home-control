@@ -19,7 +19,7 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
   };
 
   public interface MotionSensor extends Entity<MotionSensorDefinition>, Sensor {
-
+    boolean isEngaged();
   }
 
   public MotionSensorProvider( Registry registry, SensorControlFactory allocationControlFactory ) {

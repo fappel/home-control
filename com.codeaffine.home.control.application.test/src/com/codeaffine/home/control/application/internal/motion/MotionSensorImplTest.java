@@ -1,19 +1,147 @@
 package com.codeaffine.home.control.application.internal.motion;
 
 import static com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition.bathRoomMotion1;
-import static org.mockito.Mockito.mock;
+import static com.codeaffine.home.control.type.OnOffType.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 
 import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.event.ChangeEvent;
+import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.item.SwitchItem;
+import com.codeaffine.home.control.type.OnOffType;
 
 public class MotionSensorImplTest {
 
+  private ChangeListener<SwitchItem, OnOffType> sensorSwitchStateObserver;
+  private SensorControlFactory sensorControlFactory;
+  private SensorControl sensorControl;
+  private SwitchItem sensorItem;
+  private MotionSensorImpl sensor;
+
   @Before
   public void setUp() {
-    SwitchItem sensorSwitch = mock( SwitchItem.class );
-    new MotionSensorImpl( bathRoomMotion1, sensorSwitch, mock( SensorControlFactory.class ) );
+    sensorItem = stubSensorItem();
+    sensorControl = mock( SensorControl.class );
+    sensorControlFactory = stubSensorControlFactory( sensorControl );
+    sensor = new MotionSensorImpl( bathRoomMotion1, sensorItem, sensorControlFactory );
+    sensorSwitchStateObserver = captureSensorSwitchStateObserver();
+  }
+
+  @Test
+  public void initialization() {
+    verify( sensorControlFactory ).create( sensor );
+    assertThat( sensor.getDefinition() ).isSameAs( bathRoomMotion1 );
+    assertThat( sensor.isEngaged() ).isFalse();
+  }
+
+  @Test
+  public void registerZone() {
+    Entity<?> expected = mock( Entity.class );
+
+    sensor.registerZone( expected );
+
+    verify( sensorControl ).registerZone( expected );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void registerZoneWithNullAsArgument() {
+    sensor.registerZone( null );
+  }
+
+  @Test
+  public void unregisterZone() {
+    Entity<?> expected = mock( Entity.class );
+
+    sensor.unregisterZone( expected );
+
+    verify( sensorControl ).unregisterZone( expected );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void unregisterZoneWithNullAsArgument() {
+    sensor.unregisterZone( null );
+  }
+
+  @Test
+  public void engage() {
+    ChangeEvent<SwitchItem, OnOffType> event = stubEvent( ON );
+
+    sensorSwitchStateObserver.itemChanged( event );
+
+    verify( sensorControl ).engage();
+  }
+
+  @Test
+  public void release() {
+    ChangeEvent<SwitchItem, OnOffType> event = stubEvent( OFF );
+
+    sensorSwitchStateObserver.itemChanged( event );
+
+    verify( sensorControl ).release();
+  }
+
+  @Test
+  public void releaseWithUndefinedStatus() {
+    ChangeEvent<SwitchItem, OnOffType> event = stubEvent( null );
+
+    sensorSwitchStateObserver.itemChanged( event );
+
+    verify( sensorControl ).release();
+  }
+
+  @Test
+  public void isEngaged() {
+    when( sensorItem.getStatus() ).thenReturn( Optional.of( ON ) );
+
+    boolean actual = sensor.isEngaged();
+
+    assertThat( actual ).isTrue();
+  }
+
+  @Test
+  public void isEngagedIfOff() {
+    when( sensorItem.getStatus() ).thenReturn( Optional.of( OFF ) );
+
+    boolean actual = sensor.isEngaged();
+
+    assertThat( actual ).isFalse();
+  }
+
+  private static SwitchItem stubSensorItem() {
+    SwitchItem result = mock( SwitchItem.class );
+    when( result.getStatus() ).thenReturn( Optional.empty() );
+    return result;
+  }
+
+  private static SensorControlFactory stubSensorControlFactory( SensorControl sensorControl ) {
+    SensorControlFactory result = mock( SensorControlFactory.class );
+    when( result.create( any( MotionSensor.class ) ) ).thenReturn( sensorControl );
+    return result;
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private ChangeListener<SwitchItem, OnOffType> captureSensorSwitchStateObserver() {
+    ArgumentCaptor<ChangeListener> captor = forClass( ChangeListener.class );
+    verify( sensorItem ).addChangeListener( captor.capture() );
+    return captor.getValue();
+  }
+
+  private static ChangeEvent<SwitchItem, OnOffType> stubEvent( OnOffType status ) {
+    @SuppressWarnings("unchecked")
+    ChangeEvent<SwitchItem, OnOffType> result = mock( ChangeEvent.class );
+    when( result.getNewStatus() ).thenReturn( Optional.ofNullable( status ) );
+    return result;
   }
 }
