@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.application.internal.room;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import java.util.Collection;
 
 import com.codeaffine.home.control.application.RoomProvider.Room;
@@ -14,6 +16,9 @@ public class RoomImpl implements Room {
   private final EntityRelationResolver<RoomDefinition> entityRelationResolver;
 
   RoomImpl( RoomDefinition definition, EntityRelationProvider relationProvider ) {
+    verifyNotNull( relationProvider, "relationProvider" );
+    verifyNotNull( definition, "definition" );
+
     this.entityRelationResolver = new EntityRelationResolver<>( definition, relationProvider );
   }
 

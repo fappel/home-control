@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.application.BulbProvider.Bulb;
 import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
+import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomImplTest {
@@ -35,13 +36,50 @@ public class RoomImplTest {
   }
 
   @Test
-  public void getChildren() {
+  public void getChildrenWithChildTypeParameter() {
     Bulb expected = mock( Bulb.class );
     stubEntityRelation( entityRelationProvider, BathRoom, BathRoomCeiling );
     stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 
     Collection<Bulb> actual = room.getChildren( BulbDefinition.class );
 
-    assertThat( actual ).contains( expected );
+    assertThat( actual )
+      .hasSize( 1 )
+      .contains( expected );
+  }
+
+  @Test
+  public void getChildren() {
+    Bulb expected = mock( Bulb.class );
+    stubEntityRelationForAllChildren( entityRelationProvider, BathRoom, BathRoomCeiling );
+    stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
+
+    Collection<Entity<?>> actual = room.getChildren();
+
+    assertThat( actual )
+      .hasSize( 1 )
+      .contains( expected );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void getChildrenWithChildTypeParameterAndNullAsArgument() {
+    room.getChildren( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsDefinitionArgument() {
+    new RoomImpl( null, entityRelationProvider );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEntityRelationProviderArgument() {
+    new RoomImpl( BathRoom, null );
+  }
+
+  @Test
+  public void toStringImplementation() {
+    String actual = room.toString();
+
+    assertThat( actual.toString() ).contains( room.getDefinition().toString() );
   }
 }

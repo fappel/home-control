@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.application;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.RoomProvider.Room;
@@ -19,7 +21,7 @@ public class RoomProvider extends BaseEntityProvider<Room, RoomDefinition> {
   public interface Room extends CompositeEntity<RoomDefinition> {}
 
   public RoomProvider( EntityRelationProvider entityRelationProvider ) {
-    super( new RoomFactory( entityRelationProvider ) );
+    super( new RoomFactory( verifyNotNull( entityRelationProvider, "entityRelationProvider" ) ) );
   }
 
   @Override
