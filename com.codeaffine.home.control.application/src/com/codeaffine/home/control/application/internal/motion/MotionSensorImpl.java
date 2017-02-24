@@ -18,14 +18,18 @@ public class MotionSensorImpl implements MotionSensor {
 
   private final SensorControl sensorControl;
   private final MotionSensorDefinition definition;
-  private final SwitchItem item;
+  private final SwitchItem sensorItem;
 
   public MotionSensorImpl(
-    MotionSensorDefinition definition, SwitchItem item, SensorControlFactory sensorControlFactory )
+    MotionSensorDefinition definition, SwitchItem sensorItem, SensorControlFactory sensorControlFactory )
   {
+    verifyNotNull( sensorControlFactory, "sensorControlFactory" );
+    verifyNotNull( definition, "definition" );
+    verifyNotNull( sensorItem, "sensorItem" );
+
     this.sensorControl = sensorControlFactory.create( this );
+    this.sensorItem = sensorItem;
     this.definition = definition;
-    this.item = item;
     initialize();
   }
 
@@ -36,7 +40,7 @@ public class MotionSensorImpl implements MotionSensor {
 
   @Override
   public boolean isEngaged() {
-    return item.getStatus().orElse( OFF ).equals( ON );
+    return sensorItem.getStatus().orElse( OFF ).equals( ON );
   }
 
   @Override
@@ -54,7 +58,7 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   private void initialize() {
-    item.addChangeListener( evt -> handleEntityAllocation( evt ) );
+    sensorItem.addChangeListener( evt -> handleEntityAllocation( evt ) );
   }
 
   private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {

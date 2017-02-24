@@ -22,8 +22,8 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
     boolean isEngaged();
   }
 
-  public MotionSensorProvider( Registry registry, SensorControlFactory allocationControlFactory ) {
-    super( new MotionSensorFactory( registry, allocationControlFactory ) );
+  public MotionSensorProvider( Registry registry, SensorControlFactory sensorControlFactory ) {
+    super( new MotionSensorFactory( registry, sensorControlFactory ) );
   }
 
   @Override

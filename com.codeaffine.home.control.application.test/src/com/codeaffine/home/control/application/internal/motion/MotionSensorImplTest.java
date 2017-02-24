@@ -119,6 +119,21 @@ public class MotionSensorImplTest {
     assertThat( actual ).isFalse();
   }
 
+  @Test( expected = IllegalArgumentException.class )
+  public void createWithNullAsDefinitionArgument() {
+    new MotionSensorImpl( null, sensorItem, sensorControlFactory );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void createWithNullAsSensorItemArgument() {
+    new MotionSensorImpl( bathRoomMotion1, null, sensorControlFactory );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void createWithNullAsSensorControlFactoryArgument() {
+    new MotionSensorImpl( bathRoomMotion1, sensorItem, null );
+  }
+
   private static SwitchItem stubSensorItem() {
     SwitchItem result = mock( SwitchItem.class );
     when( result.getStatus() ).thenReturn( Optional.empty() );

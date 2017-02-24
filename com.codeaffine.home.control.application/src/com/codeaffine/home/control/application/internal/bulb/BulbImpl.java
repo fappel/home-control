@@ -21,10 +21,10 @@ public class BulbImpl implements Bulb {
 
   static final long OFFSET_AFTER_LAST_UPDATE = 4L;
 
-  private final DimmerItem colorTemperature;
+  private final DimmerItem colorTemperatureItem;
   private final BulbDefinition definition;
-  private final DimmerItem brightness;
-  private final SwitchItem onOff;
+  private final DimmerItem brightnessItem;
+  private final SwitchItem onOffItem;
   private final Logger logger;
 
   private Optional<PercentType> colorTemperatureBuffer;
@@ -34,19 +34,28 @@ public class BulbImpl implements Bulb {
   private Optional<OnOffType> onOffBuffer;
   private LocalDateTime updateTimestamp;
 
-  BulbImpl(
-    BulbDefinition definition, SwitchItem onOff, DimmerItem brightness, DimmerItem colorTemperature, Logger logger )
+  BulbImpl( BulbDefinition definition,
+            SwitchItem onOffItem,
+            DimmerItem brightnessItem,
+            DimmerItem colorTemperatureItem,
+            Logger logger )
   {
-    this.colorTemperature = colorTemperature;
+    verifyNotNull( colorTemperatureItem, "colorTemperatureItem" );
+    verifyNotNull( definition, "definitionItem" );
+    verifyNotNull( brightnessItem, "brightnessItem" );
+    verifyNotNull( onOffItem, "onOffItem" );
+    verifyNotNull( logger, "logger" );
+
+    this.colorTemperatureItem = colorTemperatureItem;
+    this.brightnessItem = brightnessItem;
     this.definition = definition;
-    this.brightness = brightness;
+    this.onOffItem = onOffItem;
     this.logger = logger;
-    this.onOff = onOff;
-    this.colorTemperatureBuffer = colorTemperature.getStatus();
-    this.colorTemperatureStatus = colorTemperature.getStatus();
-    this.brightnessBuffer = brightness.getStatus();
-    this.brightnessStatus = brightness.getStatus();
-    this.onOffBuffer = onOff.getStatus();
+    this.colorTemperatureBuffer = colorTemperatureItem.getStatus();
+    this.colorTemperatureStatus = colorTemperatureItem.getStatus();
+    this.brightnessBuffer = brightnessItem.getStatus();
+    this.brightnessStatus = brightnessItem.getStatus();
+    this.onOffBuffer = onOffItem.getStatus();
     setUpdateTimestamp( now() );
   }
 
@@ -59,18 +68,18 @@ public class BulbImpl implements Bulb {
   public void setOnOffStatus( OnOffType newOnOffStatus ) {
     verifyNotNull( newOnOffStatus, "newOnOffStatus" );
 
-    if( !onOff.getStatus().equals( Optional.of( newOnOffStatus ) ) ) {
+    if( !onOffItem.getStatus().equals( Optional.of( newOnOffStatus ) ) ) {
       onOffBuffer = Optional.of( newOnOffStatus );
-      onOff.updateStatus( newOnOffStatus );
+      onOffItem.updateStatus( newOnOffStatus );
       if( newOnOffStatus == ON && colorTemperatureStatus.isPresent() ) {
-        colorTemperature.updateStatus( colorTemperatureStatus.get() );
+        colorTemperatureItem.updateStatus( colorTemperatureStatus.get() );
         colorTemperatureBuffer = colorTemperatureStatus;
       }
       if( newOnOffStatus == ON && brightnessStatus.isPresent() ) {
-        brightness.updateStatus( brightnessStatus.get() );
+        brightnessItem.updateStatus( brightnessStatus.get() );
         brightnessBuffer = brightnessStatus;
       } else if( brightnessStatus.isPresent() ) {
-        brightness.updateStatus( PercentType.ZERO );
+        brightnessItem.updateStatus( PercentType.ZERO );
         brightnessBuffer = Optional.of( PercentType.ZERO );
       }
       setUpdateTimestamp( now() );
@@ -80,7 +89,7 @@ public class BulbImpl implements Bulb {
 
   @Override
   public Optional<OnOffType> getOnOffStatus() {
-    return onOff.getStatus();
+    return onOffItem.getStatus();
   }
 
   @Override
@@ -88,10 +97,10 @@ public class BulbImpl implements Bulb {
     verifyNotNull( newBrightness, "newBrightness" );
 
     brightnessStatus = Optional.of( newBrightness );
-    if(    onOff.getStatus().equals( Optional.of( ON ) )
-        && !brightness.getStatus().equals( Optional.of( newBrightness ) ) )
+    if(    onOffItem.getStatus().equals( Optional.of( ON ) )
+        && !brightnessItem.getStatus().equals( Optional.of( newBrightness ) ) )
     {
-      brightness.updateStatus( newBrightness );
+      brightnessItem.updateStatus( newBrightness );
       brightnessBuffer = Optional.of( newBrightness );
       setUpdateTimestamp( now() );
       logger.info( BULB_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
@@ -100,8 +109,8 @@ public class BulbImpl implements Bulb {
 
   @Override
   public Optional<PercentType> getBrightness() {
-    if( onOff.getStatus().equals( Optional.of( ON ) ) ) {
-      return brightness.getStatus();
+    if( onOffItem.getStatus().equals( Optional.of( ON ) ) ) {
+      return brightnessItem.getStatus();
     }
     return brightnessStatus;
   }
@@ -111,10 +120,10 @@ public class BulbImpl implements Bulb {
     verifyNotNull( newColorTemperature, "newColorTemperature" );
 
     colorTemperatureStatus = Optional.of( newColorTemperature );
-    if( onOff.getStatus().equals( Optional.of( ON ) )
-        && !colorTemperature.getStatus().equals( Optional.of( newColorTemperature ) ) )
+    if( onOffItem.getStatus().equals( Optional.of( ON ) )
+        && !colorTemperatureItem.getStatus().equals( Optional.of( newColorTemperature ) ) )
     {
-      colorTemperature.updateStatus( newColorTemperature );
+      colorTemperatureItem.updateStatus( newColorTemperature );
       colorTemperatureBuffer = Optional.of( newColorTemperature );
       setUpdateTimestamp( now() );
       logger.info( BULB_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
@@ -123,8 +132,8 @@ public class BulbImpl implements Bulb {
 
   @Override
   public Optional<PercentType> getColorTemperature() {
-    if( onOff.getStatus().equals( Optional.of( ON ) ) ) {
-      return colorTemperature.getStatus();
+    if( onOffItem.getStatus().equals( Optional.of( ON ) ) ) {
+      return colorTemperatureItem.getStatus();
     }
     return colorTemperatureStatus;
   }
@@ -133,26 +142,26 @@ public class BulbImpl implements Bulb {
   public String toString() {
     return format( BULB_TO_STRING_PATTERN,
                    getDefinition(),
-                   colorTemperature.getStatus(),
-                   brightness.getStatus(),
-                   onOff.getStatus() );
+                   colorTemperatureItem.getStatus(),
+                   brightnessItem.getStatus(),
+                   onOffItem.getStatus() );
   }
 
   public void ensure() {
     if(    updateTimestamp.plusSeconds( OFFSET_AFTER_LAST_UPDATE ).isBefore( now() )
-        && (    !colorTemperatureBuffer.equals( colorTemperature.getStatus() )
-             || !brightnessBuffer.equals( brightness.getStatus() )
-             || !onOffBuffer.equals( onOff.getStatus() ) ) )
+        && (    !colorTemperatureBuffer.equals( colorTemperatureItem.getStatus() )
+             || !brightnessBuffer.equals( brightnessItem.getStatus() )
+             || !onOffBuffer.equals( onOffItem.getStatus() ) ) )
     {
       logger.info( BULB_OUT_OF_SYNC_PATTERN, getDefinition(), createSyncStatus() );
       if( brightnessBuffer.isPresent() ) {
-        brightness.updateStatus( brightnessBuffer.get() );
+        brightnessItem.updateStatus( brightnessBuffer.get() );
       }
       if( colorTemperatureBuffer.isPresent() ) {
-        colorTemperature.updateStatus( colorTemperatureBuffer.get() );
+        colorTemperatureItem.updateStatus( colorTemperatureBuffer.get() );
       }
       onOffBuffer = Optional.of( ON );
-      onOff.updateStatus( ON );
+      onOffItem.updateStatus( ON );
     }
   }
 
@@ -163,8 +172,8 @@ public class BulbImpl implements Bulb {
   String createSyncStatus() {
     return format( BULB_TO_STRING_PATTERN,
                    "",
-                   colorTemperature.getStatus() + "/" + colorTemperatureBuffer,
-                   brightness.getStatus() + "/" + brightnessBuffer,
-                   onOff.getStatus() + "/" + onOffBuffer );
+                   colorTemperatureItem.getStatus() + "/" + colorTemperatureBuffer,
+                   brightnessItem.getStatus() + "/" + brightnessBuffer,
+                   onOffItem.getStatus() + "/" + onOffBuffer );
   }
 }

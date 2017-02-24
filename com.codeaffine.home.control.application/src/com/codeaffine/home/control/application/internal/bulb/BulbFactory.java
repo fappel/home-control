@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.application.internal.bulb;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.application.BulbProvider.Bulb;
 import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
@@ -18,12 +20,17 @@ public class BulbFactory implements EntityFactory<Bulb, BulbDefinition> {
   private final Registry registry;
 
   public BulbFactory( Registry registry, LoggerFactory loggerFactory ) {
-    this.registry = registry;
+    verifyNotNull( loggerFactory, "loggerFactory" );
+    verifyNotNull( registry, "registry" );
+
     this.loggerFactory = loggerFactory;
+    this.registry = registry;
   }
 
   @Override
   public Bulb create( BulbDefinition definition ) {
+    verifyNotNull( definition, "definition" );
+
     return new BulbImpl( definition,
                          registry.getItem( PREFIX_SWITCH + definition, SwitchItem.class ),
                          registry.getItem( PREFIX_BRIGHTNESS + definition, DimmerItem.class ),

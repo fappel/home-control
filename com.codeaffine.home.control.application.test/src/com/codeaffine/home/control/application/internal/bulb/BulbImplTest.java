@@ -408,6 +408,31 @@ public class BulbImplTest {
                           Optional.of( OFF) + "/" + Optional.of( ON ) ) );
   }
 
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsDefinitionArgument() {
+    new BulbImpl( null, onOffItem, brightnessItem, colorTemperatureItem, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsOnOffItemArgument() {
+    new BulbImpl( BathRoomCeiling, null, brightnessItem, colorTemperatureItem, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsBrightnessItemArgument() {
+    new BulbImpl( BathRoomCeiling, onOffItem, null, colorTemperatureItem, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsColorTemperatureItemArgument() {
+    new BulbImpl( BathRoomCeiling, onOffItem, brightnessItem, null, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsLoggerArgument() {
+    new BulbImpl( BathRoomCeiling, onOffItem, brightnessItem, colorTemperatureItem, null );
+  }
+
   private void stubOnOffItemWithStatusOn() {
     when( onOffItem.getStatus() ).thenReturn( Optional.of( ON ) );
   }
