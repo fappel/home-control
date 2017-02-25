@@ -29,8 +29,17 @@ class ControlCenter {
       Set<Bulb> on = collectBulbsToSwitchOn( zoneActivation );
       Collection<Bulb> bulbs = entityRegistry.findByDefinitionType( BulbDefinition.class );
       Set<Bulb> off = bulbs.stream().filter( bulb -> !on.contains( bulb ) ).collect( toSet() );
-      on.forEach( bulb -> { bulb.setBrightness( P_100 ); bulb.setOnOffStatus( ON ); } );
+      on.forEach( bulb -> bulb.setOnOffStatus( ON ) );
       off.forEach( bulb -> bulb.setOnOffStatus( OFF ) );
+    } );
+
+    event.getSource( Activity.class ).ifPresent( activity -> {
+      Collection<Bulb> bulbs = entityRegistry.findByDefinitionType( BulbDefinition.class );
+      if( activity.getActivityRate().compareTo( P_050 ) > 1 ) {
+        bulbs.forEach( bulb -> bulb.setBrightness( P_100 ) );
+      } else {
+        bulbs.forEach( bulb -> bulb.setBrightness( P_050 ) );
+      }
     } );
   }
 
