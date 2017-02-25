@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.internal.bulb;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;

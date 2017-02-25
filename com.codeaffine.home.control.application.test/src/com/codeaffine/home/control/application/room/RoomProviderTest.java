@@ -1,8 +1,8 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.room;
 
-import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.BathRoomCeiling;
-import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.BathRoom;
+import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.*;
+import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.BathRoom;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -13,10 +13,10 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
-import com.codeaffine.home.control.application.RoomProvider.Room;
-import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
+import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.room.RoomProvider.Room;
+import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomProviderTest {

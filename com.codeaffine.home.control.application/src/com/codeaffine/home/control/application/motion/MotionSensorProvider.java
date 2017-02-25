@@ -1,11 +1,11 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.motion;
 
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.internal.motion.MotionSensorFactory;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.ZoneProvider.Sensor;

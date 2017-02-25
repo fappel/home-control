@@ -1,13 +1,13 @@
 package com.codeaffine.home.control.application.internal.room;
 
-import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.BathRoom;
+import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.BathRoom;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.RoomProvider.Room;
+import com.codeaffine.home.control.application.room.RoomProvider.Room;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomFactoryTest {

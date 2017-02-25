@@ -2,9 +2,9 @@ package com.codeaffine.home.control.application.internal.room;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
-import com.codeaffine.home.control.application.RoomProvider.Room;
-import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
+import com.codeaffine.home.control.application.room.RoomProvider.Room;
+import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 
 public class RoomFactory implements EntityFactory<Room, RoomDefinition> {

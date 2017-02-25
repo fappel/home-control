@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.application.Event;
+import com.codeaffine.home.control.application.ZoneActivation;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
@@ -48,7 +49,7 @@ public class ZoneActivationImplTest {
 
     ArgumentCaptor<Event> captor = forClass( Event.class );
     verify( eventBus ).post( captor.capture() );
-    assertThat( captor.getValue().getSource() ).isSameAs( activation );
+    assertThat( captor.getValue().getSource( ZoneActivation.class ) ).hasValue( activation );
   }
 
   @Test

@@ -1,12 +1,12 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.room;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.stream.Stream;
 
-import com.codeaffine.home.control.application.RoomProvider.Room;
-import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.application.internal.room.RoomFactory;
+import com.codeaffine.home.control.application.room.RoomProvider.Room;
+import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;

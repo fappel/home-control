@@ -7,5 +7,4 @@ public interface SwitchItem
   extends AdjustableItem<SwitchItem, OnOffType>
 {
   OnOffType getStatus( OnOffType defaultValue );
-  void updateStatus( OnOffType status );
 }

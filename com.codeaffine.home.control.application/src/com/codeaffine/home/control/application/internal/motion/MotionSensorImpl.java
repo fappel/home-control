@@ -5,8 +5,8 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
 
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;

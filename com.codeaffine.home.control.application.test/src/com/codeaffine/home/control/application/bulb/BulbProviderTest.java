@@ -1,10 +1,10 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.bulb;
 
-import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.BathRoomCeiling;
+import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.internal.bulb.BulbItemHelper.*;
 import static com.codeaffine.home.control.application.test.LoggerHelper.stubLoggerFactory;
-import static com.codeaffine.home.control.type.OnOffType.*;
-import static com.codeaffine.home.control.type.PercentType.ZERO;
+import static com.codeaffine.home.control.application.type.OnOff.*;
+import static com.codeaffine.home.control.application.type.Percent.*;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -16,9 +16,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.internal.bulb.BulbImpl;
+import com.codeaffine.home.control.application.type.OnOff;
+import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.type.OnOffType;
@@ -26,8 +28,10 @@ import com.codeaffine.home.control.type.PercentType;
 
 public class BulbProviderTest {
 
-  private static final PercentType BRIGHTNESS = new PercentType( 20 );
-  private static final PercentType COLOR_TEMPERATUR = new PercentType( 10 );
+  private static final Percent BRIGHTNESS = P_020;
+  private static final Percent COLOR_TEMPERATUR = P_010;
+  private static final PercentType BRIGHTNESS_OF_ITEM = new PercentType( BRIGHTNESS.intValue() );
+  private static final PercentType COLOR_TEMPERATUR_OF_Item = new PercentType( COLOR_TEMPERATUR.intValue() );
 
   private DimmerItem colorTemperatureItem;
   private DimmerItem brightnessItem;
@@ -58,9 +62,9 @@ public class BulbProviderTest {
     bulb.setBrightness( BRIGHTNESS );
     bulb.setOnOffStatus( ON );
 
-    verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATUR );
-    verify( brightnessItem ).updateStatus( BRIGHTNESS );
-    verify( onOffItem ).updateStatus( ON );
+    verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATUR_OF_Item );
+    verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
+    verify( onOffItem ).updateStatus( OnOffType.ON );
     assertThat( bulb.getDefinition() ).isSameAs( BathRoomCeiling );
   }
 
@@ -80,9 +84,9 @@ public class BulbProviderTest {
 
     provider.ensureBulbStates();
 
-    verify( onOffItem, times( provider.findAll().size() ) ).updateStatus( ON );
-    verify( brightnessItem, times( provider.findAll().size() ) ).updateStatus( ZERO );
-    verify( colorTemperatureItem, atLeast( 1 ) /* same item for all bulbs */ ).updateStatus( COLOR_TEMPERATUR );
+    verify( onOffItem, times( provider.findAll().size() ) ).updateStatus( OnOffType.ON );
+    verify( brightnessItem, times( provider.findAll().size() ) ).updateStatus( PercentType.ZERO );
+    verify( colorTemperatureItem, atLeast( 1 ) /* same item for all bulbs */ ).updateStatus( COLOR_TEMPERATUR_OF_Item );
   }
 
   @Test
@@ -91,15 +95,15 @@ public class BulbProviderTest {
 
     provider.ensureBulbStates();
 
-    verify( onOffItem, never() ).setStatus( ON );
-    verify( brightnessItem, never() ).setStatus( BRIGHTNESS );
-    verify( colorTemperatureItem, never() ).setStatus( COLOR_TEMPERATUR );
+    verify( onOffItem, never() ).setStatus( OnOffType.ON );
+    verify( brightnessItem, never() ).setStatus( BRIGHTNESS_OF_ITEM );
+    verify( colorTemperatureItem, never() ).setStatus( COLOR_TEMPERATUR_OF_Item );
   }
 
   private static void setStatus(
-    Bulb bulb, OnOffType switchStatus, PercentType brightness, PercentType colorTemperatur )
+    Bulb bulb, OnOff switchStatus, Percent brightness, Percent colorTemperatur )
   {
-    bulb.setOnOffStatus( ON );
+    bulb.setOnOffStatus( OnOff.ON );
     bulb.setColorTemperature( colorTemperatur );
     bulb.setBrightness( brightness );
     bulb.setOnOffStatus( switchStatus );

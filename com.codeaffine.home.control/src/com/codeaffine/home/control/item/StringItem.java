@@ -10,6 +10,5 @@ public interface StringItem
 
   void setStatus( String status );
 
-  void updateStatus( StringType status );
   void updateStatus( String status );
 }

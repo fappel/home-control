@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.internal.motion;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;

@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.bulb;
 
-import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.BathRoomCeiling;
+import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.internal.bulb.BulbItemHelper.*;
 import static com.codeaffine.home.control.application.test.LoggerHelper.stubLoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.type.OnOff;
+import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
@@ -33,9 +35,9 @@ public class BulbFactoryTest {
     Bulb bulb = bulbFactory.create( BathRoomCeiling );
 
     assertThat( bulb.getDefinition() ).isSameAs( BathRoomCeiling );
-    assertThat( bulb.getOnOffStatus() ).isNotPresent();
-    assertThat( bulb.getBrightness() ).isNotPresent();
-    assertThat( bulb.getColorTemperature() ).isNotPresent();
+    assertThat( bulb.getOnOffStatus() ).isSameAs( OnOff.OFF );
+    assertThat( bulb.getBrightness() ).isSameAs( Percent.P_100 );
+    assertThat( bulb.getColorTemperature() ).isSameAs( Percent.P_000 );
     assertThat( bulb.getDefinition() ).isSameAs( BathRoomCeiling );
   }
 

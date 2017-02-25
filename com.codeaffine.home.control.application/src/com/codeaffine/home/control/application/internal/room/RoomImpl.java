@@ -4,10 +4,10 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Collection;
 
-import com.codeaffine.home.control.application.RoomProvider.Room;
-import com.codeaffine.home.control.application.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.application.room.RoomProvider.Room;
+import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationResolver;
 

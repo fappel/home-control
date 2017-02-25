@@ -1,16 +1,19 @@
 package com.codeaffine.home.control.application;
 
-import static com.codeaffine.home.control.application.BulbProvider.BulbDefinition.*;
-import static com.codeaffine.home.control.application.MotionSensorProvider.MotionSensorDefinition.*;
-import static com.codeaffine.home.control.application.RoomProvider.RoomDefinition.*;
+import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.*;
+import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.*;
+import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.application.bulb.BulbProvider;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider;
+import com.codeaffine.home.control.application.room.RoomProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 
@@ -46,7 +49,7 @@ public class Configuration implements SystemConfiguration {
       .link( Kitchen, BathRoom );
 
     context.set( ZoneActivation.class, context.create( ZoneActivationImpl.class ) );
-    context.set( ActivityRate.class, context.create( ActivityRate.class ) );
+    context.set( Activity.class, context.create( Activity.class ) );
     context.set( ControlCenter.class, context.create( ControlCenter.class ) );
   }
 }

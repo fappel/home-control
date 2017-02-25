@@ -1,21 +1,20 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.bulb;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
+import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.internal.bulb.BulbFactory;
 import com.codeaffine.home.control.application.internal.bulb.BulbImpl;
+import com.codeaffine.home.control.application.type.OnOff;
+import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.logger.LoggerFactory;
-import com.codeaffine.home.control.type.OnOffType;
-import com.codeaffine.home.control.type.PercentType;
 
 public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
 
@@ -25,12 +24,12 @@ public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
   };
 
   public interface Bulb extends Entity<BulbDefinition> {
-    void setOnOffStatus( OnOffType onOffStatus );
-    Optional<OnOffType> getOnOffStatus();
-    void setBrightness( PercentType percent );
-    Optional<PercentType> getBrightness();
-    void setColorTemperature( PercentType percent );
-    Optional<PercentType> getColorTemperature();
+    void setOnOffStatus( OnOff onOffStatus );
+    OnOff getOnOffStatus();
+    void setBrightness( Percent brightness );
+    Percent getBrightness();
+    void setColorTemperature( Percent colorTemperature );
+    Percent getColorTemperature();
   }
 
   public BulbProvider( Registry registry, LoggerFactory loggerFactory ) {
@@ -39,7 +38,7 @@ public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
 
   @Schedule( period = 2 )
   void ensureBulbStates() {
-    forEachBulbDefintion( definition -> ( ( BulbImpl )findByDefinition( definition ) ).ensure() );
+    forEachBulbDefintion( definition -> ( ( BulbImpl )findByDefinition( definition ) ).ensureStatusIntegrity() );
   }
 
   @Override
