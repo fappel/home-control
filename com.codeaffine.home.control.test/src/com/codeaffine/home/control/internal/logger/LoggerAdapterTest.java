@@ -1,6 +1,8 @@
 package com.codeaffine.home.control.internal.logger;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
@@ -12,10 +14,12 @@ public class LoggerAdapterTest {
 
   private static final Throwable THROWABLE = new Throwable();
   private static final String MESSAGE = "message";
-  private static final String PATTERN = "pattern";
-  private static final Object ARG1 = new Object();
-  private static final Object ARG2 = new Object();
-  private static final Object ARG3 = new Object();
+  private static final String PATTERN_FOR_1_ARG = "pattern %s";
+  private static final String PATTERN_FOR_2_ARGS = "pattern %s, %s";
+  private static final String PATTERN_FOR_3_ARGS = "pattern %s, %s, %s";
+  private static final Object ARG1 = "ARG1";
+  private static final Object ARG2 = "ARG2";
+  private static final Object ARG3 = "ARG3";
   private static final String NAME = "name";
 
   private LoggerAdapter logger;
@@ -28,7 +32,7 @@ public class LoggerAdapterTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void LoggerAdapterWitnNullArgument() {
+  public void constructLoggerAdapterWithNullAsDelegateArgument() {
     new LoggerAdapter( null );
   }
 
@@ -41,23 +45,50 @@ public class LoggerAdapterTest {
 
   @Test
   public void warnWithPatternAndTwoArguments() {
-    logger.warn( PATTERN, ARG1, ARG2 );
+    stubAsWarnEnabled();
 
-    verify( delegate ).warn( PATTERN, ARG1, ARG2 );
+    logger.warn( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate ).warn( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+  }
+
+  @Test
+  public void warnWithPatternAndTwoArgumentsButWarnLevelDisabled() {
+    logger.warn( PATTERN_FOR_1_ARG, ARG1, ARG2 );
+
+    verify( delegate, never() ).warn( anyString() );
   }
 
   @Test
   public void warnWithPatternAndArgumentArray() {
-    logger.warn( PATTERN, ARG1, ARG2, ARG3 );
+    stubAsWarnEnabled();
 
-    verify( delegate ).warn( PATTERN, ARG1, ARG2, ARG3 );
+    logger.warn( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate ).warn( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+  }
+
+  @Test
+  public void warnWithPatternAndArgumentArrayButWarnLevelDisabled() {
+    logger.warn( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate, never() ).warn( anyString() );
   }
 
   @Test
   public void warnWithPatternAndArgument() {
-    logger.warn( PATTERN, ARG1 );
+    stubAsWarnEnabled();
 
-    verify( delegate ).warn( PATTERN, ARG1 );
+    logger.warn( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate ).warn( format( PATTERN_FOR_1_ARG, ARG1 ) );
+  }
+
+  @Test
+  public void warnWithPatternAndArgumentButWarnLevelDisabled() {
+    logger.warn( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate, never() ).warn( anyString() );
   }
 
   @Test
@@ -76,23 +107,50 @@ public class LoggerAdapterTest {
 
   @Test
   public void traceWithPatternAndArgumentArray() {
-    logger.trace( PATTERN, ARG1, ARG2, ARG3 );
+    stubAsTraceEnabled();
 
-    verify( delegate ).trace( PATTERN, ARG1, ARG2, ARG3 );
+    logger.trace( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate ).trace( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+  }
+
+  @Test
+  public void traceWithPatternAndArgumentArrayButTraceLevelDisabled() {
+    logger.trace( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate, never() ).trace( anyString() );
   }
 
   @Test
   public void traceWithPatterAndTwoArguments() {
-    logger.trace( PATTERN, ARG1, ARG2 );
+    stubAsTraceEnabled();
 
-    verify( delegate ).trace( PATTERN, ARG1, ARG2 );
+    logger.trace( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate ).trace( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+  }
+
+  @Test
+  public void traceWithPatterAndTwoArgumentsButTraceLevelDisabled() {
+    logger.trace( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate, never() ).trace( anyString() );
   }
 
   @Test
   public void traceWithPatternAndOneArgument() {
-    logger.trace( PATTERN, ARG1 );
+    stubAsTraceEnabled();
 
-    verify( delegate ).trace( PATTERN, ARG1 );
+    logger.trace( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate ).trace( format( PATTERN_FOR_1_ARG, ARG1 ) );
+  }
+
+  @Test
+  public void traceWithPatternAndOneArgumentButTraceLevelDisabled() {
+    logger.trace( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate, never() ).trace( anyString() );
   }
 
   @Test
@@ -156,23 +214,50 @@ public class LoggerAdapterTest {
 
   @Test
   public void infoWithPatternAndArgumentArray() {
-    logger.info( PATTERN, ARG1, ARG2, ARG3 );
+    stubAsInfoEnabled();
 
-    verify( delegate ).info( PATTERN, ARG1, ARG2, ARG3 );
+    logger.info( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate ).info( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+  }
+
+  @Test
+  public void infoWithPatternAndArgumentArrayButInfoLevelDisabled() {
+    logger.info( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate, never() ).info( anyString() );
   }
 
   @Test
   public void infoWithPatternAndTwoArguments() {
-    logger.info( PATTERN, ARG1, ARG2 );
+    stubAsInfoEnabled();
 
-    verify( delegate ).info( PATTERN, ARG1, ARG2 );
+    logger.info( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate ).info( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+  }
+
+  @Test
+  public void infoWithPatternAndTwoArgumentsButInfoLevelDisabled() {
+    logger.info( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate, never() ).info( anyString() );
   }
 
   @Test
   public void infoWithPatternAndArgument() {
-    logger.info( PATTERN, ARG1 );
+    stubAsInfoEnabled();
 
-    verify( delegate ).info( PATTERN, ARG1 );
+    logger.info( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate ).info( format( PATTERN_FOR_1_ARG, ARG1 ) );
+  }
+
+  @Test
+  public void infoWithPatternAndArgumentButInfoLevelDisabled() {
+    logger.info( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate, never() ).info( anyString() );
   }
 
   @Test
@@ -200,23 +285,50 @@ public class LoggerAdapterTest {
 
   @Test
   public void errorWithPatternAndObjectArray() {
-    logger.error( PATTERN, ARG1, ARG2, ARG3 );
+    stubAsErrorEnabled();
 
-    verify( delegate ).error( PATTERN, ARG1, ARG2, ARG3 );
+    logger.error( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate ).error( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+  }
+
+  @Test
+  public void errorWithPatternAndObjectArrayButErrorLevelDisabled() {
+    logger.error( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate, never() ).error( anyString() );
   }
 
   @Test
   public void errorWithPatternAndTwoArguments() {
-    logger.error( PATTERN, ARG1, ARG2 );
+    stubAsErrorEnabled();
 
-    verify( delegate ).error( PATTERN, ARG1, ARG2 );
+    logger.error( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate ).error( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+  }
+
+  @Test
+  public void errorWithPatternAndTwoArgumentsButErrorLevelDisabled() {
+    logger.error( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate, never() ).error( anyString() );
   }
 
   @Test
   public void errorWithPatternAndArgument() {
-    logger.error( PATTERN, ARG1 );
+    stubAsErrorEnabled();
 
-    verify( delegate ).error( PATTERN, ARG1 );
+    logger.error( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate ).error( format( PATTERN_FOR_1_ARG, ARG1 ) );
+  }
+
+  @Test
+  public void errorWithPatternAndArgumentButErrorLevelDisabled() {
+    logger.error( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate, never() ).error( anyString() );
   }
 
   @Test
@@ -235,23 +347,50 @@ public class LoggerAdapterTest {
 
   @Test
   public void debugWithPatternAndArgumentArray() {
-    logger.debug( PATTERN, ARG1, ARG2, ARG3 );
+    stubAsDebugEnabled();
 
-    verify( delegate ).debug( PATTERN, ARG1, ARG2, ARG3 );
+    logger.debug( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate ).debug( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+  }
+
+  @Test
+  public void debugWithPatternAndArgumentArrayButDebugLevelDisabled() {
+    logger.debug( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+
+    verify( delegate, never() ).debug( anyString() );
   }
 
   @Test
   public void debugWithPatternAndTwoArguments() {
-    logger.debug( PATTERN, ARG1, ARG2 );
+    stubAsDebugEnabled();
 
-    verify( delegate ).debug( PATTERN, ARG1, ARG2 );
+    logger.debug( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate ).debug( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+  }
+
+  @Test
+  public void debugWithPatternAndTwoArgumentsButDebugLevelDisabled() {
+    logger.debug( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+
+    verify( delegate, never() ).debug( anyString() );
   }
 
   @Test
   public void debugWithPatternAndArgument() {
-    logger.debug( PATTERN, ARG1 );
+    stubAsDebugEnabled();
 
-    verify( delegate ).debug( PATTERN, ARG1 );
+    logger.debug( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate ).debug( format( PATTERN_FOR_1_ARG, ARG1 ) );
+  }
+
+  @Test
+  public void debugWithPatternAndArgumentButDebugLevelDisabled() {
+    logger.debug( PATTERN_FOR_1_ARG, ARG1 );
+
+    verify( delegate, never() ).debug( anyString() );
   }
 
   @Test
@@ -259,5 +398,25 @@ public class LoggerAdapterTest {
     logger.debug( MESSAGE );
 
     verify( delegate ).debug( MESSAGE );
+  }
+
+  private void stubAsWarnEnabled() {
+    when( delegate.isWarnEnabled() ).thenReturn( true );
+  }
+
+  private void stubAsTraceEnabled() {
+    when( delegate.isTraceEnabled() ).thenReturn( true );
+  }
+
+  private void stubAsInfoEnabled() {
+    when( delegate.isInfoEnabled() ).thenReturn( true );
+  }
+
+  private void stubAsErrorEnabled() {
+    when( delegate.isErrorEnabled() ).thenReturn( true );
+  }
+
+  private void stubAsDebugEnabled() {
+    when( delegate.isDebugEnabled() ).thenReturn( true );
   }
 }

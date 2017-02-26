@@ -1,7 +1,6 @@
 package com.codeaffine.home.control.internal.activation;
 
 import static com.codeaffine.home.control.internal.activation.Messages.*;
-import static java.lang.String.format;
 
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
@@ -27,7 +26,7 @@ class SystemLifeCycle {
 
   void start( SystemConfiguration configuration ) {
     systemWiring.initialize( configuration );
-    logger.info( format( INFO_SYSTEM_CONFIGURATION_LOADED, configuration.getClass().getName() ) );
+    logger.info( INFO_SYSTEM_CONFIGURATION_LOADED, configuration.getClass().getName() );
   }
 
   void stop( SystemConfiguration configuration ) {
@@ -43,7 +42,7 @@ class SystemLifeCycle {
     shutdownDispatcher.dispatch();
     configurationStopCommand.run();
     if( configuration != null ) {
-      logger.info( format( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() ) );
+      logger.info( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() );
     }
   }
 }

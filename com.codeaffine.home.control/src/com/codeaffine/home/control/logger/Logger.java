@@ -25,7 +25,7 @@ public interface Logger {
   void trace( String msg );
 
   /**
-   * Log a message at the TRACE level according to the specified format and
+   * Log a message at the TRACE level according to the specified pattern and
    * argument.
    * <p/>
    * <p>
@@ -33,13 +33,13 @@ public interface Logger {
    * for the TRACE level.
    * </p>
    *
-   * @param format the format string
-   * @param arg the argument
+   * @param pattern a string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg the argument referenced by the format specifiers in the pattern string
    */
-  void trace( String format, Object arg );
+  void trace( String pattern, Object arg );
 
   /**
-   * Log a message at the TRACE level according to the specified format and
+   * Log a message at the TRACE level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -47,14 +47,14 @@ public interface Logger {
    * for the TRACE level.
    * </p>
    *
-   * @param format the format string
-   * @param arg1 the first argument
-   * @param arg2 the second argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg1 the first argument referenced by the format specifiers in the pattern string
+   * @param arg2 the second argument referenced by the format specifiers in the pattern string
    */
-  void trace( String format, Object arg1, Object arg2 );
+  void trace( String pattern, Object arg1, Object arg2 );
 
   /**
-   * Log a message at the TRACE level according to the specified format and
+   * Log a message at the TRACE level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -67,10 +67,10 @@ public interface Logger {
    * order to avoid this hidden cost.
    * </p>
    *
-   * @param format the format string
-   * @param arguments a list of 3 or more arguments
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arguments a list of 3 or more arguments referenced by the format specifiers in the pattern string
    */
-  void trace( String format, Object... arguments );
+  void trace( String pattern, Object... arguments );
 
   /**
    * Log an exception (throwable) at the TRACE level with an accompanying
@@ -97,7 +97,7 @@ public interface Logger {
   void debug( String msg );
 
   /**
-   * Log a message at the DEBUG level according to the specified format and
+   * Log a message at the DEBUG level according to the specified pattern and
    * argument.
    * <p/>
    * <p>
@@ -105,13 +105,13 @@ public interface Logger {
    * for the DEBUG level.
    * </p>
    *
-   * @param format the format string
-   * @param arg the argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization.
+   * @param arg the argument referenced by the format specifiers in the pattern string
    */
-  void debug( String format, Object arg );
+  void debug( String pattern, Object arg );
 
   /**
-   * Log a message at the DEBUG level according to the specified format and
+   * Log a message at the DEBUG level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -119,14 +119,14 @@ public interface Logger {
    * for the DEBUG level.
    * </p>
    *
-   * @param format the format string
-   * @param arg1 the first argument
-   * @param arg2 the second argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg1 the first argument referenced by the format specifiers in the pattern string
+   * @param arg2 the second argument referenced by the format specifiers in the pattern string
    */
-  void debug( String format, Object arg1, Object arg2 );
+  void debug( String pattern, Object arg1, Object arg2 );
 
   /**
-   * Log a message at the DEBUG level according to the specified format and
+   * Log a message at the DEBUG level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -139,10 +139,10 @@ public interface Logger {
    * order to avoid this hidden cost.
    * </p>
    *
-   * @param format the format string
-   * @param arguments a list of 3 or more arguments
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arguments a list of 3 or more arguments referenced by the format specifiers in the pattern string
    */
-  void debug( String format, Object... arguments );
+  void debug( String pattern, Object... arguments );
 
   /**
    * Log an exception (throwable) at the DEBUG level with an accompanying
@@ -169,7 +169,7 @@ public interface Logger {
   void info( String msg );
 
   /**
-   * Log a message at the INFO level according to the specified format and
+   * Log a message at the INFO level according to the specified pattern and
    * argument.
    * <p/>
    * <p>
@@ -177,13 +177,13 @@ public interface Logger {
    * for the INFO level.
    * </p>
    *
-   * @param format the format string
-   * @param arg the argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg the argument referenced by the format specifiers in the pattern string
    */
-  void info( String format, Object arg );
+  void info( String pattern, Object arg );
 
   /**
-   * Log a message at the INFO level according to the specified format and
+   * Log a message at the INFO level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -191,14 +191,14 @@ public interface Logger {
    * for the INFO level.
    * </p>
    *
-   * @param format the format string
-   * @param arg1 the first argument
-   * @param arg2 the second argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg1 the first argument referenced by the format specifiers in the pattern string
+   * @param arg2 the second argument referenced by the format specifiers in the pattern string
    */
-  void info( String format, Object arg1, Object arg2 );
+  void info( String pattern, Object arg1, Object arg2 );
 
   /**
-   * Log a message at the INFO level according to the specified format and
+   * Log a message at the INFO level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -211,10 +211,10 @@ public interface Logger {
    * to avoid this hidden cost.
    * </p>
    *
-   * @param format the format string
-   * @param arguments a list of 3 or more arguments
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arguments a list of 3 or more arguments referenced by the format specifiers in the pattern string
    */
-  void info( String format, Object... arguments );
+  void info( String pattern, Object... arguments );
 
   /**
    * Log an exception (throwable) at the INFO level with an accompanying
@@ -241,7 +241,7 @@ public interface Logger {
   void warn( String msg );
 
   /**
-   * Log a message at the WARN level according to the specified format and
+   * Log a message at the WARN level according to the specified pattern and
    * argument.
    * <p/>
    * <p>
@@ -249,13 +249,13 @@ public interface Logger {
    * for the WARN level.
    * </p>
    *
-   * @param format the format string
-   * @param arg the argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg the argument referenced by the format specifiers in the pattern string
    */
-  void warn( String format, Object arg );
+  void warn( String pattern, Object arg );
 
   /**
-   * Log a message at the WARN level according to the specified format and
+   * Log a message at the WARN level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -268,13 +268,13 @@ public interface Logger {
    * to avoid this hidden cost.
    * </p>
    *
-   * @param format the format string
-   * @param arguments a list of 3 or more arguments
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arguments a list of 3 or more arguments referenced by the format specifiers in the pattern string
    */
-  void warn( String format, Object... arguments );
+  void warn( String pattern, Object... arguments );
 
   /**
-   * Log a message at the WARN level according to the specified format and
+   * Log a message at the WARN level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -282,11 +282,11 @@ public interface Logger {
    * for the WARN level.
    * </p>
    *
-   * @param format the format string
-   * @param arg1 the first argument
-   * @param arg2 the second argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg1 the first argument referenced by the format specifiers in the pattern string
+   * @param arg2 the second argument referenced by the format specifiers in the pattern string
    */
-  void warn( String format, Object arg1, Object arg2 );
+  void warn( String pattern, Object arg1, Object arg2 );
 
   /**
    * Log an exception (throwable) at the WARN level with an accompanying
@@ -313,7 +313,7 @@ public interface Logger {
   void error( String msg );
 
   /**
-   * Log a message at the ERROR level according to the specified format and
+   * Log a message at the ERROR level according to the specified pattern and
    * argument.
    * <p/>
    * <p>
@@ -321,13 +321,13 @@ public interface Logger {
    * for the ERROR level.
    * </p>
    *
-   * @param format the format string
-   * @param arg the argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg the argument referenced by the format specifiers in the pattern string
    */
-  void error( String format, Object arg );
+  void error( String pattern, Object arg );
 
   /**
-   * Log a message at the ERROR level according to the specified format and
+   * Log a message at the ERROR level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -335,14 +335,14 @@ public interface Logger {
    * for the ERROR level.
    * </p>
    *
-   * @param format the format string
-   * @param arg1 the first argument
-   * @param arg2 the second argument
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arg1 the first argument referenced by the format specifiers in the pattern string
+   * @param arg2 the second argument referenced by the format specifiers in the pattern string
    */
-  void error( String format, Object arg1, Object arg2 );
+  void error( String pattern, Object arg1, Object arg2 );
 
   /**
-   * Log a message at the ERROR level according to the specified format and
+   * Log a message at the ERROR level according to the specified pattern and
    * arguments.
    * <p/>
    * <p>
@@ -355,10 +355,10 @@ public interface Logger {
    * order to avoid this hidden cost.
    * </p>
    *
-   * @param format the format string
-   * @param arguments a list of 3 or more arguments
+   * @param A string that follows the formatting rules used by {@link Formatter#format(String, Object...)} ignoring localization}.
+   * @param arguments a list of 3 or more arguments referenced by the format specifiers in the pattern string
    */
-  void error( String format, Object... arguments );
+  void error( String pattern, Object... arguments );
 
   /**
    * Log an exception (throwable) at the ERROR level with an accompanying
