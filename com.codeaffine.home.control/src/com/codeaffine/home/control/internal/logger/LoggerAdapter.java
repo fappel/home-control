@@ -10,12 +10,10 @@ import com.codeaffine.home.control.logger.Logger;
 class LoggerAdapter implements Logger {
 
   private final org.slf4j.Logger logger;
-  private final Formatter formatter;
 
   public LoggerAdapter( org.slf4j.Logger logger ) {
     verifyNotNull( logger, "logger" );
 
-    this.formatter = new Formatter( ( Locale )null );
     this.logger = logger;
   }
 
@@ -27,21 +25,21 @@ class LoggerAdapter implements Logger {
   @Override
   public void warn( String pattern, Object arg1, Object arg2 ) {
     if( logger.isWarnEnabled() ) {
-      logger.warn( formatter.format( pattern, arg1, arg2 ).toString() );
+      logger.warn( newFormatter().format( pattern, arg1, arg2 ).toString() );
     }
   }
 
   @Override
   public void warn( String pattern, Object... arguments ) {
     if( logger.isWarnEnabled() ) {
-      logger.warn( formatter.format( pattern, arguments ).toString() );
+      logger.warn( newFormatter().format( pattern, arguments ).toString() );
     }
   }
 
   @Override
   public void warn( String pattern, Object arg ) {
     if( logger.isWarnEnabled() ) {
-      logger.warn( formatter.format( pattern, arg ).toString() );
+      logger.warn( newFormatter().format( pattern, arg ).toString() );
     }
   }
 
@@ -58,21 +56,21 @@ class LoggerAdapter implements Logger {
   @Override
   public void trace( String pattern, Object... arguments ) {
     if( logger.isTraceEnabled() ) {
-      logger.trace( formatter.format( pattern, arguments ).toString() );
+      logger.trace( newFormatter().format( pattern, arguments ).toString() );
     }
   }
 
   @Override
   public void trace( String pattern, Object arg1, Object arg2 ) {
     if( logger.isTraceEnabled() ) {
-      logger.trace( formatter.format( pattern, arg1, arg2 ).toString() );
+      logger.trace( newFormatter().format( pattern, arg1, arg2 ).toString() );
     }
   }
 
   @Override
   public void trace( String pattern, Object arg ) {
     if( logger.isTraceEnabled() ) {
-      logger.trace( formatter.format( pattern, arg ).toString() );
+      logger.trace( newFormatter().format( pattern, arg ).toString() );
     }
   }
 
@@ -114,21 +112,21 @@ class LoggerAdapter implements Logger {
   @Override
   public void info( String pattern, Object... arguments ) {
     if( logger.isInfoEnabled() ) {
-      logger.info( formatter.format( pattern, arguments ).toString() );
+      logger.info( newFormatter().format( pattern, arguments ).toString() );
     }
   }
 
   @Override
   public void info( String pattern, Object arg1, Object arg2 ) {
     if( logger.isInfoEnabled() ) {
-      logger.info( formatter.format( pattern, arg1, arg2 ).toString() );
+      logger.info( newFormatter().format( pattern, arg1, arg2 ).toString() );
     }
   }
 
   @Override
   public void info( String pattern, Object arg ) {
     if( logger.isInfoEnabled() ) {
-      logger.info( formatter.format( pattern, arg ).toString() );
+      logger.info( newFormatter().format( pattern, arg ).toString() );
     }
   }
 
@@ -150,21 +148,21 @@ class LoggerAdapter implements Logger {
   @Override
   public void error( String pattern, Object... arguments ) {
     if( logger.isErrorEnabled() ) {
-      logger.error( formatter.format( pattern, arguments ).toString() );
+      logger.error( newFormatter().format( pattern, arguments ).toString() );
     }
   }
 
   @Override
   public void error( String pattern, Object arg1, Object arg2 ) {
     if( logger.isErrorEnabled() ) {
-      logger.error( formatter.format( pattern, arg1, arg2 ).toString() );
+      logger.error( newFormatter().format( pattern, arg1, arg2 ).toString() );
     }
   }
 
   @Override
   public void error( String pattern, Object arg ) {
     if( logger.isErrorEnabled() ) {
-      logger.error( formatter.format( pattern, arg ).toString() );
+      logger.error( newFormatter().format( pattern, arg ).toString() );
     }
   }
 
@@ -181,26 +179,30 @@ class LoggerAdapter implements Logger {
   @Override
   public void debug( String pattern, Object... arguments ) {
     if( logger.isDebugEnabled() ) {
-      logger.debug( formatter.format( pattern, arguments ).toString() );
+      logger.debug( newFormatter().format( pattern, arguments ).toString() );
     }
   }
 
   @Override
   public void debug( String pattern, Object arg1, Object arg2 ) {
     if( logger.isDebugEnabled() ) {
-      logger.debug( formatter.format( pattern, arg1, arg2 ).toString() );
+      logger.debug( newFormatter().format( pattern, arg1, arg2 ).toString() );
     }
   }
 
   @Override
   public void debug( String pattern, Object arg ) {
     if( logger.isDebugEnabled() ) {
-      logger.debug( formatter.format( pattern, arg ).toString() );
+      logger.debug( newFormatter().format( pattern, arg ).toString() );
     }
   }
 
   @Override
   public void debug( String msg ) {
     logger.debug( msg );
+  }
+
+  private static Formatter newFormatter() {
+    return new Formatter( ( Locale )null );
   }
 }

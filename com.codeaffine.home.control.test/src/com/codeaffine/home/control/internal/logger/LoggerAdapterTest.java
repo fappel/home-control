@@ -48,8 +48,9 @@ public class LoggerAdapterTest {
     stubAsWarnEnabled();
 
     logger.warn( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+    logger.warn( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
 
-    verify( delegate ).warn( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+    verify( delegate, times( 2 ) ).warn( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
   }
 
   @Test
@@ -64,8 +65,9 @@ public class LoggerAdapterTest {
     stubAsWarnEnabled();
 
     logger.warn( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+    logger.warn( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
 
-    verify( delegate ).warn( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+    verify( delegate, times( 2 ) ).warn( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
   }
 
   @Test
@@ -80,8 +82,9 @@ public class LoggerAdapterTest {
     stubAsWarnEnabled();
 
     logger.warn( PATTERN_FOR_1_ARG, ARG1 );
+    logger.warn( PATTERN_FOR_1_ARG, ARG1 );
 
-    verify( delegate ).warn( format( PATTERN_FOR_1_ARG, ARG1 ) );
+    verify( delegate, times( 2 ) ).warn( format( PATTERN_FOR_1_ARG, ARG1 ) );
   }
 
   @Test
@@ -110,8 +113,9 @@ public class LoggerAdapterTest {
     stubAsTraceEnabled();
 
     logger.trace( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+    logger.trace( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
 
-    verify( delegate ).trace( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+    verify( delegate, times( 2 ) ).trace( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
   }
 
   @Test
@@ -126,8 +130,9 @@ public class LoggerAdapterTest {
     stubAsTraceEnabled();
 
     logger.trace( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+    logger.trace( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
 
-    verify( delegate ).trace( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+    verify( delegate, times( 2 ) ).trace( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
   }
 
   @Test
@@ -142,8 +147,9 @@ public class LoggerAdapterTest {
     stubAsTraceEnabled();
 
     logger.trace( PATTERN_FOR_1_ARG, ARG1 );
+    logger.trace( PATTERN_FOR_1_ARG, ARG1 );
 
-    verify( delegate ).trace( format( PATTERN_FOR_1_ARG, ARG1 ) );
+    verify( delegate, times( 2 ) ).trace( format( PATTERN_FOR_1_ARG, ARG1 ) );
   }
 
   @Test
@@ -217,8 +223,9 @@ public class LoggerAdapterTest {
     stubAsInfoEnabled();
 
     logger.info( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+    logger.info( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
 
-    verify( delegate ).info( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+    verify( delegate, times( 2 ) ).info( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
   }
 
   @Test
@@ -233,8 +240,9 @@ public class LoggerAdapterTest {
     stubAsInfoEnabled();
 
     logger.info( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+    logger.info( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
 
-    verify( delegate ).info( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+    verify( delegate, times( 2 ) ).info( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
   }
 
   @Test
@@ -249,8 +257,9 @@ public class LoggerAdapterTest {
     stubAsInfoEnabled();
 
     logger.info( PATTERN_FOR_1_ARG, ARG1 );
+    logger.info( PATTERN_FOR_1_ARG, ARG1 );
 
-    verify( delegate ).info( format( PATTERN_FOR_1_ARG, ARG1 ) );
+    verify( delegate, times( 2 ) ).info( format( PATTERN_FOR_1_ARG, ARG1 ) );
   }
 
   @Test
@@ -288,8 +297,9 @@ public class LoggerAdapterTest {
     stubAsErrorEnabled();
 
     logger.error( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+    logger.error( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
 
-    verify( delegate ).error( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+    verify( delegate, times( 2 ) ).error( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
   }
 
   @Test
@@ -304,8 +314,9 @@ public class LoggerAdapterTest {
     stubAsErrorEnabled();
 
     logger.error( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+    logger.error( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
 
-    verify( delegate ).error( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+    verify( delegate, times( 2 ) ).error( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
   }
 
   @Test
@@ -320,8 +331,9 @@ public class LoggerAdapterTest {
     stubAsErrorEnabled();
 
     logger.error( PATTERN_FOR_1_ARG, ARG1 );
+    logger.error( PATTERN_FOR_1_ARG, ARG1 );
 
-    verify( delegate ).error( format( PATTERN_FOR_1_ARG, ARG1 ) );
+    verify( delegate, times( 2 ) ).error( format( PATTERN_FOR_1_ARG, ARG1 ) );
   }
 
   @Test
@@ -350,8 +362,9 @@ public class LoggerAdapterTest {
     stubAsDebugEnabled();
 
     logger.debug( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
+    logger.debug( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 );
 
-    verify( delegate ).debug( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
+    verify( delegate, times( 2 ) ).debug( format( PATTERN_FOR_3_ARGS, ARG1, ARG2, ARG3 ) );
   }
 
   @Test
@@ -366,8 +379,9 @@ public class LoggerAdapterTest {
     stubAsDebugEnabled();
 
     logger.debug( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
+    logger.debug( PATTERN_FOR_2_ARGS, ARG1, ARG2 );
 
-    verify( delegate ).debug( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
+    verify( delegate, times( 2 ) ).debug( format( PATTERN_FOR_2_ARGS, ARG1, ARG2 ) );
   }
 
   @Test
@@ -382,8 +396,9 @@ public class LoggerAdapterTest {
     stubAsDebugEnabled();
 
     logger.debug( PATTERN_FOR_1_ARG, ARG1 );
+    logger.debug( PATTERN_FOR_1_ARG, ARG1 );
 
-    verify( delegate ).debug( format( PATTERN_FOR_1_ARG, ARG1 ) );
+    verify( delegate, times( 2 ) ).debug( format( PATTERN_FOR_1_ARG, ARG1 ) );
   }
 
   @Test
