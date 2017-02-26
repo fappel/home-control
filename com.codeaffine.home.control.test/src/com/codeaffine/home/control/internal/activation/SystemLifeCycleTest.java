@@ -1,15 +1,11 @@
 package com.codeaffine.home.control.internal.activation;
 
 import static com.codeaffine.home.control.internal.activation.Messages.*;
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.SystemConfiguration;
@@ -38,12 +34,9 @@ public class SystemLifeCycleTest {
 
     lifeCycle.start( configuration );
 
-    ArgumentCaptor<String> captor = forClass( String.class );
     InOrder order = inOrder( wiring, logger );
     order.verify( wiring ).initialize( configuration );
-    order.verify( logger ).info( captor.capture() );
-    assertThat( captor.getValue() )
-      .isEqualTo( format( INFO_SYSTEM_CONFIGURATION_LOADED, configuration.getClass().getName() ) ) ;
+    order.verify( logger ).info( INFO_SYSTEM_CONFIGURATION_LOADED, configuration.getClass().getName() );
   }
 
   @Test
@@ -53,13 +46,10 @@ public class SystemLifeCycleTest {
 
     lifeCycle.stop( configuration );
 
-    ArgumentCaptor<String> captor = forClass( String.class );
     InOrder order = inOrder( wiring, shutdownDispatcher, logger );
     order.verify( shutdownDispatcher ).dispatch();
     order.verify( wiring ).reset( configuration );
-    order.verify( logger ).info( captor.capture() );
-    assertThat( captor.getValue() )
-      .isEqualTo( format( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() ) ) ;
+    order.verify( logger ).info( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() );
   }
 
   @Test
@@ -69,13 +59,10 @@ public class SystemLifeCycleTest {
 
     lifeCycle.dispose();
 
-    ArgumentCaptor<String> captor = forClass( String.class );
     InOrder order = inOrder( wiring, shutdownDispatcher, logger );
     order.verify( shutdownDispatcher ).dispatch();
     order.verify( wiring ).dispose();
-    order.verify( logger ).info( captor.capture() );
-    assertThat( captor.getValue() )
-      .isEqualTo( format( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() ) ) ;
+    order.verify( logger ).info( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() );
   }
 
   @Test
