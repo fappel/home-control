@@ -66,7 +66,7 @@ public class BulbImplTest {
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOffType.ON );
+    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
   }
 
@@ -79,7 +79,7 @@ public class BulbImplTest {
     InOrder order = inOrder( onOffItem, colorTemperatureItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOffType.ON );
+    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -93,7 +93,7 @@ public class BulbImplTest {
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOffType.ON );
+    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -122,7 +122,7 @@ public class BulbImplTest {
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.OFF );
     order.verify( brightnessItem ).updateStatus( ZERO );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOffType.OFF );
+    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.OFF );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -149,7 +149,7 @@ public class BulbImplTest {
 
     InOrder order = inOrder( brightnessItem, logger );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS_OF_ITEM );
+    order.verify( logger ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS );
   }
 
   @Test
@@ -160,7 +160,7 @@ public class BulbImplTest {
     bulb.setBrightness( BRIGHTNESS );
 
     verify( brightnessItem, never() ).updateStatus( BRIGHTNESS_OF_ITEM );
-    verify( logger, never() ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS_OF_ITEM );
+    verify( logger, never() ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS );
   }
 
   @Test
@@ -194,7 +194,7 @@ public class BulbImplTest {
 
     InOrder order = inOrder( colorTemperatureItem, logger );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE_OF_ITEM );
+    order.verify( logger ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
@@ -205,7 +205,7 @@ public class BulbImplTest {
     bulb.setColorTemperature( COLOR_TEMPERATURE );
 
     verify( colorTemperatureItem, never() ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE_OF_ITEM );
+    verify( logger, never() ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
@@ -238,9 +238,9 @@ public class BulbImplTest {
 
     bulb.ensureStatusIntegrity();
 
-    verify( onOffItem ).updateStatus( DEFAULT_ON_OFF_STATE );
-    verify( brightnessItem ).updateStatus( DEFAULT_BRIGHTNESS );
-    verify( colorTemperatureItem ).updateStatus( DEFAULT_COLOR_TEMPERATURE );
+    verify( onOffItem ).updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
+    verify( brightnessItem ).updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
+    verify( colorTemperatureItem ).updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
     verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
     verify( logger ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), DEFAULT_BRIGHTNESS );
     verify( logger ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), DEFAULT_COLOR_TEMPERATURE );

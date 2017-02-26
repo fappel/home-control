@@ -22,9 +22,12 @@ import com.codeaffine.home.control.type.PercentType;
 
 public class BulbImpl implements Bulb {
 
-  static final PercentType DEFAULT_COLOR_TEMPERATURE = PercentType.ZERO;
-  static final PercentType DEFAULT_BRIGHTNESS = PercentType.HUNDRED;
-  static final OnOffType DEFAULT_ON_OFF_STATE = OnOffType.OFF;
+  static final Percent DEFAULT_COLOR_TEMPERATURE = Percent.P_000;
+  static final PercentType DEFAULT_COLOR_TEMPERATURE_INTERNAL = convertFromPercent( DEFAULT_COLOR_TEMPERATURE );
+  static final Percent DEFAULT_BRIGHTNESS = Percent.P_100;
+  static final PercentType DEFAULT_BRIGHTNESS_INTERNAL = convertFromPercent( DEFAULT_BRIGHTNESS );
+  static final OnOff DEFAULT_ON_OFF_STATE = OnOff.OFF;
+  static final OnOffType DEFAULT_ON_OFF_STATE_INTERNAL = convertFromOnOff( DEFAULT_ON_OFF_STATE );
   static final long OFFSET_AFTER_LAST_UPDATE = 4L;
 
   private final DimmerItem colorTemperatureItem;
@@ -74,42 +77,42 @@ public class BulbImpl implements Bulb {
   public void setOnOffStatus( OnOff newOnOffStatus ) {
     verifyNotNull( newOnOffStatus, "newOnOffStatus" );
 
-    setOnOffStatusInternal( convertFromOnOff( newOnOffStatus ) );
+    setOnOffStatusInternal( newOnOffStatus );
   }
 
   @Override
   public OnOff getOnOffStatus() {
-    return convertToOnOff( onOffItem.getStatus(), DEFAULT_ON_OFF_STATE );
+    return convertToOnOff( onOffItem.getStatus(), DEFAULT_ON_OFF_STATE_INTERNAL );
   }
 
   @Override
   public void setBrightness( Percent newBrightness ) {
     verifyNotNull( newBrightness, "newBrightness" );
 
-    setBrightnessInternal( convertFromPercent( newBrightness ) );
+    setBrightnessInternal( newBrightness );
   }
 
   @Override
   public Percent getBrightness() {
     if( onOffItem.getStatus().equals( Optional.of( ON ) ) ) {
-      return convertToPercent( brightnessItem.getStatus(), DEFAULT_BRIGHTNESS );
+      return convertToPercent( brightnessItem.getStatus(), DEFAULT_BRIGHTNESS_INTERNAL );
     }
-    return convertToPercent( brightnessStatus, DEFAULT_BRIGHTNESS );
+    return convertToPercent( brightnessStatus, DEFAULT_BRIGHTNESS_INTERNAL );
   }
 
   @Override
   public void setColorTemperature( Percent newColorTemperature ) {
     verifyNotNull( newColorTemperature, "newColorTemperature" );
 
-    setColorTemperatureInternal( convertFromPercent( newColorTemperature ) );
+    setColorTemperatureInternal( newColorTemperature );
   }
 
   @Override
   public Percent getColorTemperature() {
     if( onOffItem.getStatus().equals( Optional.of( ON ) ) ) {
-      return convertToPercent( colorTemperatureItem.getStatus(), DEFAULT_COLOR_TEMPERATURE );
+      return convertToPercent( colorTemperatureItem.getStatus(), DEFAULT_COLOR_TEMPERATURE_INTERNAL );
     }
-    return convertToPercent( colorTemperatureStatus, DEFAULT_COLOR_TEMPERATURE );
+    return convertToPercent( colorTemperatureStatus, DEFAULT_COLOR_TEMPERATURE_INTERNAL );
   }
 
   @Override
@@ -143,45 +146,48 @@ public class BulbImpl implements Bulb {
                    onOffItem.getStatus() + "/" + onOffBuffer );
   }
 
-  private void setOnOffStatusInternal( OnOffType newOnOffStatus ) {
-    if( !onOffItem.getStatus().equals( Optional.of( newOnOffStatus ) ) ) {
-      onOffBuffer = Optional.of( newOnOffStatus );
-      onOffItem.updateStatus( newOnOffStatus );
-      if( newOnOffStatus == ON && colorTemperatureStatus.isPresent() ) {
+  private void setOnOffStatusInternal( OnOff newOnOffStatus ) {
+    OnOffType value = convertFromOnOff( newOnOffStatus );
+    if( !onOffItem.getStatus().equals( Optional.of( value ) ) ) {
+      onOffBuffer = Optional.of( value );
+      onOffItem.updateStatus( value );
+      if( value == ON && colorTemperatureStatus.isPresent() ) {
         colorTemperatureItem.updateStatus( colorTemperatureStatus.get() );
         colorTemperatureBuffer = colorTemperatureStatus;
       }
-      if( newOnOffStatus == ON && brightnessStatus.isPresent() ) {
+      if( value == ON && brightnessStatus.isPresent() ) {
         brightnessItem.updateStatus( brightnessStatus.get() );
         brightnessBuffer = brightnessStatus;
       } else if( brightnessStatus.isPresent() ) {
-        brightnessItem.updateStatus( DEFAULT_COLOR_TEMPERATURE );
-        brightnessBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE );
+        brightnessItem.updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
+        brightnessBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       }
       setUpdateTimestamp( now() );
       logger.info( BULB_SWITCH_PATTERN, getDefinition(), newOnOffStatus );
     }
   }
 
-  private void setBrightnessInternal( PercentType newBrightness ) {
-    brightnessStatus = Optional.of( newBrightness );
+  private void setBrightnessInternal( Percent newBrightness ) {
+    PercentType value = convertFromPercent( newBrightness );
+    brightnessStatus = Optional.of( value );
     if(    onOffItem.getStatus().equals( Optional.of( ON ) )
-        && !brightnessItem.getStatus().equals( Optional.of( newBrightness ) ) )
+        && !brightnessItem.getStatus().equals( Optional.of( value ) ) )
     {
-      brightnessItem.updateStatus( newBrightness );
-      brightnessBuffer = Optional.of( newBrightness );
+      brightnessItem.updateStatus( value );
+      brightnessBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
       logger.info( BULB_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
     }
   }
 
-  private void setColorTemperatureInternal( PercentType newColorTemperature ) {
-    colorTemperatureStatus = Optional.of( newColorTemperature );
+  private void setColorTemperatureInternal( Percent newColorTemperature ) {
+    PercentType value = convertFromPercent( newColorTemperature );
+    colorTemperatureStatus = Optional.of( value );
     if( onOffItem.getStatus().equals( Optional.of( ON ) )
-        && !colorTemperatureItem.getStatus().equals( Optional.of( newColorTemperature ) ) )
+        && !colorTemperatureItem.getStatus().equals( Optional.of( value ) ) )
     {
-      colorTemperatureItem.updateStatus( newColorTemperature );
-      colorTemperatureBuffer = Optional.of( newColorTemperature );
+      colorTemperatureItem.updateStatus( value );
+      colorTemperatureBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
       logger.info( BULB_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
     }
@@ -207,20 +213,20 @@ public class BulbImpl implements Bulb {
 
   private void ensureDefaults() {
     if( !colorTemperatureItem.getStatus().isPresent() ) {
-      colorTemperatureItem.updateStatus( DEFAULT_COLOR_TEMPERATURE );
-      colorTemperatureBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE );
-      colorTemperatureStatus = Optional.of( DEFAULT_COLOR_TEMPERATURE );
+      colorTemperatureItem.updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
+      colorTemperatureBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
+      colorTemperatureStatus = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       logger.info( BULB_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), DEFAULT_COLOR_TEMPERATURE );
     }
     if( !brightnessItem.getStatus().isPresent() ) {
-      brightnessItem.updateStatus( DEFAULT_BRIGHTNESS );
-      brightnessBuffer = Optional.of( DEFAULT_BRIGHTNESS );
-      brightnessStatus = Optional.of( DEFAULT_BRIGHTNESS );
+      brightnessItem.updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
+      brightnessBuffer = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
+      brightnessStatus = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
       logger.info( BULB_SET_BRIGHTNESS_PATTERN, getDefinition(), DEFAULT_BRIGHTNESS );
     }
     if( !onOffItem.getStatus().isPresent() ) {
-      onOffItem.updateStatus( DEFAULT_ON_OFF_STATE );
-      onOffBuffer = Optional.of( DEFAULT_ON_OFF_STATE );
+      onOffItem.updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
+      onOffBuffer = Optional.of( DEFAULT_ON_OFF_STATE_INTERNAL );
       logger.info( BULB_SWITCH_PATTERN, getDefinition(), DEFAULT_ON_OFF_STATE );
     }
   }
