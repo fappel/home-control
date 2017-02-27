@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.room;
 
-import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.*;
+import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.BathRoom;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -11,8 +11,8 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
@@ -37,11 +37,11 @@ public class RoomImplTest {
 
   @Test
   public void getChildrenWithChildTypeParameter() {
-    Bulb expected = mock( Bulb.class );
+    Lamp expected = mock( Lamp.class );
     stubEntityRelation( entityRelationProvider, BathRoom, BathRoomCeiling );
     stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 
-    Collection<Bulb> actual = room.getChildren( BulbDefinition.class );
+    Collection<Lamp> actual = room.getChildren( LampDefinition.class );
 
     assertThat( actual )
       .hasSize( 1 )
@@ -50,7 +50,7 @@ public class RoomImplTest {
 
   @Test
   public void getChildren() {
-    Bulb expected = mock( Bulb.class );
+    Lamp expected = mock( Lamp.class );
     stubEntityRelationForAllChildren( entityRelationProvider, BathRoom, BathRoomCeiling );
     stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 

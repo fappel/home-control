@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application.internal.bulb;
+package com.codeaffine.home.control.application.internal.lamp;
 
-import static com.codeaffine.home.control.application.internal.bulb.BulbFactory.*;
+import static com.codeaffine.home.control.application.internal.lamp.LampFactory.*;
 import static java.util.Optional.empty;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -15,7 +15,7 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 
-public class BulbItemHelper {
+public class LampItemHelper {
 
   public static Registry stubRegistry(
     SwitchItem onOffItem, DimmerItem brightnessItem, DimmerItem colorTemperatureItem )

@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application;
 
-import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.*;
+import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.*;
 import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
 import static java.util.Arrays.asList;
@@ -9,11 +9,11 @@ import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.application.bulb.BulbProvider;
 import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
+import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.room.RoomProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -24,7 +24,7 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void registerEntities( EntityRegistry entityRegistry ) {
     entityRegistry.register( MotionSensorProvider.class );
-    entityRegistry.register( BulbProvider.class );
+    entityRegistry.register( LampProvider.class );
     entityRegistry.register( RoomProvider.class );
   }
 

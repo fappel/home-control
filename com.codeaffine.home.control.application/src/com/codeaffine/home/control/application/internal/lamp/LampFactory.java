@@ -1,16 +1,16 @@
-package com.codeaffine.home.control.application.internal.bulb;
+package com.codeaffine.home.control.application.internal.lamp;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
 
-public class BulbFactory implements EntityFactory<Bulb, BulbDefinition> {
+public class LampFactory implements EntityFactory<Lamp, LampDefinition> {
 
   static final String PREFIX_COLOR_TEMPERATURE = "colorTemperature";
   static final String PREFIX_BRIGHTNESS = "dimmer";
@@ -19,7 +19,7 @@ public class BulbFactory implements EntityFactory<Bulb, BulbDefinition> {
   private final LoggerFactory loggerFactory;
   private final Registry registry;
 
-  public BulbFactory( Registry registry, LoggerFactory loggerFactory ) {
+  public LampFactory( Registry registry, LoggerFactory loggerFactory ) {
     verifyNotNull( loggerFactory, "loggerFactory" );
     verifyNotNull( registry, "registry" );
 
@@ -28,13 +28,13 @@ public class BulbFactory implements EntityFactory<Bulb, BulbDefinition> {
   }
 
   @Override
-  public Bulb create( BulbDefinition definition ) {
+  public Lamp create( LampDefinition definition ) {
     verifyNotNull( definition, "definition" );
 
-    return new BulbImpl( definition,
+    return new LampImpl( definition,
                          registry.getItem( PREFIX_SWITCH + definition, SwitchItem.class ),
                          registry.getItem( PREFIX_BRIGHTNESS + definition, DimmerItem.class ),
                          registry.getItem( PREFIX_COLOR_TEMPERATURE + definition, DimmerItem.class ),
-                         loggerFactory.getLogger( BulbImpl.class ) );
+                         loggerFactory.getLogger( LampImpl.class ) );
   }
 }

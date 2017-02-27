@@ -1,7 +1,7 @@
-package com.codeaffine.home.control.application.bulb;
+package com.codeaffine.home.control.application.lamp;
 
-import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
-import static com.codeaffine.home.control.application.internal.bulb.BulbItemHelper.*;
+import static com.codeaffine.home.control.application.internal.lamp.LampItemHelper.*;
+import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.test.LoggerHelper.stubLoggerFactory;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.home.control.application.type.Percent.*;
@@ -16,9 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
-import com.codeaffine.home.control.application.internal.bulb.BulbImpl;
+import com.codeaffine.home.control.application.internal.lamp.LampImpl;
+import com.codeaffine.home.control.application.lamp.LampProvider;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
@@ -26,7 +27,7 @@ import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
-public class BulbProviderTest {
+public class LampProviderTest {
 
   private static final Percent BRIGHTNESS = P_020;
   private static final Percent COLOR_TEMPERATUR = P_010;
@@ -35,7 +36,7 @@ public class BulbProviderTest {
 
   private DimmerItem colorTemperatureItem;
   private DimmerItem brightnessItem;
-  private BulbProvider provider;
+  private LampProvider provider;
   private SwitchItem onOffItem;
   private Registry registry;
 
@@ -45,19 +46,19 @@ public class BulbProviderTest {
     colorTemperatureItem = stubItem( DimmerItem.class );
     brightnessItem = stubItem( DimmerItem.class );
     registry = stubRegistry( onOffItem, brightnessItem, colorTemperatureItem );
-    provider = new BulbProvider( registry, stubLoggerFactory() );
+    provider = new LampProvider( registry, stubLoggerFactory() );
   }
 
   @Test
   public void findAll() {
-    Collection<Bulb> actual = provider.findAll();
+    Collection<Lamp> actual = provider.findAll();
 
-    assertThat( actual ).hasSize( BulbDefinition.values().length );
+    assertThat( actual ).hasSize( LampDefinition.values().length );
   }
 
   @Test
   public void findByDefinition() {
-    Bulb bulb = provider.findByDefinition( BathRoomCeiling );
+    Lamp bulb = provider.findByDefinition( BathRoomCeiling );
     bulb.setColorTemperature( COLOR_TEMPERATUR );
     bulb.setBrightness( BRIGHTNESS );
     bulb.setOnOffStatus( ON );
@@ -77,37 +78,37 @@ public class BulbProviderTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void ensureBulbStatesIfIntegrityWasCorrupted() {
-    provider.findAll().stream().forEach( bulb -> setStatus( bulb, OFF, BRIGHTNESS, COLOR_TEMPERATUR ) );
-    reset( onOffItem, brightnessItem, colorTemperatureItem );
+    @SuppressWarnings("unchecked")
+    public void ensureLampStatesIfIntegrityWasCorrupted() {
+      provider.findAll().stream().forEach( bulb -> setStatus( bulb, OFF, BRIGHTNESS, COLOR_TEMPERATUR ) );
+      reset( onOffItem, brightnessItem, colorTemperatureItem );
 
-    provider.ensureBulbStates();
+      provider.ensureLampStates();
 
-    verify( onOffItem, times( provider.findAll().size() ) ).updateStatus( OnOffType.ON );
-    verify( brightnessItem, times( provider.findAll().size() ) ).updateStatus( PercentType.ZERO );
-    verify( colorTemperatureItem, atLeast( 1 ) /* same item for all bulbs */ ).updateStatus( COLOR_TEMPERATUR_OF_Item );
-  }
+      verify( onOffItem, times( provider.findAll().size() ) ).updateStatus( OnOffType.ON );
+      verify( brightnessItem, times( provider.findAll().size() ) ).updateStatus( PercentType.ZERO );
+      verify( colorTemperatureItem, atLeast( 1 ) /* same item for all bulbs */ ).updateStatus( COLOR_TEMPERATUR_OF_Item );
+    }
 
   @Test
-  public void ensureBulbStates() {
-    provider.findAll().stream().forEach( bulb -> ( ( BulbImpl )bulb ).setUpdateTimestamp( getExpiredTimestamp() ) );
+    public void ensureLampStates() {
+      provider.findAll().stream().forEach( bulb -> ( ( LampImpl )bulb ).setUpdateTimestamp( getExpiredTimestamp() ) );
 
-    provider.ensureBulbStates();
+      provider.ensureLampStates();
 
-    verify( onOffItem, never() ).setStatus( OnOffType.ON );
-    verify( brightnessItem, never() ).setStatus( BRIGHTNESS_OF_ITEM );
-    verify( colorTemperatureItem, never() ).setStatus( COLOR_TEMPERATUR_OF_Item );
-  }
+      verify( onOffItem, never() ).setStatus( OnOffType.ON );
+      verify( brightnessItem, never() ).setStatus( BRIGHTNESS_OF_ITEM );
+      verify( colorTemperatureItem, never() ).setStatus( COLOR_TEMPERATUR_OF_Item );
+    }
 
   private static void setStatus(
-    Bulb bulb, OnOff switchStatus, Percent brightness, Percent colorTemperatur )
+    Lamp bulb, OnOff switchStatus, Percent brightness, Percent colorTemperatur )
   {
     bulb.setOnOffStatus( OnOff.ON );
     bulb.setColorTemperature( colorTemperatur );
     bulb.setBrightness( brightness );
     bulb.setOnOffStatus( switchStatus );
-    ( ( BulbImpl )bulb ).setUpdateTimestamp( getExpiredTimestamp() );
+    ( ( LampImpl )bulb ).setUpdateTimestamp( getExpiredTimestamp() );
   }
 
   private static LocalDateTime getExpiredTimestamp() {

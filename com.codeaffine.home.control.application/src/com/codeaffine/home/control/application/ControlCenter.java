@@ -9,9 +9,9 @@ import static java.util.stream.Collectors.toSet;
 import java.util.Collection;
 import java.util.Set;
 
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
@@ -37,9 +37,9 @@ class ControlCenter {
   @Subscribe
   void onEvent( Event event ) {
     event.getSource( ZoneActivation.class ).ifPresent( zoneActivation -> {
-      Set<Bulb> on = collectBulbsToSwitchOn( zoneActivation );
-      Collection<Bulb> bulbs = entityRegistry.findByDefinitionType( BulbDefinition.class );
-      Set<Bulb> off = bulbs.stream().filter( bulb -> !on.contains( bulb ) ).collect( toSet() );
+      Set<Lamp> on = collectBulbsToSwitchOn( zoneActivation );
+      Collection<Lamp> bulbs = entityRegistry.findByDefinitionType( LampDefinition.class );
+      Set<Lamp> off = bulbs.stream().filter( bulb -> !on.contains( bulb ) ).collect( toSet() );
       on.forEach( bulb -> bulb.setOnOffStatus( ON ) );
       off.forEach( bulb -> bulb.setOnOffStatus( OFF ) );
     } );
@@ -67,12 +67,12 @@ class ControlCenter {
   }
 
   private void updateBulbs() {
-    Collection<Bulb> bulbs = entityRegistry.findByDefinitionType( BulbDefinition.class );
+    Collection<Lamp> bulbs = entityRegistry.findByDefinitionType( LampDefinition.class );
     bulbs.forEach( bulb -> bulb.setColorTemperature( colorTemperature ) );
     bulbs.forEach( bulb -> bulb.setBrightness( brightness ) );
   }
 
-  private static Set<Bulb> collectBulbsToSwitchOn( ZoneActivation zoneActivation ) {
+  private static Set<Lamp> collectBulbsToSwitchOn( ZoneActivation zoneActivation ) {
     return zoneActivation
       .getActiveZones()
       .stream()
@@ -80,7 +80,7 @@ class ControlCenter {
       .collect( toSet() );
   }
 
-  private static Collection<Bulb> getZoneBulbs( Entity<EntityDefinition<?>> zone ) {
-    return ( ( CompositeEntity<?> )zone ).getChildren( BulbDefinition.class );
+  private static Collection<Lamp> getZoneBulbs( Entity<EntityDefinition<?>> zone ) {
+    return ( ( CompositeEntity<?> )zone ).getChildren( LampDefinition.class );
   }
 }

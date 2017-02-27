@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application.internal.bulb;
+package com.codeaffine.home.control.application.internal.lamp;
 
-import static com.codeaffine.home.control.application.internal.bulb.Messages.*;
+import static com.codeaffine.home.control.application.internal.lamp.Messages.*;
 import static com.codeaffine.home.control.application.internal.type.TypeConverter.*;
 import static com.codeaffine.home.control.type.OnOffType.ON;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
@@ -10,9 +10,9 @@ import static java.time.LocalDateTime.now;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.codeaffine.home.control.application.bulb.BulbProvider;
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.lamp.LampProvider;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
@@ -21,7 +21,7 @@ import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
-public class BulbImpl implements Bulb {
+public class LampImpl implements Lamp {
 
   static final Percent DEFAULT_COLOR_TEMPERATURE = Percent.P_000;
   static final PercentType DEFAULT_COLOR_TEMPERATURE_INTERNAL = convertFromPercent( DEFAULT_COLOR_TEMPERATURE );
@@ -29,10 +29,10 @@ public class BulbImpl implements Bulb {
   static final PercentType DEFAULT_BRIGHTNESS_INTERNAL = convertFromPercent( DEFAULT_BRIGHTNESS );
   static final OnOff DEFAULT_ON_OFF_STATE = OnOff.OFF;
   static final OnOffType DEFAULT_ON_OFF_STATE_INTERNAL = convertFromOnOff( DEFAULT_ON_OFF_STATE );
-  static final long OFFSET_AFTER_LAST_UPDATE = BulbProvider.BULB_INTEGRITY_CHECK_INTERVAL * 4;
+  static final long OFFSET_AFTER_LAST_UPDATE = LampProvider.LAMP_INTEGRITY_CHECK_INTERVAL * 4;
 
   private final DimmerItem colorTemperatureItem;
-  private final BulbDefinition definition;
+  private final LampDefinition definition;
   private final DimmerItem brightnessItem;
   private final SwitchItem onOffItem;
   private final Logger logger;
@@ -44,7 +44,7 @@ public class BulbImpl implements Bulb {
   private Optional<OnOffType> onOffBuffer;
   private LocalDateTime updateTimestamp;
 
-  BulbImpl( BulbDefinition definition,
+  LampImpl( LampDefinition definition,
             SwitchItem onOffItem,
             DimmerItem brightnessItem,
             DimmerItem colorTemperatureItem,
@@ -70,7 +70,7 @@ public class BulbImpl implements Bulb {
   }
 
   @Override
-  public BulbDefinition getDefinition() {
+  public LampDefinition getDefinition() {
     return definition;
   }
 
@@ -118,7 +118,7 @@ public class BulbImpl implements Bulb {
 
   @Override
   public String toString() {
-    return format( BULB_TO_STRING_PATTERN,
+    return format( LAMP_TO_STRING_PATTERN,
                    getDefinition(),
                    colorTemperatureItem.getStatus(),
                    brightnessItem.getStatus(),
@@ -140,7 +140,7 @@ public class BulbImpl implements Bulb {
   }
 
   String createSyncStatus() {
-    return format( BULB_TO_STRING_PATTERN,
+    return format( LAMP_TO_STRING_PATTERN,
                    "",
                    colorTemperatureItem.getStatus() + "/" + colorTemperatureBuffer,
                    brightnessItem.getStatus() + "/" + brightnessBuffer,
@@ -164,7 +164,7 @@ public class BulbImpl implements Bulb {
         brightnessBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       }
       setUpdateTimestamp( now() );
-      logger.info( BULB_SWITCH_PATTERN, getDefinition(), newOnOffStatus );
+      logger.info( LAMP_SWITCH_PATTERN, getDefinition(), newOnOffStatus );
     }
   }
 
@@ -177,7 +177,7 @@ public class BulbImpl implements Bulb {
       brightnessItem.updateStatus( value );
       brightnessBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
-      logger.info( BULB_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
+      logger.info( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
     }
   }
 
@@ -190,7 +190,7 @@ public class BulbImpl implements Bulb {
       colorTemperatureItem.updateStatus( value );
       colorTemperatureBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
-      logger.info( BULB_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
+      logger.info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
     }
   }
 
@@ -201,7 +201,7 @@ public class BulbImpl implements Bulb {
   }
 
   private void synchronize() {
-    logger.info( BULB_OUT_OF_SYNC_PATTERN, getDefinition(), createSyncStatus() );
+    logger.info( LAMP_OUT_OF_SYNC_PATTERN, getDefinition(), createSyncStatus() );
     if( brightnessBuffer.isPresent() ) {
       brightnessItem.updateStatus( brightnessBuffer.get() );
     }
@@ -217,18 +217,18 @@ public class BulbImpl implements Bulb {
       colorTemperatureItem.updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       colorTemperatureBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       colorTemperatureStatus = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
-      logger.info( BULB_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), DEFAULT_COLOR_TEMPERATURE );
+      logger.info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), DEFAULT_COLOR_TEMPERATURE );
     }
     if( !brightnessItem.getStatus().isPresent() ) {
       brightnessItem.updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
       brightnessBuffer = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
       brightnessStatus = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
-      logger.info( BULB_SET_BRIGHTNESS_PATTERN, getDefinition(), DEFAULT_BRIGHTNESS );
+      logger.info( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), DEFAULT_BRIGHTNESS );
     }
     if( !onOffItem.getStatus().isPresent() ) {
       onOffItem.updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
       onOffBuffer = Optional.of( DEFAULT_ON_OFF_STATE_INTERNAL );
-      logger.info( BULB_SWITCH_PATTERN, getDefinition(), DEFAULT_ON_OFF_STATE );
+      logger.info( LAMP_SWITCH_PATTERN, getDefinition(), DEFAULT_ON_OFF_STATE );
     }
   }
 }

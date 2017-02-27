@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.room;
 
-import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.internal.room.EntityRelationHelper.*;
+import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.BathRoom;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
-import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
+import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.room.RoomProvider.Room;
 import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
@@ -54,12 +54,12 @@ public class RoomProviderTest {
 
   @Test
   public void getChildrenOnProvidedRoom() {
-    Bulb expected = mock( Bulb.class );
+    Lamp expected = mock( Lamp.class );
     stubEntityRelation( entityRelationProvider, BathRoom, BathRoomCeiling );
     stubRegistryWithEntityInstanceForDefinition( entityRelationProvider, BathRoomCeiling, expected );
 
     Room room = roomProvider.findByDefinition( RoomDefinition.BathRoom );
-    Collection<Bulb> actual = room.getChildren( BulbDefinition.class );
+    Collection<Lamp> actual = room.getChildren( LampDefinition.class );
 
     assertThat( actual ).contains( expected );
   }

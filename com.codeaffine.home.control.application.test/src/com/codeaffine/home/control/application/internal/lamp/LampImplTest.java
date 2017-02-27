@@ -1,9 +1,9 @@
-package com.codeaffine.home.control.application.internal.bulb;
+package com.codeaffine.home.control.application.internal.lamp;
 
-import static com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition.BathRoomCeiling;
-import static com.codeaffine.home.control.application.internal.bulb.BulbImpl.*;
-import static com.codeaffine.home.control.application.internal.bulb.BulbItemHelper.stubItem;
-import static com.codeaffine.home.control.application.internal.bulb.Messages.*;
+import static com.codeaffine.home.control.application.internal.lamp.LampItemHelper.stubItem;
+import static com.codeaffine.home.control.application.internal.lamp.LampImpl.*;
+import static com.codeaffine.home.control.application.internal.lamp.Messages.*;
+import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.type.PercentType.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import com.codeaffine.home.control.application.internal.lamp.LampImpl;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
@@ -25,7 +26,7 @@ import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
-public class BulbImplTest {
+public class LampImplTest {
 
   private static final Percent BRIGHTNESS = Percent.P_020;
   private static final Percent COLOR_TEMPERATURE = Percent.P_010;
@@ -36,7 +37,7 @@ public class BulbImplTest {
   private DimmerItem brightnessItem;
   private SwitchItem onOffItem;
   private Logger logger;
-  private BulbImpl bulb;
+  private LampImpl lamp;
 
   @Before
   public void setUp() {
@@ -44,85 +45,85 @@ public class BulbImplTest {
     brightnessItem = stubItem( DimmerItem.class );
     colorTemperatureItem = stubItem( DimmerItem.class );
     logger = mock( Logger.class );
-    bulb = new BulbImpl( BathRoomCeiling, onOffItem, brightnessItem, colorTemperatureItem, logger );
+    lamp = new LampImpl( BathRoomCeiling, onOffItem, brightnessItem, colorTemperatureItem, logger );
   }
 
   @Test
   public void initialization() {
-    assertThat( bulb.getOnOffStatus() ).isSameAs( OnOff.OFF );
-    assertThat( bulb.getBrightness() ).isSameAs( Percent.P_100 );
-    assertThat( bulb.getColorTemperature() ).isSameAs( Percent.P_000 );
-    assertThat( bulb.getDefinition() ).isSameAs( BathRoomCeiling );
+    assertThat( lamp.getOnOffStatus() ).isSameAs( OnOff.OFF );
+    assertThat( lamp.getBrightness() ).isSameAs( Percent.P_100 );
+    assertThat( lamp.getColorTemperature() ).isSameAs( Percent.P_000 );
+    assertThat( lamp.getDefinition() ).isSameAs( BathRoomCeiling );
   }
 
   @Test
   public void setOnOffStatusToOn() {
-    bulb.setBrightness( BRIGHTNESS );
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setBrightness( BRIGHTNESS );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
 
-    bulb.setOnOffStatus( OnOff.ON );
+    lamp.setOnOffStatus( OnOff.ON );
 
     InOrder order = inOrder( onOffItem, brightnessItem, colorTemperatureItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
+    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
   }
 
   @Test
   public void setOnOffStatusToOnIfBrightnessIsNotPresent() {
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
 
-    bulb.setOnOffStatus( OnOff.ON );
+    lamp.setOnOffStatus( OnOff.ON );
 
     InOrder order = inOrder( onOffItem, colorTemperatureItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
+    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
   }
 
   @Test
   public void setOnOffStatusToOnIfColorTemperatureIsNotPresent() {
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setBrightness( BRIGHTNESS );
 
-    bulb.setOnOffStatus( OnOff.ON );
+    lamp.setOnOffStatus( OnOff.ON );
 
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.ON );
+    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
 
   @Test
   public void setOnOffStatusToOnIfAlreadySwitchedOn() {
-    bulb.setBrightness( BRIGHTNESS );
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setBrightness( BRIGHTNESS );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
     stubOnOffItemWithStatusOn();
 
-    bulb.setOnOffStatus( OnOff.ON );
+    lamp.setOnOffStatus( OnOff.ON );
 
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( eq( BULB_SWITCH_PATTERN ), eq( bulb.getDefinition() ), any( OnOffType.class ) );
+    verify( logger, never() ).info( eq( LAMP_SWITCH_PATTERN ), eq( lamp.getDefinition() ), any( OnOffType.class ) );
   }
 
   @Test
   public void setOnOffStatusToOff() {
-    bulb.setBrightness( BRIGHTNESS );
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setBrightness( BRIGHTNESS );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
 
-    bulb.setOnOffStatus( OnOff.OFF );
+    lamp.setOnOffStatus( OnOff.OFF );
 
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.OFF );
     order.verify( brightnessItem ).updateStatus( ZERO );
-    order.verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), OnOff.OFF );
+    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.OFF );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -131,25 +132,25 @@ public class BulbImplTest {
   public void getOnOffStatus() {
     stubOnOffItemWithStatusOn();
 
-    OnOff actual = bulb.getOnOffStatus();
+    OnOff actual = lamp.getOnOffStatus();
 
     assertThat( actual ).isSameAs( OnOff.ON );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void setOnOffStatusWithNullAsArgument() {
-    bulb.setOnOffStatus( null );
+    lamp.setOnOffStatus( null );
   }
 
   @Test
   public void setBrightness() {
     stubOnOffItemWithStatusOn();
 
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setBrightness( BRIGHTNESS );
 
     InOrder order = inOrder( brightnessItem, logger );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS );
+    order.verify( logger ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
   }
 
   @Test
@@ -157,44 +158,44 @@ public class BulbImplTest {
     stubOnOffItemWithStatusOn();
     stubBrightnessItemWithStatus( BRIGHTNESS_OF_ITEM );
 
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setBrightness( BRIGHTNESS );
 
     verify( brightnessItem, never() ).updateStatus( BRIGHTNESS_OF_ITEM );
-    verify( logger, never() ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), BRIGHTNESS );
+    verify( logger, never() ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
   }
 
   @Test
-  public void getBrightnessIfBulbIsSwitchedOn() {
+  public void getBrightnessIfLampIsSwitchedOn() {
     stubOnOffItemWithStatusOn();
     stubBrightnessItemWithStatus( BRIGHTNESS_OF_ITEM );
 
-    Percent actual = bulb.getBrightness();
+    Percent actual = lamp.getBrightness();
 
     assertThat( actual ).isSameAs( BRIGHTNESS );
   }
 
   @Test
-  public void getBrightnessIfBulbIsNotSwitchedOn() {
-    bulb.setBrightness( BRIGHTNESS );
-    Percent actual = bulb.getBrightness();
+  public void getBrightnessIfLampIsNotSwitchedOn() {
+    lamp.setBrightness( BRIGHTNESS );
+    Percent actual = lamp.getBrightness();
 
     assertThat( actual ).isSameAs( BRIGHTNESS );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void setBrightnessWithNullAsArgument() {
-    bulb.setBrightness( null );
+    lamp.setBrightness( null );
   }
 
   @Test
   public void setColorTemperature() {
     stubOnOffItemWithStatusOn();
 
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
 
     InOrder order = inOrder( colorTemperatureItem, logger );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE );
+    order.verify( logger ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
@@ -202,212 +203,212 @@ public class BulbImplTest {
     stubOnOffItemWithStatusOn();
     stubColorTemperatureItemWithStatus( COLOR_TEMPERATURE_OF_ITEM );
 
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
 
     verify( colorTemperatureItem, never() ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), COLOR_TEMPERATURE );
+    verify( logger, never() ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
-  public void setColorTemperatureIfBulbIsSwitchedOn() {
+  public void setColorTemperatureIfLampIsSwitchedOn() {
     stubOnOffItemWithStatusOn();
     stubColorTemperatureItemWithStatus( COLOR_TEMPERATURE_OF_ITEM );
 
-    Percent actual = bulb.getColorTemperature();
+    Percent actual = lamp.getColorTemperature();
 
     assertThat( actual ).isSameAs( COLOR_TEMPERATURE );
   }
 
   @Test
-  public void setColorTemperatureIfBulbIsNotSwitchedOn() {
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
-    Percent actual = bulb.getColorTemperature();
+  public void setColorTemperatureIfLampIsNotSwitchedOn() {
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
+    Percent actual = lamp.getColorTemperature();
 
     assertThat( actual ).isSameAs( COLOR_TEMPERATURE );
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void setColorTemperatureWithNullAsArgument() {
-    bulb.setColorTemperature( null );
+    lamp.setColorTemperature( null );
   }
 
   @Test
   public void ensureStatusIntegrity() {
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
     verify( brightnessItem ).updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
     verify( colorTemperatureItem ).updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
-    verify( logger ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), DEFAULT_BRIGHTNESS );
-    verify( logger ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
-    verify( logger ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), DEFAULT_ON_OFF_STATE );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
+    verify( logger ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
+    verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
   }
 
   @Test
-  public void ensureStatusIntegrityIfBulbIsInitialized() {
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    bulb.setOnOffStatus( OnOff.ON );
-    bulb.setBrightness( BRIGHTNESS );
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
-    String expectedSyncState = bulb.createSyncStatus();
+  public void ensureStatusIntegrityIfLampIsInitialized() {
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    lamp.setOnOffStatus( OnOff.ON );
+    lamp.setBrightness( BRIGHTNESS );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
-    verify( logger, never() ).info( BULB_SET_BRIGHTNESS_PATTERN, bulb.getDefinition(), DEFAULT_BRIGHTNESS );
-    verify( logger, never() ).info( BULB_SET_COLOR_TEMPERATURE_PATTERN, bulb.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
-    verify( logger, never() ).info( BULB_SWITCH_PATTERN, bulb.getDefinition(), DEFAULT_ON_OFF_STATE );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
+    verify( logger, never() ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
+    verify( logger, never() ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
   }
 
   @Test
   public void ensureStatusIntegrityButUpdateTimestampIsNotExpired() {
-    String expectedSyncState = bulb.createSyncStatus();
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfBrightnessItemChanged() {
     stubOnOffItemWithStatusOn();
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setBrightness( BRIGHTNESS );
     stubBrightnessItemWithStatus( ZERO );
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, times( 2 ) ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfBrightnessItemChangedButUpdateTimestampIsNotExpired() {
     stubOnOffItemWithStatusOn();
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setBrightness( BRIGHTNESS );
     stubBrightnessItemWithStatus( ZERO );
-    String expectedSyncState = bulb.createSyncStatus();
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfBrightnessItemChangedAfterInitialization() {
     stubBrightnessItemWithStatus( BRIGHTNESS_OF_ITEM );
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfBrightnessItemChangedAfterInitializationButUpdateTimestampIsNotExpired() {
     stubBrightnessItemWithStatus( BRIGHTNESS_OF_ITEM );
-    String expectedSyncState = bulb.createSyncStatus();
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfColorTemperatureItemChanged() {
     stubOnOffItemWithStatusOn();
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
     stubColorTemperatureItemWithStatus( ZERO );
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, times( 2 ) ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfColorTemperatureItemChangedButUpdateTimestampHasNotExpired() {
     stubOnOffItemWithStatusOn();
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
     stubColorTemperatureItemWithStatus( ZERO );
-    String expectedSyncState = bulb.createSyncStatus();
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfColorTemperatureItemChangedAfterInitialization() {
     stubColorTemperatureItemWithStatus( COLOR_TEMPERATURE_OF_ITEM );
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfOnOffItemChanged() {
-    bulb.setOnOffStatus( OnOff.ON );
+    lamp.setOnOffStatus( OnOff.ON );
     stubOnOffItemWithStatusOff();
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem, times( 2 ) ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
   public void ensureStatusIntegrityIfOnOffItemChangedAfterInitialization() {
     stubOnOffItemWithStatusOff();
-    bulb.setUpdateTimestamp( getExpiredUpdateTimestamp() );
-    String expectedSyncState = bulb.createSyncStatus();
+    lamp.setUpdateTimestamp( getExpiredUpdateTimestamp() );
+    String expectedSyncState = lamp.createSyncStatus();
 
-    bulb.ensureStatusIntegrity();
+    lamp.ensureStatusIntegrity();
 
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( BULB_OUT_OF_SYNC_PATTERN, bulb.getDefinition(), expectedSyncState );
+    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -416,11 +417,11 @@ public class BulbImplTest {
     stubBrightnessItemWithStatus( BRIGHTNESS_OF_ITEM );
     stubOnOffItemWithStatusOn();
 
-    String actual = bulb.toString();
+    String actual = lamp.toString();
 
     assertThat( actual )
-      .isEqualTo( format( BULB_TO_STRING_PATTERN,
-                          bulb.getDefinition(),
+      .isEqualTo( format( LAMP_TO_STRING_PATTERN,
+                          lamp.getDefinition(),
                           Optional.of( COLOR_TEMPERATURE_OF_ITEM ),
                           Optional.of( BRIGHTNESS_OF_ITEM ),
                           Optional.of( OnOffType.ON ) ) );
@@ -428,17 +429,17 @@ public class BulbImplTest {
 
   @Test
   public void createSyncState() {
-    bulb.setOnOffStatus( OnOff.ON );
-    bulb.setColorTemperature( COLOR_TEMPERATURE );
-    bulb.setBrightness( BRIGHTNESS );
+    lamp.setOnOffStatus( OnOff.ON );
+    lamp.setColorTemperature( COLOR_TEMPERATURE );
+    lamp.setBrightness( BRIGHTNESS );
     stubColorTemperatureItemWithStatus( HUNDRED );
     stubBrightnessItemWithStatus( ZERO );
     stubOnOffItemWithStatusOff();
 
-    String actual = bulb.createSyncStatus();
+    String actual = lamp.createSyncStatus();
 
     assertThat( actual )
-      .isEqualTo( format( BULB_TO_STRING_PATTERN,
+      .isEqualTo( format( LAMP_TO_STRING_PATTERN,
                           "",
                           Optional.of( HUNDRED ) + "/" + Optional.of( COLOR_TEMPERATURE_OF_ITEM ),
                           Optional.of( ZERO ) + "/" + Optional.of( BRIGHTNESS_OF_ITEM ),
@@ -447,27 +448,27 @@ public class BulbImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsDefinitionArgument() {
-    new BulbImpl( null, onOffItem, brightnessItem, colorTemperatureItem, logger );
+    new LampImpl( null, onOffItem, brightnessItem, colorTemperatureItem, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsOnOffItemArgument() {
-    new BulbImpl( BathRoomCeiling, null, brightnessItem, colorTemperatureItem, logger );
+    new LampImpl( BathRoomCeiling, null, brightnessItem, colorTemperatureItem, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsBrightnessItemArgument() {
-    new BulbImpl( BathRoomCeiling, onOffItem, null, colorTemperatureItem, logger );
+    new LampImpl( BathRoomCeiling, onOffItem, null, colorTemperatureItem, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsColorTemperatureItemArgument() {
-    new BulbImpl( BathRoomCeiling, onOffItem, brightnessItem, null, logger );
+    new LampImpl( BathRoomCeiling, onOffItem, brightnessItem, null, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsLoggerArgument() {
-    new BulbImpl( BathRoomCeiling, onOffItem, brightnessItem, colorTemperatureItem, null );
+    new LampImpl( BathRoomCeiling, onOffItem, brightnessItem, colorTemperatureItem, null );
   }
 
   private void stubOnOffItemWithStatusOn() {
