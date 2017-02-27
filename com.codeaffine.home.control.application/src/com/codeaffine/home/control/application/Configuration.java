@@ -10,6 +10,8 @@ import java.util.HashSet;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.application.bulb.BulbProvider;
+import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
+import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
@@ -48,8 +50,9 @@ public class Configuration implements SystemConfiguration {
       .link( Kitchen, Hall )
       .link( Kitchen, BathRoom );
 
+    context.set( SunPositionProvider.class, context.create( SunPositionProviderImpl.class ) );
     context.set( ZoneActivation.class, context.create( ZoneActivationImpl.class ) );
-    context.set( Activity.class, context.create( Activity.class ) );
+    context.set( Activity.class, context.create( ActivityImpl.class ) );
     context.set( ControlCenter.class, context.create( ControlCenter.class ) );
   }
 }

@@ -42,6 +42,7 @@ public class ItemAdapterFactoryTest {
   }
 
   public static class ItemTypeMappingProvider {
+
     public static Object[] provideData() {
       return new Object[] {
         new ItemTypeMapping( NumberItem.class, NumberItemAdapter.class ),

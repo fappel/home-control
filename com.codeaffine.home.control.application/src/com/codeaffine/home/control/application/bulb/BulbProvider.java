@@ -18,6 +18,8 @@ import com.codeaffine.home.control.logger.LoggerFactory;
 
 public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
 
+  public static final int BULB_INTEGRITY_CHECK_INTERVAL = 2;
+
   public enum BulbDefinition implements EntityDefinition<Bulb> {
     KitchenCeiling, SinkUplight, ChimneyUplight, WindowUplight, DeskUplight, FanLight1, FanLight2, BedStand,
     BedRoomCeiling, BathRoomCeiling, HallCeiling;
@@ -36,7 +38,7 @@ public class BulbProvider extends BaseEntityProvider<Bulb, BulbDefinition> {
     super( new BulbFactory( registry, loggerFactory ) );
   }
 
-  @Schedule( period = 2 )
+  @Schedule( period = BULB_INTEGRITY_CHECK_INTERVAL )
   void ensureBulbStates() {
     forEachBulbDefintion( definition -> ( ( BulbImpl )findByDefinition( definition ) ).ensureStatusIntegrity() );
   }

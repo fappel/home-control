@@ -10,6 +10,7 @@ import static java.time.LocalDateTime.now;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.codeaffine.home.control.application.bulb.BulbProvider;
 import com.codeaffine.home.control.application.bulb.BulbProvider.Bulb;
 import com.codeaffine.home.control.application.bulb.BulbProvider.BulbDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
@@ -28,7 +29,7 @@ public class BulbImpl implements Bulb {
   static final PercentType DEFAULT_BRIGHTNESS_INTERNAL = convertFromPercent( DEFAULT_BRIGHTNESS );
   static final OnOff DEFAULT_ON_OFF_STATE = OnOff.OFF;
   static final OnOffType DEFAULT_ON_OFF_STATE_INTERNAL = convertFromOnOff( DEFAULT_ON_OFF_STATE );
-  static final long OFFSET_AFTER_LAST_UPDATE = 4L;
+  static final long OFFSET_AFTER_LAST_UPDATE = BulbProvider.BULB_INTEGRITY_CHECK_INTERVAL * 4;
 
   private final DimmerItem colorTemperatureItem;
   private final BulbDefinition definition;
