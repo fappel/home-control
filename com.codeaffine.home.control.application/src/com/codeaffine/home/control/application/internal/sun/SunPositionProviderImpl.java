@@ -8,9 +8,9 @@ import static net.e175.klaus.solarpositioning.SPA.calculateSolarPosition;
 import java.util.GregorianCalendar;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.Event;
 import com.codeaffine.home.control.application.SunPosition;
 import com.codeaffine.home.control.application.SunPositionProvider;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
@@ -37,7 +37,7 @@ public class SunPositionProviderImpl implements SunPositionProvider {
   }
 
   @Override
-  public SunPosition getSunPosition() {
+  public SunPosition getStatus() {
     return sunPosition;
   }
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.Event;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.event.EventBus;
 
 public class EventBusHelper {

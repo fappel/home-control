@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.control;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Optional.empty;

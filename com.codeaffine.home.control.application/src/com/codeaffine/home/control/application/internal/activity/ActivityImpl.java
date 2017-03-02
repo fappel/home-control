@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.Activity;
-import com.codeaffine.home.control.application.Event;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -49,7 +49,7 @@ public class ActivityImpl implements Activity {
   }
 
   @Override
-  public Percent getActivityRate() {
+  public Percent getStatus() {
     return activityRate;
   }
 

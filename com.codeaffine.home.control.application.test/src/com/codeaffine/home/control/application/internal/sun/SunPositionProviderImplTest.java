@@ -14,9 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codeaffine.home.control.application.Event;
 import com.codeaffine.home.control.application.SunPosition;
 import com.codeaffine.home.control.application.SunPositionProvider;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
@@ -54,7 +54,7 @@ public class SunPositionProviderImplTest {
 
   @Test
   public void initialization() {
-    assertThat( provider.getSunPosition() ).isEqualTo( new SunPosition( 0.0, 0.0 ) );
+    assertThat( provider.getStatus() ).isEqualTo( new SunPosition( 0.0, 0.0 ) );
   }
 
   @Test
@@ -64,13 +64,13 @@ public class SunPositionProviderImplTest {
 
     Optional<SunPositionProvider> actual = captureEvent( eventBus, SunPositionProvider.class );
     assertThat( actual ).hasValue( provider );
-    assertThat( provider.getSunPosition().getZenit() )
+    assertThat( provider.getStatus().getZenit() )
       .isGreaterThanOrEqualTo( -90.0 )
       .isLessThanOrEqualTo( 90.0 );
-    assertThat( provider.getSunPosition().getAzimuth() )
+    assertThat( provider.getStatus().getAzimuth() )
       .isGreaterThanOrEqualTo( 0.0 )
       .isLessThanOrEqualTo( 360.0 );
-    verify( logger ).info( provider.getSunPosition().toString() );
+    verify( logger ).info( provider.getStatus().toString() );
   }
 
   @Test

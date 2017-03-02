@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.Activity;
-import com.codeaffine.home.control.application.Event;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
@@ -49,7 +49,7 @@ public class ActivityImplTest {
     captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 6 );
 
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_050 );
     assertThat( dryRun ).isGreaterThan( 0 );
@@ -62,7 +62,7 @@ public class ActivityImplTest {
     captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue()  );
 
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_100 );
     verifyEventNotification();
@@ -74,7 +74,7 @@ public class ActivityImplTest {
     captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() + 1 );
 
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_100 );
     verifyEventNotification();
@@ -83,11 +83,11 @@ public class ActivityImplTest {
   @Test
   public void calculateRateAfterCreation() {
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_000 );
     verify( eventBus, never() ).post( any( Event.class ) );
-    verify( logger, never() ).info( anyString(), eq( activity.getActivityRate() ) );
+    verify( logger, never() ).info( anyString(), eq( activity.getStatus () ) );
   }
 
   @Test
@@ -95,12 +95,12 @@ public class ActivityImplTest {
     int dryRun = captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 2 );
 
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_000 );
     assertThat( dryRun ).isGreaterThan( 0 );
     verify( eventBus, never() ).post( any( Event.class ) );
-    verify( logger, never() ).info( anyString(), eq( activity.getActivityRate() ) );
+    verify( logger, never() ).info( anyString(), eq( activity.getStatus() ) );
   }
 
   @Test
@@ -115,7 +115,7 @@ public class ActivityImplTest {
     captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 3 );
 
     activity.calculateRate();
-    Percent actual = activity.getActivityRate();
+    Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_033 );
     assertThat( dryRun ).isGreaterThan( 0 );
@@ -124,7 +124,7 @@ public class ActivityImplTest {
 
   private void verifyEventNotification() {
     assertThat( captureEvent( eventBus, Activity.class ) ).hasValue( activity );
-    verify( logger ).info( INFO_ACTIVITY_RATE, activity.getActivityRate() );
+    verify( logger ).info( INFO_ACTIVITY_RATE, activity.getStatus() );
   }
 
   private static void stubMotionSensorAsEngaged( MotionSensor motionSensor ) {

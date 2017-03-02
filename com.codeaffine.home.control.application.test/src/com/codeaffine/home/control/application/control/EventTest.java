@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.control;
 
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
+
+import com.codeaffine.home.control.application.control.Event;
 
 public class EventTest {
 

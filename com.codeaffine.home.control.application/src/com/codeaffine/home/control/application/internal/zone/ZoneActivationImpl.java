@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.codeaffine.home.control.application.Event;
 import com.codeaffine.home.control.application.ZoneActivation;
+import com.codeaffine.home.control.application.control.Event;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
@@ -35,15 +35,15 @@ public class ZoneActivationImpl implements ZoneActivation {
   }
 
   @Override
-  public Set<Entity<EntityDefinition<?>>> getActiveZones() {
+  public Set<Entity<EntityDefinition<?>>> getStatus() {
     return traces.stream().flatMap( stack -> stack.stream() ).collect( toSet() );
   }
 
   @Subscribe
   public void engagedZonesChanged( ZoneEvent event ) {
-    Set<?> oldZones = getActiveZones();
+    Set<?> oldZones = getStatus();
     doEngagedZonesChanged( event );
-    if( !oldZones.equals( getActiveZones() ) ) {
+    if( !oldZones.equals( getStatus() ) ) {
       eventBus.post( new Event( this ) );
       logger.info( "Engaged Zones: " + createListOfEngagedZoneDefinitions()  );
     }

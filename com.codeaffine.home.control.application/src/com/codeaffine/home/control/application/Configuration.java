@@ -9,13 +9,20 @@ import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.application.control.ControlCenter;
+import com.codeaffine.home.control.application.control.ControlCenter.SceneSelectionConfigurer;
 import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
+import com.codeaffine.home.control.application.internal.control.ControlCenterImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
+import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
+import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
+import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.room.RoomProvider;
+import com.codeaffine.home.control.application.sence.HomeSceneSelectionConfigurer;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 
@@ -53,6 +60,10 @@ public class Configuration implements SystemConfiguration {
     context.set( SunPositionProvider.class, context.create( SunPositionProviderImpl.class ) );
     context.set( ZoneActivation.class, context.create( ZoneActivationImpl.class ) );
     context.set( Activity.class, context.create( ActivityImpl.class ) );
-    context.set( ControlCenter.class, context.create( ControlCenter.class ) );
+    context.set( SceneSelectionConfigurer.class, new HomeSceneSelectionConfigurer() );
+    context.set( ControlCenter.class, context.create( ControlCenterImpl.class ) );
+    context.get( ControlCenter.class ).registerOperation( LampSwitchOperation.class );
+    context.get( ControlCenter.class ).registerOperation( AdjustBrightnessOperation.class );
+    context.get( ControlCenter.class ).registerOperation( AdjustColorTemperatureOperation.class );
   }
 }
