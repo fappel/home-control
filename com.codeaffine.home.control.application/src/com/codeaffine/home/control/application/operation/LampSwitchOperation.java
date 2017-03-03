@@ -43,7 +43,6 @@ public class LampSwitchOperation implements ControlCenterOperation {
     this.filter = filter;
   }
 
-
   public void setLampSwitchStrategy( LampSwitchStrategy lampSwitchStrategy ) {
     verifyNotNull( lampSwitchStrategy, "lampSwitchStrategy" );
 
