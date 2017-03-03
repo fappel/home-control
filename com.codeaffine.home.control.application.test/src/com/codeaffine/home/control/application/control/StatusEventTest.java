@@ -5,37 +5,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.internal.control.MyStatusProvider;
 
-public class EventTest {
+public class StatusEventTest {
 
   @Test
   public void getSource() {
-    Runnable expected = mock( Runnable.class );
-    Event event = new Event( expected );
+    MyStatusProvider expected = mock( MyStatusProvider.class );
+    StatusEvent event = new StatusEvent( expected );
 
-    Optional<Runnable> actual = event.getSource( Runnable.class );
+    Optional<MyStatusProvider> actual = event.getSource( MyStatusProvider.class );
 
     assertThat( actual ).hasValue( expected );
   }
 
   @Test
-  @SuppressWarnings("rawtypes")
   public void getSourceIfTypeDoesNotMatch() {
-    Event event = new Event( mock( Runnable.class ) );
+    StatusEvent event = new StatusEvent( mock( StatusProvider.class ) );
 
-    Optional<Callable> actual = event.getSource( Callable.class );
+    Optional<MyStatusProvider> actual = event.getSource( MyStatusProvider.class );
 
     assertThat( actual ).isEmpty();
   }
 
   @Test
   public void getSourceWithNullAsTypeArgument() {
-    Event event = new Event( mock( Runnable.class ) );
+    StatusEvent event = new StatusEvent( mock( StatusProvider.class ) );
 
     Throwable actual = thrownBy( () -> event.getSource( null ) );
 
@@ -44,6 +42,6 @@ public class EventTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsSourceArgument() {
-    new Event( null );
+    new StatusEvent( null );
   }
 }

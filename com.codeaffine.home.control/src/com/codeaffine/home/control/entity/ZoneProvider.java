@@ -7,16 +7,16 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public interface ZoneProvider {
 
-  interface Sensor {
+  public interface Sensor {
     void registerZone( Entity<?> zone );
     void unregisterZone( Entity<?> zone );
   }
 
-  interface SensorControlFactory {
+  public interface SensorControlFactory {
     <E extends Entity<D>, D extends EntityDefinition<E>> SensorControl create( E sensor );
   }
 
-  interface SensorControl extends Sensor {
+  public interface SensorControl extends Sensor {
     void engage();
     void release();
   }

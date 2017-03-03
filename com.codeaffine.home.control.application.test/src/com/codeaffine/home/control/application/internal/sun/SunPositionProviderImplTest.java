@@ -1,7 +1,9 @@
 package com.codeaffine.home.control.application.internal.sun;
 
+import static com.codeaffine.home.control.application.internal.sun.Messages.SUN_POSITION_STATUS_INFO_PATTERN;
 import static com.codeaffine.home.control.application.test.EventBusHelper.captureEvent;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collection;
@@ -16,7 +18,7 @@ import org.junit.runner.RunWith;
 
 import com.codeaffine.home.control.application.SunPosition;
 import com.codeaffine.home.control.application.SunPositionProvider;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
@@ -70,18 +72,19 @@ public class SunPositionProviderImplTest {
     assertThat( provider.getStatus().getAzimuth() )
       .isGreaterThanOrEqualTo( 0.0 )
       .isLessThanOrEqualTo( 360.0 );
-    verify( logger ).info( provider.getStatus().toString() );
+    verify( logger ).info( SUN_POSITION_STATUS_INFO_PATTERN, provider.getStatus() );
   }
 
   @Test
+  @SuppressWarnings("cast")
   public void calculatePositionTwice() {
     Date now = new Date();
 
     provider.calculate( createPointInTime( now ) );
     provider.calculate( createPointInTime( now ) );
 
-    verify( eventBus, times( 1 ) ).post( any( Event.class ) );
-    verify( logger, times( 1 ) ).info( anyString() );
+    verify( eventBus, times( 1 ) ).post( any( StatusEvent.class ) );
+    verify( logger, times( 1 ) ).info( eq( SUN_POSITION_STATUS_INFO_PATTERN ), ( Object )anyObject() );
   }
 
   @Test( expected = IllegalArgumentException.class )

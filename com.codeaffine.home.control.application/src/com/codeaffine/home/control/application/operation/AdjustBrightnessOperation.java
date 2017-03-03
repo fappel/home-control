@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import com.codeaffine.home.control.application.SunPositionProvider;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
@@ -53,7 +53,7 @@ public class AdjustBrightnessOperation implements ControlCenterOperation {
   }
 
   @Override
-  public void executeOn( Event event ) {
+  public void executeOn( StatusEvent event ) {
     event.getSource( ActivityImpl.class ).ifPresent( activity -> {
       brightnessMinimum = brightnessMiniumumBelowThreshold;
       if( activity.getStatus().compareTo( activityThreshold ) > 1 ) {

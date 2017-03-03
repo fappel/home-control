@@ -1,8 +1,10 @@
 package com.codeaffine.home.control.application.internal.zone;
 
+import static com.codeaffine.home.control.application.internal.zone.Messages.ZONE_ACTIVATION_STATUS_CHANGED_INFO;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.HashSet;
@@ -11,9 +13,10 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 
 import com.codeaffine.home.control.application.ZoneActivation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
@@ -47,20 +50,21 @@ public class ZoneActivationImplTest {
   public void engageZonesChanged() {
     activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
 
-    ArgumentCaptor<Event> captor = forClass( Event.class );
+    ArgumentCaptor<StatusEvent> captor = forClass( StatusEvent.class );
     verify( eventBus ).post( captor.capture() );
     assertThat( captor.getValue().getSource( ZoneActivation.class ) ).hasValue( activation );
+    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
   }
 
   @Test
-    public void getStatusAfterZoneEngaging() {
-      Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1 );
+  public void getStatusAfterZoneEngaging() {
+    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1 );
 
-      activation.engagedZonesChanged( newEvent( expected, expected, $() ) );
-      Set<Entity<EntityDefinition<?>>> actual = activation.getStatus();
+    activation.engagedZonesChanged( newEvent( expected, expected, $() ) );
+    Set<Entity<EntityDefinition<?>>> actual = activation.getStatus();
 
-      assertThat( actual ).isEqualTo( expected );
-    }
+    assertThat( actual ).isEqualTo( expected );
+  }
 
   @Test
   public void getStatusAfterSubsequentZoneEngaging() {
@@ -71,6 +75,7 @@ public class ZoneActivationImplTest {
     Set<Entity<EntityDefinition<?>>> actual = activation.getStatus();
 
     assertThat( actual ).isEqualTo( expected );
+    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1, Zone2 ]" ) );
   }
 
   @Test
@@ -117,7 +122,15 @@ public class ZoneActivationImplTest {
     activation.engagedZonesChanged( newEvent( $(), $(), expected ) );
     Set<Entity<EntityDefinition<?>>> actual = activation.getStatus();
 
+    ArgumentCaptor<String> captor = forClass( String.class );
     assertThat( actual ).isEqualTo( expected );
+    InOrder order = inOrder( logger );
+    order.verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
+    order.verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
+    order.verifyNoMoreInteractions();
+    assertThat( asList( captor.getValue().split( "\\|" ) ) )
+      .allMatch( zoneName -> zoneName.contains( "Zone1" ) || zoneName.contains( "Zone3" ) )
+      .hasSize( 2 );
   }
 
   @Test
@@ -145,6 +158,21 @@ public class ZoneActivationImplTest {
     Set<Entity<EntityDefinition<?>>> actual = activation.getStatus();
 
     assertThat( actual ).isEqualTo( $( ZONE_1 ) );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsAdjacencyDefinitionArgument() {
+    new ZoneActivationImpl( null, eventBus, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEventBusDefinitionArgument() {
+    new ZoneActivationImpl( adjacency, null, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsLoggerDefinitionArgument() {
+    new ZoneActivationImpl( adjacency, eventBus, null );
   }
 
   @SafeVarargs

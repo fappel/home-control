@@ -5,17 +5,17 @@ import static java.util.Optional.empty;
 
 import java.util.Optional;
 
-public class Event {
+public class StatusEvent {
 
-  private final Object source;
+  private final StatusProvider<?> source;
 
-  public Event( Object source ) {
+  public StatusEvent( StatusProvider<?> source ) {
     verifyNotNull( source, "source" );
 
     this.source = source;
   }
 
-  public <T> Optional<T> getSource( Class<T> type ) {
+  public <T extends StatusProvider<?>> Optional<T> getSource( Class<T> type ) {
     verifyNotNull( type, "type" );
 
     if( type.isInstance( source ) ) {

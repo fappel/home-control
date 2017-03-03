@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.Activity;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
@@ -86,7 +86,7 @@ public class ActivityImplTest {
     Percent actual = activity.getStatus();
 
     assertThat( actual ).isSameAs( P_000 );
-    verify( eventBus, never() ).post( any( Event.class ) );
+    verify( eventBus, never() ).post( any( StatusEvent.class ) );
     verify( logger, never() ).info( anyString(), eq( activity.getStatus () ) );
   }
 
@@ -99,7 +99,7 @@ public class ActivityImplTest {
 
     assertThat( actual ).isSameAs( P_000 );
     assertThat( dryRun ).isGreaterThan( 0 );
-    verify( eventBus, never() ).post( any( Event.class ) );
+    verify( eventBus, never() ).post( any( StatusEvent.class ) );
     verify( logger, never() ).info( anyString(), eq( activity.getStatus() ) );
   }
 
@@ -120,6 +120,21 @@ public class ActivityImplTest {
     assertThat( actual ).isSameAs( P_033 );
     assertThat( dryRun ).isGreaterThan( 0 );
     verifyEventNotification();
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEntityRegistryArgument() {
+    new ActivityImpl( null, eventBus, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEventBusArgument() {
+    new ActivityImpl( mock( EntityRegistry.class ), null, logger );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsLoggerArgument() {
+    new ActivityImpl( mock( EntityRegistry.class ), eventBus, null );
   }
 
   private void verifyEventNotification() {

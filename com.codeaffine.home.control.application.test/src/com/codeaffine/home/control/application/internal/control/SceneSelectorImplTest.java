@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.control;
 
 import static com.codeaffine.home.control.application.internal.control.Messages.*;
-import static com.codeaffine.home.control.application.internal.control.Status.*;
+import static com.codeaffine.home.control.application.internal.control.MyStatus.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;

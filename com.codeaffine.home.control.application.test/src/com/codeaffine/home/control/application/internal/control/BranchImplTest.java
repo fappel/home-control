@@ -42,7 +42,7 @@ public class BranchImplTest {
 
   @Test
   public void otherwiseWhenStatusOf() {
-    NodeCondition<Status> actual = branch.otherwiseWhenStatusOf( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = branch.otherwiseWhenStatusOf( MyStatusProvider.class );
 
     assertThat( actual ).isNotNull();
     assertThat( parent.nextIs( CHILD ) );

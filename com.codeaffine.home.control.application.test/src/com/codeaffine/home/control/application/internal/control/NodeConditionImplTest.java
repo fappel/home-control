@@ -12,7 +12,7 @@ import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class NodeConditionImplTest {
 
-  private NodeConditionImpl<Status> nodeCondition;
+  private NodeConditionImpl<MyStatus> nodeCondition;
   private MyStatusProvider statusProvider;
 
   @Before
@@ -25,14 +25,14 @@ public class NodeConditionImplTest {
 
   @Test
   public void construction() {
-    Node<Status> actual = nodeCondition.getNode();
+    Node<MyStatus> actual = nodeCondition.getNode();
 
     assertThat( actual.getStatusProvider() ).isSameAs( statusProvider );
   }
 
   @Test
   public void matches() {
-    Predicate<Status> predicate = status -> true;
+    Predicate<MyStatus> predicate = status -> true;
 
     NodeDefinition actual = nodeCondition.matches( predicate );
 

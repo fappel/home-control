@@ -2,16 +2,16 @@ package com.codeaffine.home.control.application.internal.control;
 
 import com.codeaffine.home.control.application.control.StatusProvider;
 
-class MyStatusProvider implements StatusProvider<Status> {
+public class MyStatusProvider implements StatusProvider<MyStatus> {
 
-  private Status status;
+  private MyStatus status;
 
   @Override
-  public Status getStatus() {
+  public MyStatus getStatus() {
     return status;
   }
 
-  void setStatus( Status status ) {
+  void setStatus( MyStatus status ) {
     this.status = status;
   }
 }

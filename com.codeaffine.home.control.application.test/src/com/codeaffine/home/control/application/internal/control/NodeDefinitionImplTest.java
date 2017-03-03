@@ -14,7 +14,7 @@ public class NodeDefinitionImplTest {
 
   private NodeDefinitionImpl nodeDefinition;
   private MyStatusProvider statusProvider;
-  private Node<Status> node;
+  private Node<MyStatus> node;
 
   @Before
   public void setUp() {
@@ -27,7 +27,7 @@ public class NodeDefinitionImplTest {
 
   @Test
   public void whenStatusOf() {
-    NodeCondition<Status> actual = nodeDefinition.whenStatusOf( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.whenStatusOf( MyStatusProvider.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();
@@ -55,7 +55,7 @@ public class NodeDefinitionImplTest {
 
   @Test
   public void or() {
-    NodeCondition<Status> actual = nodeDefinition.or( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.or( MyStatusProvider.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();
@@ -70,7 +70,7 @@ public class NodeDefinitionImplTest {
 
   @Test
   public void and() {
-    NodeCondition<Status> actual = nodeDefinition.and( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.and( MyStatusProvider.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();

@@ -2,6 +2,7 @@ package com.codeaffine.home.control.application.internal.activity;
 
 import static com.codeaffine.home.control.application.internal.activity.Messages.INFO_ACTIVITY_RATE;
 import static com.codeaffine.home.control.application.type.Percent.P_000;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.Boolean.*;
 import static java.lang.Math.min;
 import static java.math.BigDecimal.ROUND_HALF_UP;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.Activity;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusProviderCore;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -31,36 +32,31 @@ public class ActivityImpl implements Activity {
     = new BigDecimal( OBSERVATION_TIME_FRAME * 60 )
         .divide( new BigDecimal( CALCULATION_INTERVAL_DURATION ), 2, ROUND_HALF_UP );
 
+  private final StatusProviderCore<Percent> statusProviderCore;
   private final Queue<LocalDateTime> motionActivations;
   private final EntityRegistry entityRegistry;
-  private final EventBus eventBus;
-  private final Logger logger;
 
   private Supplier<LocalDateTime> timestampSupplier;
-  private Percent activityRate;
 
   public ActivityImpl( EntityRegistry entityRegistry, EventBus eventBus, Logger logger ) {
+    verifyNotNull( entityRegistry, "entityRegistry" );
+    verifyNotNull( eventBus, "eventBus" );
+    verifyNotNull( logger, "logger" );
+
+    this.statusProviderCore = new StatusProviderCore<>( eventBus, P_000, this, logger );
     this.motionActivations = new LinkedList<>();
     this.entityRegistry = entityRegistry;
-    this.activityRate = P_000;
-    this.eventBus = eventBus;
-    this.logger = logger;
     this.timestampSupplier = () -> now();
   }
 
   @Override
   public Percent getStatus() {
-    return activityRate;
+    return statusProviderCore.getStatus();
   }
 
   @Schedule( period = SCAN_RATE )
   void calculateRate() {
-    Percent oldActivityRate = activityRate;
-    activityRate = doCalculateRate();
-    if( oldActivityRate != activityRate ) {
-      eventBus.post( new Event( this ) );
-      logger.info( INFO_ACTIVITY_RATE, activityRate );
-    }
+    statusProviderCore.updateStatus( () -> doCalculateRate(), INFO_ACTIVITY_RATE );
   }
 
   @Schedule( period = CALCULATION_INTERVAL_DURATION )

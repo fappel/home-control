@@ -8,7 +8,7 @@ import java.util.Map;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.application.control.ControlCenter;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.event.Subscribe;
 
@@ -38,7 +38,7 @@ public class ControlCenterImpl implements ControlCenter {
   }
 
   @Subscribe
-  void onEvent( Event event ) {
+  void onEvent( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
     ensureSceneSelector();

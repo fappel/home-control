@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import com.codeaffine.home.control.application.SunPositionProvider;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.type.Percent;
@@ -26,7 +26,7 @@ public class AdjustColorTemperatureOperation implements ControlCenterOperation {
   }
 
   @Override
-  public void executeOn( Event event ) {
+  public void executeOn( StatusEvent event ) {
     event.getSource( SunPositionProvider.class ).ifPresent( sunPositionProvider -> {
       double zenitAngle = sunPositionProvider.getStatus().getZenit();
       double temperatureFactor = max( 2.0, ( abs( ( 10 + now().getDayOfYear() ) % 366 - 183 ) / 31 ) );

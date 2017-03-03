@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.sun;
 
-import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static com.codeaffine.home.control.application.internal.sun.Messages.SUN_POSITION_STATUS_INFO_PATTERN;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.e175.klaus.solarpositioning.DeltaT.estimate;
 import static net.e175.klaus.solarpositioning.SPA.calculateSolarPosition;
@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.SunPosition;
 import com.codeaffine.home.control.application.SunPositionProvider;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusProviderCore;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
@@ -22,23 +22,15 @@ public class SunPositionProviderImpl implements SunPositionProvider {
   private static final double LONGITUDE = 8.419432640075684; // degree
   private static final double ELEVATION = 115.13; // meter
 
-  private final EventBus eventBus;
-  private final Logger logger;
-
-  private SunPosition sunPosition;
+  private final StatusProviderCore<SunPosition> statusProviderCore;
 
   public SunPositionProviderImpl( EventBus eventBus, Logger logger ) {
-    verifyNotNull( eventBus, "eventBus" );
-    verifyNotNull( logger, "logger" );
-
-    this.sunPosition = new SunPosition( 0, 0 );
-    this.logger = logger;
-    this.eventBus = eventBus;
+    statusProviderCore = new StatusProviderCore<>( eventBus, new SunPosition( 0, 0 ), this, logger );
   }
 
   @Override
   public SunPosition getStatus() {
-    return sunPosition;
+    return statusProviderCore.getStatus();
   }
 
   @Schedule( period = 1, timeUnit = MINUTES )
@@ -47,12 +39,11 @@ public class SunPositionProviderImpl implements SunPositionProvider {
   }
 
   void calculate( GregorianCalendar date ) {
+    statusProviderCore.updateStatus( () -> doCalculate( date ), SUN_POSITION_STATUS_INFO_PATTERN );
+  }
+
+  private static SunPosition doCalculate( GregorianCalendar date ) {
     AzimuthZenithAngle position = calculateSolarPosition( date, LATITUDE, LONGITUDE, ELEVATION, estimate( date ) );
-    SunPosition newSunPosition = new SunPosition( 90 - position.getZenithAngle(), position.getAzimuth() );
-    if( !newSunPosition.equals( sunPosition ) ) {
-      sunPosition = newSunPosition;
-      eventBus.post( new Event( this ) );
-      logger.info( sunPosition.toString() );
-    }
+    return new SunPosition( 90 - position.getZenithAngle(), position.getAzimuth() );
   }
 }

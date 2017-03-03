@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.control;
 
-import static com.codeaffine.home.control.application.internal.control.Status.*;
+import static com.codeaffine.home.control.application.internal.control.MyStatus.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.application.control.ControlCenter.SceneSelectionConfigurer;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.control.SceneSelector;
 import com.codeaffine.home.control.test.util.context.TestContext;
@@ -98,7 +98,7 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void executeOn( Event event ) {
+    public void executeOn( StatusEvent event ) {
       log.add( event );
     }
   }
@@ -118,7 +118,7 @@ public class ControlCenterImplTest {
   @Test
   public void onEvent() {
     statusProvider.setStatus( ONE );
-    Event event = new Event( statusProvider );
+    StatusEvent event = new StatusEvent( statusProvider );
 
     controlCenter.onEvent( event );
 
@@ -128,7 +128,7 @@ public class ControlCenterImplTest {
   @Test
   public void onEventWithDifferentStatus() {
     statusProvider.setStatus( TWO );
-    Event event = new Event( statusProvider );
+    StatusEvent event = new StatusEvent( statusProvider );
 
     controlCenter.onEvent( event );
 
@@ -138,10 +138,10 @@ public class ControlCenterImplTest {
   @Test
   public void onEventWithEventSequence() {
     statusProvider.setStatus( ONE );
-    Event firstEvent = new Event( statusProvider );
+    StatusEvent firstEvent = new StatusEvent( statusProvider );
     controlCenter.onEvent( firstEvent );
     statusProvider.setStatus( TWO );
-    Event secondEvent = new Event( statusProvider );
+    StatusEvent secondEvent = new StatusEvent( statusProvider );
     controlCenter.onEvent( secondEvent );
 
     assertThat( log )
@@ -159,7 +159,7 @@ public class ControlCenterImplTest {
     sceneSelectionConfigurator.useInvalidSelectorConfiguration();
     statusProvider.setStatus( ONE );
 
-    Throwable actual = thrownBy( () -> controlCenter.onEvent( new Event( statusProvider ) ) );
+    Throwable actual = thrownBy( () -> controlCenter.onEvent( new StatusEvent( statusProvider ) ) );
 
     assertThat( actual ).isInstanceOf( IllegalStateException.class );
   }

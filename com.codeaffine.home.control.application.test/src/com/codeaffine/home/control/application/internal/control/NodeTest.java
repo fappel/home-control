@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.control;
 
 import static com.codeaffine.home.control.application.internal.control.Messages.*;
-import static com.codeaffine.home.control.application.internal.control.Status.*;
+import static com.codeaffine.home.control.application.internal.control.MyStatus.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +15,7 @@ import com.codeaffine.home.control.application.control.StatusProvider;
 
 public class NodeTest {
 
-  private Node<Status> node;
+  private Node<MyStatus> node;
   private MyStatusProvider statusProvider;
 
   @Before
@@ -43,7 +43,7 @@ public class NodeTest {
     statusProvider.setStatus( ONE );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == ONE );
-    Node<Status> childNode = new Node<>();
+    Node<MyStatus> childNode = new Node<>();
     childNode.setStatusProvider( statusProvider );
     childNode.setPredicate( status -> status == ONE );
     childNode.setScene( expected );
@@ -60,7 +60,7 @@ public class NodeTest {
     statusProvider.setStatus( ONE );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == ONE );
-    Node<Status> andConjunction = new Node<>();
+    Node<MyStatus> andConjunction = new Node<>();
     andConjunction.setStatusProvider( statusProvider );
     andConjunction.setPredicate( status -> status == ONE );
     andConjunction.setScene( expected );
@@ -77,7 +77,7 @@ public class NodeTest {
     statusProvider.setStatus( ONE );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == ONE );
-    Node<Status> orConjunction = new Node<>();
+    Node<MyStatus> orConjunction = new Node<>();
     orConjunction.setStatusProvider( statusProvider );
     orConjunction.setPredicate( status -> status == ONE );
     orConjunction.setScene( expected );
@@ -94,11 +94,11 @@ public class NodeTest {
     statusProvider.setStatus( ONE );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == ONE );
-    Node<Status> orConjunction = new Node<>();
+    Node<MyStatus> orConjunction = new Node<>();
     orConjunction.setStatusProvider( statusProvider );
     orConjunction.setPredicate( status -> status == ONE );
     node.setOrConjunction( orConjunction );
-    Node<Status> andConjunction = new Node<>();
+    Node<MyStatus> andConjunction = new Node<>();
     andConjunction.setStatusProvider( statusProvider );
     andConjunction.setPredicate( status -> status == ONE );
     andConjunction.setScene( expected );
@@ -115,7 +115,7 @@ public class NodeTest {
     statusProvider.setStatus( ONE );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == TWO );
-    Node<Status> successor = new Node<>();
+    Node<MyStatus> successor = new Node<>();
     successor.setStatusProvider( statusProvider );
     successor.setPredicate( status -> status == ONE );
     successor.setScene( expected );
@@ -132,7 +132,7 @@ public class NodeTest {
     statusProvider.setStatus( TWO );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == ONE );
-    Node<Status> orConjunction = new Node<>();
+    Node<MyStatus> orConjunction = new Node<>();
     orConjunction.setStatusProvider( statusProvider );
     orConjunction.setPredicate( status -> status == TWO );
     orConjunction.setScene( expected );
@@ -159,7 +159,7 @@ public class NodeTest {
     statusProvider.setStatus( TWO );
     node.setStatusProvider( statusProvider );
     node.setPredicate( status -> status == TWO );
-    Node<Status> orConjunction = new Node<>();
+    Node<MyStatus> orConjunction = new Node<>();
     orConjunction.setStatusProvider( statusProvider );
     orConjunction.setPredicate( status -> status == ONE );
     node.setOrConjunction( orConjunction );
@@ -175,17 +175,17 @@ public class NodeTest {
   public void getStatusProvider() {
     node.setStatusProvider( statusProvider );
 
-    StatusProvider<Status> actual = node.getStatusProvider();
+    StatusProvider<MyStatus> actual = node.getStatusProvider();
 
     assertThat( actual ).isSameAs( statusProvider );
   }
 
   @Test
   public void getPredicate() {
-    Predicate<Status> expected = status -> true;
+    Predicate<MyStatus> expected = status -> true;
     node.setPredicate( expected );
 
-    Predicate<Status> actual = node.getPredicate();
+    Predicate<MyStatus> actual = node.getPredicate();
 
     assertThat( actual ).isSameAs( expected );
   }

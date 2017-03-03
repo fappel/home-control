@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.application.ZoneActivation;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
@@ -56,7 +56,7 @@ public class LampSwitchOperation implements ControlCenterOperation {
   }
 
   @Override
-  public void executeOn( Event event ) {
+  public void executeOn( StatusEvent event ) {
     event.getSource( ZoneActivation.class ).ifPresent( zoneActivation -> {
       Set<Lamp> on = collectLampsToSwitchOn( zoneActivation );
       Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );

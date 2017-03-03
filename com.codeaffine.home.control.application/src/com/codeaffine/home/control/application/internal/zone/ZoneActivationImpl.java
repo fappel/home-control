@@ -1,6 +1,8 @@
 package com.codeaffine.home.control.application.internal.zone;
 
+import static com.codeaffine.home.control.application.internal.zone.Messages.ZONE_ACTIVATION_STATUS_CHANGED_INFO;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.*;
 
 import java.util.HashSet;
@@ -9,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.codeaffine.home.control.application.ZoneActivation;
-import com.codeaffine.home.control.application.control.Event;
+import com.codeaffine.home.control.application.control.StatusProviderCore;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
@@ -19,34 +21,35 @@ import com.codeaffine.home.control.logger.Logger;
 
 public class ZoneActivationImpl implements ZoneActivation {
 
+  private final StatusProviderCore<Set<Entity<EntityDefinition<?>>>> statusProviderCore;
   private final Set<List<Entity<EntityDefinition<?>>>> traces;
   private final AdjacencyDefinition adjacencyDefinitions;
-  private final EventBus eventBus;
-  private final Logger logger;
 
   public ZoneActivationImpl( AdjacencyDefinition adjacencyDefinition, EventBus eventBus, Logger logger ) {
     verifyNotNull( adjacencyDefinition, "adjacencyDefinition" );
     verifyNotNull( eventBus, "eventBus" );
+    verifyNotNull( logger, "logger" );
 
+    this.statusProviderCore = new StatusProviderCore<>( eventBus, emptySet(), this, logger );
     this.adjacencyDefinitions = adjacencyDefinition;
-    this.eventBus = eventBus;
-    this.logger = logger;
     this.traces = new HashSet<>();
   }
 
   @Override
   public Set<Entity<EntityDefinition<?>>> getStatus() {
-    return traces.stream().flatMap( stack -> stack.stream() ).collect( toSet() );
+    return statusProviderCore.getStatus();
   }
 
   @Subscribe
   public void engagedZonesChanged( ZoneEvent event ) {
-    Set<?> oldZones = getStatus();
+    statusProviderCore.updateStatus( () -> update( event ),
+                                     ZONE_ACTIVATION_STATUS_CHANGED_INFO,
+                                     status -> createListOfEngagedZoneDefinitions() );
+  }
+
+  private Set<Entity<EntityDefinition<?>>> update( ZoneEvent event ) {
     doEngagedZonesChanged( event );
-    if( !oldZones.equals( getStatus() ) ) {
-      eventBus.post( new Event( this ) );
-      logger.info( "Engaged Zones: " + createListOfEngagedZoneDefinitions()  );
-    }
+    return traces.stream().flatMap( stack -> stack.stream() ).collect( toSet() );
   }
 
   private void doEngagedZonesChanged( ZoneEvent event ) {

@@ -1,3 +1,3 @@
 package com.codeaffine.home.control.application.internal.control;
 
-enum Status { ONE, TWO }
+public enum MyStatus { ONE, TWO }
