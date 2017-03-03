@@ -38,7 +38,7 @@ import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.event.Subscribe;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.home.control.type.DecimalType;
@@ -52,7 +52,7 @@ public class SystemWiringTest {
   private com.codeaffine.util.inject.Context context;
   private SystemConfiguration configuration;
   private ContextFactory contextFactory;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private SystemWiring wiring;
   private NumberItem item;
   @SuppressWarnings( "rawtypes" )

@@ -17,21 +17,21 @@ import com.codeaffine.home.control.internal.entity.SensorControlFactoryImpl;
 import com.codeaffine.home.control.internal.entity.ZoneProviderImpl;
 import com.codeaffine.home.control.internal.event.EventBusImpl;
 import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.util.inject.Context;
 
 public class SystemWiring {
 
   private final ContextFactory contextFactory;
-  private final SystemExecutor executor;
+  private final SystemExecutorImpl executor;
   private final Registry registry;
 
   private volatile SystemConfiguration configuration;
   private volatile ContextAdapter contextAdapter;
   private volatile Context context;
 
-  public SystemWiring( ContextFactory contextFactory, Registry registry, SystemExecutor executor ) {
+  public SystemWiring( ContextFactory contextFactory, Registry registry, SystemExecutorImpl executor ) {
     this.contextFactory = contextFactory;
     this.registry = registry;
     this.executor = executor;
@@ -41,13 +41,13 @@ public class SystemWiring {
     verifyNoConfigurationIsLoaded( configuration );
 
     this.configuration = configuration;
-    executor.execute( () -> doInitialize() );
+    executor.executeAsynchronously( () -> doInitialize() );
   }
 
   public void reset( SystemConfiguration configuration ) {
     verifyToUnloadMatchesLoadedConfiguration( configuration );
 
-    executor.execute( () -> doReset() );
+    executor.executeAsynchronously( () -> doReset() );
   }
 
   public void dispose() {

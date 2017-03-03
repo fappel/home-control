@@ -7,7 +7,7 @@ import org.eclipse.smarthome.core.events.EventPublisher;
 import com.codeaffine.home.control.internal.adapter.ItemAdapter;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.type.DecimalType;
 
@@ -17,7 +17,7 @@ public class NumberItemAdapter extends ItemAdapter<NumberItem, DecimalType> impl
                                ItemRegistryAdapter registry,
                                EventPublisher eventPublisher,
                                ShutdownDispatcher shutdownDispatcher,
-                               SystemExecutor executor )
+                               SystemExecutorImpl executor )
   {
     super( key, registry, eventPublisher, shutdownDispatcher, executor, DecimalType.class );
   }

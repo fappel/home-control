@@ -17,7 +17,7 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.ItemListener;
 import com.codeaffine.home.control.event.UpdateListener;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item<I, S> {
 
@@ -26,7 +26,7 @@ public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item
   private final ShutdownDispatcher shutdownDispatcher;
   private final EventPublisher eventPublisher;
   private final ItemRegistryAdapter registry;
-  private final SystemExecutor executor;
+  private final SystemExecutorImpl executor;
   private final Class<S> statusType;
   private final String key;
 
@@ -36,7 +36,7 @@ public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item
                          ItemRegistryAdapter registry,
                          EventPublisher eventPublisher,
                          ShutdownDispatcher shutdownDispatcher,
-                         SystemExecutor executor,
+                         SystemExecutorImpl executor,
                          Class<S> statusType )
   {
     verifyNotNull( key, "key" );

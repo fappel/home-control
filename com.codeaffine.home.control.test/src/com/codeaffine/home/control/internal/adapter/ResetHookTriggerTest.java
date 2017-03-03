@@ -6,12 +6,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class ResetHookTriggerTest {
 
   private ResetHookTrigger trigger;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private Runnable hook;
 
   @Before

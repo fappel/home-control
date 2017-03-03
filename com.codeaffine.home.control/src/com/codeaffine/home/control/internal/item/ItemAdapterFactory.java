@@ -10,7 +10,7 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.internal.adapter.ItemAdapter;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.NumberItem;
@@ -25,7 +25,7 @@ public class ItemAdapterFactory {
                    ItemRegistryAdapter registry,
                    EventPublisher publisher,
                    ShutdownDispatcher shutdownDispatcher,
-                   SystemExecutor executor )
+                   SystemExecutorImpl executor )
   {
     if( type == NumberItem.class ) {
       return new NumberItemAdapter( key, registry, publisher, shutdownDispatcher, executor );

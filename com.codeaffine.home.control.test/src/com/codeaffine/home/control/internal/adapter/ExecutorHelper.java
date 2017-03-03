@@ -8,26 +8,26 @@ import java.util.concurrent.TimeUnit;
 
 import org.mockito.invocation.InvocationOnMock;
 
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class ExecutorHelper {
 
-  public static SystemExecutor stubInThreadExecutor() {
-    SystemExecutor result = mock( SystemExecutor.class );
+  public static SystemExecutorImpl stubInThreadExecutor() {
+    SystemExecutorImpl result = mock( SystemExecutorImpl.class );
     doAnswer( invocation -> performExecute( invocation ) )
       .when( result )
-      .execute( any( Runnable.class ) );
+      .executeAsynchronously( any( Runnable.class ) );
     return result;
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static void stubWithFutureForFixedRateScheduling( SystemExecutor executor, ScheduledFuture future ) {
+  public static void stubWithFutureForFixedRateScheduling( SystemExecutorImpl executor, ScheduledFuture future ) {
     when( executor.scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) ) )
       .thenReturn( future );
   }
 
-  public static void blockExecutor( SystemExecutor executor ) {
-    doNothing().when( executor ).execute( any( Runnable.class ) );
+  public static void blockExecutor( SystemExecutorImpl executor ) {
+    doNothing().when( executor ).executeAsynchronously( any( Runnable.class ) );
   }
 
   private static Object performExecute( InvocationOnMock invocation ) {

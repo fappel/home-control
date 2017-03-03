@@ -10,7 +10,7 @@ import org.osgi.framework.BundleContext;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
 import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.internal.wiring.ContextFactory;
 import com.codeaffine.home.control.internal.wiring.SystemWiring;
 import com.codeaffine.home.control.logger.Logger;
@@ -22,7 +22,7 @@ public class Activator implements BundleActivator {
   private SystemConfigurationTracker configurationTracker;
   private ShutdownDispatcher shutdownDispatcher;
   private SystemLifeCycle lifeCycle;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
 
   @Override
   public void start( BundleContext context ) throws Exception {
@@ -43,7 +43,7 @@ public class Activator implements BundleActivator {
   }
 
   private static SystemWiring createSystemWiring(
-    BundleContext context, ShutdownDispatcher shutdownDispatcher, SystemExecutor executor )
+    BundleContext context, ShutdownDispatcher shutdownDispatcher, SystemExecutorImpl executor )
   {
     ItemRegistryAdapter registry = new ItemRegistryAdapter( context, shutdownDispatcher, executor );
     ContextFactory contextFactory = new SystemContextFactory( registry );
@@ -56,7 +56,7 @@ public class Activator implements BundleActivator {
     return result;
   }
 
-  private static SystemExecutor createApartmentThreadExecutor() {
-    return new SystemExecutor( newSingleThreadScheduledExecutor( new SystemThreadFactory() ) );
+  private static SystemExecutorImpl createApartmentThreadExecutor() {
+    return new SystemExecutorImpl( newSingleThreadScheduledExecutor( new SystemThreadFactory() ) );
   }
 }

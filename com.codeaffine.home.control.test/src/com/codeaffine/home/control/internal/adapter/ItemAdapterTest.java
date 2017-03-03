@@ -21,7 +21,7 @@ import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.event.UpdateListener;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.OpenClosedType;
@@ -35,7 +35,7 @@ public class ItemAdapterTest {
   private ItemAdapter<ContactItem, OpenClosedType> adapter;
   private ItemRegistryAdapter registry;
   private EventPublisher eventPublisher;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private GenericItem item;
   private Runnable resetHook;
 

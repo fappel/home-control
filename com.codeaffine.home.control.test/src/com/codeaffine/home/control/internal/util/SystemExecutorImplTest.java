@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.internal.util;
 
-import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.eq;
@@ -16,22 +16,23 @@ import org.mockito.InOrder;
 
 import com.codeaffine.home.control.logger.Logger;
 
-public class SystemExecutorTest {
+public class SystemExecutorImplTest {
 
   private static final String PROBLEM_MESSAGE = "problem-message";
   private static final long INITIAL_DELAY = 10L;
   private static final long TIME_OUT = 13L;
   private static final long PERIOD = 20L;
+  private static final long DELAY = 32L;
 
   private ScheduledExecutorService delegate;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private Logger logger;
 
   @Before
   public void setUp() {
     delegate = mock( ScheduledExecutorService.class );
     logger = mock( Logger.class );
-    executor = new SystemExecutor( delegate, logger );
+    executor = new SystemExecutorImpl( delegate, logger );
   }
 
   @Test
@@ -45,17 +46,17 @@ public class SystemExecutorTest {
   }
 
   @Test
-  public void execute() {
-    Runnable command = mock( Runnable.class );
+    public void executeAsynchronously() {
+      Runnable command = mock( Runnable.class );
 
-    executor.execute( command );
+      executor.executeAsynchronously( command );
 
-    ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
-    verify( delegate ).execute( captor.capture() );
-    assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
-    captor.getValue().run();
-    verify( command ).run();
-  }
+      ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+      verify( delegate ).execute( captor.capture() );
+      assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
+      captor.getValue().run();
+      verify( command ).run();
+    }
 
   @Test
   public void scheduleAtFixedRate() {
@@ -71,16 +72,29 @@ public class SystemExecutorTest {
   }
 
   @Test
-  public void executeWithProblem() {
+  public void schedule() {
     Runnable command = mock( Runnable.class );
-    RuntimeException problem = new RuntimeException( PROBLEM_MESSAGE );
-    doThrow( problem ).when( command ).run();
 
-    executor.execute( command );
+    executor.schedule( command, DELAY, MINUTES );
 
     ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
-    verify( delegate ).execute( captor.capture() );
+    verify( delegate ).schedule( captor.capture(), eq( DELAY ), eq( MINUTES ) );
+    assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
     captor.getValue().run();
-    verify( logger ).error( PROBLEM_MESSAGE, problem );
+    verify( command ).run();
   }
+
+  @Test
+    public void executeAsynchronouslyWithProblem() {
+      Runnable command = mock( Runnable.class );
+      RuntimeException problem = new RuntimeException( PROBLEM_MESSAGE );
+      doThrow( problem ).when( command ).run();
+
+      executor.executeAsynchronously( command );
+
+      ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+      verify( delegate ).execute( captor.capture() );
+      captor.getValue().run();
+      verify( logger ).error( PROBLEM_MESSAGE, problem );
+    }
 }

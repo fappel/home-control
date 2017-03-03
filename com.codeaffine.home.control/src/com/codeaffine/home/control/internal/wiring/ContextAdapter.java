@@ -2,8 +2,9 @@ package com.codeaffine.home.control.internal.wiring;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.EventBus;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 class ContextAdapter implements Context {
 
@@ -13,13 +14,13 @@ class ContextAdapter implements Context {
   private final TimerWiring timer;
 
   ContextAdapter(
-    com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutor executor, EventBus eventBus )
+    com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutorImpl executor, EventBus eventBus )
   {
     this.eventWiring = new ItemEventWiring( registry );
     this.timer = new TimerWiring( executor );
     this.eventBus = eventBus;
     this.delegate = delegate;
-    initialize();
+    initialize( eventBus, executor );
   }
 
   @Override
@@ -45,8 +46,9 @@ class ContextAdapter implements Context {
     timer.reset();
   }
 
-  private void initialize() {
+  private void initialize( EventBus eventBus, SystemExecutorImpl executor) {
     set( Context.class, this );
     set( EventBus.class, eventBus );
+    set( SystemExecutor.class, executor );
   }
 }

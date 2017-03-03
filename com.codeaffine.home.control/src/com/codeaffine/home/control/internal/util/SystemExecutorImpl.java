@@ -4,19 +4,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.logger.Logger;
 
-public class SystemExecutor {
+public class SystemExecutorImpl implements SystemExecutor {
 
   private final ScheduledExecutorService delegate;
   private final Logger logger;
 
-  public SystemExecutor( ScheduledExecutorService delegate ) {
+  public SystemExecutorImpl( ScheduledExecutorService delegate ) {
     this( delegate, new LoggerFactoryAdapter().getLogger( ScheduledExecutorService.class ) );
   }
 
-  SystemExecutor( ScheduledExecutorService delegate, Logger logger ) {
+  SystemExecutorImpl( ScheduledExecutorService delegate, Logger logger ) {
     this.delegate = delegate;
     this.logger = logger;
   }
@@ -26,11 +27,22 @@ public class SystemExecutor {
     delegate.awaitTermination( timeout, unit );
   }
 
-  public void execute( Runnable command ) {
-    delegate.execute( new SafeRunnable( command, logger ) );
+  @Override
+  public void executeAsynchronously( Runnable command ) {
+    delegate.execute( wrapCommand( command ) );
   }
 
+  @Override
   public ScheduledFuture<?> scheduleAtFixedRate( Runnable command, long initialDelay, long period, TimeUnit unit ) {
-    return delegate.scheduleAtFixedRate( new SafeRunnable( command, logger ), initialDelay, period, unit );
+    return delegate.scheduleAtFixedRate( wrapCommand( command ), initialDelay, period, unit );
+  }
+
+  @Override
+  public void schedule( Runnable command, long delay, TimeUnit unit ) {
+    delegate.schedule( wrapCommand( command ), delay, unit );
+  }
+
+  private SafeRunnable wrapCommand( Runnable command ) {
+    return new SafeRunnable( command, logger );
   }
 }

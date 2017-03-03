@@ -8,7 +8,7 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.ItemListener;
 import com.codeaffine.home.control.event.UpdateListener;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 class StateChangeAdapter<I extends Item<I, S>, S extends Status>
   implements StateChangeListener
@@ -17,9 +17,9 @@ class StateChangeAdapter<I extends Item<I, S>, S extends Status>
   private final ChangeListener<I, S> changeListener;
   private final UpdateListener<I ,S> updateListener;
   private final ItemAdapter<I, S> itemAdapter;
-  private final SystemExecutor executor;
+  private final SystemExecutorImpl executor;
 
-  StateChangeAdapter( ItemAdapter<I, S> itemAdapter, ItemListener<I, S> listener, SystemExecutor executor ) {
+  StateChangeAdapter( ItemAdapter<I, S> itemAdapter, ItemListener<I, S> listener, SystemExecutorImpl executor ) {
     this.changeListener = ensureChangeListener( listener );
     this.updateListener = ensureUpdateListener( listener );
     this.itemAdapter = itemAdapter;
@@ -28,12 +28,12 @@ class StateChangeAdapter<I extends Item<I, S>, S extends Status>
 
   @Override
   public void stateUpdated( org.eclipse.smarthome.core.items.Item item, State state ) {
-    executor.execute( () -> updateListener.itemUpdated( new UpdateEventImpl<>( itemAdapter, state ) ) );
+    executor.executeAsynchronously( () -> updateListener.itemUpdated( new UpdateEventImpl<>( itemAdapter, state ) ) );
   }
 
   @Override
   public void stateChanged( org.eclipse.smarthome.core.items.Item item, State oldState, State newState ) {
-    executor.execute( () -> changeListener.itemChanged( new ChangeEventImpl<>( itemAdapter, oldState, newState )  ) );
+    executor.executeAsynchronously( () -> changeListener.itemChanged( new ChangeEventImpl<>( itemAdapter, oldState, newState )  ) );
   }
 
   ChangeListener<I,S> getChangeListener() {

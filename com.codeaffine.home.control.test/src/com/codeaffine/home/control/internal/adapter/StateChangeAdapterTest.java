@@ -16,7 +16,7 @@ import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.UpdateEvent;
 import com.codeaffine.home.control.event.UpdateListener;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.type.OpenClosedType;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -25,7 +25,7 @@ public class StateChangeAdapterTest {
   private ChangeListener changeListener;
   private UpdateListener updateListener;
   private ItemAdapter itemAdapter;
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
 
   @Before
   public void setUp() {

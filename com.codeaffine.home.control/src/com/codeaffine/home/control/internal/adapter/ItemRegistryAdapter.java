@@ -17,19 +17,19 @@ import org.osgi.framework.BundleContext;
 import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Status;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class ItemRegistryAdapter implements Registry {
 
   private final Map<String, Item<? extends Item<?, ?>, ? extends Status>> referencedItemAdapters;
   private final ShutdownDispatcher shutdownDispatcher;
   private final ResetHookTrigger resetHookTrigger;
-  private final SystemExecutor executor;
+  private final SystemExecutorImpl executor;
   private final EventPublisher eventPublisher;
   private final ItemRegistry registry;
 
   public ItemRegistryAdapter(
-    BundleContext bundleContext, ShutdownDispatcher shutdownDispatcher, SystemExecutor executor )
+    BundleContext bundleContext, ShutdownDispatcher shutdownDispatcher, SystemExecutorImpl executor )
   {
     this.shutdownDispatcher = shutdownDispatcher;
     this.executor = executor;

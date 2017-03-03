@@ -12,11 +12,12 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Observe;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.util.inject.Context;
@@ -26,7 +27,7 @@ public class ContextAdapterTest {
   private static final String ITEM_NAME = "itemName";
   private static final long PERIOD = 5L;
 
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private ContextAdapter adapter;
   private Registry registry;
   private EventBus eventBus;
@@ -48,16 +49,16 @@ public class ContextAdapterTest {
     item = mock( NumberItem.class );
     registry = stubRegistry( ITEM_NAME, item );
     context.set( Registry.class, registry );
-    executor = mock( SystemExecutor.class );
+    executor = mock( SystemExecutorImpl.class );
     eventBus = mock( EventBus.class );
     adapter = new ContextAdapter( context, registry, executor, eventBus );
   }
 
   @Test
   public void initialState() {
-    com.codeaffine.home.control.Context actual = context.get( com.codeaffine.home.control.Context.class );
-
-    assertThat( actual ).isSameAs( adapter );
+    assertThat( context.get( com.codeaffine.home.control.Context.class ) ).isSameAs( adapter );
+    assertThat( context.get( EventBus.class ) ).isSameAs( eventBus );
+    assertThat( context.get( SystemExecutor.class ) ).isSameAs( executor );
   }
 
   @Test

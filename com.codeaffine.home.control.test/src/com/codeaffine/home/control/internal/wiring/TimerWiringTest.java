@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class TimerWiringTest {
 
@@ -22,7 +22,7 @@ public class TimerWiringTest {
   private static final long INITIAL_DELAY = 0L;
   private static final long PERIOD = 10L;
 
-  private SystemExecutor executor;
+  private SystemExecutorImpl executor;
   private TimerWiring timer;
 
   private static class Bean {
@@ -84,7 +84,7 @@ public class TimerWiringTest {
 
   @Before
   public void setUp() {
-    executor = mock( SystemExecutor.class );
+    executor = mock( SystemExecutorImpl.class );
     timer = new TimerWiring( executor );
   }
 

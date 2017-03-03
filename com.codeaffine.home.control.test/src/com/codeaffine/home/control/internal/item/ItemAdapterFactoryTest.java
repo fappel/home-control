@@ -15,7 +15,7 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.internal.adapter.ItemAdapter;
 import com.codeaffine.home.control.internal.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.internal.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.NumberItem;
@@ -60,7 +60,7 @@ public class ItemAdapterFactoryTest {
     ItemRegistryAdapter registry = mock( ItemRegistryAdapter.class );
     EventPublisher publisher = mock( EventPublisher.class );
     ShutdownDispatcher shutdownDispatcher = mock( ShutdownDispatcher.class );
-    SystemExecutor executor = mock( SystemExecutor.class );
+    SystemExecutorImpl executor = mock( SystemExecutorImpl.class );
 
     ItemAdapter<? extends Item<?, ?>, ? extends Status> actual
       = ItemAdapterFactory.createAdapter( ITEM_NAME,

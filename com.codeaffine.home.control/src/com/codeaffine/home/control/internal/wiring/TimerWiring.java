@@ -13,14 +13,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.internal.util.SystemExecutor;
+import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
 public class TimerWiring {
 
   private final Set<ScheduledFuture<?>> schedules;
-  private final SystemExecutor executor;
+  private final SystemExecutorImpl executor;
 
-  public TimerWiring( SystemExecutor executor ) {
+  public TimerWiring( SystemExecutorImpl executor ) {
     this.schedules = new HashSet<>();
     this.executor = executor;
   }
