@@ -6,12 +6,12 @@ import static java.time.LocalDateTime.now;
 
 import java.util.Collection;
 
-import com.codeaffine.home.control.application.SunPositionProvider;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
 import com.codeaffine.home.control.application.control.StatusEvent;
-import com.codeaffine.home.control.application.internal.activity.ActivityImpl;
+import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
@@ -54,7 +54,7 @@ public class AdjustBrightnessOperation implements ControlCenterOperation {
 
   @Override
   public void executeOn( StatusEvent event ) {
-    event.getSource( ActivityImpl.class ).ifPresent( activity -> {
+    event.getSource( ActivityProviderImpl.class ).ifPresent( activity -> {
       brightnessMinimum = brightnessMiniumumBelowThreshold;
       if( activity.getStatus().compareTo( activityThreshold ) > 1 ) {
         brightnessMinimum = brightnessMinimumAboveThreshold;

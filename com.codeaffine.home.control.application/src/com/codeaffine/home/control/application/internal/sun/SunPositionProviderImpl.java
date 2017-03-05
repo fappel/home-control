@@ -8,9 +8,9 @@ import static net.e175.klaus.solarpositioning.SPA.calculateSolarPosition;
 import java.util.GregorianCalendar;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.SunPosition;
-import com.codeaffine.home.control.application.SunPositionProvider;
 import com.codeaffine.home.control.application.control.StatusProviderCore;
+import com.codeaffine.home.control.application.status.SunPosition;
+import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 

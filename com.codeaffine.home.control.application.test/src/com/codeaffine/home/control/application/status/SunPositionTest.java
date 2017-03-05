@@ -1,9 +1,10 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class SunPositionTest {

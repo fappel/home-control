@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.operation;
 
-import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSwitchStrategy.ZONE_ACTIVATION;
+import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSwitchSelectionStrategy.ZONE_ACTIVATION;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Collections.emptySet;
@@ -11,11 +11,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import com.codeaffine.home.control.application.ZoneActivation;
 import com.codeaffine.home.control.application.control.ControlCenterOperation;
 import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -25,10 +25,10 @@ public class LampSwitchOperation implements ControlCenterOperation {
 
   private final EntityRegistry entityRegistry;
 
-  private LampSwitchStrategy lampSwitchStrategy;
+  private LampSwitchSelectionStrategy lampSwitchSelectionStrategy;
   private Predicate<Lamp> filter;
 
-  public enum LampSwitchStrategy {
+  public enum LampSwitchSelectionStrategy {
     ALL, NONE, ZONE_ACTIVATION
   }
 
@@ -43,32 +43,32 @@ public class LampSwitchOperation implements ControlCenterOperation {
     this.filter = filter;
   }
 
-  public void setLampSwitchStrategy( LampSwitchStrategy lampSwitchStrategy ) {
-    verifyNotNull( lampSwitchStrategy, "lampSwitchStrategy" );
+  public void setLampSwitchSelectionStrategy( LampSwitchSelectionStrategy lampSwitchSelectionStrategy ) {
+    verifyNotNull( lampSwitchSelectionStrategy, "lampSwitchSelectionStrategy" );
 
-    this.lampSwitchStrategy = lampSwitchStrategy;
+    this.lampSwitchSelectionStrategy = lampSwitchSelectionStrategy;
   }
 
   @Override
   public void prepare() {
     filter = lamp -> true;
-    lampSwitchStrategy = ZONE_ACTIVATION;
+    lampSwitchSelectionStrategy = ZONE_ACTIVATION;
   }
 
   @Override
   public void executeOn( StatusEvent event ) {
-    event.getSource( ZoneActivation.class ).ifPresent( zoneActivation -> {
+    event.getSource( ZoneActivationProvider.class ).ifPresent( zoneActivation -> {
       Set<Lamp> on = collectLampsToSwitchOn( zoneActivation );
       Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
-      Set<Lamp> off = lamps.stream().filter( bulb -> !on.contains( bulb ) ).collect( toSet() );
+      Set<Lamp> off = lamps.stream().filter( lamp -> !on.contains( lamp ) ).collect( toSet() );
       on.forEach( lamp -> lamp.setOnOffStatus( ON ) );
       off.forEach( lamp -> lamp.setOnOffStatus( OFF ) );
     } );
   }
 
-  private Set<Lamp> collectLampsToSwitchOn( ZoneActivation zoneActivation ) {
+  private Set<Lamp> collectLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
     Collection<Lamp> on = null;
-    switch( lampSwitchStrategy ) {
+    switch( lampSwitchSelectionStrategy ) {
       case ZONE_ACTIVATION:
         on = collectZoneLampsToSwitchOn( zoneActivation );
         break;
@@ -79,16 +79,16 @@ public class LampSwitchOperation implements ControlCenterOperation {
         on = emptySet();
         break;
       default:
-        throw new IllegalStateException( "Uncovered LampActivationStrategy: " + lampSwitchStrategy );
+        throw new IllegalStateException( "Uncovered LampActivationStrategy: " + lampSwitchSelectionStrategy );
     }
     return new HashSet<>( on );
   }
 
-  private Set<Lamp> collectZoneLampsToSwitchOn( ZoneActivation zoneActivation ) {
+  private Set<Lamp> collectZoneLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
     return zoneActivation
       .getStatus()
       .stream()
-      .flatMap( zone -> getZoneLamps( zone ).stream() )
+      .flatMap( activation -> getZoneLamps( activation.getZone() ).stream() )
       .filter( filter )
       .collect( toSet() );
   }

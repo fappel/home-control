@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.status;
 
-import static com.codeaffine.home.control.application.Messages.*;
+import static com.codeaffine.home.control.application.status.Messages.*;
 import static com.codeaffine.util.ArgumentVerification.verifyCondition;
 import static java.lang.Double.valueOf;
 

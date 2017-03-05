@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.status;
 
 class Messages {
 

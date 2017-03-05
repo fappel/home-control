@@ -15,15 +15,15 @@ import java.util.Queue;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.Activity;
 import com.codeaffine.home.control.application.control.StatusProviderCore;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
-public class ActivityImpl implements Activity {
+public class ActivityProviderImpl implements ActivityProvider {
 
   static final long CALCULATION_INTERVAL_DURATION = 10L; // Seconds
   static final long OBSERVATION_TIME_FRAME = 5L; // Minutes
@@ -38,7 +38,7 @@ public class ActivityImpl implements Activity {
 
   private Supplier<LocalDateTime> timestampSupplier;
 
-  public ActivityImpl( EntityRegistry entityRegistry, EventBus eventBus, Logger logger ) {
+  public ActivityProviderImpl( EntityRegistry entityRegistry, EventBus eventBus, Logger logger ) {
     verifyNotNull( entityRegistry, "entityRegistry" );
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( logger, "logger" );

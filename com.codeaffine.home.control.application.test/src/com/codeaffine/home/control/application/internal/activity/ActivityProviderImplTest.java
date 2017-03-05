@@ -12,20 +12,20 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.Activity;
 import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 
-public class ActivityImplTest {
+public class ActivityProviderImplTest {
 
   private MotionSensor motionSensor1;
   private MotionSensor motionSensor2;
-  private ActivityImpl activity;
+  private ActivityProviderImpl activity;
   private EventBus eventBus;
   private Logger logger;
 
@@ -36,17 +36,17 @@ public class ActivityImplTest {
     EntityRegistry entityRegistry = stubEntityRegistry( motionSensor1, motionSensor2 );
     eventBus = mock( EventBus.class );
     logger = mock( Logger.class );
-    activity = new ActivityImpl( entityRegistry, eventBus, logger );
+    activity = new ActivityProviderImpl( entityRegistry, eventBus, logger );
   }
 
   @Test
   public void calculateRate() {
-    int dryRun = captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 2 );
+    int dryRun = captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 2 );
     stubMotionSensorAsEngaged( motionSensor1 );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 3 );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 3 );
     stubMotionSensorAsReleased( motionSensor1 );
     stubMotionSensorAsEngaged( motionSensor2 );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 6 );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 6 );
 
     activity.calculateRate();
     Percent actual = activity.getStatus();
@@ -59,7 +59,7 @@ public class ActivityImplTest {
   @Test
   public void calculateRateOnMaximumOfExpectedActivations() {
     stubMotionSensorAsEngaged( motionSensor1 );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue()  );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue()  );
 
     activity.calculateRate();
     Percent actual = activity.getStatus();
@@ -71,7 +71,7 @@ public class ActivityImplTest {
   @Test
   public void calculateRateOnExpectedActivationOverflow() {
     stubMotionSensorAsEngaged( motionSensor1 );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() + 1 );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() + 1 );
 
     activity.calculateRate();
     Percent actual = activity.getStatus();
@@ -92,7 +92,7 @@ public class ActivityImplTest {
 
   @Test
   public void calculateRateIfNoMotionActivationHasBeenCaptured() {
-    int dryRun = captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 2 );
+    int dryRun = captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 2 );
 
     activity.calculateRate();
     Percent actual = activity.getStatus();
@@ -105,14 +105,14 @@ public class ActivityImplTest {
 
   @Test
   public void calculateRateWithExpiredTimestamps() {
-    int dryRun = captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 3 );
+    int dryRun = captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 3 );
     stubMotionSensorAsEngaged( motionSensor1 );
-    activity.setTimestampSupplier( () -> now().minusMinutes( ActivityImpl.OBSERVATION_TIME_FRAME + 1 ) );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 3 );
+    activity.setTimestampSupplier( () -> now().minusMinutes( ActivityProviderImpl.OBSERVATION_TIME_FRAME + 1 ) );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 3 );
     stubMotionSensorAsReleased( motionSensor1 );
     stubMotionSensorAsEngaged( motionSensor2 );
     activity.setTimestampSupplier( () -> now() );
-    captureMotionActivations( ActivityImpl.MAX_ACTIVATIONS.intValue() / 3 );
+    captureMotionActivations( ActivityProviderImpl.MAX_ACTIVATIONS.intValue() / 3 );
 
     activity.calculateRate();
     Percent actual = activity.getStatus();
@@ -124,21 +124,21 @@ public class ActivityImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEntityRegistryArgument() {
-    new ActivityImpl( null, eventBus, logger );
+    new ActivityProviderImpl( null, eventBus, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEventBusArgument() {
-    new ActivityImpl( mock( EntityRegistry.class ), null, logger );
+    new ActivityProviderImpl( mock( EntityRegistry.class ), null, logger );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsLoggerArgument() {
-    new ActivityImpl( mock( EntityRegistry.class ), eventBus, null );
+    new ActivityProviderImpl( mock( EntityRegistry.class ), eventBus, null );
   }
 
   private void verifyEventNotification() {
-    assertThat( captureEvent( eventBus, Activity.class ) ).hasValue( activity );
+    assertThat( captureEvent( eventBus, ActivityProvider.class ) ).hasValue( activity );
     verify( logger ).info( INFO_ACTIVITY_RATE, activity.getStatus() );
   }
 

@@ -5,12 +5,14 @@ import static com.codeaffine.home.control.application.internal.control.MyStatus.
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.application.control.Scene;
+import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class SceneSelectorImplTest {
@@ -18,34 +20,52 @@ public class SceneSelectorImplTest {
   private MyStatusProvider myStatusProvider;
   private SceneSelectorImpl sceneSelector;
   private Context context;
+  private Logger logger;
 
   @Before
   public void setUp() {
     myStatusProvider = new MyStatusProvider();
     context = new TestContext();
     context.set( MyStatusProvider.class, myStatusProvider );
-    sceneSelector = new SceneSelectorImpl( context );
+    logger = mock( Logger.class );
+    sceneSelector = new SceneSelectorImpl( context, logger );
   }
 
   @Test
-  public void getDecisionWithMatchOfFirstCondition() {
+  public void selectWithMatchOfFirstCondition() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
+    verify( logger ).info( INFO_SELECTED_SCENE, Scene1.class.getSimpleName() );
   }
 
   @Test
-  public void getDecisionTwice() {
+  public void selectSameSceneTwice() {
+    myStatusProvider.setStatus( ONE );
+
+    sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
+    .thenSelect( Scene1.class );
+    Scene first = sceneSelector.select();
+    Scene second = sceneSelector.select();
+
+    assertThat( first )
+      .isSameAs( second )
+      .isInstanceOf( Scene1.class );
+    verify( logger ).info( INFO_SELECTED_SCENE, Scene1.class.getSimpleName() );
+  }
+
+  @Test
+  public void selectTwice() {
     myStatusProvider.setStatus( ONE );
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
 
-    Scene first = sceneSelector.getDecision();
-    Scene second = sceneSelector.getDecision();
+    Scene first = sceneSelector.select();
+    Scene second = sceneSelector.select();
 
     assertThat( first )
       .isInstanceOf( Scene1.class )
@@ -53,44 +73,44 @@ public class SceneSelectorImplTest {
   }
 
   @Test
-  public void getDecisionWithMatchOfSecondCondition() {
+  public void selectWithMatchOfSecondCondition() {
     myStatusProvider.setStatus( TWO );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseWhenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
       .thenSelect( Scene2.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene2.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfFallback() {
+  public void selectWithMatchOfFallback() {
     myStatusProvider.setStatus( TWO );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseSelect( Scene2.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene2.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfFirstNestedCondition() {
+  public void selectWithMatchOfFirstNestedCondition() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
         .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfSecondNestedCondition() {
+  public void selectWithMatchOfSecondNestedCondition() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
@@ -98,69 +118,69 @@ public class SceneSelectorImplTest {
         .thenSelect( Scene1.class )
       .otherwiseWhenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
         .thenSelect( Scene2.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene2.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfNestedFallBack() {
+  public void selectWithMatchOfNestedFallBack() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
         .thenSelect( Scene1.class )
       .otherwiseSelect( Scene2.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene2.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfAndConjunctionExpression() {
+  public void selectWithMatchOfAndConjunctionExpression() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .and( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfFirstOrConjunctionOperand() {
+  public void selectWithMatchOfFirstOrConjunctionOperand() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
       .or( MyStatusProvider.class ).matches( status -> status == TWO )
       .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfSecondOrConjunctionOperand() {
+  public void selectWithMatchOfSecondOrConjunctionOperand() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
       .or( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
   }
 
   @Test
-  public void getDecisionWithMatchOfThirdOrConjunctionOperand() {
+  public void selectWithMatchOfThirdOrConjunctionOperand() {
     myStatusProvider.setStatus( ONE );
 
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
       .and( MyStatusProvider.class ).matches( status -> status == TWO )
       .or( MyStatusProvider.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    Scene actual = sceneSelector.getDecision();
+    Scene actual = sceneSelector.select();
 
     assertThat( actual ).isInstanceOf( Scene1.class );
   }
@@ -174,8 +194,8 @@ public class SceneSelectorImplTest {
     sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
       .thenSelect( Scene1.class );
 
-    Scene first = sceneSelector.getDecision();
-    Scene second = sceneSelector.getDecision();
+    Scene first = sceneSelector.select();
+    Scene second = sceneSelector.select();
 
     assertThat( first )
       .isInstanceOf( Scene1.class )

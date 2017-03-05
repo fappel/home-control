@@ -9,15 +9,19 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.control.SceneSelector;
 import com.codeaffine.home.control.application.control.StatusProvider;
+import com.codeaffine.home.control.logger.Logger;
 
 public class SceneSelectorImpl implements SceneSelector {
 
   private final Context context;
+  private final Logger logger;
 
   private Node<?> root;
+  private Scene selection;
 
-  public SceneSelectorImpl( Context context ) {
+  public SceneSelectorImpl( Context context, Logger logger ) {
     this.context = context;
+    this.logger = logger;
   }
 
   @Override
@@ -29,8 +33,13 @@ public class SceneSelectorImpl implements SceneSelector {
     return result;
   }
 
-  public Scene getDecision() {
-    return root.evaluate();
+  public Scene select() {
+    Scene oldSelection = selection;
+    selection = root.evaluate();
+    if( oldSelection != selection ) {
+      logger.info( INFO_SELECTED_SCENE, selection.getClass().getSimpleName() );
+    }
+    return selection;
   }
 
   static <T extends Scene> T getScene( Context context, Class<T> sceneType ) {

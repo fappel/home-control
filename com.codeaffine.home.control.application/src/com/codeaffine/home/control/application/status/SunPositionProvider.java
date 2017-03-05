@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application;
+package com.codeaffine.home.control.application.status;
 
 import com.codeaffine.home.control.application.control.StatusProvider;
 
