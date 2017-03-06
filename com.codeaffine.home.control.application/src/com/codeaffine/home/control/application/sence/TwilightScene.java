@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.application.sence;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSwitchSelectionStrategy.ALL;
-import static com.codeaffine.home.control.application.type.Percent.P_020;
+import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.ALL;
+import static com.codeaffine.home.control.application.type.Percent.P_070;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ import com.codeaffine.home.control.application.status.ActivityProvider;
 
 public class TwilightScene implements Scene {
 
-  private static final Collection<LampDefinition> NIGHT_LAMPS
+  private static final Collection<LampDefinition> TWILIGHT_LAMPS
     = asList( SinkUplight,
               ChimneyUplight, WindowUplight,
               BedStand,
@@ -37,11 +37,11 @@ public class TwilightScene implements Scene {
 
   @Override
   public void activate() {
-    if( activity.getStatus().compareTo( P_020 ) < 0 ) {
-      lampSwitchOperation.setLampSwitchSelectionStrategy( ALL );
+    if( activity.getStatus().compareTo( P_070 ) < 0 ) {
+      lampSwitchOperation.setLampSelectionStrategy( ALL );
     }
-    lampSwitchOperation.setLampFilter( lamp -> NIGHT_LAMPS.contains( lamp.getDefinition() ) );
-    adjustBrightnessOperation.setActivityThreshold( P_020 );
-    adjustBrightnessOperation.setBrightnessMinimumAboveThreshold( P_020 );
+    lampSwitchOperation.setLampFilter( lamp -> TWILIGHT_LAMPS.contains( lamp.getDefinition() ) );
+    adjustBrightnessOperation.setActivityThreshold( P_070 );
+    adjustBrightnessOperation.setBrightnessMinimumAboveThreshold( P_070 );
   }
 }

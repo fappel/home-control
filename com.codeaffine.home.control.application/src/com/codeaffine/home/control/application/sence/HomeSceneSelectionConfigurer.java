@@ -1,7 +1,6 @@
 package com.codeaffine.home.control.application.sence;
 
-import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.Hall;
-import static java.time.LocalDateTime.now;
+import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
 
 import java.util.Set;
 
@@ -11,13 +10,16 @@ import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public class HomeSceneSelectionConfigurer implements SceneSelectionConfigurer {
 
   @Override
   public void configure( SceneSelector sceneSelector ) {
-    sceneSelector.whenStatusOf( ZoneActivationProvider.class ).matches( zones -> lastPersonHasLeftHall( zones ) )
+    sceneSelector.whenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, Hall ) )
       .thenSelect( AwayScene.class )
+    .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BedRoom ) )
+      .thenSelect( SleepScene.class )
     .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
       .thenSelect( DayScene.class )
     .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
@@ -25,11 +27,10 @@ public class HomeSceneSelectionConfigurer implements SceneSelectionConfigurer {
     .otherwiseSelect( NightScene.class );
   }
 
-  private static boolean lastPersonHasLeftHall( Set<ZoneActivation> zones ) {
+  private static boolean singleZoneReleaseOn( Set<ZoneActivation> zones, EntityDefinition<?> zoneDefinition ) {
     return zones.size() == 1
-        && zones.iterator().next().getZone().getDefinition() == Hall
+        && zones.iterator().next().getZone().getDefinition() == zoneDefinition
         && zones.iterator().next().getReleaseTime().isPresent();
-//        && zones.iterator().next().getReleaseTime().get().plusSeconds( 40L ).isBefore( now() );
   }
 
   private static boolean sunIsAboveHorizon( SunPosition position ) {

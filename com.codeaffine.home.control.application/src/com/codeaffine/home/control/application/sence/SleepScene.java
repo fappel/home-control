@@ -6,12 +6,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 
-public class AwayScene implements Scene {
+public class SleepScene implements Scene {
 
   private final LampSwitchOperation lampSwitchOperation;
   private final FollowUpTimer followUpTimer;
 
-  public AwayScene( LampSwitchOperation lampSwitchOperation, FollowUpTimer followUpTimer ) {
+  public SleepScene( LampSwitchOperation lampSwitchOperation, FollowUpTimer followUpTimer ) {
     this.lampSwitchOperation = lampSwitchOperation;
     this.followUpTimer = followUpTimer;
   }
