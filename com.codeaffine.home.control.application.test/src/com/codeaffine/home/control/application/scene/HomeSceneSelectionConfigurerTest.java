@@ -22,7 +22,7 @@ import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
-import com.codeaffine.home.control.internal.status.SceneSelectorImpl;
+import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.test.util.context.TestContext;

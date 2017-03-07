@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Control
 Bundle-SymbolicName: com.codeaffine.home.control.engine
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: com.codeaffine.home.control.internal.activation.Activator
+Bundle-Activator: com.codeaffine.home.control.engine.activation.Activator
 Bundle-Vendor: CODEAFFINE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.smarthome.core.common.registry,
@@ -19,13 +19,13 @@ Import-Package: org.eclipse.smarthome.core.common.registry,
 Require-Bundle: com.codeaffine.util,
  com.google.guava;bundle-version="10.0.1",
  com.codeaffine.home.control.api;bundle-version="1.0.0"
-Export-Package: com.codeaffine.home.control.internal.activation,
- com.codeaffine.home.control.internal.adapter,
- com.codeaffine.home.control.internal.entity,
- com.codeaffine.home.control.internal.event,
- com.codeaffine.home.control.internal.item,
- com.codeaffine.home.control.internal.logger,
- com.codeaffine.home.control.internal.status,
- com.codeaffine.home.control.internal.type,
- com.codeaffine.home.control.internal.util,
- com.codeaffine.home.control.internal.wiring
+Export-Package: com.codeaffine.home.control.engine.activation,
+ com.codeaffine.home.control.engine.adapter,
+ com.codeaffine.home.control.engine.entity,
+ com.codeaffine.home.control.engine.event,
+ com.codeaffine.home.control.engine.item,
+ com.codeaffine.home.control.engine.logger,
+ com.codeaffine.home.control.engine.status,
+ com.codeaffine.home.control.engine.type,
+ com.codeaffine.home.control.engine.util,
+ com.codeaffine.home.control.engine.wiring

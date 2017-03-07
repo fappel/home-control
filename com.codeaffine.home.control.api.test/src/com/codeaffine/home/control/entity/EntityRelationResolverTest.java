@@ -10,12 +10,12 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.engine.entity.EntityRegistryImpl;
+import com.codeaffine.home.control.engine.entity.EntityRelationProviderImpl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
-import com.codeaffine.home.control.internal.entity.EntityRegistryImpl;
-import com.codeaffine.home.control.internal.entity.EntityRelationProviderImpl;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.entity.MyEntity;
 import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
