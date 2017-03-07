@@ -16,11 +16,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.StatusEvent;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

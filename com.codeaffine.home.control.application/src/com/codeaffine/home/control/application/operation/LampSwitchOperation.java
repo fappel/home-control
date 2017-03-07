@@ -17,19 +17,19 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import com.codeaffine.home.control.application.control.ControlCenterOperation;
-import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.sence.FollowUpTimer;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import com.codeaffine.home.control.status.HomeControlOperation;
+import com.codeaffine.home.control.status.FollowUpTimer;
+import com.codeaffine.home.control.status.StatusEvent;
 
-public class LampSwitchOperation implements ControlCenterOperation {
+public class LampSwitchOperation implements HomeControlOperation {
 
   static final TimeUnit LAMP_DELAY_TIMEUNIT = SECONDS;
   static final long LAMP_DELAY_TIME = 2L;

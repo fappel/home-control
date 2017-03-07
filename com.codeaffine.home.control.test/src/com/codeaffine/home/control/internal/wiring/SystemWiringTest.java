@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.internal.wiring;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.internal.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.internal.wiring.Messages.*;
+import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +27,6 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
-import com.codeaffine.home.control.entity.MyEntityDefinition;
-import com.codeaffine.home.control.entity.MyEntityProvider;
 import com.codeaffine.home.control.entity.ZoneEvent;
 import com.codeaffine.home.control.entity.ZoneProvider;
 import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
@@ -41,6 +39,16 @@ import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
+import com.codeaffine.home.control.status.ControlCenter;
+import com.codeaffine.home.control.status.SceneSelector;
+import com.codeaffine.home.control.status.StatusProviderRegistry;
+import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
+import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
+import com.codeaffine.home.control.test.util.status.MyHomeControlOperation;
+import com.codeaffine.home.control.test.util.status.MyStatus;
+import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.Scene1;
+import com.codeaffine.home.control.test.util.status.Scene2;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.util.Disposable;
 
@@ -74,17 +82,33 @@ public class SystemWiringTest {
     }
   }
 
-
   static class Configuration implements SystemConfiguration {
 
     @Override
-    public void registerEntities( EntityRegistry entityRegistry ) {
+    public void configureEntities( EntityRegistry entityRegistry ) {
       entityRegistry.register( MyEntityProvider.class );
     }
 
     @Override
     public void configureFacility( Facility facility ) {
       facility.equip( PARENT ).with( CHILD );
+    }
+
+    @Override
+    public void configureStatusProvider( StatusProviderRegistry statusProviderRegistry ) {
+      statusProviderRegistry.register( MyStatusProvider.class, MyStatusProvider.class );
+    }
+
+    @Override
+    public void configureHomeControlOperations( ControlCenter controlCenter ) {
+      controlCenter.registerOperation( MyHomeControlOperation.class );
+    }
+
+    @Override
+    public void configureSceneSelection( SceneSelector sceneSelector ) {
+      sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == MyStatus.ONE )
+        .thenSelect( Scene1.class )
+      .otherwiseSelect( Scene2.class );
     }
 
     @Override
@@ -106,25 +130,14 @@ public class SystemWiringTest {
   }
 
   @Test
-  @SuppressWarnings( "unchecked" )
   public void initialize() {
     wiring.initialize( configuration );
 
     ArgumentCaptor<Context> contextCaptor = forClass( Context.class );
-    InOrder order = inOrder( contextFactory, configuration, executor, item );
-    order.verify( contextFactory ).create();
-    order.verify( configuration ).registerEntities( any( EntityRegistry.class ) );
-    order.verify( configuration ).configureFacility( any( Facility.class ) );
-    order.verify( configuration ).configureSystem( contextCaptor.capture() );
-    order.verify( item ).addChangeListener( any( ChangeListener.class ) );
-    order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
-    order.verifyNoMoreInteractions();
-    assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
-    assertThat( context.get( EventBus.class ) ).isNotNull();
-    assertThat( context.get( ZoneProvider.class ) ).isNotNull();
-    assertThat( context.get( LoggerFactory.class ) ).isNotNull();
-    assertThat( wiring.getConfiguration() ).isNotNull();
+    verifyInitializationOrder( contextCaptor );
+    verifyContextContent( contextCaptor );
     verifyEntitySetup();
+    verifyControlCenterSetup();
   }
 
   @Test
@@ -235,6 +248,29 @@ public class SystemWiringTest {
     factory.engage();
   }
 
+  @SuppressWarnings( "unchecked" )
+  private void verifyInitializationOrder( ArgumentCaptor<Context> contextCaptor ) {
+    InOrder order = inOrder( contextFactory, configuration, executor, item );
+    order.verify( contextFactory ).create();
+    order.verify( configuration ).configureEntities( any( EntityRegistry.class ) );
+    order.verify( configuration ).configureFacility( any( Facility.class ) );
+    order.verify( configuration ).configureStatusProvider( any( StatusProviderRegistry.class ) );
+    order.verify( configuration ).configureHomeControlOperations( any( ControlCenter.class ) );
+    order.verify( configuration ).configureSceneSelection( any( SceneSelector.class ) );
+    order.verify( configuration ).configureSystem( contextCaptor.capture() );
+    order.verify( item ).addChangeListener( any( ChangeListener.class ) );
+    order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
+    order.verifyNoMoreInteractions();
+  }
+
+  private void verifyContextContent( ArgumentCaptor<Context> contextCaptor ) {
+    assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
+    assertThat( context.get( EventBus.class ) ).isNotNull();
+    assertThat( context.get( ZoneProvider.class ) ).isNotNull();
+    assertThat( context.get( LoggerFactory.class ) ).isNotNull();
+    assertThat( wiring.getConfiguration() ).isNotNull();
+  }
+
   private void verifyEntitySetup() {
     EntityRelationProvider relationProvider = context.get( EntityRelationProvider.class );
     EntityRegistry entityRegistry = context.get( EntityRegistry.class );
@@ -242,6 +278,14 @@ public class SystemWiringTest {
     assertThat( relationProvider.findByDefinition( PARENT ) ).isNotNull();
     assertThat( entityRegistry.findByDefinition( CHILD ) ).isNotNull();
     assertThat( entityRegistry.findByDefinition( PARENT ) ).isNotNull();
+  }
+
+  private void verifyControlCenterSetup() {
+    assertThat( context.get( MyStatusProvider.class ) ).isNotNull();
+    assertThat( context.get( MyHomeControlOperation.class ) ).isNotNull();
+    assertThat( context.get( MyHomeControlOperation.class ).getMyStatusProvider() ).isNotNull();
+    assertThat( context.get( Scene1.class ) ).isNotNull();
+    assertThat( context.get( Scene2.class ) ).isNotNull();
   }
 
   private static ContextFactory stubContextFactory( com.codeaffine.util.inject.Context context ) {

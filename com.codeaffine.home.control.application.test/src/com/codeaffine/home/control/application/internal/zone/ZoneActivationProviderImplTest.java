@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
@@ -24,6 +23,7 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.ZoneEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.StatusEvent;
 
 public class ZoneActivationProviderImplTest {
 

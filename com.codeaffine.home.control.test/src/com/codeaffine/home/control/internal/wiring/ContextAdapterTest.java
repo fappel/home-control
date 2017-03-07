@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.Context.Disposable;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemExecutor;
@@ -34,13 +35,24 @@ public class ContextAdapterTest {
   private Context context;
   private NumberItem item;
 
-  static class Bean {
+  static class Bean implements Disposable {
+
+    private boolean disposed;
 
     @Schedule( period = PERIOD )
     private void method(){}
 
     @Observe( ITEM_NAME )
     private void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
+
+    @Override
+    public void dispose() {
+      disposed = true;
+    }
+
+    boolean isDisposed() {
+      return disposed;
+    }
   }
 
   @Before
@@ -89,6 +101,30 @@ public class ContextAdapterTest {
     adapter.set( Bean.class, expected );
 
     assertThat( context.get( Bean.class ) ).isSameAs( expected );
+  }
+
+  @Test
+  public void contextDispose() {
+    Bean bean = new Bean();
+    adapter.set( Bean.class, bean );
+
+    context.dispose();
+    boolean actual = bean.isDisposed();
+
+    assertThat( actual ).isTrue();
+  }
+
+  @Test
+  public void contextDisposeIfSameInstanceIsAddedTwice() {
+    Bean bean = spy( new Bean() );
+    adapter.set( Bean.class, bean );
+    adapter.set( Disposable.class, bean );
+
+    context.dispose();
+    boolean actual = bean.isDisposed();
+
+    assertThat( actual ).isTrue();
+    verify( bean ).dispose();
   }
 
   @Test

@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.internal.entity;
 
 import static com.codeaffine.home.control.internal.entity.Sets.asSet;
-import static com.codeaffine.home.control.internal.entity.ZoneEventAssert.assertThat;
+import static com.codeaffine.home.control.test.util.entity.ZoneEventAssert.assertThat;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

@@ -12,7 +12,6 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.status.ActivityProvider;
@@ -20,6 +19,7 @@ import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.StatusEvent;
 
 public class ActivityProviderImplTest {
 

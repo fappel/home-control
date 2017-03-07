@@ -7,12 +7,8 @@ import static java.util.Arrays.asList;
 
 import java.util.HashSet;
 
-import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.application.control.ControlCenter;
-import com.codeaffine.home.control.application.control.ControlCenter.SceneSelectionConfigurer;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
-import com.codeaffine.home.control.application.internal.control.ControlCenterImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl;
@@ -22,18 +18,20 @@ import com.codeaffine.home.control.application.operation.AdjustBrightnessOperati
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.room.RoomProvider;
-import com.codeaffine.home.control.application.sence.FollowUpTimer;
-import com.codeaffine.home.control.application.sence.HomeSceneSelectionConfigurer;
+import com.codeaffine.home.control.application.scene.HomeSceneSelectionConfigurer;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
+import com.codeaffine.home.control.status.ControlCenter;
+import com.codeaffine.home.control.status.SceneSelector;
+import com.codeaffine.home.control.status.StatusProviderRegistry;
 
 public class Configuration implements SystemConfiguration {
 
   @Override
-  public void registerEntities( EntityRegistry entityRegistry ) {
+  public void configureEntities( EntityRegistry entityRegistry ) {
     entityRegistry.register( MotionSensorProvider.class );
     entityRegistry.register( LampProvider.class );
     entityRegistry.register( RoomProvider.class );
@@ -50,10 +48,9 @@ public class Configuration implements SystemConfiguration {
   }
 
   @Override
-  public void configureSystem( Context context ) {
+  public void configureStatusProvider( StatusProviderRegistry statusProviderRegistry ) {
     AdjacencyDefinition adjacencyDefinition
       = new AdjacencyDefinition( new HashSet<>( asList( BedRoom, Hall, Kitchen, BathRoom, LivingRoom ) ) );
-    context.set( AdjacencyDefinition.class, adjacencyDefinition );
     adjacencyDefinition
       .link( BedRoom, LivingRoom )
       .link( LivingRoom, Kitchen )
@@ -61,14 +58,21 @@ public class Configuration implements SystemConfiguration {
       .link( Kitchen, Hall )
       .link( Kitchen, BathRoom );
 
-    context.set( SunPositionProvider.class, context.create( SunPositionProviderImpl.class ) );
-    context.set( ZoneActivationProvider.class, context.create( ZoneActivationProviderImpl.class ) );
-    context.set( ActivityProvider.class, context.create( ActivityProviderImpl.class ) );
-    context.set( SceneSelectionConfigurer.class, new HomeSceneSelectionConfigurer() );
-    context.set( ControlCenter.class, context.create( ControlCenterImpl.class ) );
-    context.set( FollowUpTimer.class, ( FollowUpTimer )context.get( ControlCenter.class ) );
-    context.get( ControlCenter.class ).registerOperation( LampSwitchOperation.class );
-    context.get( ControlCenter.class ).registerOperation( AdjustBrightnessOperation.class );
-    context.get( ControlCenter.class ).registerOperation( AdjustColorTemperatureOperation.class );
+    statusProviderRegistry.getContext().set( AdjacencyDefinition.class, adjacencyDefinition );
+    statusProviderRegistry.register( ZoneActivationProvider.class, ZoneActivationProviderImpl.class );
+    statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
+    statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
+  }
+
+  @Override
+  public void configureHomeControlOperations( ControlCenter controlCenter ) {
+    controlCenter.registerOperation( LampSwitchOperation.class );
+    controlCenter.registerOperation( AdjustBrightnessOperation.class );
+    controlCenter.registerOperation( AdjustColorTemperatureOperation.class );
+  }
+
+  @Override
+  public void configureSceneSelection( SceneSelector sceneSelector ) {
+    new HomeSceneSelectionConfigurer().configureSceneSelection( sceneSelector );
   }
 }

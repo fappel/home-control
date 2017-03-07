@@ -23,18 +23,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy;
 import com.codeaffine.home.control.application.room.RoomProvider.Room;
 import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
-import com.codeaffine.home.control.application.sence.FollowUpTimer;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.application.test.RegistryHelper;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import com.codeaffine.home.control.status.FollowUpTimer;
+import com.codeaffine.home.control.status.StatusEvent;
 
 public class LampSwitchOperationTest {
 

@@ -15,13 +15,13 @@ import java.util.Queue;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.control.StatusProviderCore;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.StatusProviderCore;
 
 public class ActivityProviderImpl implements ActivityProvider {
 

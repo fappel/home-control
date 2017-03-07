@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.internal.entity;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.*;
+import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
+import static com.codeaffine.home.control.test.util.entity.SensorControlFactoryHelper.stubSensorControlFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -10,11 +11,14 @@ import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.TestContext;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.MyEntity;
-import com.codeaffine.home.control.entity.MyEntityDefinition;
-import com.codeaffine.home.control.entity.MyEntityProvider;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.test.util.context.TestContext;
+import com.codeaffine.home.control.test.util.entity.MyEntity;
+import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
+import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
 
 public class EntityRegistryImplTest {
 
@@ -24,6 +28,8 @@ public class EntityRegistryImplTest {
   @Before
   public void setUp() {
     context = new TestContext();
+    SensorControl sensorControl = mock( SensorControl.class );
+    context.set( SensorControlFactory.class, stubSensorControlFactory( sensorControl ) );
     entityRegistry = new EntityRegistryImpl( context );
   }
 

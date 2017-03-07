@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.control.StatusEvent;
-import com.codeaffine.home.control.application.control.StatusProvider;
 import com.codeaffine.home.control.event.EventBus;
+import com.codeaffine.home.control.status.StatusEvent;
+import com.codeaffine.home.control.status.StatusProvider;
 
 public class EventBusHelper {
 

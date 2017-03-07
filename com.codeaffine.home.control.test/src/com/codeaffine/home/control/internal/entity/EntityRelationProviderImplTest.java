@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.internal.entity;
 
-import static com.codeaffine.home.control.entity.MyEntityProvider.*;
+import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
@@ -9,14 +9,15 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.TestContext;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
-import com.codeaffine.home.control.entity.MyEntity;
-import com.codeaffine.home.control.entity.MyEntityDefinition;
-import com.codeaffine.home.control.entity.MyEntityProvider;
+import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
 import com.codeaffine.home.control.internal.event.EventBusImpl;
+import com.codeaffine.home.control.test.util.context.TestContext;
+import com.codeaffine.home.control.test.util.entity.MyEntity;
+import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
+import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
 
 public class EntityRelationProviderImplTest {
 
@@ -31,6 +32,7 @@ public class EntityRelationProviderImplTest {
     TestContext context = new TestContext();
     zoneProvider = new ZoneProviderImpl( new EventBusImpl() );
     context.set( ZoneProviderImpl.class, zoneProvider );
+    context.set( SensorControlFactory.class, new SensorControlFactoryImpl( zoneProvider ) );
     registry = new EntityRegistryImpl( context );
     registry.register( MyEntityProvider.class );
     provider = new EntityRelationProviderImpl( registry );

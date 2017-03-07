@@ -1,16 +1,20 @@
 package com.codeaffine.home.control.internal.wiring;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 
-class ContextAdapter implements Context {
+class ContextAdapter implements Context, com.codeaffine.util.Disposable {
 
   private final com.codeaffine.util.inject.Context delegate;
-  private final EventBus eventBus;
   private final ItemEventWiring eventWiring;
+  private final Set<Disposable> disposables;
+  private final EventBus eventBus;
   private final TimerWiring timer;
 
   ContextAdapter(
@@ -18,9 +22,16 @@ class ContextAdapter implements Context {
   {
     this.eventWiring = new ItemEventWiring( registry );
     this.timer = new TimerWiring( executor );
+    this.disposables = new HashSet<>();
     this.eventBus = eventBus;
     this.delegate = delegate;
     initialize( eventBus, executor );
+  }
+
+  @Override
+  public void dispose() {
+    disposables.forEach( disposable  -> disposable.dispose() );
+    disposables.clear();
   }
 
   @Override
@@ -31,6 +42,9 @@ class ContextAdapter implements Context {
   @Override
   public <T> void set( Class<T> key, T value ) {
     delegate.set( key, value );
+    if( value instanceof Disposable ) {
+      disposables.add( ( Disposable )value );
+    }
   }
 
   @Override

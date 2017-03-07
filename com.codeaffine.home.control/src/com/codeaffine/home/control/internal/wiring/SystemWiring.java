@@ -17,8 +17,11 @@ import com.codeaffine.home.control.internal.entity.SensorControlFactoryImpl;
 import com.codeaffine.home.control.internal.entity.ZoneProviderImpl;
 import com.codeaffine.home.control.internal.event.EventBusImpl;
 import com.codeaffine.home.control.internal.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.internal.status.ControlCenterImpl;
+import com.codeaffine.home.control.internal.status.StatusProviderRegistryImpl;
 import com.codeaffine.home.control.internal.util.SystemExecutorImpl;
 import com.codeaffine.home.control.logger.LoggerFactory;
+import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.util.inject.Context;
 
 public class SystemWiring {
@@ -81,8 +84,13 @@ public class SystemWiring {
     contextAdapter.set( EntityRegistry.class, entityRegistry );
     EntityRelationProviderImpl entityRelationProvider = contextAdapter.create( EntityRelationProviderImpl.class );
     contextAdapter.set( EntityRelationProvider.class, entityRelationProvider );
-    configuration.registerEntities( entityRegistry );
+    configuration.configureEntities( entityRegistry );
     entityRelationProvider.establishRelations( configuration );
+    configuration.configureStatusProvider( new StatusProviderRegistryImpl( contextAdapter ) );
+    ControlCenterImpl controlCenter = contextAdapter.create( ControlCenterImpl.class );
+    contextAdapter.set( FollowUpTimer.class, controlCenter );
+    configuration.configureHomeControlOperations( controlCenter );
+    configuration.configureSceneSelection( controlCenter );
     configuration.configureSystem( contextAdapter );
   }
 
