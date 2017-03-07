@@ -4,8 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.application.test"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.test"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.engine.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.engine"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.application"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.api.test"/>

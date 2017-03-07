@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Control
-Bundle-SymbolicName: com.codeaffine.home.control
+Bundle-SymbolicName: com.codeaffine.home.control.engine
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.codeaffine.home.control.internal.activation.Activator
 Bundle-Vendor: CODEAFFINE
