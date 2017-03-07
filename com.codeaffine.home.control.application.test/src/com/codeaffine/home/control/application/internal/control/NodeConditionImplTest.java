@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.control.SceneSelector.NodeDefinition;
+import com.codeaffine.home.control.application.test.MyStatus;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class NodeConditionImplTest {

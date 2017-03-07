@@ -19,6 +19,7 @@ import org.mockito.InOrder;
 import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.control.StatusEvent;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 
 public class FollowUpControllerTest {
 

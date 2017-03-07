@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.control.Scene;
+import com.codeaffine.home.control.application.test.Scene1;
 
 public class NextNodeTest {
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.internal.control.MyStatusProvider;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 
 public class StatusEventTest {
 

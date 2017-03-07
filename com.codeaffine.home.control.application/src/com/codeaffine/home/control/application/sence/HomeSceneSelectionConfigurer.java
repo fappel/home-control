@@ -20,10 +20,10 @@ public class HomeSceneSelectionConfigurer implements SceneSelectionConfigurer {
       .thenSelect( AwayScene.class )
     .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BedRoom ) )
       .thenSelect( SleepScene.class )
-    .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
-      .thenSelect( DayScene.class )
     .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
       .thenSelect( TwilightScene.class )
+    .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
+      .thenSelect( DayScene.class )
     .otherwiseSelect( NightScene.class );
   }
 

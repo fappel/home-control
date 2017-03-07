@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.control;
 
-import static com.codeaffine.home.control.application.internal.control.MyStatus.*;
+import static com.codeaffine.home.control.application.test.MyStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.internal.control.MyStatus;
-import com.codeaffine.home.control.application.internal.control.MyStatusProvider;
+import com.codeaffine.home.control.application.test.MyStatus;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 

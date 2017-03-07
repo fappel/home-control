@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.application.control.SceneSelector.Branch;
 import com.codeaffine.home.control.application.control.SceneSelector.NodeCondition;
+import com.codeaffine.home.control.application.test.MyStatus;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
+import com.codeaffine.home.control.application.test.Scene1;
 import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class BranchImplTest {

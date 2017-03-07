@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application.internal.control;
+package com.codeaffine.home.control.application.test;
 
 import com.codeaffine.home.control.application.control.StatusProvider;
 
@@ -11,7 +11,7 @@ public class MyStatusProvider implements StatusProvider<MyStatus> {
     return status;
   }
 
-  void setStatus( MyStatus status ) {
+  public void setStatus( MyStatus status ) {
     this.status = status;
   }
 }

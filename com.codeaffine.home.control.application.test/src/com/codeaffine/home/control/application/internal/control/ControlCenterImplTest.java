@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.control;
 
-import static com.codeaffine.home.control.application.internal.control.MyStatus.*;
+import static com.codeaffine.home.control.application.test.MyStatus.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +22,7 @@ import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.control.SceneSelector;
 import com.codeaffine.home.control.application.control.StatusEvent;
 import com.codeaffine.home.control.application.sence.FollowUpTimer;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.test.util.context.TestContext;
 

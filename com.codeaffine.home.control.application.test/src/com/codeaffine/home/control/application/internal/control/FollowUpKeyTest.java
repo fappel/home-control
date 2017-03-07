@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.application.control.Scene;
 import com.codeaffine.home.control.application.control.StatusEvent;
+import com.codeaffine.home.control.application.test.MyStatusProvider;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class FollowUpKeyTest {

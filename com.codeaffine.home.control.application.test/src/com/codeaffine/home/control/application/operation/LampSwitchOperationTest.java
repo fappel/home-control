@@ -2,8 +2,9 @@ package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.*;
-import static com.codeaffine.home.control.application.operation.RegistryHelper.*;
 import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
+import static com.codeaffine.home.control.application.test.RegistryHelper.*;
+import static com.codeaffine.home.control.application.test.ZoneActivationHelper.stubZoneActivation;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
@@ -31,9 +32,8 @@ import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
 import com.codeaffine.home.control.application.sence.FollowUpTimer;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.test.RegistryHelper;
 import com.codeaffine.home.control.application.type.OnOff;
-import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
 public class LampSwitchOperationTest {
@@ -422,23 +422,16 @@ public class LampSwitchOperationTest {
     return result;
   }
 
-  private void stubZoneActivationProvider( ZoneActivationProvider provider, RoomDefinition... zoneDefinitions ) {
+  void stubZoneActivationProvider( ZoneActivationProvider provider, RoomDefinition... zoneDefinitions ) {
     Set<ZoneActivation> status = stubStatus( zoneDefinitions );
     when( provider.getStatus() ).thenReturn( status );
   }
 
-  private Set<ZoneActivation> stubStatus( RoomDefinition... zoneDefinitions ) {
+  Set<ZoneActivation> stubStatus( RoomDefinition... zoneDefinitions ) {
     return Stream.of( zoneDefinitions )
       .map( zoneDefinition -> registry.findByDefinition( zoneDefinition ) )
-      .map( zone ->  stubZoneActivation( zone ) )
+      .map( zone -> stubZoneActivation( zone ) )
       .collect( toSet() );
-  }
-
-  @SuppressWarnings("unchecked")
-  private static ZoneActivation stubZoneActivation( Entity<?> zone ) {
-    ZoneActivation result = mock( ZoneActivation.class );
-    when( result.getZone() ).thenReturn( ( Entity<EntityDefinition<?>> )zone );
-    return result;
   }
 
   static EntityRegistry stubRegistry() {

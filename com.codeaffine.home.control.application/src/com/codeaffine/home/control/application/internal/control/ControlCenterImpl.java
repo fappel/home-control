@@ -58,7 +58,7 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer {
   }
 
   @Subscribe
-  void onEvent( StatusEvent event ) {
+  public void onEvent( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
     ensureSceneSelector();
