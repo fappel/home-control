@@ -1,6 +1,8 @@
 package com.codeaffine.home.control.engine.status;
 
 import static com.codeaffine.home.control.engine.status.Messages.ERROR_SCHEDULE_CALLED_OUTSIDE_OF_SCENE_ACTIVATION;
+import static com.codeaffine.home.control.engine.status.SceneSelectionHelper.newSceneSelection;
+import static com.codeaffine.home.control.test.util.status.MyScope.GLOBAL;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +10,7 @@ import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -17,15 +20,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.SystemExecutor;
-import com.codeaffine.home.control.engine.status.FollowUpController;
 import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.status.StatusEvent;
 import com.codeaffine.home.control.test.util.status.MyStatusProvider;
 
 public class FollowUpControllerTest {
 
+  private static final Map<Scope, Scene> ACTIVE_SCENE = newSceneSelection( GLOBAL, mock( Scene.class ) );
   private static final StatusEvent STATUS_EVENT = new StatusEvent( new MyStatusProvider() );
-  private static final Scene ACTIVE_SCENE = mock( Scene.class );
   private static final long DELAY = 10L;
 
   private SystemExecutor executor;

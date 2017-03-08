@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
+import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
 
 import java.util.Set;
 
@@ -14,15 +15,16 @@ import com.codeaffine.home.control.status.SceneSelector;
 public class HomeSceneSelectionConfigurer {
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
-    sceneSelector.whenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, Hall ) )
-      .thenSelect( AwayScene.class )
-    .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BedRoom ) )
-      .thenSelect( SleepScene.class )
-    .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
-      .thenSelect( TwilightScene.class )
-    .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
-      .thenSelect( DayScene.class )
-    .otherwiseSelect( NightScene.class );
+    sceneSelector
+      .whenStatusOf( GLOBAL, ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, Hall ) )
+        .thenSelect( AwayScene.class )
+      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BedRoom ) )
+        .thenSelect( SleepScene.class )
+      .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
+        .thenSelect( TwilightScene.class )
+      .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
+        .thenSelect( DayScene.class )
+      .otherwiseSelect( NightScene.class );
   }
 
   private static boolean singleZoneReleaseOn( Set<ZoneActivation> zones, EntityDefinition<?> zoneDefinition ) {

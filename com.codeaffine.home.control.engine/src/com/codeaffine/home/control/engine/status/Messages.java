@@ -7,7 +7,7 @@ class Messages {
     = "Invalid scene selection configuration: missing 'otherwiseSelect' branch on nesting level <%s>.";
   static final String ERROR_SUPERFLUOUS_OTHERWISE_SELECT_BRANCH_DETECTED
     = "Superfluous 'otherwiseSelect' branch detected.";
-  static final String INFO_SELECTED_SCENE = "Selected Scene: %s";
+  static final String INFO_SELECTED_SCENES = "Selected Scenes: %s";
   static final String ERROR_SCHEDULE_CALLED_OUTSIDE_OF_SCENE_ACTIVATION
     = "Schedule must not be called outside of scene activation.";
 }

@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.status.StatusEvent;
 
 class FollowUpController {
@@ -29,24 +30,26 @@ class FollowUpController {
     this.executor = executor;
   }
 
-  void process( StatusEvent event, Scene scene, Runnable preparations, Runnable actions ) {
+  void process( StatusEvent event, Map<Scope, Scene> scenes, Runnable preparations, Runnable actions ) {
     this.event = event;
     try {
-      doProcessing( event, scene, preparations, actions );
+      doProcessing( event, scenes, preparations, actions );
     } finally {
       this.event = null;
     }
   }
 
-  void schedule( Scene scene, long delay, TimeUnit unit, Runnable followUp, Consumer<StatusEvent> processCallback ) {
+  void schedule(
+    Map<Scope, Scene> scenes, long delay, TimeUnit unit, Runnable followUp, Consumer<StatusEvent> callback )
+  {
     verifySceneActivationBoundary();
 
-    FollowUpKey key = new FollowUpKey( scene, event );
+    FollowUpKey key = new FollowUpKey( scenes, event );
     if( !followUps.containsKey( key ) ) {
       followUps.put( key, new ArrayList<>() );
     }
     followUps.get( key ).add( followUp );
-    executor.schedule( () -> executeFollowUp( processCallback, key ), delay, unit );
+    executor.schedule( () -> executeFollowUp( callback, key ), delay, unit );
   }
 
   private void executeFollowUp( Consumer<StatusEvent> processCallback, FollowUpKey key ) {
@@ -65,17 +68,17 @@ class FollowUpController {
     }
   }
 
-  private void doProcessing( StatusEvent event, Scene scene, Runnable preparations, Runnable actions ) {
+  private void doProcessing( StatusEvent event, Map<Scope, Scene> scenes, Runnable preparations, Runnable actions ) {
     if( onFollowUpProcessing ) {
-      doFollowUpProcessing( event, scene, actions );
+      doFollowUpProcessing( event, scenes, actions );
     } else {
       preparations.run();
       actions.run();
     }
   }
 
-  private void doFollowUpProcessing( StatusEvent event, Scene scene, Runnable actions ) {
-    FollowUpKey key = new FollowUpKey( scene, event );
+  private void doFollowUpProcessing( StatusEvent event, Map<Scope, Scene> scenes, Runnable actions ) {
+    FollowUpKey key = new FollowUpKey( scenes, event );
     if( followUps.containsKey( key ) ) {
       followUps.get( key ).forEach( followUpHandler -> followUpHandler.run() );
       actions.run();

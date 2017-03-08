@@ -25,4 +25,9 @@ public class SleepScene implements Scene {
   private Runnable activateAwayMode() {
     return () -> lampSwitchOperation.setLampSelectionStrategy( NONE );
   }
+
+  @Override
+  public String getName() {
+    return getClass().getSimpleName();
+  }
 }

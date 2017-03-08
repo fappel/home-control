@@ -36,6 +36,11 @@ public class TwilightScene implements Scene {
   }
 
   @Override
+  public String getName() {
+    return getClass().getSimpleName();
+  }
+
+  @Override
   public void activate() {
     if( activity.getStatus().compareTo( P_070 ) < 0 ) {
       lampSwitchOperation.setLampSelectionStrategy( ALL );

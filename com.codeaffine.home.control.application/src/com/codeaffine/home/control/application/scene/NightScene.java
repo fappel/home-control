@@ -28,4 +28,9 @@ public class NightScene implements Scene {
   public void activate() {
     lampSwitchOperation.setLampFilter( lamp -> EVENING_LAMPS.contains( lamp.getDefinition() ) );
   }
+
+  @Override
+  public String getName() {
+    return getClass().getSimpleName();
+  }
 }

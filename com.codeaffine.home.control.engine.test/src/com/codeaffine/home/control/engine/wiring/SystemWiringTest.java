@@ -23,8 +23,6 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
-import com.codeaffine.home.control.engine.wiring.ContextFactory;
-import com.codeaffine.home.control.engine.wiring.SystemWiring;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -47,6 +45,7 @@ import com.codeaffine.home.control.status.StatusProviderRegistry;
 import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
 import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
 import com.codeaffine.home.control.test.util.status.MyHomeControlOperation;
+import com.codeaffine.home.control.test.util.status.MyScope;
 import com.codeaffine.home.control.test.util.status.MyStatus;
 import com.codeaffine.home.control.test.util.status.MyStatusProvider;
 import com.codeaffine.home.control.test.util.status.Scene1;
@@ -108,7 +107,7 @@ public class SystemWiringTest {
 
     @Override
     public void configureSceneSelection( SceneSelector sceneSelector ) {
-      sceneSelector.whenStatusOf( MyStatusProvider.class ).matches( status -> status == MyStatus.ONE )
+      sceneSelector.whenStatusOf( MyScope.GLOBAL, MyStatusProvider.class ).matches( status -> status == MyStatus.ONE )
         .thenSelect( Scene1.class )
       .otherwiseSelect( Scene2.class );
     }

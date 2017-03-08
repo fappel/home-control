@@ -20,5 +20,10 @@ public interface SceneSelector {
     <T extends Scene> Branch otherwiseSelect( Class<T> sceneType );
   }
 
-  <S> NodeCondition<S> whenStatusOf( Class<? extends StatusProvider<S>> statusProviderType );
+  public interface Scope extends Comparable<Scope> {
+    String getName();
+    int getOrdinal();
+  }
+
+  <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusProvider<S>> statusProviderType );
 }
