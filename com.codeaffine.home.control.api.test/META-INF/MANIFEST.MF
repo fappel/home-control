@@ -13,6 +13,4 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.google.guava;bundle-version="10.0.1",
  junitparams;bundle-version="1.0.3",
  com.codeaffine.util;bundle-version="0.1.0",
- com.codeaffine.test.util;bundle-version="0.2.0",
- com.codeaffine.home.control.engine;bundle-version="1.0.0",
- com.codeaffine.home.control.test.util;bundle-version="1.0.0"
+ com.codeaffine.test.util;bundle-version="0.2.0"
