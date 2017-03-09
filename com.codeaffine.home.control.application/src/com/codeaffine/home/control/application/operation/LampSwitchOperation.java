@@ -25,8 +25,8 @@ import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
-import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.FollowUpTimer;
+import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
 
 public class LampSwitchOperation implements HomeControlOperation {
@@ -37,6 +37,8 @@ public class LampSwitchOperation implements HomeControlOperation {
   private final Map<Lamp, Set<ZoneActivation>> delayStatus;
   private final EntityRegistry entityRegistry;
   private final FollowUpTimer followUpTimer;
+  private final Set<Lamp> lampsToSwitchOff;
+  private final Set<Lamp> lampsToSwitchOn;
   private final Set<Lamp> scheduled;
   private final Set<Lamp> delayed;
 
@@ -51,6 +53,8 @@ public class LampSwitchOperation implements HomeControlOperation {
     verifyNotNull( entityRegistry, "entityRegistration" );
     verifyNotNull( followUpTimer, "followUpTimer" );
 
+    this.lampsToSwitchOff = new HashSet<>();
+    this.lampsToSwitchOn = new HashSet<>();
     this.delayStatus = new HashMap<>();
     this.scheduled = new HashSet<>();
     this.delayed = new HashSet<>();
@@ -59,30 +63,46 @@ public class LampSwitchOperation implements HomeControlOperation {
     prepare();
   }
 
-  public void setLampFilter( Predicate<Lamp> filter ) {
-    verifyNotNull( filter, "filter" );
-
-    this.filter = filter;
-  }
-
   public void setLampSelectionStrategy( LampSelectionStrategy lampSelectionStrategy ) {
     verifyNotNull( lampSelectionStrategy, "lampSelectionStrategy" );
 
     this.lampSelectionStrategy = lampSelectionStrategy;
   }
 
-  public void setDelayed( Set<Lamp> delayed ) {
+  public void setLampFilter( Predicate<Lamp> filter ) {
+    verifyNotNull( filter, "filter" );
+
+    this.filter = filter;
+  }
+
+  public void setLampsToSwitchOn( Lamp ... lampsToSwitchOn ) {
+    verifyNotNull( lampsToSwitchOn, "lampsToSwitchOn" );
+
+    this.lampsToSwitchOn.clear();
+    this.lampsToSwitchOn.addAll( asList( lampsToSwitchOn ) );
+  }
+
+  public void setLampsToSwitchOff( Lamp ... lampsToSwitchOff ) {
+    verifyNotNull( lampsToSwitchOff, "lampsToSwitchOff" );
+
+    this.lampsToSwitchOff.clear();
+    this.lampsToSwitchOff.addAll( asList( lampsToSwitchOff ) );
+  }
+
+  public void setDelayed( Lamp ... delayed ) {
     verifyNotNull( delayed, "delayed" );
 
     this.delayed.clear();
-    this.delayed.addAll( delayed );
+    this.delayed.addAll( asList( delayed ) );
   }
 
   @Override
   public void prepare() {
-    setDelayed( new HashSet<>( asList( entityRegistry.findByDefinition( HallCeiling ) ) ) );
+    setDelayed( entityRegistry.findByDefinition( HallCeiling ) );
     lampSelectionStrategy = ZONE_ACTIVATION;
     filter = lamp -> true;
+    lampsToSwitchOff.clear();
+    lampsToSwitchOn.clear();
     delayStatus.clear();
   }
 
@@ -94,7 +114,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   private void executeOn( ZoneActivationProvider zoneActivation ) {
-    Set<Lamp> on = filterDelayed( collectLampsToSwitchOn( zoneActivation ), zoneActivation.getStatus() );
+    Set<Lamp> on = collectLampsToSwitchOn( zoneActivation );
     Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
     Set<Lamp> off = lamps.stream().filter( lamp -> !on.contains( lamp ) ).collect( toSet() );
     on.forEach( lamp -> lamp.setOnOffStatus( ON ) );
@@ -102,6 +122,13 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   private Set<Lamp> collectLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
+    Set<Lamp> strategyRelatedLampsToSwitchOn = collectStrategyRelatedLampsToSwitchOn( zoneActivation );
+    strategyRelatedLampsToSwitchOn.addAll( lampsToSwitchOn );
+    strategyRelatedLampsToSwitchOn.removeAll( lampsToSwitchOff );
+    return filterDelayed( strategyRelatedLampsToSwitchOn, zoneActivation.getStatus() );
+  }
+
+  private Set<Lamp> collectStrategyRelatedLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
     Collection<Lamp> on = null;
     switch( lampSelectionStrategy ) {
       case ZONE_ACTIVATION:
