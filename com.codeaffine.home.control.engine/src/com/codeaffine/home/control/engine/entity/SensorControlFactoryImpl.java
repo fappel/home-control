@@ -4,21 +4,24 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
+import com.codeaffine.home.control.event.EventBus;
 
 public class SensorControlFactoryImpl implements SensorControlFactory {
 
-  private final AllocationTrackerImpl zoneProvider;
+  private final EventBus eventBus;
 
-  public SensorControlFactoryImpl( AllocationTrackerImpl zoneProvider ) {
-    this.zoneProvider = zoneProvider;
+  public SensorControlFactoryImpl( EventBus eventBus ) {
+    verifyNotNull( eventBus, "eventBus" );
+
+    this.eventBus = eventBus;
   }
 
   @Override
-  public <E extends Entity<D>, D extends EntityDefinition<E>> SensorControl create( E zone ) {
-    verifyNotNull( zone, "zone" );
+  public <E extends Entity<D>, D extends EntityDefinition<E>> SensorControl create( E sensor ) {
+    verifyNotNull( sensor, "sensor" );
 
-    return new SensorControlImpl( zone, zoneProvider );
+    return new SensorControlImpl( sensor, eventBus );
   }
 }

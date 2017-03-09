@@ -1,115 +1,96 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
+import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.event.EventBusImpl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorEvent;
+import com.codeaffine.home.control.event.EventBus;
 
 @SuppressWarnings("unchecked")
 public class SensorControlImplTest {
 
-  private Entity<EntityDefinition<?>> allocable;
-  private AllocationTrackerImpl tracker;
+  private final static Object SENSOR_STATUS = new Object();
+
+  private Entity<EntityDefinition<?>> affected;
+  private Entity<EntityDefinition<?>> sensor;
   private SensorControl control;
+  private EventBus eventBus;
 
   @Before
   public void setUp() {
-    tracker = new AllocationTrackerImpl( new EventBusImpl() );
-    SensorControlFactoryImpl factory = new SensorControlFactoryImpl( tracker );
-    control = factory.create( mock( Entity.class ) );
-    allocable = mock( Entity.class );
+    eventBus = mock( EventBus.class );
+    sensor = mock( Entity.class );
+    control = new SensorControlImpl( sensor, eventBus );
+    affected = mock( Entity.class );
   }
 
   @Test
-  public void allocate() {
-    control.registerAllocable( allocable );
+  public void notifyAboutSensorStatusChange() {
+    control.registerAffected( affected );
 
-    control.allocate();
+    control.notifyAboutSensorStatusChange( SENSOR_STATUS );
+    SensorEvent<?> actual = captureSensorEvent( eventBus );
 
-    assertThat( tracker.getAllocated() ).contains( allocable );
+    assertThat( actual )
+      .hasAffected( affected )
+      .hasSensor( sensor )
+      .hasSensorStatus( SENSOR_STATUS );
   }
 
   @Test
-  public void allocateWithoutRegisteredAllocable() {
-    control.allocate();
+  public void notifyAboutSensorStatusChangeWithoutRegisteredAffected() {
+    control.notifyAboutSensorStatusChange( SENSOR_STATUS );
+    SensorEvent<?> actual = captureSensorEvent( eventBus );
 
-    assertThat( tracker.getAllocated() ).isEmpty();
+    assertThat( actual )
+      .hasNoAffected()
+      .hasSensor( sensor )
+      .hasSensorStatus( SENSOR_STATUS );
   }
 
   @Test
-  public void registerAllocableAfterAllocate() {
-    control.allocate();
+  public void notifyAboutSensorStatusChangeAfterUnregisteringAffected() {
+    control.registerAffected( affected );
 
-    control.registerAllocable( allocable );
+    control.unregisterAffected( affected );
+    control.notifyAboutSensorStatusChange( SENSOR_STATUS );
+    SensorEvent<?> actual = captureSensorEvent( eventBus );
 
-    assertThat( tracker.getAllocated() ).contains( allocable );
-  }
-
-  @Test
-  public void registerAllocableWhichIsAlreadyAllocatedASecondTime() {
-    control.registerAllocable( allocable );
-    control.allocate();
-
-    control.registerAllocable( allocable );
-
-    assertThat( tracker.getAllocated() ).contains( allocable );
-  }
-
-  @Test
-  public void release() {
-    control.registerAllocable( allocable );
-    control.allocate();
-
-    control.release();
-
-    assertThat( tracker.getAllocated() ).isEmpty();
-  }
-
-  @Test
-  public void unregisterAllocableAfterAllocate() {
-    control.registerAllocable( allocable );
-
-    control.allocate();
-    control.unregisterAllocable( allocable );
-
-    assertThat( tracker.getAllocated() ).isEmpty();
-  }
-
-  @Test
-  public void unregisterAllocableAfterRelease() {
-    control.registerAllocable( allocable );
-    control.allocate();
-
-    control.release();
-    control.unregisterAllocable( allocable );
-
-    assertThat( tracker.getAllocated() ).isEmpty();
-  }
-
-  @Test
-  public void unregisterAllocableTwiceAfterAllocate() {
-    control.registerAllocable( allocable );
-    control.allocate();
-
-    control.unregisterAllocable( allocable );
-    control.unregisterAllocable( allocable );
-
-    assertThat( tracker.getAllocated() ).isEmpty();
+    assertThat( actual )
+      .hasNoAffected()
+      .hasSensor( sensor )
+      .hasSensorStatus( SENSOR_STATUS );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerAllocableWithNullAsAllocable() {
-    control.registerAllocable( null );
+  public void notifyAboutSensorStatusChangeWithNullAsSensorStatusArgument() {
+    control.notifyAboutSensorStatusChange( null );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void unregisterAllocableWithNullAsAllocable() {
-    control.unregisterAllocable( null );
+  public void registerAffectedWithNullAsAffectedArgument() {
+    control.registerAffected( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void unregisterAffectedWithNullAsAffectedArgument() {
+    control.unregisterAffected( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsSensorArgument() {
+    new SensorControlImpl( null, eventBus );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEventBusArgument() {
+    new SensorControlImpl( sensor, null );
   }
 }

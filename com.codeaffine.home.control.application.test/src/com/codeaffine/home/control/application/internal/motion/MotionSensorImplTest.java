@@ -15,8 +15,8 @@ import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.item.SwitchItem;
@@ -47,31 +47,31 @@ public class MotionSensorImplTest {
   }
 
   @Test
-  public void registerAllocable() {
+  public void registerAffected() {
     Entity<?> expected = mock( Entity.class );
 
-    sensor.registerAllocable( expected );
+    sensor.registerAffected( expected );
 
-    verify( sensorControl ).registerAllocable( expected );
+    verify( sensorControl ).registerAffected( expected );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerAllocableWithNullAsArgument() {
-    sensor.registerAllocable( null );
+  public void registerAffectedWithNullAsArgument() {
+    sensor.registerAffected( null );
   }
 
   @Test
-  public void unregisterAllocable() {
+  public void unregisterAffected() {
     Entity<?> expected = mock( Entity.class );
 
-    sensor.unregisterAllocable( expected );
+    sensor.unregisterAffected( expected );
 
-    verify( sensorControl ).unregisterAllocable( expected );
+    verify( sensorControl ).unregisterAffected( expected );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void unregisterAllocableWithNullAsArgument() {
-    sensor.unregisterAllocable( null );
+  public void unregisterAffectedWithNullAsArgument() {
+    sensor.unregisterAffected( null );
   }
 
   @Test
@@ -80,7 +80,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).allocate();
+    verify( sensorControl ).notifyAboutSensorStatusChange( ON );
   }
 
   @Test
@@ -89,7 +89,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).release();
+    verify( sensorControl ).notifyAboutSensorStatusChange( OFF );
   }
 
   @Test
@@ -98,7 +98,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).release();
+    verify( sensorControl ).notifyAboutSensorStatusChange( OFF );
   }
 
   @Test

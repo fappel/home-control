@@ -6,7 +6,7 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;
 
 

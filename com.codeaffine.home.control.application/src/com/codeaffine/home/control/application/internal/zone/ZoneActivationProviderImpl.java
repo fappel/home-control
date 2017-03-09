@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.internal.zone;
 
 import static com.codeaffine.home.control.application.internal.zone.Messages.*;
+import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.*;
@@ -13,9 +14,10 @@ import java.util.Set;
 
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationEvent;
+import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.logger.Logger;
@@ -43,36 +45,40 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   @Subscribe
-  public void engagedZonesChanged( AllocationEvent event ) {
+  public void engagedZonesChanged( SensorEvent<OnOff> event ) {
     statusProviderCore.updateStatus( () -> update( event ),
                                      ZONE_ACTIVATION_STATUS_CHANGED_INFO,
                                      status -> createListOfEngagedZoneDefinitions() );
   }
 
-  private Set<ZoneActivation> update( AllocationEvent event ) {
+  private Set<ZoneActivation> update( SensorEvent<OnOff> event ) {
     doEngagedZonesChanged( event );
     return traces.stream().flatMap( stack -> stack.stream() ).collect( toSet() );
   }
 
-  private void doEngagedZonesChanged( AllocationEvent event ) {
+  private void doEngagedZonesChanged( SensorEvent<OnOff> event ) {
     ensureDiscreteTraces( event );
     handleAdditions( event );
     handleRemovals( event );
     removeTraceDuplicates();
   }
 
-  private void ensureDiscreteTraces( AllocationEvent event ) {
-    event.getAdditions().stream().forEach( zone -> ensureDescreteTrace( zone ) );
+  private void ensureDiscreteTraces( SensorEvent<OnOff> event ) {
+    if( ON == event.getSensorStatus() ) {
+      event.getAffected().stream().forEach( zone -> ensureDiscreteTrace( zone ) );
+    }
   }
 
-  private void ensureDescreteTrace( Entity<EntityDefinition<?>> zone ) {
+  private void ensureDiscreteTrace( Entity<EntityDefinition<?>> zone ) {
     if( traces.isEmpty() || !belongsToExistingTrace( zone ) ) {
       traces.add( new LinkedList<>() );
     }
   }
 
-  private void handleAdditions( AllocationEvent event ) {
-    event.getAdditions().stream().forEach( zone -> handleAdditions( zone ) );
+  private void handleAdditions( SensorEvent<OnOff> event ) {
+    if( ON == event.getSensorStatus() ) {
+      event.getAffected().stream().forEach( zone -> handleAdditions( zone ) );
+    }
   }
 
   private void handleAdditions( Entity<EntityDefinition<?>> zone ) {
@@ -86,8 +92,10 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     }
   }
 
-  private void handleRemovals( AllocationEvent event ) {
-    event.getRemovals().stream().forEach( zone -> handleRemovals( zone ) );
+  private void handleRemovals( SensorEvent<OnOff> event ) {
+    if( OFF == event.getSensorStatus() ) {
+      event.getAffected().stream().forEach( zone -> handleRemovals( zone ) );
+    }
   }
 
   private void handleRemovals( Entity<EntityDefinition<?>> zone ) {

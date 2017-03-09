@@ -9,9 +9,9 @@ import java.util.Set;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationTracker.Sensor;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.Sensor;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 
 public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
 
@@ -42,21 +42,17 @@ public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
   }
 
   @Override
-  public void registerAllocable( Entity<?> allocable ) {
-    sensorControl.registerAllocable( allocable );
+  public void registerAffected( Entity<?> affected ) {
+    sensorControl.registerAffected( affected );
   }
 
   @Override
-  public void unregisterAllocable( Entity<?> allocable ) {
-    sensorControl.unregisterAllocable( allocable );
+  public void unregisterAffected( Entity<?> affected ) {
+    sensorControl.unregisterAffected( affected );
   }
 
-  public void allocate() {
-    sensorControl.allocate();
-  }
-
-  public void release() {
-    sensorControl.release();
+  public void notifyAboutStateChange( Object sensorStatus ) {
+    sensorControl.notifyAboutSensorStatusChange( sensorStatus );
   }
 
   @Override

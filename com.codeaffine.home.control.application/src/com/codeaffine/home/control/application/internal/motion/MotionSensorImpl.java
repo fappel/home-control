@@ -8,8 +8,8 @@ import java.util.Optional;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.type.OnOffType;
@@ -44,17 +44,17 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   @Override
-  public void registerAllocable( Entity<?> allocable ) {
+  public void registerAffected( Entity<?> allocable ) {
     verifyNotNull( allocable, "allocable" );
 
-    sensorControl.registerAllocable( allocable );
+    sensorControl.registerAffected( allocable );
   }
 
   @Override
-  public void unregisterAllocable( Entity<?> allocable ) {
+  public void unregisterAffected( Entity<?> allocable ) {
     verifyNotNull( allocable, "zone" );
 
-    sensorControl.unregisterAllocable( allocable );
+    sensorControl.unregisterAffected( allocable );
   }
 
   private void initialize() {
@@ -63,9 +63,9 @@ public class MotionSensorImpl implements MotionSensor {
 
   private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {
     if( mustEngage( evt ) ) {
-      sensorControl.allocate();
+      sensorControl.notifyAboutSensorStatusChange( ON );
     } else {
-      sensorControl.release();
+      sensorControl.notifyAboutSensorStatusChange( OFF );
     }
   }
 

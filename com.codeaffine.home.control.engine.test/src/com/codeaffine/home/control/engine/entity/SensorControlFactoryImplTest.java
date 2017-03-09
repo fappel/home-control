@@ -1,44 +1,53 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
+import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.entity.SensorControlFactoryImpl;
-import com.codeaffine.home.control.engine.entity.AllocationTrackerImpl;
-import com.codeaffine.home.control.engine.event.EventBusImpl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.event.EventBus;
 
 public class SensorControlFactoryImplTest {
 
-  private AllocationTrackerImpl zoneProvider;
-  private SensorControlFactoryImpl factory;
+  private static final Object SENSOR_STATUS = new Object();
 
+  private SensorControlFactoryImpl factory;
+  private EventBus eventBus;
 
   @Before
   public void setUp() {
-    zoneProvider = new AllocationTrackerImpl( new EventBusImpl() );
-    factory = new SensorControlFactoryImpl( zoneProvider );
+    eventBus = mock( EventBus.class );
+    factory = new SensorControlFactoryImpl( eventBus );
   }
 
   @Test
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void create() {
-    Entity<EntityDefinition<?>> expected = mock( Entity.class );
+    Entity<EntityDefinition<?>> affected = mock( Entity.class );
+    Entity sensor = mock( Entity.class );
 
-    SensorControl control = factory.create( mock( Entity.class ) );
-    control.registerAllocable( expected );
-    control.allocate();
+    SensorControl control = factory.create( sensor );
+    control.registerAffected( affected );
+    control.notifyAboutSensorStatusChange( SENSOR_STATUS );
 
-    assertThat( zoneProvider.getAllocated() ).contains( expected );
+    assertThat( captureSensorEvent( eventBus ) )
+      .hasSensor( sensor )
+      .hasAffected( affected )
+      .hasSensorStatus( SENSOR_STATUS );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void createWithNullAsSensorArgument() {
     factory.create( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEventBusFactory() {
+    new SensorControlFactoryImpl( null );
   }
 }

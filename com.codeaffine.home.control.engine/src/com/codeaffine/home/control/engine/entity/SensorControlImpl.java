@@ -1,6 +1,5 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.HashSet;
@@ -8,57 +7,45 @@ import java.util.Set;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorEvent;
+import com.codeaffine.home.control.event.EventBus;
 
 class SensorControlImpl implements SensorControl {
 
-  private final Set<Entity<EntityDefinition<?>>> allocated;
-  private final AllocationTrackerImpl allocationTracker;
+  private final Set<Entity<EntityDefinition<?>>> affected;
   private final Entity<EntityDefinition<?>> sensor;
+  private final EventBus eventBus;
 
-  private boolean active;
+  public SensorControlImpl( Entity<?> sensor, EventBus eventBus ) {
+    verifyNotNull( eventBus, "eventBus" );
+    verifyNotNull( sensor, "sensor" );
 
-  public SensorControlImpl( Entity<?> sensor, AllocationTrackerImpl allocationTracker ) {
-    this.allocationTracker = allocationTracker;
+    this.affected = new HashSet<>();
     this.sensor = cast( sensor );
-    this.allocated = new HashSet<>();
-    this.active = false;
+    this.eventBus = eventBus;
   }
 
   @Override
-  public void registerAllocable( Entity<?> allocable ) {
-    verifyNotNull( allocable, "allocable" );
+  public void registerAffected( Entity<?> affected ) {
+    verifyNotNull( affected, "affected" );
 
-    if( active && !allocated.contains( allocable ) ) {
-      allocationTracker.allocate( sensor, asSet( cast( allocable ) ) );
-    }
-    allocated.add( cast( allocable ) );
+    this.affected.add( cast( affected ) );
   }
 
   @Override
-  public void unregisterAllocable( Entity<?> allocable ) {
-    verifyNotNull( allocable, "allocable" );
+  public void unregisterAffected( Entity<?> affected ) {
+    verifyNotNull( affected, "affected" );
 
-    if( active && allocated.contains( allocable ) ) {
-      allocationTracker.release( sensor, asSet( cast( allocable ) ) );
-    }
-    allocated.remove( allocable );
+    this.affected.remove( affected );
   }
 
   @Override
-  public void allocate() {
-    allocationTracker.allocate( sensor, copyAllocated() );
-    active = true;
-  }
+  @SuppressWarnings("unchecked")
+  public <S> void notifyAboutSensorStatusChange( S sensorStatus ) {
+    verifyNotNull( sensorStatus, "sensorStatus" );
 
-  @Override
-  public void release() {
-    allocationTracker.release( sensor, copyAllocated() );
-    active = false;
-  }
-
-  private Set<Entity<EntityDefinition<?>>> copyAllocated() {
-    return new HashSet<>( allocated );
+    eventBus.post( new SensorEvent<S>( sensor, sensorStatus, affected.toArray( new Entity[ affected.size() ] ) ) );
   }
 
   @SuppressWarnings("unchecked")

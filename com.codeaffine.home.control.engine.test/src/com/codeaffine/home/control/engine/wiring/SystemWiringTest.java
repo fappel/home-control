@@ -28,10 +28,9 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
-import com.codeaffine.home.control.entity.AllocationEvent;
-import com.codeaffine.home.control.entity.AllocationTracker;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorControl;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.EventBus;
@@ -69,7 +68,7 @@ public class SystemWiringTest {
 
   static class Bean {
 
-    Entity<EntityDefinition<?>> allocated;
+    Entity<EntityDefinition<?>> affected;
 
     @Schedule( period = PERIOD )
     private void method(){}
@@ -78,8 +77,8 @@ public class SystemWiringTest {
     void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
 
     @Subscribe
-    void onBusEvent( AllocationEvent event ) {
-      allocated = event.getAdditions().iterator().next();
+    void onBusEvent( SensorEvent<?> event ) {
+      affected = event.getAffected().iterator().next();
     }
   }
 
@@ -237,16 +236,15 @@ public class SystemWiringTest {
     Entity<EntityDefinition<?>> expected = mock( Entity.class );
 
     triggerAllocationEvent( expected );
-    Entity<EntityDefinition<?>> actual = context.get( Bean.class ).allocated;
+    Entity<EntityDefinition<?>> actual = context.get( Bean.class ).affected;
 
     assertThat( actual ).isSameAs( expected );
-    assertThat( context.get( AllocationTracker.class ).getAllocated() ).contains( expected );
   }
 
   private void triggerAllocationEvent( Entity<EntityDefinition<?>> allocatable ) {
     SensorControl factory = context.get( SensorControlFactory.class ).create( mock( Entity.class ) );
-    factory.registerAllocable( allocatable );
-    factory.allocate();
+    factory.registerAffected( allocatable );
+    factory.notifyAboutSensorStatusChange( new Object() );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -267,7 +265,6 @@ public class SystemWiringTest {
   private void verifyContextContent( ArgumentCaptor<Context> contextCaptor ) {
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( context.get( EventBus.class ) ).isNotNull();
-    assertThat( context.get( AllocationTracker.class ) ).isNotNull();
     assertThat( context.get( LoggerFactory.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
   }

@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.internal.zone;
 
 import static com.codeaffine.home.control.application.internal.zone.Messages.*;
+import static com.codeaffine.home.control.application.type.OnOff.*;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,9 +19,10 @@ import org.mockito.InOrder;
 
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationEvent;
+import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
@@ -50,7 +52,7 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void engageZonesChanged() {
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
 
     ArgumentCaptor<StatusEvent> captor = forClass( StatusEvent.class );
     verify( eventBus ).post( captor.capture() );
@@ -60,61 +62,59 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void getStatusAfterZoneEngaging() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1 );
+    Entity<EntityDefinition<?>> expected = ZONE_1;
 
-    activation.engagedZonesChanged( newEvent( expected, expected, $() ) );
+    activation.engagedZonesChanged( newEvent( ON, expected ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
     assertThat( actual.iterator().next().getReleaseTime() ).isEmpty();
   }
 
   @Test
   public void getStatusAfterSubsequentZoneEngaging() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1, ZONE_2 );
-
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
-    activation.engagedZonesChanged( newEvent( expected, $( ZONE_2 ), $() ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1, Zone2 ]" ) );
   }
 
   @Test
   public void getStatusAfterReleaseOfFirstEngaging() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_2 );
+    Entity<EntityDefinition<?>> expected = ZONE_2;
 
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_1, ZONE_2 ), expected, $() ) );
-    activation.engagedZonesChanged( newEvent( expected, $(), $( ZONE_1 ) ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( ON, expected ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
   }
 
   @Test
   public void getStatusAtfterReleaseOfSecondEngaging() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1 );
+    Entity<EntityDefinition<?>> expected = ZONE_1;
 
-    activation.engagedZonesChanged( newEvent( expected, expected, $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_1, ZONE_2 ), $( ZONE_2 ), $() ) );
-    activation.engagedZonesChanged( newEvent( expected, $(), $( ZONE_2 ) ) );
+    activation.engagedZonesChanged( newEvent( ON, expected ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_2 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
   }
 
   @Test
   public void getStatusAfterReleaseOfTheOnlyActiveZone() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1 );
+    Entity<EntityDefinition<?>> expected = ZONE_1;
 
-    activation.engagedZonesChanged( newEvent( expected, expected, $() ) );
+    activation.engagedZonesChanged( newEvent( ON, expected ) );
     reset( logger, eventBus );
-    activation.engagedZonesChanged( newEvent( $(), $(), expected ) );
+    activation.engagedZonesChanged( newEvent( OFF, expected ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
     assertThat( actual.iterator().next().getReleaseTime() ).isNotEmpty();
     ArgumentCaptor<String> loggingCaptor = forClass( String.class );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), loggingCaptor.capture() );
@@ -127,15 +127,13 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void getStatusAfterRemovalOfNonAdjacentZoneEngagings() {
-    Set<Entity<EntityDefinition<?>>> expected = $( ZONE_1, ZONE_3 );
-
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
-    activation.engagedZonesChanged( newEvent( expected, $( ZONE_3 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $(), $(), expected ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_1, ZONE_3 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
     ArgumentCaptor<String> captor = forClass( String.class );
-    assertThat( toZoneSet( actual ) ).isEqualTo( expected );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     InOrder order = inOrder( logger );
     order.verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
     order.verify( logger, times( 2 ) ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
@@ -147,12 +145,13 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void getStatusAfterMovementInNonAdjacentZoneEngagings() {
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_1, ZONE_3 ), $( ZONE_3 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $(), $(), $( ZONE_1, ZONE_3 ) ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_3 ), $( ZONE_3 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_2 ), $( ZONE_2 ), $( ZONE_3 ) ) );
-    activation.engagedZonesChanged( newEvent( $(), $(), $( ZONE_2 ) ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_1, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_2 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
@@ -160,13 +159,15 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void getStatusJoiningFromMultipleZoneEngagings() {
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_1, ZONE_3 ), $( ZONE_3 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $(), $(), $( ZONE_1, ZONE_3 ) ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_3 ), $( ZONE_3 ), $() ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_2 ), $( ZONE_2 ), $( ZONE_3 ) ) );
-    activation.engagedZonesChanged( newEvent( $( ZONE_1 ), $( ZONE_1 ), $( ZONE_2 ) ) );
-    activation.engagedZonesChanged( newEvent( $(), $(), $( ZONE_1 ) ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_1, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_3 ) );
+    activation.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_2 ) );
+    activation.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
     Set<ZoneActivation> actual = activation.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1 ) );
@@ -197,12 +198,10 @@ public class ZoneActivationProviderImplTest {
     return new HashSet<>( asList( elements ) );
   }
 
+  @SafeVarargs
   @SuppressWarnings("unchecked")
-  private static AllocationEvent newEvent( Set<Entity<EntityDefinition<?>>> engagedZones,
-                                     Set<Entity<EntityDefinition<?>>> additions,
-                                     Set<Entity<EntityDefinition<?>>> removals )
-  {
-    return new AllocationEvent( mock( Entity.class ), engagedZones, additions, removals );
+  private static SensorEvent<OnOff> newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
+    return new SensorEvent<>( mock( Entity.class ), sensorStatus, affected );
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

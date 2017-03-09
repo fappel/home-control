@@ -8,9 +8,9 @@ import com.codeaffine.home.control.application.motion.MotionSensorProvider.Motio
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.AllocationTracker.Sensor;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
+import com.codeaffine.home.control.entity.Sensor;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 
 public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, MotionSensorDefinition> {
 

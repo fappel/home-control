@@ -5,8 +5,8 @@ import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
+import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 
 public class MyEntityProvider extends BaseEntityProvider<MyEntity, MyEntityDefinition> {
 
