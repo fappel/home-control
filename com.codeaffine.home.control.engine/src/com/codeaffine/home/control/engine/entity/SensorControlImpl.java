@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.EventBus;
@@ -14,16 +15,16 @@ import com.codeaffine.home.control.event.EventBus;
 class SensorControlImpl implements SensorControl {
 
   private final Set<Entity<EntityDefinition<?>>> affected;
-  private final Entity<EntityDefinition<?>> sensor;
   private final EventBus eventBus;
+  private final Sensor sensor;
 
-  public SensorControlImpl( Entity<?> sensor, EventBus eventBus ) {
+  public SensorControlImpl( Sensor sensor, EventBus eventBus ) {
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( sensor, "sensor" );
 
     this.affected = new HashSet<>();
-    this.sensor = cast( sensor );
     this.eventBus = eventBus;
+    this.sensor = sensor;
   }
 
   @Override
@@ -46,6 +47,11 @@ class SensorControlImpl implements SensorControl {
     verifyNotNull( sensorStatus, "sensorStatus" );
 
     eventBus.post( new SensorEvent<S>( sensor, sensorStatus, affected.toArray( new Entity[ affected.size() ] ) ) );
+  }
+
+  @Override
+  public String getName() {
+    return sensor.getName();
   }
 
   @SuppressWarnings("unchecked")

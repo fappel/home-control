@@ -8,6 +8,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorEvent;
 
 public class SensorEventAssert extends AbstractAssert<SensorEventAssert, SensorEvent<?>> {
@@ -20,12 +21,10 @@ public class SensorEventAssert extends AbstractAssert<SensorEventAssert, SensorE
     return new SensorEventAssert( actual );
   }
 
-  public SensorEventAssert hasSensor( Entity<?> expected ) {
+  public SensorEventAssert hasSensor( Sensor expected ) {
     isNotNull();
     if( actual.getSensor() != expected ) {
-      failWithMessage( "Expected sensor <%s> but was <%s>",
-                       expected.getDefinition(),
-                       actual.getSensor().getDefinition() );
+      failWithMessage( "Expected sensor <%s> but was <%s>", expected.getName(), actual.getSensor().getName() );
     }
     return this;
   }

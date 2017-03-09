@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.event.EventBus;
 
@@ -26,10 +27,10 @@ public class SensorControlFactoryImplTest {
   }
 
   @Test
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({ "unchecked" })
   public void create() {
     Entity<EntityDefinition<?>> affected = mock( Entity.class );
-    Entity sensor = mock( Entity.class );
+    Sensor sensor = mock( Sensor.class );
 
     SensorControl control = factory.create( sensor );
     control.registerAffected( affected );

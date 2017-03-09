@@ -1,7 +1,8 @@
 package com.codeaffine.home.control.entity;
 
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
-import static org.mockito.Mockito.mock;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
+import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
@@ -14,8 +15,7 @@ public class SensorEventTest {
   private static final Entity<EntityDefinition<?>> AFFECTED_1 = mock( Entity.class );
   @SuppressWarnings("unchecked")
   private static final Entity<EntityDefinition<?>> AFFECTED_2 = mock( Entity.class );
-  @SuppressWarnings("unchecked")
-  private static final Entity<EntityDefinition<?>> SENSOR = mock( Entity.class );
+  private static final Sensor SENSOR = stubSensor( "sensor" );
   private static final Object SENSOR_STATUS = new Object();
 
   @Test

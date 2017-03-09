@@ -72,4 +72,9 @@ public class MotionSensorImpl implements MotionSensor {
   private static boolean mustEngage( ChangeEvent<SwitchItem, OnOffType> evt ) {
     return evt.getNewStatus().equals( Optional.of( ON ) );
   }
+
+  @Override
+  public String getName() {
+    return getDefinition().toString();
+  }
 }

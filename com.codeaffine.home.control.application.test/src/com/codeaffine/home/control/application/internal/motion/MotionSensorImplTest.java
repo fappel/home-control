@@ -44,6 +44,7 @@ public class MotionSensorImplTest {
     verify( sensorControlFactory ).create( sensor );
     assertThat( sensor.getDefinition() ).isSameAs( bathRoomMotion1 );
     assertThat( sensor.isEngaged() ).isFalse();
+    assertThat( sensor.getName() ).isEqualTo( bathRoomMotion1.toString() );
   }
 
   @Test

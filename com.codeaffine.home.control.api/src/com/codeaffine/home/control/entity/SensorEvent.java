@@ -12,11 +12,11 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 public class SensorEvent<S> {
 
   private final Set<Entity<EntityDefinition<?>>> affected;
-  private final Entity<EntityDefinition<?>> sensor;
   private final S sensorStatus;
+  private final Sensor sensor;
 
   @SafeVarargs
-  public SensorEvent( Entity<EntityDefinition<?>> sensor, S sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
+  public SensorEvent( Sensor sensor, S sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
     verifyNotNull( sensorStatus, "sensorStatus" );
     verifyNotNull( affected, "affected" );
     verifyNotNull( sensor, "sensor" );
@@ -30,7 +30,7 @@ public class SensorEvent<S> {
     return new HashSet<>( affected );
   }
 
-  public Entity<EntityDefinition<?>> getSensor() {
+  public Sensor getSensor() {
     return sensor;
   }
 

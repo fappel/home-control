@@ -3,6 +3,7 @@ package com.codeaffine.home.control.engine.wiring;
 import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -242,7 +243,7 @@ public class SystemWiringTest {
   }
 
   private void triggerAllocationEvent( Entity<EntityDefinition<?>> allocatable ) {
-    SensorControl factory = context.get( SensorControlFactory.class ).create( mock( Entity.class ) );
+    SensorControl factory = context.get( SensorControlFactory.class ).create( stubSensor( "sensor" ) );
     factory.registerAffected( allocatable );
     factory.notifyAboutSensorStatusChange( new Object() );
   }

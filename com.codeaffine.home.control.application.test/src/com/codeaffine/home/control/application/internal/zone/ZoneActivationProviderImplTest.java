@@ -2,6 +2,7 @@ package com.codeaffine.home.control.application.internal.zone;
 
 import static com.codeaffine.home.control.application.internal.zone.Messages.*;
 import static com.codeaffine.home.control.application.type.OnOff.*;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,9 +200,8 @@ public class ZoneActivationProviderImplTest {
   }
 
   @SafeVarargs
-  @SuppressWarnings("unchecked")
   private static SensorEvent<OnOff> newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
-    return new SensorEvent<>( mock( Entity.class ), sensorStatus, affected );
+    return new SensorEvent<>( stubSensor( "sensor" ), sensorStatus, affected );
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

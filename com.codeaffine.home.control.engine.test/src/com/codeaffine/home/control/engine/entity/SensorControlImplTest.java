@@ -2,6 +2,8 @@ package com.codeaffine.home.control.engine.entity;
 
 import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
@@ -9,6 +11,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.EventBus;
@@ -17,16 +20,17 @@ import com.codeaffine.home.control.event.EventBus;
 public class SensorControlImplTest {
 
   private final static Object SENSOR_STATUS = new Object();
+  private static final String NAME = "name";
 
   private Entity<EntityDefinition<?>> affected;
-  private Entity<EntityDefinition<?>> sensor;
   private SensorControl control;
   private EventBus eventBus;
+  private Sensor sensor;
 
   @Before
   public void setUp() {
     eventBus = mock( EventBus.class );
-    sensor = mock( Entity.class );
+    sensor = stubSensor( NAME );
     control = new SensorControlImpl( sensor, eventBus );
     affected = mock( Entity.class );
   }
@@ -67,6 +71,13 @@ public class SensorControlImplTest {
       .hasNoAffected()
       .hasSensor( sensor )
       .hasSensorStatus( SENSOR_STATUS );
+  }
+
+  @Test
+  public void getName() {
+    String actual = control.getName();
+
+    assertThat( actual ).isEqualTo( NAME );
   }
 
   @Test( expected = IllegalArgumentException.class )

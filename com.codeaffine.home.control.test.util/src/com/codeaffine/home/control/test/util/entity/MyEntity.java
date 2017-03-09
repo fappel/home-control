@@ -56,6 +56,11 @@ public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
   }
 
   @Override
+  public String getName() {
+    return getDefinition().toString();
+  }
+
+  @Override
   public String toString() {
     return "MyEntity [definition=" + definition + "]";
   }
