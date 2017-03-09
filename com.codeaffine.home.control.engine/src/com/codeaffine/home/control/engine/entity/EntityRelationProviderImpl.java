@@ -13,7 +13,7 @@ import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
-import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
+import com.codeaffine.home.control.entity.AllocationTracker.Sensor;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.util.Disposable;
 
@@ -91,12 +91,14 @@ public class EntityRelationProviderImpl implements EntityRelationProvider, Dispo
       .stream()
       .filter( entity -> entity instanceof CompositeEntity )
       .map( entity -> ( CompositeEntity<?> )entity )
-      .forEach( composite -> {
-        composite.getChildren()
-        .stream()
-        .filter( child -> child instanceof Sensor )
-        .map( child -> ( Sensor )child )
-        .forEach( sensor -> sensor.registerZone( composite ) );
-      } );
+      .forEach( composite -> registerZoneAtSensorChild( composite ) );
+  }
+
+  private static void registerZoneAtSensorChild( CompositeEntity<?> zone ) {
+    zone.getChildren()
+      .stream()
+      .filter( child -> child instanceof Sensor )
+      .map( child -> ( Sensor )child )
+      .forEach( sensor -> sensor.registerAllocable( zone ) );
   }
 }

@@ -8,57 +8,57 @@ import java.util.Set;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
 
 class SensorControlImpl implements SensorControl {
 
-  private final Set<Entity<EntityDefinition<?>>> zones;
+  private final Set<Entity<EntityDefinition<?>>> allocated;
+  private final AllocationTrackerImpl allocationTracker;
   private final Entity<EntityDefinition<?>> sensor;
-  private final ZoneProviderImpl zoneProvider;
 
   private boolean active;
 
-  public SensorControlImpl( Entity<?> sensor, ZoneProviderImpl zoneProvider ) {
-    this.zoneProvider = zoneProvider;
+  public SensorControlImpl( Entity<?> sensor, AllocationTrackerImpl allocationTracker ) {
+    this.allocationTracker = allocationTracker;
     this.sensor = cast( sensor );
-    this.zones = new HashSet<>();
+    this.allocated = new HashSet<>();
     this.active = false;
   }
 
   @Override
-  public void registerZone( Entity<?> zone ) {
-    verifyNotNull( zone, "zone" );
+  public void registerAllocable( Entity<?> allocable ) {
+    verifyNotNull( allocable, "allocable" );
 
-    if( active && !zones.contains( zone ) ) {
-      zoneProvider.engage( sensor, asSet( cast( zone ) ) );
+    if( active && !allocated.contains( allocable ) ) {
+      allocationTracker.allocate( sensor, asSet( cast( allocable ) ) );
     }
-    zones.add( cast( zone ) );
+    allocated.add( cast( allocable ) );
   }
 
   @Override
-  public void unregisterZone( Entity<?> zone ) {
-    verifyNotNull( zone, "zone" );
+  public void unregisterAllocable( Entity<?> allocable ) {
+    verifyNotNull( allocable, "allocable" );
 
-    if( active && zones.contains( zone ) ) {
-      zoneProvider.release( sensor, asSet( cast( zone ) ) );
+    if( active && allocated.contains( allocable ) ) {
+      allocationTracker.release( sensor, asSet( cast( allocable ) ) );
     }
-    zones.remove( zone );
+    allocated.remove( allocable );
   }
 
   @Override
-  public void engage() {
-    zoneProvider.engage( sensor, copyZones() );
+  public void allocate() {
+    allocationTracker.allocate( sensor, copyAllocated() );
     active = true;
   }
 
   @Override
   public void release() {
-    zoneProvider.release( sensor, copyZones() );
+    allocationTracker.release( sensor, copyAllocated() );
     active = false;
   }
 
-  private Set<Entity<EntityDefinition<?>>> copyZones() {
-    return new HashSet<>( zones );
+  private Set<Entity<EntityDefinition<?>>> copyAllocated() {
+    return new HashSet<>( allocated );
   }
 
   @SuppressWarnings("unchecked")

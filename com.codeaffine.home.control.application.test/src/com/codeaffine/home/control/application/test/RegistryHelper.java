@@ -14,8 +14,8 @@ import org.mockito.invocation.InvocationOnMock;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.room.RoomProvider.Room;
-import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
+import com.codeaffine.home.control.application.section.SectionProvider.Section;
+import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -37,22 +37,22 @@ public class RegistryHelper {
     return result;
   }
 
-  public static Set<Room> stubZones( RoomDefinition ... definitions ) {
+  public static Set<Section> stubZones( SectionDefinition ... definitions ) {
     return Stream.of( definitions ).map( definition -> stubZone( definition ) ).collect( toSet() );
   }
 
-  public static Room stubZone( RoomDefinition zoneDefinition ) {
-    Room result = mock( Room.class );
+  public static Section stubZone( SectionDefinition zoneDefinition ) {
+    Section result = mock( Section.class );
     when( result.getDefinition() ).thenReturn( zoneDefinition );
     return result;
   }
 
-  public static EntityRegistry stubRegistry( Set<Room> zones, Set<Lamp> lamps ) {
+  public static EntityRegistry stubRegistry( Set<Section> zones, Set<Lamp> lamps ) {
     Set<Entity<?>> all = new HashSet<>( zones );
     all.addAll( lamps );
     EntityRegistry result = mock( EntityRegistry.class );
     when( result.findAll() ).thenReturn( all );
-    when( result.findByDefinitionType( RoomDefinition.class ) ).thenReturn( zones );
+    when( result.findByDefinitionType( SectionDefinition.class ) ).thenReturn( zones );
     when( result.findByDefinitionType( LampDefinition.class ) ).thenReturn( lamps );
     when( result.findByDefinition( any( EntityDefinition.class ) ) )
       .thenAnswer( invocation -> doFindByDefinition( all, invocation.getArguments()[ 0 ] ) );
@@ -60,7 +60,7 @@ public class RegistryHelper {
   }
 
   public static void equipWithLamp(
-    EntityRegistry registryStub, RoomDefinition zoneDefinition, LampDefinition ... lampDefinitions )
+    EntityRegistry registryStub, SectionDefinition zoneDefinition, LampDefinition ... lampDefinitions )
   {
     equipWithLamp( registryStub.findByDefinition( zoneDefinition ), collectLamps( registryStub, lampDefinitions ) );
   }
@@ -73,7 +73,7 @@ public class RegistryHelper {
     return Stream.of( definitions ).map( definition -> registryStub.findByDefinition( definition ) ).collect( toSet() );
   }
 
-  private static void equipWithLamp( Room zone, Set<Lamp> lamps ) {
+  private static void equipWithLamp( Section zone, Set<Lamp> lamps ) {
     when( zone.getChildren() ).thenReturn( ( asList( lamps.toArray( new Lamp[ lamps.size() ] ) ) ) );
     when( zone.getChildren( LampDefinition.class ) ).thenReturn( lamps );
   }

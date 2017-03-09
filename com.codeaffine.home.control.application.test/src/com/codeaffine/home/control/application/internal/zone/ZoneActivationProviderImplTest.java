@@ -20,7 +20,7 @@ import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.ZoneEvent;
+import com.codeaffine.home.control.entity.AllocationEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
@@ -198,11 +198,11 @@ public class ZoneActivationProviderImplTest {
   }
 
   @SuppressWarnings("unchecked")
-  private static ZoneEvent newEvent( Set<Entity<EntityDefinition<?>>> engagedZones,
+  private static AllocationEvent newEvent( Set<Entity<EntityDefinition<?>>> engagedZones,
                                      Set<Entity<EntityDefinition<?>>> additions,
                                      Set<Entity<EntityDefinition<?>>> removals )
   {
-    return new ZoneEvent( mock( Entity.class ), engagedZones, additions, removals );
+    return new AllocationEvent( mock( Entity.class ), engagedZones, additions, removals );
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

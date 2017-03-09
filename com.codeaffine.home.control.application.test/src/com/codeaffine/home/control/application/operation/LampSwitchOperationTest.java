@@ -2,7 +2,7 @@ package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.*;
-import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
 import static com.codeaffine.home.control.application.test.ZoneActivationHelper.stubZoneActivation;
 import static com.codeaffine.home.control.application.type.OnOff.*;
@@ -23,8 +23,8 @@ import org.mockito.ArgumentCaptor;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy;
-import com.codeaffine.home.control.application.room.RoomProvider.Room;
-import com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition;
+import com.codeaffine.home.control.application.section.SectionProvider.Section;
+import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.application.test.RegistryHelper;
@@ -49,7 +49,7 @@ public class LampSwitchOperationTest {
   @Test
   public void operateOnSingleZoneEngagement() {
     operation.prepare();
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -61,7 +61,7 @@ public class LampSwitchOperationTest {
   public void operateOnSingleZoneEngagementWithLampFilter() {
     operation.prepare();
     operation.setLampFilter( lamp -> lamp.getDefinition() == DeskUplight );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( OFF );
@@ -72,7 +72,7 @@ public class LampSwitchOperationTest {
   @Test
   public void operateOnMultipleZoneEngagement() {
     operation.prepare();
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom, Kitchen ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -84,7 +84,7 @@ public class LampSwitchOperationTest {
   public void operateOnMultipleZoneEngagementWithLampFilter() {
     operation.prepare();
     operation.setLampFilter( lamp -> asList( WindowUplight, KitchenCeiling ).contains( lamp.getDefinition() ) );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom, Kitchen ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -98,7 +98,7 @@ public class LampSwitchOperationTest {
     operation.setLampFilter( lamp -> asList( WindowUplight, KitchenCeiling ).contains( lamp.getDefinition() ) );
     operation.setLampsToSwitchOff( findLamp( KitchenCeiling ) );
     operation.setLampsToSwitchOn( findLamp( DeskUplight ) );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom, Kitchen ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -110,7 +110,7 @@ public class LampSwitchOperationTest {
   public void operateOnLampSelectionStrategyALL() {
     operation.prepare();
     operation.setLampSelectionStrategy( LampSelectionStrategy.ALL );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -123,7 +123,7 @@ public class LampSwitchOperationTest {
     operation.prepare();
     operation.setLampSelectionStrategy( LampSelectionStrategy.ALL );
     operation.setLampFilter( lamp -> lamp.getDefinition() == KitchenCeiling );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( OFF );
@@ -135,7 +135,7 @@ public class LampSwitchOperationTest {
   public void operateOnLampSelectionStrategyNONE() {
     operation.prepare();
     operation.setLampSelectionStrategy( LampSelectionStrategy.NONE );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( OFF );
@@ -148,10 +148,10 @@ public class LampSwitchOperationTest {
     operation.prepare();
     operation.setLampFilter( lamp -> lamp.getDefinition() == DeskUplight );
     operation.setLampSelectionStrategy( LampSelectionStrategy.ALL );
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA ) ) );
 
     operation.prepare();
-    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LivingRoom, Kitchen ) ) );
+    operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -161,7 +161,7 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithLampDelayTimer() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -175,13 +175,13 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementIfDelayedLampIsSwitchedOn() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
     operation.setDelayed();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
 
@@ -191,13 +191,13 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithTransitionThatFinallyActivatesDelayedLamp() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnTransit = findLamp( HallCeiling ).getOnOffStatus();
@@ -206,12 +206,12 @@ public class LampSwitchOperationTest {
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTimerRunOnTransit = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall );
+    stubZoneActivationProvider( zoneActivationProvider, HALL );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnOnlyZoneActivation = findLamp( HallCeiling ).getOnOffStatus();
@@ -225,13 +225,13 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithTransitionWithSubsequentActivation() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnTransit = findLamp( HallCeiling ).getOnOffStatus();
@@ -240,17 +240,17 @@ public class LampSwitchOperationTest {
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTimerRunOnTransit = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWithTransitionEndAsOnlyZoneActivation = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, HALL, DINING_AREA );
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayedSecondTime = findLamp( HallCeiling ).getOnOffStatus();
@@ -270,7 +270,7 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithDelayedLampIsOnlyAffected() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( HALL );
 
     operation.prepare();
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -280,14 +280,14 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithMultiLampDelayesOnDifferentZones() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( Kitchen, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( DINING_AREA, HALL );
 
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -299,14 +299,14 @@ public class LampSwitchOperationTest {
     OnOff hallOnOffAfterTimerRunOnTransit = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTimerRun = findLamp( DeskUplight ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall, LivingRoom );
+    stubZoneActivationProvider( zoneActivationProvider, HALL, LIVING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTransitionStartVanished = findLamp( DeskUplight ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -326,14 +326,14 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithMultiLampDelayesOnDifferentZonesThatFinallyActivatesZoneWithoutDelayedLamp() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA );
 
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff deskOnOffAtBeginning = findLamp( DeskUplight ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -341,7 +341,7 @@ public class LampSwitchOperationTest {
     OnOff deskOnOffAfterTransitionStart = findLamp( DeskUplight ).getOnOffStatus();
     Runnable command = captureTimerCommand();
 
-    stubZoneActivationProvider( zoneActivationProvider, LivingRoom, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -353,14 +353,14 @@ public class LampSwitchOperationTest {
     OnOff hallOnOffAfterTimerRunOnTransit = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTimerRun = findLamp( DeskUplight ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Hall, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, HALL, DINING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTransitionStartVanished = findLamp( DeskUplight ).getOnOffStatus();
 
-    stubZoneActivationProvider( zoneActivationProvider, Kitchen );
+    stubZoneActivationProvider( zoneActivationProvider, DINING_AREA );
     operation.prepare();
     operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
@@ -382,7 +382,7 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithLampDelayTimerAndDelayedExplicitlySwitchedOn() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LivingRoom, Hall );
+    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
     operation.setLampsToSwitchOn( findLamp( HallCeiling ) );
@@ -461,18 +461,18 @@ public class LampSwitchOperationTest {
     return registry.findByDefinition( definition );
   }
 
-  private ZoneActivationProvider stubZoneActivationProvider( RoomDefinition ... zoneDefinitions ) {
+  private ZoneActivationProvider stubZoneActivationProvider( SectionDefinition ... zoneDefinitions ) {
     ZoneActivationProvider result = mock( ZoneActivationProvider.class );
     stubZoneActivationProvider( result, zoneDefinitions );
     return result;
   }
 
-  void stubZoneActivationProvider( ZoneActivationProvider provider, RoomDefinition... zoneDefinitions ) {
+  void stubZoneActivationProvider( ZoneActivationProvider provider, SectionDefinition... zoneDefinitions ) {
     Set<ZoneActivation> status = stubStatus( zoneDefinitions );
     when( provider.getStatus() ).thenReturn( status );
   }
 
-  Set<ZoneActivation> stubStatus( RoomDefinition... zoneDefinitions ) {
+  Set<ZoneActivation> stubStatus( SectionDefinition... zoneDefinitions ) {
     return Stream.of( zoneDefinitions )
       .map( zoneDefinition -> registry.findByDefinition( zoneDefinition ) )
       .map( zone -> stubZoneActivation( zone ) )
@@ -481,11 +481,11 @@ public class LampSwitchOperationTest {
 
   static EntityRegistry stubRegistry() {
     Set<Lamp> lamps = stubLamps( KitchenCeiling, HallCeiling, DeskUplight, WindowUplight );
-    Set<Room> rooms = stubZones( Kitchen, Hall, LivingRoom );
+    Set<Section> rooms = stubZones( DINING_AREA, HALL, LIVING_AREA );
     EntityRegistry result = RegistryHelper.stubRegistry( rooms, lamps );
-    equipWithLamp( result, Kitchen, KitchenCeiling );
-    equipWithLamp( result, Hall, HallCeiling );
-    equipWithLamp( result, LivingRoom, DeskUplight, WindowUplight );
+    equipWithLamp( result, DINING_AREA, KitchenCeiling );
+    equipWithLamp( result, HALL, HallCeiling );
+    equipWithLamp( result, LIVING_AREA, DeskUplight, WindowUplight );
     return result;
   }
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.test.util.entity.MyEntity;
 import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
 

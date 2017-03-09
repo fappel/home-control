@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubZone;
 import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
 import static java.time.LocalDateTime.now;
@@ -14,12 +14,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.scene.AwayScene;
-import com.codeaffine.home.control.application.scene.DayScene;
-import com.codeaffine.home.control.application.scene.HomeSceneSelectionConfigurer;
-import com.codeaffine.home.control.application.scene.NightScene;
-import com.codeaffine.home.control.application.scene.SleepScene;
-import com.codeaffine.home.control.application.scene.TwilightScene;
 import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivation;
@@ -50,7 +44,7 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectWithSunPositionHasZenitAboveHorizonAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( LivingRoom ) ) ) );
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -63,7 +57,7 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectWithSunPositionAfterSunsetOrBeforeSunriseAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( LivingRoom ) ) ) );
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( -0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -76,7 +70,7 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectWithSunPositionBeforeDawnOrAfterDuskAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( LivingRoom ) ) ) );
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( -18.1, 4 ) );
 
 
@@ -90,7 +84,7 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsReleasedLeavingZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( Hall ), now() ) ) );
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( HALL ), now() ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -104,7 +98,7 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsEngagedLeavingZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( Hall ) ) ) );
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( HALL ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -117,8 +111,8 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectOnArbitraySunPositionAndMultipleZoneActivationsIncludingReleasedLeavingZone() {
-    ZoneActivation hallActivation = stubZoneActivation( stubZone( Hall ), now() );
-    ZoneActivation livingRoomActivation = stubZoneActivation( stubZone( LivingRoom ) );
+    ZoneActivation hallActivation = stubZoneActivation( stubZone( HALL ), now() );
+    ZoneActivation livingRoomActivation = stubZoneActivation( stubZone( WORK_AREA ) );
     stubZoneActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
@@ -131,8 +125,8 @@ public class HomeSceneSelectionConfigurerTest {
   }
 
   @Test
-  public void selectOnAribrarySunPositionAndSingleZoneActivationWhichIsReleasedBedRoomZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( BedRoom ), now() ) ) );
+  public void selectOnAribrarySunPositionAndSingleZoneActivationWhichIsReleasedBedZone() {
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( BED ), now() ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -144,8 +138,8 @@ public class HomeSceneSelectionConfigurerTest {
   }
 
   @Test
-  public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsEngagedBedRoomZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( BedRoom ) ) ) );
+  public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsEngagedBedZone() {
+    stubZoneActivationProvider( asStatus( stubZoneActivation( stubZone( BED ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -158,8 +152,8 @@ public class HomeSceneSelectionConfigurerTest {
 
   @Test
   public void selectOnArbitraySunPositionAndMultipleZoneActivationsIncludingReleasedSleepingZone() {
-    ZoneActivation hallActivation = stubZoneActivation( stubZone( BedRoom ), now() );
-    ZoneActivation livingRoomActivation = stubZoneActivation( stubZone( LivingRoom ) );
+    ZoneActivation hallActivation = stubZoneActivation( stubZone( BED ), now() );
+    ZoneActivation livingRoomActivation = stubZoneActivation( stubZone( WORK_AREA ) );
     stubZoneActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 

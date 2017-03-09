@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;
 
 public class MotionSensorProviderTest {

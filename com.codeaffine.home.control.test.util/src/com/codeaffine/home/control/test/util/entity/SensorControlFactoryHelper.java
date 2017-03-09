@@ -3,8 +3,8 @@ package com.codeaffine.home.control.test.util.entity;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 
 public class SensorControlFactoryHelper {
 

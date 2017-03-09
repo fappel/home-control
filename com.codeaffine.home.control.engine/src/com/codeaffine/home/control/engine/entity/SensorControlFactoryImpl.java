@@ -4,14 +4,14 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 
 public class SensorControlFactoryImpl implements SensorControlFactory {
 
-  private final ZoneProviderImpl zoneProvider;
+  private final AllocationTrackerImpl zoneProvider;
 
-  public SensorControlFactoryImpl( ZoneProviderImpl zoneProvider ) {
+  public SensorControlFactoryImpl( AllocationTrackerImpl zoneProvider ) {
     this.zoneProvider = zoneProvider;
   }
 

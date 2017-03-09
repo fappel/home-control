@@ -8,16 +8,16 @@ import java.util.Optional;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.type.OnOffType;
 
 public class MotionSensorImpl implements MotionSensor {
 
-  private final SensorControl sensorControl;
   private final MotionSensorDefinition definition;
+  private final SensorControl sensorControl;
   private final SwitchItem sensorItem;
 
   public MotionSensorImpl(
@@ -44,17 +44,17 @@ public class MotionSensorImpl implements MotionSensor {
   }
 
   @Override
-  public void registerZone( Entity<?> zone ) {
-    verifyNotNull( zone, "zone" );
+  public void registerAllocable( Entity<?> allocable ) {
+    verifyNotNull( allocable, "allocable" );
 
-    sensorControl.registerZone( zone );
+    sensorControl.registerAllocable( allocable );
   }
 
   @Override
-  public void unregisterZone( Entity<?> zone ) {
-    verifyNotNull( zone, "zone" );
+  public void unregisterAllocable( Entity<?> allocable ) {
+    verifyNotNull( allocable, "zone" );
 
-    sensorControl.unregisterZone( zone );
+    sensorControl.unregisterAllocable( allocable );
   }
 
   private void initialize() {
@@ -63,7 +63,7 @@ public class MotionSensorImpl implements MotionSensor {
 
   private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {
     if( mustEngage( evt ) ) {
-      sensorControl.engage();
+      sensorControl.allocate();
     } else {
       sensorControl.release();
     }

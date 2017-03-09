@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 
 import java.util.Set;
 
@@ -16,9 +16,9 @@ public class HomeSceneSelectionConfigurer {
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     sceneSelector
-      .whenStatusOf( GLOBAL, ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, Hall ) )
+      .whenStatusOf( GLOBAL, ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, HALL ) )
         .thenSelect( AwayScene.class )
-      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BedRoom ) )
+      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BED ) )
         .thenSelect( SleepScene.class )
       .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
         .thenSelect( TwilightScene.class )

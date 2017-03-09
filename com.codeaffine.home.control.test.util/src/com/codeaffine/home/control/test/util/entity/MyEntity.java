@@ -9,9 +9,9 @@ import java.util.Set;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.ZoneProvider.Sensor;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.Sensor;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 
 public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
 
@@ -42,17 +42,17 @@ public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
   }
 
   @Override
-  public void registerZone( Entity<?> zone ) {
-    sensorControl.registerZone( zone );
+  public void registerAllocable( Entity<?> allocable ) {
+    sensorControl.registerAllocable( allocable );
   }
 
   @Override
-  public void unregisterZone( Entity<?> zone ) {
-    sensorControl.unregisterZone( zone );
+  public void unregisterAllocable( Entity<?> allocable ) {
+    sensorControl.unregisterAllocable( allocable );
   }
 
-  public void engage() {
-    sensorControl.engage();
+  public void allocate() {
+    sensorControl.allocate();
   }
 
   public void release() {

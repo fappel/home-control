@@ -15,7 +15,7 @@ import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.ZoneEvent;
+import com.codeaffine.home.control.entity.AllocationEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.logger.Logger;
@@ -43,25 +43,25 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   @Subscribe
-  public void engagedZonesChanged( ZoneEvent event ) {
+  public void engagedZonesChanged( AllocationEvent event ) {
     statusProviderCore.updateStatus( () -> update( event ),
                                      ZONE_ACTIVATION_STATUS_CHANGED_INFO,
                                      status -> createListOfEngagedZoneDefinitions() );
   }
 
-  private Set<ZoneActivation> update( ZoneEvent event ) {
+  private Set<ZoneActivation> update( AllocationEvent event ) {
     doEngagedZonesChanged( event );
     return traces.stream().flatMap( stack -> stack.stream() ).collect( toSet() );
   }
 
-  private void doEngagedZonesChanged( ZoneEvent event ) {
+  private void doEngagedZonesChanged( AllocationEvent event ) {
     ensureDiscreteTraces( event );
     handleAdditions( event );
     handleRemovals( event );
     removeTraceDuplicates();
   }
 
-  private void ensureDiscreteTraces( ZoneEvent event ) {
+  private void ensureDiscreteTraces( AllocationEvent event ) {
     event.getAdditions().stream().forEach( zone -> ensureDescreteTrace( zone ) );
   }
 
@@ -71,7 +71,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     }
   }
 
-  private void handleAdditions( ZoneEvent event ) {
+  private void handleAdditions( AllocationEvent event ) {
     event.getAdditions().stream().forEach( zone -> handleAdditions( zone ) );
   }
 
@@ -86,7 +86,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     }
   }
 
-  private void handleRemovals( ZoneEvent event ) {
+  private void handleRemovals( AllocationEvent event ) {
     event.getRemovals().stream().forEach( zone -> handleRemovals( zone ) );
   }
 

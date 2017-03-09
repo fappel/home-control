@@ -15,8 +15,8 @@ import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.item.SwitchItem;
@@ -47,31 +47,31 @@ public class MotionSensorImplTest {
   }
 
   @Test
-  public void registerZone() {
+  public void registerAllocable() {
     Entity<?> expected = mock( Entity.class );
 
-    sensor.registerZone( expected );
+    sensor.registerAllocable( expected );
 
-    verify( sensorControl ).registerZone( expected );
+    verify( sensorControl ).registerAllocable( expected );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerZoneWithNullAsArgument() {
-    sensor.registerZone( null );
+  public void registerAllocableWithNullAsArgument() {
+    sensor.registerAllocable( null );
   }
 
   @Test
-  public void unregisterZone() {
+  public void unregisterAllocable() {
     Entity<?> expected = mock( Entity.class );
 
-    sensor.unregisterZone( expected );
+    sensor.unregisterAllocable( expected );
 
-    verify( sensorControl ).unregisterZone( expected );
+    verify( sensorControl ).unregisterAllocable( expected );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void unregisterZoneWithNullAsArgument() {
-    sensor.unregisterZone( null );
+  public void unregisterAllocableWithNullAsArgument() {
+    sensor.unregisterAllocable( null );
   }
 
   @Test
@@ -80,7 +80,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).engage();
+    verify( sensorControl ).allocate();
   }
 
   @Test

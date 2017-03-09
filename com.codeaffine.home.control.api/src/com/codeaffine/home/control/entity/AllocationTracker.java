@@ -5,11 +5,11 @@ import java.util.Set;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
-public interface ZoneProvider {
+public interface AllocationTracker {
 
   public interface Sensor {
-    void registerZone( Entity<?> zone );
-    void unregisterZone( Entity<?> zone );
+    void registerAllocable( Entity<?> allocable );
+    void unregisterAllocable( Entity<?> allocable );
   }
 
   public interface SensorControlFactory {
@@ -17,9 +17,9 @@ public interface ZoneProvider {
   }
 
   public interface SensorControl extends Sensor {
-    void engage();
+    void allocate();
     void release();
   }
 
-  Set<Entity<?>> getEngagedZones();
+  Set<Entity<?>> getAllocated();
 }

@@ -6,112 +6,110 @@ import static org.mockito.Mockito.mock;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.engine.entity.SensorControlFactoryImpl;
-import com.codeaffine.home.control.engine.entity.ZoneProviderImpl;
 import com.codeaffine.home.control.engine.event.EventBusImpl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 @SuppressWarnings("unchecked")
 public class SensorControlImplTest {
 
-  private Entity<EntityDefinition<?>> zone;
-  private ZoneProviderImpl zoneProvider;
+  private Entity<EntityDefinition<?>> allocable;
+  private AllocationTrackerImpl tracker;
   private SensorControl control;
 
   @Before
   public void setUp() {
-    zoneProvider = new ZoneProviderImpl( new EventBusImpl() );
-    SensorControlFactoryImpl factory = new SensorControlFactoryImpl( zoneProvider );
+    tracker = new AllocationTrackerImpl( new EventBusImpl() );
+    SensorControlFactoryImpl factory = new SensorControlFactoryImpl( tracker );
     control = factory.create( mock( Entity.class ) );
-    zone = mock( Entity.class );
+    allocable = mock( Entity.class );
   }
 
   @Test
-  public void engage() {
-    control.registerZone( zone );
+  public void allocate() {
+    control.registerAllocable( allocable );
 
-    control.engage();
+    control.allocate();
 
-    assertThat( zoneProvider.getEngagedZones() ).contains( zone );
+    assertThat( tracker.getAllocated() ).contains( allocable );
   }
 
   @Test
-  public void engageWithoutRegisteredZone() {
-    control.engage();
+  public void allocateWithoutRegisteredAllocable() {
+    control.allocate();
 
-    assertThat( zoneProvider.getEngagedZones() ).isEmpty();
+    assertThat( tracker.getAllocated() ).isEmpty();
   }
 
   @Test
-  public void registerZoneAfterEngage() {
-    control.engage();
+  public void registerAllocableAfterAllocate() {
+    control.allocate();
 
-    control.registerZone( zone );
+    control.registerAllocable( allocable );
 
-    assertThat( zoneProvider.getEngagedZones() ).contains( zone );
+    assertThat( tracker.getAllocated() ).contains( allocable );
   }
 
   @Test
-  public void registerZoneAfterEngageAndAlreadyEngaged() {
-    control.registerZone( zone );
-    control.engage();
+  public void registerAllocableWhichIsAlreadyAllocatedASecondTime() {
+    control.registerAllocable( allocable );
+    control.allocate();
 
-    control.registerZone( zone );
+    control.registerAllocable( allocable );
 
-    assertThat( zoneProvider.getEngagedZones() ).contains( zone );
+    assertThat( tracker.getAllocated() ).contains( allocable );
   }
 
   @Test
   public void release() {
-    control.registerZone( zone );
-    control.engage();
+    control.registerAllocable( allocable );
+    control.allocate();
 
     control.release();
 
-    assertThat( zoneProvider.getEngagedZones() ).isEmpty();
+    assertThat( tracker.getAllocated() ).isEmpty();
   }
 
   @Test
-  public void unregisterZoneAfterEngage() {
-    control.registerZone( zone );
+  public void unregisterAllocableAfterAllocate() {
+    control.registerAllocable( allocable );
 
-    control.engage();
-    control.unregisterZone( zone );
+    control.allocate();
+    control.unregisterAllocable( allocable );
 
-    assertThat( zoneProvider.getEngagedZones() ).isEmpty();
+    assertThat( tracker.getAllocated() ).isEmpty();
   }
 
   @Test
-  public void unregisterZoneAfterRelease() {
-    control.registerZone( zone );
-    control.engage();
+  public void unregisterAllocableAfterRelease() {
+    control.registerAllocable( allocable );
+    control.allocate();
 
     control.release();
-    control.unregisterZone( zone );
+    control.unregisterAllocable( allocable );
 
-    assertThat( zoneProvider.getEngagedZones() ).isEmpty();
+    assertThat( tracker.getAllocated() ).isEmpty();
   }
 
   @Test
-  public void unregisterZoneTwiceAfterEngage() {
-    control.registerZone( zone );
-    control.engage();
+  public void unregisterAllocableTwiceAfterAllocate() {
+    control.registerAllocable( allocable );
+    control.allocate();
 
-    control.unregisterZone( zone );
-    control.unregisterZone( zone );
+    control.unregisterAllocable( allocable );
+    control.unregisterAllocable( allocable );
 
-    assertThat( zoneProvider.getEngagedZones() ).isEmpty();
+    assertThat( tracker.getAllocated() ).isEmpty();
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerZoneWithNullAsZone() {
-    control.registerZone( null );
+  public void registerAllocableWithNullAsAllocable() {
+    control.registerAllocable( null );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void unregisterZoneWithNullAsZone() {
-    control.unregisterZone( null );
+  public void unregisterAllocableWithNullAsAllocable() {
+    control.unregisterAllocable( null );
   }
 }

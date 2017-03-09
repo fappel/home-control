@@ -28,10 +28,10 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
-import com.codeaffine.home.control.entity.ZoneEvent;
-import com.codeaffine.home.control.entity.ZoneProvider;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControl;
-import com.codeaffine.home.control.entity.ZoneProvider.SensorControlFactory;
+import com.codeaffine.home.control.entity.AllocationEvent;
+import com.codeaffine.home.control.entity.AllocationTracker;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControl;
+import com.codeaffine.home.control.entity.AllocationTracker.SensorControlFactory;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.EventBus;
@@ -78,7 +78,7 @@ public class SystemWiringTest {
     void onItemEvent( @SuppressWarnings("unused") ChangeEvent<NumberItem, DecimalType> event ){}
 
     @Subscribe
-    void onBusEvent( ZoneEvent event ) {
+    void onBusEvent( AllocationEvent event ) {
       allocated = event.getAdditions().iterator().next();
     }
   }
@@ -240,13 +240,13 @@ public class SystemWiringTest {
     Entity<EntityDefinition<?>> actual = context.get( Bean.class ).allocated;
 
     assertThat( actual ).isSameAs( expected );
-    assertThat( context.get( ZoneProvider.class ).getEngagedZones() ).contains( expected );
+    assertThat( context.get( AllocationTracker.class ).getAllocated() ).contains( expected );
   }
 
   private void triggerAllocationEvent( Entity<EntityDefinition<?>> allocatable ) {
     SensorControl factory = context.get( SensorControlFactory.class ).create( mock( Entity.class ) );
-    factory.registerZone( allocatable );
-    factory.engage();
+    factory.registerAllocable( allocatable );
+    factory.allocate();
   }
 
   @SuppressWarnings( "unchecked" )
@@ -267,7 +267,7 @@ public class SystemWiringTest {
   private void verifyContextContent( ArgumentCaptor<Context> contextCaptor ) {
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( context.get( EventBus.class ) ).isNotNull();
-    assertThat( context.get( ZoneProvider.class ) ).isNotNull();
+    assertThat( context.get( AllocationTracker.class ) ).isNotNull();
     assertThat( context.get( LoggerFactory.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
   }

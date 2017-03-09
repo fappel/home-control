@@ -2,7 +2,7 @@ package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.*;
-import static com.codeaffine.home.control.application.room.RoomProvider.RoomDefinition.*;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
@@ -17,8 +17,8 @@ import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.room.RoomProvider;
 import com.codeaffine.home.control.application.scene.HomeSceneSelectionConfigurer;
+import com.codeaffine.home.control.application.section.SectionProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
@@ -34,29 +34,37 @@ public class Configuration implements SystemConfiguration {
   public void configureEntities( EntityRegistry entityRegistry ) {
     entityRegistry.register( MotionSensorProvider.class );
     entityRegistry.register( LampProvider.class );
-    entityRegistry.register( RoomProvider.class );
+    entityRegistry.register( SectionProvider.class );
   }
 
   @Override
   public void configureFacility( Facility facility ) {
-    facility.equip( BedRoom ).with( BedStand, BedRoomCeiling, bedRoomMotion1 );
-    facility.equip( Hall ).with( HallCeiling, hallMotion1 );
-    facility.equip( Kitchen ).with( KitchenCeiling, SinkUplight, kitchenMotion1 );
-    facility.equip( BathRoom ).with( BathRoomCeiling, bathRoomMotion1 );
-    facility.equip( LivingRoom )
-      .with( FanLight1, FanLight2, ChimneyUplight, DeskUplight, WindowUplight, livingRoomMotion1 );
+    facility.equip( BEDROOM ).with( BED, DRESSING_AREA );
+    facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION );
+    facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION );
+    facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
+    facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION );
+    facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION );
+    facility.equip( HALL ).with( HallCeiling, HALL_MOTION );
+    facility.equip( KITCHEN ).with( COOKING_AREA, DINING_AREA );
+    facility.equip( COOKING_AREA ).with( KitchenCeiling, COOKING_AREA_MOTION );
+    facility.equip( DINING_AREA ).with( SinkUplight, DINING_AREA_MOTION );
+    facility.equip( BATH_ROOM ).with( BathRoomCeiling, BATH_ROOM_MOTION );
   }
 
   @Override
   public void configureStatusProvider( StatusProviderRegistry statusProviderRegistry ) {
     AdjacencyDefinition adjacencyDefinition
-      = new AdjacencyDefinition( new HashSet<>( asList( BedRoom, Hall, Kitchen, BathRoom, LivingRoom ) ) );
+      = new AdjacencyDefinition( new HashSet<>(
+          asList( COOKING_AREA, DINING_AREA, BED, DRESSING_AREA, WORK_AREA, LIVING_AREA, HALL, BATH_ROOM ) ) );
     adjacencyDefinition
-      .link( BedRoom, LivingRoom )
-      .link( LivingRoom, Kitchen )
-      .link( LivingRoom, Hall )
-      .link( Kitchen, Hall )
-      .link( Kitchen, BathRoom );
+      .link( BED, DRESSING_AREA )
+      .link( DRESSING_AREA, LIVING_AREA )
+      .link( LIVING_AREA, WORK_AREA )
+      .link( WORK_AREA, HALL )
+      .link( HALL, COOKING_AREA )
+      .link( COOKING_AREA, DINING_AREA )
+      .link( DINING_AREA, BATH_ROOM );
 
     statusProviderRegistry.getContext().set( AdjacencyDefinition.class, adjacencyDefinition );
     statusProviderRegistry.register( ZoneActivationProvider.class, ZoneActivationProviderImpl.class );
