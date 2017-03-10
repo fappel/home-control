@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.engine.entity;
 
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
-import static com.codeaffine.home.control.test.util.entity.SensorControlFactoryHelper.stubSensorControlFactory;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensorControlFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 

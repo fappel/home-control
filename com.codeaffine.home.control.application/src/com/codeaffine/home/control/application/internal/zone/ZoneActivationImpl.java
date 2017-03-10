@@ -8,22 +8,21 @@ import java.util.Optional;
 
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 class ZoneActivationImpl implements ZoneActivation {
 
-  private final Entity<EntityDefinition<?>> zone;
+  private final Entity<?> zone;
 
   private LocalDateTime releaseTime;
 
-  ZoneActivationImpl( Entity<EntityDefinition<?>> zone ) {
+  ZoneActivationImpl( Entity<?> zone ) {
     verifyNotNull( zone, "zone" );
 
     this.zone = zone;
   }
 
   @Override
-  public Entity<EntityDefinition<?>> getZone() {
+  public Entity<?> getZone() {
     return zone;
   }
 

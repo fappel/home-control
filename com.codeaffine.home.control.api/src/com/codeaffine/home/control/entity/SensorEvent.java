@@ -7,16 +7,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public class SensorEvent<S> {
 
-  private final Set<Entity<EntityDefinition<?>>> affected;
+  private final Set<Entity<?>> affected;
   private final S sensorStatus;
   private final Sensor sensor;
 
   @SafeVarargs
-  public SensorEvent( Sensor sensor, S sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
+  public SensorEvent( Sensor sensor, S sensorStatus, Entity<?> ... affected ) {
     verifyNotNull( sensorStatus, "sensorStatus" );
     verifyNotNull( affected, "affected" );
     verifyNotNull( sensor, "sensor" );
@@ -26,7 +25,7 @@ public class SensorEvent<S> {
     this.sensor = sensor;
   }
 
-  public Set<Entity<EntityDefinition<?>>> getAffected() {
+  public Set<Entity<?>> getAffected() {
     return new HashSet<>( affected );
   }
 

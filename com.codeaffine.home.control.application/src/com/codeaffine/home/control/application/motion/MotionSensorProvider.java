@@ -6,11 +6,13 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.application.internal.motion.MotionSensorFactory;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorEvent;
 
 public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, MotionSensorDefinition> {
 
@@ -29,6 +31,14 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
 
   public interface MotionSensor extends Entity<MotionSensorDefinition>, Sensor {
     boolean isEngaged();
+  }
+
+  public static class MotionSensorEvent extends SensorEvent<OnOff> {
+
+    @SafeVarargs
+    public MotionSensorEvent( Sensor sensor, OnOff sensorStatus, Entity<?> ... affected ) {
+      super( sensor, sensorStatus, affected );
+    }
   }
 
   public MotionSensorProvider( Registry registry, SensorControlFactory sensorControlFactory ) {

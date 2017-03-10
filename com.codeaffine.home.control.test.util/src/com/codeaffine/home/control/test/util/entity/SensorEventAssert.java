@@ -7,7 +7,6 @@ import java.util.List;
 import org.assertj.core.api.AbstractAssert;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorEvent;
 
@@ -53,9 +52,7 @@ public class SensorEventAssert extends AbstractAssert<SensorEventAssert, SensorE
     return this;
   }
 
-  private void verifyContainment( List<Entity<?>> expected,
-                                  Collection<Entity<EntityDefinition<?>>> actual,
-                                  String pattern ) {
+  private void verifyContainment( List<Entity<?>> expected, Collection<Entity<?>> actual, String pattern ) {
     if( actual.size() != expected.size() ) {
       failWithMessage( pattern, expected, actual );
     }

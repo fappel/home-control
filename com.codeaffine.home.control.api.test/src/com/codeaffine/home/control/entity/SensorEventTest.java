@@ -2,7 +2,7 @@ package com.codeaffine.home.control.entity;
 
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
@@ -61,7 +61,6 @@ public class SensorEventTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  @SuppressWarnings("unchecked")
   public void createWithNullAsAffectedArrayArgument() {
     new SensorEvent<>( SENSOR, SENSOR_STATUS, new Entity[ 1 ] );
   }

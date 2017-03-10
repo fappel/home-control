@@ -20,7 +20,7 @@ public class MyEntity implements CompositeEntity<MyEntityDefinition>, Sensor {
   private final Set<Entity<?>> entities;
 
   public MyEntity( MyEntityDefinition definition, SensorControlFactory factory, Set<Entity<?>> entities ) {
-    this.sensorControl = factory.create( this );
+    this.sensorControl = factory.create( this, ( status, affected ) -> new MyEntityEvent( this, status, affected ) );
     this.definition = definition;
     this.entities = entities;
     entities.add( this );

@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.captureSensorEvent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 

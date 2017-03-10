@@ -18,12 +18,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
@@ -200,8 +200,8 @@ public class ZoneActivationProviderImplTest {
   }
 
   @SafeVarargs
-  private static SensorEvent<OnOff> newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
-    return new SensorEvent<>( stubSensor( "sensor" ), sensorStatus, affected );
+  private static MotionSensorEvent newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
+    return new MotionSensorEvent( stubSensor( "sensor" ), sensorStatus, affected );
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -220,7 +220,7 @@ public class ZoneActivationProviderImplTest {
     return result;
   }
 
-  private static Set<Entity<EntityDefinition<?>>> toZoneSet( Set<ZoneActivation> zoneActivations ) {
+  private static Set<Entity<?>> toZoneSet( Set<ZoneActivation> zoneActivations ) {
     return zoneActivations.stream().map( activation -> activation.getZone() ).collect( toSet() );
   }
 }

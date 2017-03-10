@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
@@ -27,7 +29,7 @@ public class MotionSensorImpl implements MotionSensor {
     verifyNotNull( definition, "definition" );
     verifyNotNull( sensorItem, "sensorItem" );
 
-    this.sensorControl = sensorControlFactory.create( this );
+    this.sensorControl = sensorControlFactory.create( this, ( status, affected ) -> newEvent( status, affected ) );
     this.sensorItem = sensorItem;
     this.definition = definition;
     initialize();
@@ -76,5 +78,9 @@ public class MotionSensorImpl implements MotionSensor {
   @Override
   public String getName() {
     return getDefinition().toString();
+  }
+
+  private MotionSensorEvent newEvent( Object status, Entity<?>[] affected ) {
+    return new MotionSensorEvent( this, ( OnOff )status, affected );
   }
 }

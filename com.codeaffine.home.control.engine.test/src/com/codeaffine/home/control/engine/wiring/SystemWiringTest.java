@@ -3,7 +3,7 @@ package com.codeaffine.home.control.engine.wiring;
 import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
-import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,10 +25,10 @@ import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.entity.SensorEvent;
@@ -69,7 +69,7 @@ public class SystemWiringTest {
 
   static class Bean {
 
-    Entity<EntityDefinition<?>> affected;
+    Entity<?> affected;
 
     @Schedule( period = PERIOD )
     private void method(){}
@@ -231,21 +231,24 @@ public class SystemWiringTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void busEventWiring() {
     wiring.initialize( configuration );
-    Entity<EntityDefinition<?>> expected = mock( Entity.class );
+    Entity<?> expected = mock( Entity.class );
 
     triggerAllocationEvent( expected );
-    Entity<EntityDefinition<?>> actual = context.get( Bean.class ).affected;
+    Entity<?> actual = context.get( Bean.class ).affected;
 
     assertThat( actual ).isSameAs( expected );
   }
 
-  private void triggerAllocationEvent( Entity<EntityDefinition<?>> allocatable ) {
-    SensorControl factory = context.get( SensorControlFactory.class ).create( stubSensor( "sensor" ) );
-    factory.registerAffected( allocatable );
-    factory.notifyAboutSensorStatusChange( new Object() );
+  @SuppressWarnings("unchecked")
+  private void triggerAllocationEvent( Entity<?> affected ) {
+    Sensor sensor = stubSensor( "sensor" );
+    Object status = new Object();
+    SensorControlFactory sensorControlFactory = context.get( SensorControlFactory.class );
+    SensorControl factory = sensorControlFactory.create( sensor, stubEventFactory( affected, sensor, status ) );
+    factory.registerAffected( affected );
+    factory.notifyAboutSensorStatusChange( status );
   }
 
   @SuppressWarnings( "unchecked" )

@@ -1,22 +1,27 @@
 package com.codeaffine.home.control.application.internal.motion;
 
 import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.bathRoomMotion1;
+import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
 import static com.codeaffine.home.control.type.OnOffType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
+import com.codeaffine.home.control.entity.SensorEvent;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.item.SwitchItem;
@@ -41,10 +46,23 @@ public class MotionSensorImplTest {
 
   @Test
   public void initialization() {
-    verify( sensorControlFactory ).create( sensor );
     assertThat( sensor.getDefinition() ).isSameAs( bathRoomMotion1 );
     assertThat( sensor.isEngaged() ).isFalse();
     assertThat( sensor.getName() ).isEqualTo( bathRoomMotion1.toString() );
+  }
+
+  @Test
+  public void motionSensorEventFactoryInvocation() {
+    Entity<?> affected = mock( Entity.class );
+    BiFunction<Object, Entity<?>[], SensorEvent<?>> eventFactory = captureSensorEventFactory();
+
+    SensorEvent<?> actual = eventFactory.apply( OnOff.ON, new Entity[] { affected } );
+
+    assertThat( actual )
+      .isInstanceOf( MotionSensorEvent.class )
+      .hasAffected( affected )
+      .hasSensor( sensor )
+      .hasSensorStatus( OnOff.ON );
   }
 
   @Test
@@ -141,10 +159,18 @@ public class MotionSensorImplTest {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   private static SensorControlFactory stubSensorControlFactory( SensorControl sensorControl ) {
     SensorControlFactory result = mock( SensorControlFactory.class );
-    when( result.create( any( MotionSensor.class ) ) ).thenReturn( sensorControl );
+    when( result.create( any( MotionSensor.class ), any( BiFunction.class ) ) ).thenReturn( sensorControl );
     return result;
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private BiFunction<Object, Entity<?>[], SensorEvent<?>> captureSensorEventFactory() {
+    ArgumentCaptor<BiFunction> captor = forClass( BiFunction.class );
+    verify( sensorControlFactory ).create( eq( sensor ), captor.capture() );
+    return captor.getValue();
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })

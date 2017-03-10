@@ -1,14 +1,15 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
 import static org.mockito.Mockito.mock;
+
+import java.util.function.BiFunction;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.entity.SensorControl;
 import com.codeaffine.home.control.event.EventBus;
@@ -29,10 +30,10 @@ public class SensorControlFactoryImplTest {
   @Test
   @SuppressWarnings({ "unchecked" })
   public void create() {
-    Entity<EntityDefinition<?>> affected = mock( Entity.class );
+    Entity<?> affected = mock( Entity.class );
     Sensor sensor = mock( Sensor.class );
 
-    SensorControl control = factory.create( sensor );
+    SensorControl control = factory.create( sensor, stubEventFactory( affected, sensor, SENSOR_STATUS ) );
     control.registerAffected( affected );
     control.notifyAboutSensorStatusChange( SENSOR_STATUS );
 
@@ -43,8 +44,14 @@ public class SensorControlFactoryImplTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
+  @SuppressWarnings("unchecked")
   public void createWithNullAsSensorArgument() {
-    factory.create( null );
+    factory.create( null, mock( BiFunction.class ) );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void createWithNullAsEventFactoryArgument() {
+    factory.create( mock( Sensor.class ), null );
   }
 
   @Test( expected = IllegalArgumentException.class )

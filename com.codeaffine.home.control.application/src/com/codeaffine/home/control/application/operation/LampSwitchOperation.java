@@ -23,7 +23,6 @@ import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.home.control.status.HomeControlOperation;
@@ -212,7 +211,7 @@ public class LampSwitchOperation implements HomeControlOperation {
       .collect( toSet() );
   }
 
-  private static Collection<Lamp> collectZoneLamps( Entity<EntityDefinition<?>> zone ) {
+  private static Collection<Lamp> collectZoneLamps( Entity<?> zone ) {
     return ( ( CompositeEntity<?> )zone ).getChildren( LampDefinition.class );
   }
 

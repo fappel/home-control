@@ -4,6 +4,7 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -14,14 +15,17 @@ import com.codeaffine.home.control.event.EventBus;
 
 class SensorControlImpl implements SensorControl {
 
+  private final BiFunction<Object, Entity<?>[], SensorEvent<?>> eventFactory;
   private final Set<Entity<EntityDefinition<?>>> affected;
   private final EventBus eventBus;
   private final Sensor sensor;
 
-  public SensorControlImpl( Sensor sensor, EventBus eventBus ) {
+  SensorControlImpl( Sensor sensor, BiFunction<Object, Entity<?>[], SensorEvent<?>> eventFactory, EventBus eventBus ) {
+    verifyNotNull( eventFactory, "eventFactory" );
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( sensor, "sensor" );
 
+    this.eventFactory = eventFactory;
     this.affected = new HashSet<>();
     this.eventBus = eventBus;
     this.sensor = sensor;
@@ -42,11 +46,12 @@ class SensorControlImpl implements SensorControl {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <S> void notifyAboutSensorStatusChange( S sensorStatus ) {
     verifyNotNull( sensorStatus, "sensorStatus" );
 
-    eventBus.post( new SensorEvent<S>( sensor, sensorStatus, affected.toArray( new Entity[ affected.size() ] ) ) );
+    if( !affected.isEmpty() ) {
+      eventBus.post( eventFactory.apply( sensorStatus, affected.toArray( new Entity[ affected.size() ] ) ) );
+    }
   }
 
   @Override

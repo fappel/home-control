@@ -1,10 +1,10 @@
 package com.codeaffine.home.control.engine.entity;
 
-import static com.codeaffine.home.control.engine.entity.SensorEventCaptor.captureSensorEvent;
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
-import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
+import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +31,8 @@ public class SensorControlImplTest {
   public void setUp() {
     eventBus = mock( EventBus.class );
     sensor = stubSensor( NAME );
-    control = new SensorControlImpl( sensor, eventBus );
     affected = mock( Entity.class );
+    control = new SensorControlImpl( sensor, stubEventFactory( affected, sensor, SENSOR_STATUS ), eventBus );
   }
 
   @Test
@@ -51,12 +51,8 @@ public class SensorControlImplTest {
   @Test
   public void notifyAboutSensorStatusChangeWithoutRegisteredAffected() {
     control.notifyAboutSensorStatusChange( SENSOR_STATUS );
-    SensorEvent<?> actual = captureSensorEvent( eventBus );
 
-    assertThat( actual )
-      .hasNoAffected()
-      .hasSensor( sensor )
-      .hasSensorStatus( SENSOR_STATUS );
+    verify( eventBus, never() ).post( any( SensorEvent.class ) );
   }
 
   @Test
@@ -65,12 +61,8 @@ public class SensorControlImplTest {
 
     control.unregisterAffected( affected );
     control.notifyAboutSensorStatusChange( SENSOR_STATUS );
-    SensorEvent<?> actual = captureSensorEvent( eventBus );
 
-    assertThat( actual )
-      .hasNoAffected()
-      .hasSensor( sensor )
-      .hasSensorStatus( SENSOR_STATUS );
+    verify( eventBus, never() ).post( any( SensorEvent.class ) );
   }
 
   @Test
@@ -97,11 +89,16 @@ public class SensorControlImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsSensorArgument() {
-    new SensorControlImpl( null, eventBus );
+    new SensorControlImpl( null, stubEventFactory( affected, sensor, SENSOR_STATUS ), eventBus );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEventBusArgument() {
-    new SensorControlImpl( sensor, null );
+    new SensorControlImpl( sensor, stubEventFactory( affected, sensor, SENSOR_STATUS ), null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsEventFactoryArgument() {
+    new SensorControlImpl( sensor, null, eventBus );
   }
 }
