@@ -42,7 +42,7 @@ public class TwilightScene implements Scene {
 
   @Override
   public void activate() {
-    if( activity.getStatus().compareTo( P_070 ) < 0 ) {
+    if( activity.getStatus().getOverallActivity().compareTo( P_070 ) < 0 ) {
       lampSwitchOperation.setLampSelectionStrategy( ALL );
     }
     lampSwitchOperation.setLampFilter( lamp -> TWILIGHT_LAMPS.contains( lamp.getDefinition() ) );

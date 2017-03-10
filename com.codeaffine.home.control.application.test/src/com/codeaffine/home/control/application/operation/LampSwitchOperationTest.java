@@ -7,6 +7,7 @@ import static com.codeaffine.home.control.application.test.RegistryHelper.*;
 import static com.codeaffine.home.control.application.test.ZoneActivationHelper.stubZoneActivation;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -481,8 +482,8 @@ public class LampSwitchOperationTest {
 
   static EntityRegistry stubRegistry() {
     Set<Lamp> lamps = stubLamps( KitchenCeiling, HallCeiling, DeskUplight, WindowUplight );
-    Set<Section> rooms = stubZones( DINING_AREA, HALL, LIVING_AREA );
-    EntityRegistry result = RegistryHelper.stubRegistry( rooms, lamps );
+    Set<Section> rooms = stubSections( DINING_AREA, HALL, LIVING_AREA );
+    EntityRegistry result = RegistryHelper.stubRegistry( rooms, lamps, emptySet() );
     equipWithLamp( result, DINING_AREA, KitchenCeiling );
     equipWithLamp( result, HALL, HallCeiling );
     equipWithLamp( result, LIVING_AREA, DeskUplight, WindowUplight );

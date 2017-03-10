@@ -1,10 +1,9 @@
 package com.codeaffine.home.control.application.status;
 
-import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.status.StatusProvider;
 
-public interface ActivityProvider extends StatusProvider<Percent> {
+public interface ActivityProvider extends StatusProvider<Activity> {
 
   @Override
-  Percent getStatus();
+  Activity getStatus();
 }

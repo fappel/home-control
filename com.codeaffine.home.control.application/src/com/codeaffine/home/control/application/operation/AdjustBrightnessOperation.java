@@ -56,7 +56,7 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
     event.getSource( ActivityProviderImpl.class ).ifPresent( activity -> {
       brightnessMinimum = brightnessMiniumumBelowThreshold;
-      if( activity.getStatus().compareTo( activityThreshold ) > 1 ) {
+      if( activity.getStatus().getOverallActivity().compareTo( activityThreshold ) > 1 ) {
         brightnessMinimum = brightnessMinimumAboveThreshold;
       }
       adjustBrightnessOfLamps();
