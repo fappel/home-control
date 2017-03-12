@@ -7,8 +7,10 @@ import static java.util.Arrays.asList;
 
 import java.util.HashSet;
 
+import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
+import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl;
@@ -17,9 +19,11 @@ import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.scene.HomeSceneSelectionConfigurer;
+import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
+import com.codeaffine.home.control.application.status.NamedSceneProvider;
+import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -66,10 +70,13 @@ public class Configuration implements SystemConfiguration {
       .link( COOKING_AREA, DINING_AREA )
       .link( DINING_AREA, BATH_ROOM );
 
-    statusProviderRegistry.getContext().set( AdjacencyDefinition.class, adjacencyDefinition );
+    Context context = statusProviderRegistry.getContext();
+    context.set( AdjacencyDefinition.class, adjacencyDefinition );
     statusProviderRegistry.register( ZoneActivationProvider.class, ZoneActivationProviderImpl.class );
     statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
     statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
+    context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );
+    statusProviderRegistry.register( NamedSceneProvider.class, NamedSceneProviderImpl.class );
   }
 
   @Override
@@ -81,6 +88,6 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureSceneSelection( SceneSelector sceneSelector ) {
-    new HomeSceneSelectionConfigurer().configureSceneSelection( sceneSelector );
+    new SceneConfiguration().configureSceneSelection( sceneSelector );
   }
 }

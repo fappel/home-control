@@ -18,7 +18,7 @@ public class StringType implements Status {
 
   @Override
   public String toString() {
-    return value.toString();
+    return value;
   }
 
   @Override

@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.status.BranchImpl;
-import com.codeaffine.home.control.engine.status.Node;
 import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.test.util.context.TestContext;
@@ -43,6 +41,25 @@ public class BranchImplTest {
   @Test( expected = IllegalArgumentException.class )
   public void otherwiseSelectWithNullAsSceneTypeArgument() {
     branch.otherwiseSelect( null );
+  }
+
+  @Test
+  public void otherwiseSelectWithDynamicSceneSelection() {
+    Branch actual = branch.otherwiseSelect( MyStatusProvider.class, status -> Scene1.class );
+
+    assertThat( actual ).isNotNull();
+    assertThat( parent.getNext().evaluate() ).isInstanceOf( DynamicSceneProxy.class );
+    assertThat( parent.getNext().evaluate().getName() ).isEqualTo( context.get( Scene1.class ).getName() );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void otherwiseSelectWithDynamicSceneSelectionWithNullAsStatusProviderTypeArgument() {
+    branch.otherwiseSelect( null, status -> Scene1.class );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void otherwiseSelectWithDynamicSceneSelectionWithNullAsSceneProviderTypeArgument() {
+    branch.otherwiseSelect( MyStatusProvider.class, null );
   }
 
   @Test

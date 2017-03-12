@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.status.Node;
-import com.codeaffine.home.control.engine.status.NodeDefinitionImpl;
 import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.test.util.context.TestContext;
@@ -20,10 +18,11 @@ public class NodeDefinitionImplTest {
   private NodeDefinitionImpl nodeDefinition;
   private MyStatusProvider statusProvider;
   private Node<MyStatus> node;
+  private TestContext context;
 
   @Before
   public void setUp() {
-    TestContext context = new TestContext();
+    context = new TestContext();
     statusProvider = new MyStatusProvider();
     context.set( MyStatusProvider.class, statusProvider );
     node = new Node<>();
@@ -56,6 +55,25 @@ public class NodeDefinitionImplTest {
   @Test( expected = IllegalArgumentException.class )
   public void thenSelectWithNullAsSceneTypeArgument() {
     nodeDefinition.thenSelect( null );
+  }
+
+  @Test
+  public void thenSelectWithDynamicSceneSelection() {
+    Branch actual = nodeDefinition.thenSelect( MyStatusProvider.class, status -> Scene1.class );
+
+    assertThat( actual ).isNotNull();
+    assertThat( node.getScene() ).isInstanceOf( DynamicSceneProxy.class );
+    assertThat( node.getScene().getName() ).isEqualTo( context.get( Scene1.class ).getName() );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void thenSelectWithDynamicSceneSelectionWithNullAsStatusProviderTypeArgument() {
+    nodeDefinition.thenSelect( null, status -> Scene1.class );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void thenSelectWithDynamicSceneSelectionWithNullAsSceneProviderTypeArgument() {
+    nodeDefinition.thenSelect( MyStatusProvider.class, null );
   }
 
   @Test

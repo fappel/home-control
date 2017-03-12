@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
 import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
@@ -14,17 +14,21 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
+import com.codeaffine.home.control.application.status.NamedSceneProvider;
+import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.test.util.context.TestContext;
 
-public class HomeSceneSelectionConfigurerTest {
+public class SceneConfigurationTest {
 
   private ZoneActivationProvider zoneActivationProvider;
   private SunPositionProvider sunPositionProvider;
@@ -37,9 +41,13 @@ public class HomeSceneSelectionConfigurerTest {
     zoneActivationProvider = mock( ZoneActivationProvider.class );
     context = new TestContext();
     context.set( SunPositionProvider.class, sunPositionProvider );
+    context.set( Logger.class, mock( Logger.class ) );
+    context.set( EventBus.class, mock( EventBus.class ) );
     context.set( ZoneActivationProvider.class, zoneActivationProvider );
+    context.set( NamedSceneConfiguration.class, mock( NamedSceneConfiguration.class ) );
+    context.set( NamedSceneProvider.class, context.create( NamedSceneProviderImpl.class ) );
     sceneSelector = new SceneSelectorImpl( context, mock( Logger.class ) );
-    new HomeSceneSelectionConfigurer().configureSceneSelection( sceneSelector );
+    new SceneConfiguration().configureSceneSelection( sceneSelector );
   }
 
   @Test
@@ -50,9 +58,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( DayScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
   @Test
@@ -63,9 +71,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( TwilightScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( TwilightScene.class ) );
   }
 
   @Test
@@ -77,9 +85,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( NightScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( NightScene.class ) );
   }
 
   @Test
@@ -90,10 +98,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( AwayScene.class ) );
-
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( AwayScene.class ) );
   }
 
   @Test
@@ -104,9 +111,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( DayScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
   @Test
@@ -119,9 +126,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( DayScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
   @Test
@@ -132,9 +139,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( SleepScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( SleepScene.class ) );
   }
 
   @Test
@@ -145,9 +152,9 @@ public class HomeSceneSelectionConfigurerTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( DayScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
   @Test
@@ -157,13 +164,12 @@ public class HomeSceneSelectionConfigurerTest {
     stubZoneActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
-
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .containsKey( GLOBAL )
-      .containsValue( context.get( DayScene.class ) );
+      .hasSize( 2 )
+      .containsKey( HOTSPOT )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
   private void stubSunPositionProvider( SunPosition sunPosition ) {

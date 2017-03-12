@@ -60,15 +60,6 @@ public class SceneSelectorImpl implements SceneSelector {
       .collect( joining( ", ", "[ ", " ]" ) );
   }
 
-  static <T extends Scene> T getScene( Context context, Class<T> sceneType ) {
-    T result = context.get( sceneType );
-    if( result == null ) {
-      result = context.create( sceneType );
-      context.set( sceneType, result );
-    }
-    return result;
-  }
-
   private static void validate( Node<?> node ) {
     Node<?> current = node;
     int level = 1;

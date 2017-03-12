@@ -1,13 +1,16 @@
 package com.codeaffine.home.control.engine.status;
 
+import static com.codeaffine.home.control.status.SceneSelector.loadScene;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
+import java.util.function.Function;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.StatusProvider;
 import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.status.SceneSelector.NodeDefinition;
+import com.codeaffine.home.control.status.StatusProvider;
 
 class NodeDefinitionImpl implements NodeDefinition {
 
@@ -32,7 +35,18 @@ class NodeDefinitionImpl implements NodeDefinition {
   public <T extends Scene> Branch thenSelect( Class<T> sceneType ) {
     verifyNotNull( sceneType, "sceneType" );
 
-    parent.setScene( SceneSelectorImpl.getScene( context, sceneType ) );
+    parent.setScene( loadScene( context, sceneType ) );
+    return new BranchImpl( parent, context );
+  }
+
+  @Override
+  public <S, T extends StatusProvider<S>, U extends Scene> Branch
+    thenSelect( Class<T> statusProviderType, Function<S, Class<U>> sceneProvider )
+  {
+    verifyNotNull( statusProviderType, "statusProviderType" );
+    verifyNotNull( sceneProvider, "sceneProviderProviderType" );
+
+    parent.setScene( new DynamicSceneProxy<>( context, context.get( statusProviderType ), sceneProvider ) );
     return new BranchImpl( parent, context );
   }
 

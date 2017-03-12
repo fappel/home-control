@@ -63,8 +63,8 @@ public class SunPositionProviderImplTest {
   @Parameters( source = DateProvider.class )
   public void calculate( Date date ) {
     provider.calculate( createPointInTime( date ) );
-
     Optional<SunPositionProvider> actual = captureEvent( eventBus, SunPositionProvider.class );
+
     assertThat( actual ).hasValue( provider );
     assertThat( provider.getStatus().getZenit() )
       .isGreaterThanOrEqualTo( -90.0 )

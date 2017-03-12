@@ -32,8 +32,8 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   public ControlCenterImpl( Context context ) {
     verifyNotNull( context, "context" );
 
-    this.sceneSelector = context.create( SceneSelectorImpl.class );
     this.followUpController = context.create( FollowUpController.class );
+    this.sceneSelector = context.create( SceneSelectorImpl.class );
     this.activeScenes = new HashMap<>();
     this.operations = new HashMap<>();
     this.context = context;
