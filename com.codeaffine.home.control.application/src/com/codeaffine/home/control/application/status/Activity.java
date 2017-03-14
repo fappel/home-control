@@ -59,6 +59,9 @@ public class Activity {
 
   @Override
   public String toString() {
-    return "Activity " + overallActivity + " " + sectionActivities;
+    return   "Activity "
+           + overallActivity
+           + " "
+           + sectionActivities.toString().replaceAll( "\\{", "[ " ).replaceAll( "\\}", " ]" );
   }
 }
