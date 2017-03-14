@@ -24,9 +24,7 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
     WORK_AREA_MOTION,
     LIVING_AREA_MOTION,
     HALL_MOTION,
-    BATH_ROOM_MOTION,
-
-    kitchenMotion1, livingRoomMotion1, bedRoomMotion1, hallMotion1, bathRoomMotion1;
+    BATH_ROOM_MOTION
   };
 
   public interface MotionSensor extends Entity<MotionSensorDefinition>, Sensor {

@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.motion;
 
-import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.bathRoomMotion1;
+import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.BATH_ROOM_MOTION;
 import static com.codeaffine.home.control.test.util.entity.SensorEventAssert.assertThat;
 import static com.codeaffine.home.control.type.OnOffType.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,15 +40,15 @@ public class MotionSensorImplTest {
     sensorItem = stubSensorItem();
     sensorControl = mock( SensorControl.class );
     sensorControlFactory = stubSensorControlFactory( sensorControl );
-    sensor = new MotionSensorImpl( bathRoomMotion1, sensorItem, sensorControlFactory );
+    sensor = new MotionSensorImpl( BATH_ROOM_MOTION, sensorItem, sensorControlFactory );
     sensorSwitchStateObserver = captureSensorSwitchStateObserver();
   }
 
   @Test
   public void initialization() {
-    assertThat( sensor.getDefinition() ).isSameAs( bathRoomMotion1 );
+    assertThat( sensor.getDefinition() ).isSameAs( BATH_ROOM_MOTION );
     assertThat( sensor.isEngaged() ).isFalse();
-    assertThat( sensor.getName() ).isEqualTo( bathRoomMotion1.toString() );
+    assertThat( sensor.getName() ).isEqualTo( BATH_ROOM_MOTION.toString() );
   }
 
   @Test
@@ -145,12 +145,12 @@ public class MotionSensorImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void createWithNullAsSensorItemArgument() {
-    new MotionSensorImpl( bathRoomMotion1, null, sensorControlFactory );
+    new MotionSensorImpl( BATH_ROOM_MOTION, null, sensorControlFactory );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void createWithNullAsSensorControlFactoryArgument() {
-    new MotionSensorImpl( bathRoomMotion1, sensorItem, null );
+    new MotionSensorImpl( BATH_ROOM_MOTION, sensorItem, null );
   }
 
   private static SwitchItem stubSensorItem() {
