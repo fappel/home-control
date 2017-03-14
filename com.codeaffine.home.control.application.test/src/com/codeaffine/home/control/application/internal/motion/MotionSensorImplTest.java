@@ -99,7 +99,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).notifyAboutSensorStatusChange( ON );
+    verify( sensorControl ).notifyAboutSensorStatusChange( OnOff.ON );
   }
 
   @Test
@@ -108,7 +108,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).notifyAboutSensorStatusChange( OFF );
+    verify( sensorControl ).notifyAboutSensorStatusChange( OnOff.OFF );
   }
 
   @Test
@@ -117,7 +117,7 @@ public class MotionSensorImplTest {
 
     sensorSwitchStateObserver.itemChanged( event );
 
-    verify( sensorControl ).notifyAboutSensorStatusChange( OFF );
+    verify( sensorControl ).notifyAboutSensorStatusChange( OnOff.OFF );
   }
 
   @Test

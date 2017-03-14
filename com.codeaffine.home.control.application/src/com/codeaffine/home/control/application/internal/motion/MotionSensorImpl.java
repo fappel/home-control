@@ -65,9 +65,9 @@ public class MotionSensorImpl implements MotionSensor {
 
   private void handleEntityAllocation( ChangeEvent<SwitchItem, OnOffType> evt ) {
     if( mustEngage( evt ) ) {
-      sensorControl.notifyAboutSensorStatusChange( ON );
+      sensorControl.notifyAboutSensorStatusChange( OnOff.ON );
     } else {
-      sensorControl.notifyAboutSensorStatusChange( OFF );
+      sensorControl.notifyAboutSensorStatusChange( OnOff.OFF );
     }
   }
 
