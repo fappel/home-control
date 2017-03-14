@@ -74,30 +74,30 @@ public class LampSwitchOperation implements HomeControlOperation {
     this.filter = filter;
   }
 
-  public void setLampsToSwitchOn( Lamp ... lampsToSwitchOn ) {
+  public void setLampsToSwitchOn( LampDefinition ... lampsToSwitchOn ) {
     verifyNotNull( lampsToSwitchOn, "lampsToSwitchOn" );
 
     this.lampsToSwitchOn.clear();
-    this.lampsToSwitchOn.addAll( asList( lampsToSwitchOn ) );
+    this.lampsToSwitchOn.addAll( mapToLamps( lampsToSwitchOn ) );
   }
 
-  public void setLampsToSwitchOff( Lamp ... lampsToSwitchOff ) {
+  public void setLampsToSwitchOff( LampDefinition ... lampsToSwitchOff ) {
     verifyNotNull( lampsToSwitchOff, "lampsToSwitchOff" );
 
     this.lampsToSwitchOff.clear();
-    this.lampsToSwitchOff.addAll( asList( lampsToSwitchOff ) );
+    this.lampsToSwitchOff.addAll( mapToLamps( lampsToSwitchOff ) );
   }
 
-  public void setDelayed( Lamp ... delayed ) {
+  public void setDelayed( LampDefinition ... delayed ) {
     verifyNotNull( delayed, "delayed" );
 
     this.delayed.clear();
-    this.delayed.addAll( asList( delayed ) );
+    this.delayed.addAll( mapToLamps( delayed ) );
   }
 
   @Override
   public void prepare() {
-    setDelayed( entityRegistry.findByDefinition( HallCeiling ) );
+    setDelayed( HallCeiling );
     lampSelectionStrategy = ZONE_ACTIVATION;
     filter = lamp -> true;
     lampsToSwitchOff.clear();
@@ -278,6 +278,13 @@ public class LampSwitchOperation implements HomeControlOperation {
       .stream()
       .flatMap( delayedLamp -> collectLampsWithSameZone( delayedLamp ).stream() )
       .filter( lampOfZoneWithDelayed -> affectedLamps.contains( lampOfZoneWithDelayed ) )
+      .collect( toSet() );
+  }
+
+  private Set<Lamp> mapToLamps( LampDefinition... lampsToSwitchOn ) {
+    return asList( lampsToSwitchOn )
+      .stream()
+      .map( definition -> entityRegistry.findByDefinition( definition ) )
       .collect( toSet() );
   }
 }

@@ -97,8 +97,8 @@ public class LampSwitchOperationTest {
   public void operateOnMultipleZoneEngagementWithLampFilterAndExplicitOnOffSettings() {
     operation.prepare();
     operation.setLampFilter( lamp -> asList( WindowUplight, KitchenCeiling ).contains( lamp.getDefinition() ) );
-    operation.setLampsToSwitchOff( findLamp( KitchenCeiling ) );
-    operation.setLampsToSwitchOn( findLamp( DeskUplight ) );
+    operation.setLampsToSwitchOff( KitchenCeiling );
+    operation.setLampsToSwitchOn( DeskUplight );
     operation.executeOn( new StatusEvent( stubZoneActivationProvider( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -284,13 +284,13 @@ public class LampSwitchOperationTest {
     ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( DINING_AREA, HALL );
 
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
 
     stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnTransit = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffWhenDelayed = findLamp( DeskUplight ).getOnOffStatus();
@@ -302,14 +302,14 @@ public class LampSwitchOperationTest {
 
     stubZoneActivationProvider( zoneActivationProvider, HALL, LIVING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTransitionStartVanished = findLamp( DeskUplight ).getOnOffStatus();
 
     stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnOnlyZoneActivation = findLamp( HallCeiling ).getOnOffStatus();
     OnOff desktopOnOffOnOnlyZoneActivation = findLamp( DeskUplight ).getOnOffStatus();
@@ -330,13 +330,13 @@ public class LampSwitchOperationTest {
     ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA );
 
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff deskOnOffAtBeginning = findLamp( DeskUplight ).getOnOffStatus();
 
     stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTransitionStart = findLamp( DeskUplight ).getOnOffStatus();
@@ -344,7 +344,7 @@ public class LampSwitchOperationTest {
 
     stubZoneActivationProvider( zoneActivationProvider, LIVING_AREA, HALL, DINING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnTransit = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffOnTransit = findLamp( DeskUplight ).getOnOffStatus();
@@ -356,14 +356,14 @@ public class LampSwitchOperationTest {
 
     stubZoneActivationProvider( zoneActivationProvider, HALL, DINING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffAfterTransitionStartVanished = findLamp( HallCeiling ).getOnOffStatus();
     OnOff deskOnOffAfterTransitionStartVanished = findLamp( DeskUplight ).getOnOffStatus();
 
     stubZoneActivationProvider( zoneActivationProvider, DINING_AREA );
     operation.prepare();
-    operation.setDelayed( findLamp( HallCeiling ), findLamp( DeskUplight ) );
+    operation.setDelayed( HallCeiling, DeskUplight );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffOnOnlyZoneActivation = findLamp( HallCeiling ).getOnOffStatus();
     OnOff desktopOnOffOnOnlyZoneActivation = findLamp( DeskUplight ).getOnOffStatus();
@@ -386,7 +386,7 @@ public class LampSwitchOperationTest {
     ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.prepare();
-    operation.setLampsToSwitchOn( findLamp( HallCeiling ) );
+    operation.setLampsToSwitchOn( HallCeiling );
     operation.executeOn( new StatusEvent( zoneActivationProvider ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
     captureTimerCommand().run();
@@ -413,29 +413,29 @@ public class LampSwitchOperationTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void setDelayedWithNullAsArgument() {
-    operation.setDelayed( ( Lamp[] )null );
+    operation.setDelayed( ( LampDefinition[] )null );
   }
   @Test( expected = IllegalArgumentException.class )
   public void setDelayedWithNullAsElementOfArgumentArray() {
-    operation.setDelayed( new Lamp[ 1 ] );
+    operation.setDelayed( new LampDefinition[ 1 ] );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void setLampsToSwitchOnWithNullAsArgument() {
-    operation.setLampsToSwitchOn( ( Lamp[] )null );
+    operation.setLampsToSwitchOn( ( LampDefinition[] )null );
   }
   @Test( expected = IllegalArgumentException.class )
   public void setLampsToSwitchOnWithNullAsElementOfArgumentArray() {
-    operation.setLampsToSwitchOn( new Lamp[ 1 ] );
+    operation.setLampsToSwitchOn( new LampDefinition[ 1 ] );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void setLampsToSwitchOffWithNullAsArgument() {
-    operation.setLampsToSwitchOff( ( Lamp[] )null );
+    operation.setLampsToSwitchOff( ( LampDefinition[] )null );
   }
   @Test( expected = IllegalArgumentException.class )
   public void setLampsToSwitchOffWithNullAsElementOfArgumentArray() {
-    operation.setLampsToSwitchOff( new Lamp[ 1 ] );
+    operation.setLampsToSwitchOff( new LampDefinition[ 1 ] );
   }
 
   @Test( expected = IllegalArgumentException.class )

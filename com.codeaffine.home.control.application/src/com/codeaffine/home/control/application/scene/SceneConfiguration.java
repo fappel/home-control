@@ -38,6 +38,8 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     sceneSelector
       .whenStatusOf( HOTSPOT, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
         .thenSelect( NamedSceneProvider.class, status -> status.getSceneType() )
+      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> workAreaIsSolelyActive( zones ) )
+        .thenSelect( WorkAreaScene.class )
       .otherwiseSelect( NamedSceneProvider.class, status -> status.getSceneType() );
   }
 
@@ -53,5 +55,9 @@ public class SceneConfiguration implements NamedSceneConfiguration {
 
   private static boolean sunZenitIsInTwilightZone( SunPosition position ) {
     return -18 <= position.getZenit() && position.getZenit() <= 0;
+  }
+
+  private static boolean workAreaIsSolelyActive( Set<ZoneActivation> zones ) {
+    return zones.size() == 1 && zones.contains( WORK_AREA );
   }
 }
