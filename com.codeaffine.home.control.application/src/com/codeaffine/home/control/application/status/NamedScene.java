@@ -21,7 +21,7 @@ public class NamedScene {
   }
 
   public boolean isActive() {
-    return !sceneType.isAssignableFrom( NamedSceneDefaultSelection.class );
+    return sceneType != NamedSceneDefaultSelection.class;
   }
 
   public Class<? extends Scene> getSceneType() {
