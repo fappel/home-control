@@ -119,8 +119,7 @@ public class ZoneActivationProviderImplTest {
     assertThat( actual.iterator().next().getReleaseTime() ).isNotEmpty();
     ArgumentCaptor<String> loggingCaptor = forClass( String.class );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), loggingCaptor.capture() );
-    assertThat( loggingCaptor.getValue() )
-      .contains( ZONE_1.toString(), RELEASED_TAG, actual.iterator().next().getReleaseTime().get().toString() );
+    assertThat( loggingCaptor.getValue() ).contains( ZONE_1.toString(), RELEASED_TAG );
     ArgumentCaptor<StatusEvent> event = forClass( StatusEvent.class );
     verify( eventBus ).post( event.capture() );
     assertThat( event.getValue().getSource( ZoneActivationProvider.class ) ).hasValue( activation );
