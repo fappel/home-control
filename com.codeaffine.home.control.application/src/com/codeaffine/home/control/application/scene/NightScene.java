@@ -13,8 +13,9 @@ public class NightScene implements Scene {
 
   private static final Collection<LampDefinition> EVENING_LAMPS
     = asList( SinkUplight,
+              KitchenCeiling,
               ChimneyUplight, WindowUplight,
-              BedStand,
+              BedStand, BedRoomCeiling,
               BathRoomCeiling,
               HallCeiling );
 
@@ -25,7 +26,7 @@ public class NightScene implements Scene {
   }
 
   @Override
-  public void activate() {
+  public void prepare() {
     lampSwitchOperation.setLampFilter( lamp -> EVENING_LAMPS.contains( lamp.getDefinition() ) );
   }
 

@@ -22,7 +22,7 @@ public class AdjustColorTemperatureOperation implements HomeControlOperation {
   }
 
   @Override
-  public void prepare() {
+  public void reset() {
   }
 
   @Override

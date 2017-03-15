@@ -16,7 +16,7 @@ public class MyHomeControlOperation implements HomeControlOperation {
   }
 
   @Override
-  public void prepare() {
+  public void reset() {
   }
 
   @Override

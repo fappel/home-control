@@ -31,13 +31,13 @@ class DynamicSceneProxy<S, T extends StatusProvider<S>, U extends Scene> impleme
   }
 
   @Override
-  public void activate() {
-    getDynamicScene().activate();
+  public void prepare() {
+    getDynamicScene().prepare();
   }
 
   @Override
-  public void deactivate() {
-    getDynamicScene().deactivate();
+  public void close() {
+    getDynamicScene().close();
   }
 
   private U getDynamicScene() {

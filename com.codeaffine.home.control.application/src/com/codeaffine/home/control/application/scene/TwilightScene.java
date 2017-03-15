@@ -2,7 +2,7 @@ package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.ALL;
-import static com.codeaffine.home.control.application.type.Percent.P_070;
+import static com.codeaffine.home.control.application.type.Percent.*;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
@@ -17,8 +17,9 @@ public class TwilightScene implements Scene {
 
   private static final Collection<LampDefinition> TWILIGHT_LAMPS
     = asList( SinkUplight,
+              KitchenCeiling,
               ChimneyUplight, WindowUplight,
-              BedStand,
+              BedStand, BedRoomCeiling,
               BathRoomCeiling,
               HallCeiling );
 
@@ -27,8 +28,8 @@ public class TwilightScene implements Scene {
   private final ActivityProvider activity;
 
   public TwilightScene( ActivityProvider activity,
-                         LampSwitchOperation lampSwitchOperation,
-                         AdjustBrightnessOperation adjustBrightnessOperation )
+                        LampSwitchOperation lampSwitchOperation,
+                        AdjustBrightnessOperation adjustBrightnessOperation )
   {
     this.adjustBrightnessOperation = adjustBrightnessOperation;
     this.lampSwitchOperation = lampSwitchOperation;
@@ -41,12 +42,12 @@ public class TwilightScene implements Scene {
   }
 
   @Override
-  public void activate() {
-    if( activity.getStatus().getOverallActivity().compareTo( P_070 ) < 0 ) {
+  public void prepare() {
+    if( activity.getStatus().getOverallActivity().compareTo( P_000 ) < 0 ) {
       lampSwitchOperation.setLampSelectionStrategy( ALL );
     }
     lampSwitchOperation.setLampFilter( lamp -> TWILIGHT_LAMPS.contains( lamp.getDefinition() ) );
-    adjustBrightnessOperation.setActivityThreshold( P_070 );
-    adjustBrightnessOperation.setBrightnessMinimumAboveThreshold( P_070 );
+    adjustBrightnessOperation.setActivityThreshold( P_020 );
+    adjustBrightnessOperation.setBrightnessMinimumAboveThreshold( P_020 );
   }
 }

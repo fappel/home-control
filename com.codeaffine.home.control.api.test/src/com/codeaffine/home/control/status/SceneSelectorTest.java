@@ -25,7 +25,7 @@ public class SceneSelectorTest {
     }
 
     @Override
-    public void activate() {}
+    public void prepare() {}
   }
 
   @Test

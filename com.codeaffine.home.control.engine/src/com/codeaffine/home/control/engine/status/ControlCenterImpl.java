@@ -70,28 +70,21 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   }
 
   private void prepareOperations() {
-    operations.values().forEach( operation -> operation.prepare() );
-    Map<Scope, Scene> nextScenes = sceneSelector.select();
-    filterScopesInReversedOrder( nextScenes ).forEach( scope -> activeScenes.get( scope ).deactivate() );
-    List<Scope> toActivate = filterScopes( nextScenes, activeScenes );
+    operations.values().forEach( operation -> operation.reset() );
+    sortScopesReversely( activeScenes ).forEach( scope -> activeScenes.get( scope ).close() );
     activeScenes.clear();
-    activeScenes.putAll( nextScenes );
-    toActivate.forEach( scope -> activeScenes.get( scope ).activate() );
+    activeScenes.putAll( sceneSelector.select() );
+    sortScopes( activeScenes ).forEach( scope -> activeScenes.get( scope ).prepare() );
   }
 
-  private List<Scope> filterScopesInReversedOrder( Map<Scope, Scene> nextScenes) {
-    List<Scope> result = filterScopes( activeScenes, nextScenes );
+  private static List<Scope> sortScopesReversely( Map<Scope, Scene> scenes ) {
+    List<Scope> result = sortScopes( scenes );
     reverse( result );
     return result;
   }
 
-  private static List<Scope> filterScopes( Map<Scope, Scene> scenes, Map<Scope, Scene> lookup ) {
-    return scenes
-      .keySet()
-      .stream()
-      .sorted()
-      .filter( scope -> !scenes.get( scope ).equals( lookup.get( scope ) ) )
-      .collect( toList() );
+  private static List<Scope> sortScopes( Map<Scope, Scene> scenes ) {
+    return scenes.keySet().stream().sorted().collect( toList() );
   }
 
   private void executeOperations( StatusEvent event ) {

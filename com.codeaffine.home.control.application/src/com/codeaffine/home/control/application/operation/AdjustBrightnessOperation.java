@@ -30,7 +30,7 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
     this.entityRegistry = entityRegistry;
     this.brightnessMinimum = P_001;
     this.brightness = P_100;
-    prepare();
+    reset();
   }
 
   public void setActivityThreshold( Percent activityThreshold ) {
@@ -46,7 +46,7 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
   }
 
   @Override
-  public void prepare() {
+  public void reset() {
     activityThreshold = P_050;
     brightnessMinimumAboveThreshold = P_020;
     brightnessMiniumumBelowThreshold = P_001;

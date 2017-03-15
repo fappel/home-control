@@ -9,5 +9,6 @@ public class Scene1 implements Scene {
     return getClass().getSimpleName();
   }
 
-  @Override public void activate() {}
+  @Override
+  public void prepare() {}
 }

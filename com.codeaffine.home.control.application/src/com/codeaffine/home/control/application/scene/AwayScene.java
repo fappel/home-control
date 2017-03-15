@@ -18,7 +18,7 @@ public class AwayScene implements Scene {
   }
 
   @Override
-  public void activate() {
+  public void prepare() {
     followUpTimer.schedule( 20L, SECONDS, activateAwayMode() );
   }
 

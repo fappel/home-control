@@ -59,7 +59,7 @@ public class LampSwitchOperation implements HomeControlOperation {
     this.delayed = new HashSet<>();
     this.entityRegistry = entityRegistry;
     this.followUpTimer = followUpTimer;
-    prepare();
+    reset();
   }
 
   public void setLampSelectionStrategy( LampSelectionStrategy lampSelectionStrategy ) {
@@ -96,7 +96,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   @Override
-  public void prepare() {
+  public void reset() {
     setDelayed( HallCeiling );
     lampSelectionStrategy = ZONE_ACTIVATION;
     filter = lamp -> true;

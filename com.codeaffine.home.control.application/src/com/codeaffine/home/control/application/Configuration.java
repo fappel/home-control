@@ -44,8 +44,8 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void configureFacility( Facility facility ) {
     facility.equip( BEDROOM ).with( BED, DRESSING_AREA );
-    facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION );
-    facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION );
+    facility.equip( BED ).with( BedStand, BED_MOTION );
+    facility.equip( DRESSING_AREA ).with( BedRoomCeiling, DRESSING_AREA_MOTION );
     facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
     facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION );
     facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION );

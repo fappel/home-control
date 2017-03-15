@@ -12,5 +12,5 @@ public class NamedSceneDefaultSelection implements Scene {
   }
 
   @Override
-  public void activate() {}
+  public void prepare() {}
 }

@@ -31,16 +31,16 @@ import com.codeaffine.home.control.test.util.status.MyStatusProvider;
 public class ControlCenterImplTest {
 
   private static final String LOG_CONFIGURE_SCENE_SELECTOR = "configure sceneSelector";
-  private static final String LOG_PREPARE_OPERATION = "prepare";
-  private static final String LOG_ACTIVATE_SCENE_1 = "activate scene 1";
-  private static final String LOG_DEACTIVATE_SCENE_1 = "deactivate scene 1";
+  private static final String LOG_RESET_OPERATION = "reset";
+  private static final String LOG_PREPARE_SCENE_1 = "prepare scene 1";
+  private static final String LOG_CLOSE_SCENE_1 = "close scene 1";
   private static final String LOG_FOLLOW_UP_SCENE_1 = "follow-up scene 1";
-  private static final String LOG_ACTIVATE_SCENE_2 = "activate scene 2";
-  private static final String LOG_DEACTIVATE_SCENE_2 = "deactivate scene 2";
-  private static final String LOG_ACTIVATE_SCENE_3 = "activate scene 3";
-  private static final String LOG_DEACTIVATE_SCENE_3 = "deactivate scene 3";
-  private static final String LOG_ACTIVATE_SCENE_4 = "activate scene 4";
-  private static final String LOG_DEACTIVATE_SCENE_4 = "deactivate scene 4";
+  private static final String LOG_PREPARE_SCENE_2 = "prepare scene 2";
+  private static final String LOG_CLOSE_SCENE_2 = "close scene 2";
+  private static final String LOG_PREPARE_SCENE_3 = "prepare scene 3";
+  private static final String LOG_CLOSE_SCENE_3 = "close scene 3";
+  private static final String LOG_PREPARE_SCENE_4 = "prepare scene 4";
+  private static final String LOG_CLOSE_SCENE_4 = "close scene 4";
   private static final long FOLLOW_UP_DELAY = 10L;
   private static final int DELAY_VALUE_BELOW_LOWER_BOUND = 0;
 
@@ -61,14 +61,14 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void activate() {
-      log.add( LOG_ACTIVATE_SCENE_1 );
+    public void prepare() {
+      log.add( LOG_PREPARE_SCENE_1 );
       timer.schedule( FOLLOW_UP_DELAY, SECONDS, () -> log.add( LOG_FOLLOW_UP_SCENE_1 ) );
     }
 
     @Override
-    public void deactivate() {
-      log.add( LOG_DEACTIVATE_SCENE_1 );
+    public void close() {
+      log.add( LOG_CLOSE_SCENE_1 );
     }
 
     @Override
@@ -86,13 +86,13 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void activate() {
-      log.add( LOG_ACTIVATE_SCENE_2 );
+    public void prepare() {
+      log.add( LOG_PREPARE_SCENE_2 );
     }
 
     @Override
-    public void deactivate() {
-      log.add( LOG_DEACTIVATE_SCENE_2 );
+    public void close() {
+      log.add( LOG_CLOSE_SCENE_2 );
     }
 
     @Override
@@ -115,13 +115,13 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void activate() {
-      log.add( LOG_ACTIVATE_SCENE_3 );
+    public void prepare() {
+      log.add( LOG_PREPARE_SCENE_3 );
     }
 
     @Override
-    public void deactivate() {
-      log.add( LOG_DEACTIVATE_SCENE_3 );
+    public void close() {
+      log.add( LOG_CLOSE_SCENE_3 );
     }
   }
 
@@ -139,13 +139,13 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void activate() {
-      log.add( LOG_ACTIVATE_SCENE_4 );
+    public void prepare() {
+      log.add( LOG_PREPARE_SCENE_4 );
     }
 
     @Override
-    public void deactivate() {
-      log.add( LOG_DEACTIVATE_SCENE_4 );
+    public void close() {
+      log.add( LOG_CLOSE_SCENE_4 );
     }
   }
 
@@ -205,8 +205,8 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void prepare() {
-      log.add( LOG_PREPARE_OPERATION );
+    public void reset() {
+      log.add( LOG_RESET_OPERATION );
     }
 
     @Override
@@ -238,7 +238,7 @@ public class ControlCenterImplTest {
 
     controlCenter.onEvent( evt );
 
-    assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR, LOG_PREPARE_OPERATION, LOG_ACTIVATE_SCENE_1, evt );
+    assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR, LOG_RESET_OPERATION, LOG_PREPARE_SCENE_1, evt );
   }
 
   @Test
@@ -249,7 +249,7 @@ public class ControlCenterImplTest {
 
     controlCenter.onEvent( evt );
 
-    assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR, LOG_PREPARE_OPERATION, LOG_ACTIVATE_SCENE_2, evt );
+    assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR, LOG_RESET_OPERATION, LOG_PREPARE_SCENE_2, evt );
   }
 
   @Test
@@ -270,18 +270,20 @@ public class ControlCenterImplTest {
 
     assertThat( log )
       .containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                        LOG_PREPARE_OPERATION,
-                        LOG_ACTIVATE_SCENE_1,
+                        LOG_RESET_OPERATION,
+                        LOG_PREPARE_SCENE_1,
                         firstEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_1,
-                        LOG_ACTIVATE_SCENE_2,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_1,
+                        LOG_PREPARE_SCENE_2,
                         secondEvent,
-                        LOG_PREPARE_OPERATION,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_2,
+                        LOG_PREPARE_SCENE_2,
                         thirdEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_2,
-                        LOG_ACTIVATE_SCENE_1,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_2,
+                        LOG_PREPARE_SCENE_1,
                         fourthEvent );
   }
 
@@ -306,9 +308,9 @@ public class ControlCenterImplTest {
     controlCenter.onEvent( evt );
 
     assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                                       LOG_PREPARE_OPERATION,
-                                       LOG_ACTIVATE_SCENE_1,
-                                       LOG_ACTIVATE_SCENE_2,
+                                       LOG_RESET_OPERATION,
+                                       LOG_PREPARE_SCENE_1,
+                                       LOG_PREPARE_SCENE_2,
                                        evt );
   }
 
@@ -321,9 +323,9 @@ public class ControlCenterImplTest {
     controlCenter.onEvent( evt );
 
     assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                                       LOG_PREPARE_OPERATION,
-                                       LOG_ACTIVATE_SCENE_3,
-                                       LOG_ACTIVATE_SCENE_4,
+                                       LOG_RESET_OPERATION,
+                                       LOG_PREPARE_SCENE_3,
+                                       LOG_PREPARE_SCENE_4,
                                        evt );
   }
 
@@ -348,27 +350,33 @@ public class ControlCenterImplTest {
 
     assertThat( log )
       .containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                        LOG_PREPARE_OPERATION,
-                        LOG_ACTIVATE_SCENE_1,
-                        LOG_ACTIVATE_SCENE_2,
+                        LOG_RESET_OPERATION,
+                        LOG_PREPARE_SCENE_1,
+                        LOG_PREPARE_SCENE_2,
                         firstEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_2,
-                        LOG_DEACTIVATE_SCENE_1,
-                        LOG_ACTIVATE_SCENE_3,
-                        LOG_ACTIVATE_SCENE_4,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_2,
+                        LOG_CLOSE_SCENE_1,
+                        LOG_PREPARE_SCENE_3,
+                        LOG_PREPARE_SCENE_4,
                         secondEvent,
-                        LOG_PREPARE_OPERATION,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_4,
+                        LOG_CLOSE_SCENE_3,
+                        LOG_PREPARE_SCENE_3,
+                        LOG_PREPARE_SCENE_4,
                         thirdEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_4,
-                        LOG_DEACTIVATE_SCENE_3,
-                        LOG_ACTIVATE_SCENE_1,
-                        LOG_ACTIVATE_SCENE_2,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_4,
+                        LOG_CLOSE_SCENE_3,
+                        LOG_PREPARE_SCENE_1,
+                        LOG_PREPARE_SCENE_2,
                         fourthEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_2,
-                        LOG_ACTIVATE_SCENE_4,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_2,
+                        LOG_CLOSE_SCENE_1,
+                        LOG_PREPARE_SCENE_1,
+                        LOG_PREPARE_SCENE_4,
                         fifthEvent );
   }
 
@@ -384,8 +392,8 @@ public class ControlCenterImplTest {
 
     assertThat( log )
       .containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                        LOG_PREPARE_OPERATION,
-                        LOG_ACTIVATE_SCENE_1,
+                        LOG_RESET_OPERATION,
+                        LOG_PREPARE_SCENE_1,
                         event,
                         LOG_FOLLOW_UP_SCENE_1,
                         event );
@@ -406,12 +414,12 @@ public class ControlCenterImplTest {
 
     assertThat( log )
       .containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
-                        LOG_PREPARE_OPERATION,
-                        LOG_ACTIVATE_SCENE_1,
+                        LOG_RESET_OPERATION,
+                        LOG_PREPARE_SCENE_1,
                         firstEvent,
-                        LOG_PREPARE_OPERATION,
-                        LOG_DEACTIVATE_SCENE_1,
-                        LOG_ACTIVATE_SCENE_2,
+                        LOG_RESET_OPERATION,
+                        LOG_CLOSE_SCENE_1,
+                        LOG_PREPARE_SCENE_2,
                         secondEvent );
   }
 

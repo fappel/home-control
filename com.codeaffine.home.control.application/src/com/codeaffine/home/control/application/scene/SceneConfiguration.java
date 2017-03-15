@@ -19,8 +19,9 @@ import com.codeaffine.home.control.status.SceneSelector;
 public class SceneConfiguration implements NamedSceneConfiguration {
 
   @Override
-  public void configureNamedScenes( Map<String, Class<? extends Scene>> sceneType ) {
-
+  public void configureNamedScenes( Map<String, Class<? extends Scene>> nameToSceneTypeMapping ) {
+    nameToSceneTypeMapping.put( "ALL_OFF", AllLightsOffScene.class );
+    nameToSceneTypeMapping.put( "HOME_CINEMA", HomeCinemaScene.class );
   }
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
@@ -58,6 +59,6 @@ public class SceneConfiguration implements NamedSceneConfiguration {
   }
 
   private static boolean workAreaIsSolelyActive( Set<ZoneActivation> zones ) {
-    return zones.size() == 1 && zones.contains( WORK_AREA );
+    return zones.size() == 1 && zones.iterator().next().getZone().getDefinition() == WORK_AREA;
   }
 }

@@ -1,15 +1,14 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-
+import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.status.Scene;
 
-public class WorkAreaScene implements Scene {
+public class AllLightsOffScene implements Scene {
 
   private final LampSwitchOperation lampSwitchOperation;
 
-  public WorkAreaScene( LampSwitchOperation lampSwitchOperation ) {
+  public AllLightsOffScene( LampSwitchOperation lampSwitchOperation ) {
     this.lampSwitchOperation = lampSwitchOperation;
   }
 
@@ -20,7 +19,6 @@ public class WorkAreaScene implements Scene {
 
   @Override
   public void prepare() {
-    lampSwitchOperation.setLampsToSwitchOff( FanLight1, FanLight2, WindowUplight );
-    lampSwitchOperation.setLampsToSwitchOn( DeskUplight, ChimneyUplight );
+    lampSwitchOperation.setLampsToSwitchOff( LampDefinition.values() );
   }
 }

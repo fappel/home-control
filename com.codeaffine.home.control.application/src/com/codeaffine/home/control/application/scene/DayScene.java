@@ -13,7 +13,15 @@ import com.codeaffine.home.control.status.Scene;
 public class DayScene implements Scene {
 
   private static final Collection<LampDefinition> DAY_LAMPS
-    = asList( KitchenCeiling, FanLight1, FanLight2, BedRoomCeiling, BathRoomCeiling, HallCeiling );
+    = asList( SinkUplight,
+              KitchenCeiling,
+              FanLight1,
+              FanLight2,
+              DeskUplight,
+              BedRoomCeiling,
+              BedStand,
+              BathRoomCeiling,
+              HallCeiling );
 
   private final LampSwitchOperation lampSwitchOperation;
 
@@ -22,7 +30,7 @@ public class DayScene implements Scene {
   }
 
   @Override
-  public void activate() {
+  public void prepare() {
     lampSwitchOperation.setLampFilter( lamp -> DAY_LAMPS.contains( lamp.getDefinition() ) );
   }
 

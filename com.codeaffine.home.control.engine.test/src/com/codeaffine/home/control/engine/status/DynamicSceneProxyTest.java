@@ -39,12 +39,12 @@ public class DynamicSceneProxyTest {
     }
 
     @Override
-    public void activate() {
+    public void prepare() {
       log.add( ACTIVATE_SCENE1 );
     }
 
     @Override
-    public void deactivate() {
+    public void close() {
       log.add( DEACTIVATE_SCENE1 );
     }
   }
@@ -63,12 +63,12 @@ public class DynamicSceneProxyTest {
     }
 
     @Override
-    public void activate() {
+    public void prepare() {
       log.add( ACTIVATE_SCENE2 );
     }
 
     @Override
-    public void deactivate() {
+    public void close() {
       log.add( DEACTIVATE_SCENE2 );
     }
   }
@@ -85,12 +85,12 @@ public class DynamicSceneProxyTest {
   @Test
   public void delegateToAppropriateSceneInstance() {
     statusProvider.setStatus( MyStatus.TWO );
-    proxy.activate();
-    proxy.deactivate();
+    proxy.prepare();
+    proxy.close();
     String firstDelegationName = proxy.getName();
     statusProvider.setStatus( MyStatus.ONE );
-    proxy.activate();
-    proxy.deactivate();
+    proxy.prepare();
+    proxy.close();
     String secondDelegationName = proxy.getName();
 
     assertThat( firstDelegationName ).isEqualTo( context.get( Scene2.class ).getName() );
