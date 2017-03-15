@@ -137,7 +137,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   private String createListOfEngagedZoneDefinitions() {
-    return "[ " + traces.stream().map( stack -> createListOfZonesInStack( stack ) ).collect( joining( " | " ) ) + " ]";
+    return traces.stream().map( stack -> createListOfZonesInStack( stack ) ).collect( joining( " | ", "[ ", " ]" ) );
   }
 
   private static String createListOfZonesInStack( List<ZoneActivation> stack ) {
