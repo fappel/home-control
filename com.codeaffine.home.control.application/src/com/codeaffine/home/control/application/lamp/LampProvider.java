@@ -40,7 +40,7 @@ public class LampProvider extends BaseEntityProvider<Lamp, LampDefinition> {
 
   @Schedule( period = LAMP_INTEGRITY_CHECK_INTERVAL )
   void ensureLampStates() {
-    forEachLampDefintion( definition -> ( ( LampImpl )findByDefinition( definition ) ).ensureStatusIntegrity() );
+    forEachLampDefinition( definition -> ( ( LampImpl )findByDefinition( definition ) ).ensureStatusIntegrity() );
   }
 
   @Override
@@ -48,7 +48,7 @@ public class LampProvider extends BaseEntityProvider<Lamp, LampDefinition> {
     return Stream.of( LampDefinition.values() );
   }
 
-  private void forEachLampDefintion( Consumer<? super LampDefinition> action ) {
+  private void forEachLampDefinition( Consumer<? super LampDefinition> action ) {
     getStreamOfDefinitions().forEach( action );
   }
 }
