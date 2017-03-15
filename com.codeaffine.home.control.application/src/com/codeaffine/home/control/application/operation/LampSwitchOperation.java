@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.HallCeiling;
+import static com.codeaffine.home.control.application.operation.HomeControlOperations.isRelated;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.ZONE_ACTIVATION;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
@@ -19,6 +20,7 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
@@ -33,6 +35,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   static final TimeUnit LAMP_DELAY_TIMEUNIT = SECONDS;
   static final long LAMP_DELAY_TIME = 2L;
 
+  private final ZoneActivationProvider zoneActivationProvider;
   private final Map<Lamp, Set<ZoneActivation>> delayStatus;
   private final EntityRegistry entityRegistry;
   private final FollowUpTimer followUpTimer;
@@ -48,17 +51,21 @@ public class LampSwitchOperation implements HomeControlOperation {
     ALL, NONE, ZONE_ACTIVATION
   }
 
-  LampSwitchOperation( EntityRegistry entityRegistry, FollowUpTimer followUpTimer ) {
+  LampSwitchOperation(
+    EntityRegistry entityRegistry, ZoneActivationProvider zoneActivationProvider, FollowUpTimer followUpTimer )
+  {
+    verifyNotNull( zoneActivationProvider, "zoneActivationProvider" );
     verifyNotNull( entityRegistry, "entityRegistration" );
     verifyNotNull( followUpTimer, "followUpTimer" );
 
+    this.zoneActivationProvider = zoneActivationProvider;
+    this.entityRegistry = entityRegistry;
+    this.followUpTimer = followUpTimer;
     this.lampsToSwitchOff = new HashSet<>();
     this.lampsToSwitchOn = new HashSet<>();
     this.delayStatus = new HashMap<>();
     this.scheduled = new HashSet<>();
     this.delayed = new HashSet<>();
-    this.entityRegistry = entityRegistry;
-    this.followUpTimer = followUpTimer;
     reset();
   }
 
@@ -109,11 +116,13 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
-    event.getSource( ZoneActivationProvider.class ).ifPresent( zoneActivation -> executeOn( zoneActivation ) );
+    if( isRelated( event, NamedSceneProvider.class, ZoneActivationProvider.class ) ) {
+      execute();
+    }
   }
 
-  private void executeOn( ZoneActivationProvider zoneActivation ) {
-    Set<Lamp> on = collectLampsToSwitchOn( zoneActivation );
+  private void execute() {
+    Set<Lamp> on = collectLampsToSwitchOn( zoneActivationProvider );
     Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
     Set<Lamp> off = lamps.stream().filter( lamp -> !on.contains( lamp ) ).collect( toSet() );
     on.forEach( lamp -> lamp.setOnOffStatus( ON ) );
