@@ -12,18 +12,27 @@ import com.codeaffine.home.control.entity.EntityProvider.Entity;
 class ZoneActivationImpl implements ZoneActivation {
 
   private final Entity<?> zone;
+  private final Path trace;
 
+  private LocalDateTime inPathReleaseMarkTime;
   private LocalDateTime releaseTime;
 
-  ZoneActivationImpl( Entity<?> zone ) {
+  ZoneActivationImpl( Entity<?> zone, Path trace ) {
+    verifyNotNull( trace, "trace" );
     verifyNotNull( zone, "zone" );
 
+    this.trace = trace;
     this.zone = zone;
   }
 
   @Override
   public Entity<?> getZone() {
     return zone;
+  }
+
+  @Override
+  public boolean hasAdjacentActivation() {
+    return trace.size() > 1;
   }
 
   @Override
@@ -61,5 +70,13 @@ class ZoneActivationImpl implements ZoneActivation {
     if( !zone.equals( other.zone ) )
       return false;
     return true;
+  }
+
+  void markForInPathRelease() {
+    inPathReleaseMarkTime = now();
+  }
+
+  Optional<LocalDateTime> getInPathReleaseMarkTime() {
+    return Optional.ofNullable( inPathReleaseMarkTime );
   }
 }
