@@ -23,36 +23,47 @@ class PathAdjacency {
       .anyMatch( activation -> isAdjacent( activation.getZone(), zone ) );
   }
 
-  boolean isAdjacentToInPathRelease( Entity<?> zone, Set<ZoneActivation> inPathReleases ) {
-    return    inPathReleases.size() > 0
-           && inPathReleases.stream().anyMatch( activation -> isAdjacent( activation.getZone(), zone ) );
+  boolean isAdjacentTo( Entity<?> zone, Set<ZoneActivation> range ) {
+    return range.stream().anyMatch( activation -> isAdjacent( activation.getZone(), zone ) );
   }
 
-  boolean isInPathRelease( Entity<?> zone, Path path ) {
+  boolean isAdjacentToMoreThanOneActivation( Entity<?> zone, Path path ) {
     return path.find( activation -> isAdjacent( activation.getZone(), zone ) ).size() > 1;
   }
 
-  boolean belongsToPath( Entity<?> zone, Path path ) {
-    if( hasNewPath( zone ) ) {
-      return belongsToPathWithActivatedZones( zone, path );
+  boolean isRelated( Entity<?> zone, Path path ) {
+    if( pathsContainsNewOrZoneMatchesSingleElementPath( zone ) ) {
+      return isRelatedToActivatedZones( zone, path );
     }
     return !path.find( activation -> isAdjacentOrActual( zone, activation ) ).isEmpty();
   }
 
-  boolean belongsToPathWithActivatedZones( Entity<?> zone, Path path ) {
+  boolean isRelatedToActivatedZones( Entity<?> zone, Path path ) {
     return !path.find( activation -> isNonReleasedAdjacentOrActual( zone, activation ) ).isEmpty();
   }
 
-  private boolean hasNewPath( Entity<?> zone ) {
-    return paths.stream().anyMatch( path -> path.isEmpty() || path.size() == 1 && !path.findZoneActivation( zone ).isEmpty() );
+  private boolean pathsContainsNewOrZoneMatchesSingleElementPath( Entity<?> zone ) {
+    return paths.stream().anyMatch( path -> isNewPathOrZoneMatchesSingleElementPath( zone, path ) );
+  }
+
+  private static boolean isNewPathOrZoneMatchesSingleElementPath( Entity<?> zone, Path path ) {
+    return path.isEmpty() || path.size() == 1 && !path.findZoneActivation( zone ).isEmpty();
   }
 
   private boolean isNonReleasedAdjacentOrActual( Entity<?> zone, ZoneActivation activation ) {
-    return !activation.getReleaseTime().isPresent() && isAdjacent( zone, activation.getZone() ) || zone == activation.getZone();
+    return isNonReleasedAdjacent( zone, activation ) || isActual( zone, activation );
+  }
+
+  private boolean isNonReleasedAdjacent( Entity<?> zone, ZoneActivation activation ) {
+    return !activation.getReleaseTime().isPresent() && isAdjacent( zone, activation.getZone() );
   }
 
   private boolean isAdjacentOrActual( Entity<?> zone, ZoneActivation activation ) {
-    return isAdjacent( activation.getZone(), zone ) || zone == activation.getZone();
+    return isAdjacent( activation.getZone(), zone ) || isActual( zone, activation );
+  }
+
+  private static boolean isActual( Entity<?> zone, ZoneActivation activation ) {
+    return zone == activation.getZone();
   }
 
   private boolean isAdjacent( Entity<?> zone1, Entity<?> zone2 ) {

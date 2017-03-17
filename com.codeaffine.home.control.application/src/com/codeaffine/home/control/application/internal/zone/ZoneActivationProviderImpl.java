@@ -99,13 +99,13 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   private void ensureDiscretePath( Entity<?> zone ) {
-    if( paths.isEmpty() || !belongsToPathWithActivatedZones( zone ) ) {
+    if( paths.isEmpty() || !isRelatedToActivatedZones( zone ) ) {
       paths.add( new Path() );
     }
   }
 
-  private boolean belongsToPathWithActivatedZones( Entity<?> zone ) {
-    return paths.stream().anyMatch( path -> adjacency.belongsToPathWithActivatedZones( zone, path ) );
+  private boolean isRelatedToActivatedZones( Entity<?> zone ) {
+    return paths.stream().anyMatch( path -> adjacency.isRelatedToActivatedZones( zone, path ) );
   }
 
   private void handleAdditions( SensorEvent<OnOff> event ) {
@@ -119,7 +119,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   private void updatePathWithAdditions( Entity<?> zone, Path path ) {
-    if( path.isEmpty() || adjacency.belongsToPath( zone, path ) ) {
+    if( path.isEmpty() || adjacency.isRelated( zone, path ) ) {
       path.addOrReplace( new ZoneActivationImpl( zone, adjacency ) );
     }
   }
@@ -135,14 +135,14 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   private void removeZoneFromPath( Entity<?> zone, Path path ) {
-    if( adjacency.belongsToPath( zone, path ) ) {
+    if( adjacency.isRelated( zone, path ) ) {
       doRemoveZoneFromPath( zone, path );
     }
   }
 
   private void doRemoveZoneFromPath( Entity<?> zone, Path path ) {
     if( hasMultipleZoneActivations( path ) ) {
-      if( adjacency.isInPathRelease( zone, path ) ) {
+      if( adjacency.isAdjacentToMoreThanOneActivation( zone, path ) ) {
         markForInPathRelease( zone, path );
       } else {
         removeZoneFromPathWithMultipleZoneActivations( zone, path );
@@ -156,7 +156,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     Set<ZoneActivation> toRemove = path.findZoneActivation( zone );
     if( isLastActive( path, path.findInPathReleases(), toRemove ) ) {
       removeLastActive( path, toRemove );
-    } else if( adjacency.isAdjacentToInPathRelease( zone, path.findInPathReleases() ) ) {
+    } else if( adjacency.isAdjacentTo( zone, path.findInPathReleases() ) ) {
       markForInPathRelease( zone, path );
     } else {
       path.remove( path.findZoneActivation( zone ) );
@@ -197,7 +197,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
 
   private void markAsReleased( Entity<?> zone, Path path ) {
     ZoneActivationImpl zoneActivation = new ZoneActivationImpl( zone, adjacency );
-    zoneActivation.markRelease();
+    zoneActivation.markAsReleased();
     path.addOrReplace( zoneActivation );
   }
 }

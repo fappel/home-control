@@ -38,12 +38,12 @@ public class ZoneActivationImplTest {
   }
 
   @Test
-  public void markRelease() {
-    activation.markRelease();
-    Optional<LocalDateTime> actual = activation.getReleaseTime();
-
-    assertThat( actual ).isNotEmpty();
-  }
+    public void markAsReleased() {
+      activation.markAsReleased();
+      Optional<LocalDateTime> actual = activation.getReleaseTime();
+  
+      assertThat( actual ).isNotEmpty();
+    }
 
   @Test
   public void isAdjacentActivated() {
@@ -81,8 +81,8 @@ public class ZoneActivationImplTest {
     instance.assertEqual( activation, localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
 
     ZoneActivationImpl localActivation2 = new ZoneActivationImpl( zone, localAdjacency );
-    localActivation1.markRelease();
-    localActivation2.markRelease();
+    localActivation1.markAsReleased();
+    localActivation2.markAsReleased();
     instance.assertEqual( localActivation1, localActivation2 );
     instance.assertNotEqual( localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
     instance.assertNotEqual( new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ), localActivation1 );
@@ -91,7 +91,7 @@ public class ZoneActivationImplTest {
     ZoneActivationImpl localActivation3 = new ZoneActivationImpl( zone, localAdjacency );
     localActivation3.markForInPathRelease();
     waitALittle();
-    localActivation3.markRelease();
+    localActivation3.markAsReleased();
     instance.assertNotEqual( localActivation1, localActivation3 );
   }
 

@@ -4,6 +4,7 @@ import static com.codeaffine.home.control.application.internal.zone.Messages.*;
 import static com.codeaffine.home.control.application.internal.zone.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.*;
 import static com.codeaffine.home.control.application.type.OnOff.*;
+import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
 import static java.time.LocalDateTime.now;
@@ -14,7 +15,6 @@ import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -178,10 +178,12 @@ public class ZoneActivationProviderImplTest {
     provider.engagedZonesChanged( newEvent( OFF, ZONE_3 ) );
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
     provider.engagedZonesChanged( newEvent( OFF, ZONE_2 ) );
+    reset( logger );
     provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1 ) );
+    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) ).hasSize( 1 );
   }
 
   @Test
@@ -383,11 +385,6 @@ public class ZoneActivationProviderImplTest {
   @SafeVarargs
   private static Set<Entity<EntityDefinition<?>>> $( Entity<EntityDefinition<?>> ...zones ) {
     return asSet( zones );
-  }
-
-  @SafeVarargs
-  private static <T> Set<T> asSet( T ... elements ) {
-    return new HashSet<>( asList( elements ) );
   }
 
   @SafeVarargs

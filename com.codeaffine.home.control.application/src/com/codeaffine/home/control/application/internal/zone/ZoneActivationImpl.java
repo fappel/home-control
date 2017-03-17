@@ -40,7 +40,7 @@ class ZoneActivationImpl implements ZoneActivation {
     return Optional.ofNullable( releaseTime );
   }
 
-  public void markRelease() {
+  public void markAsReleased() {
     releaseTime = now();
   }
 
