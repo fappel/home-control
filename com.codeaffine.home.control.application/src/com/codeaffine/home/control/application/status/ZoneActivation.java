@@ -7,6 +7,6 @@ import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 public interface ZoneActivation {
   Entity<?> getZone();
-  boolean hasAdjacentActivation();
+  boolean isAdjacentActivated();
   Optional<LocalDateTime> getReleaseTime();
 }

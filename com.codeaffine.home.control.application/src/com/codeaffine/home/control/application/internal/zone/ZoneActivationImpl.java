@@ -11,17 +11,17 @@ import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 class ZoneActivationImpl implements ZoneActivation {
 
+  private final PathAdjacency adjacency;
   private final Entity<?> zone;
-  private final Path trace;
 
   private LocalDateTime inPathReleaseMarkTime;
   private LocalDateTime releaseTime;
 
-  ZoneActivationImpl( Entity<?> zone, Path trace ) {
-    verifyNotNull( trace, "trace" );
+  ZoneActivationImpl( Entity<?> zone, PathAdjacency adjacency ) {
+    verifyNotNull( adjacency, "adjacency" );
     verifyNotNull( zone, "zone" );
 
-    this.trace = trace;
+    this.adjacency = adjacency;
     this.zone = zone;
   }
 
@@ -31,8 +31,8 @@ class ZoneActivationImpl implements ZoneActivation {
   }
 
   @Override
-  public boolean hasAdjacentActivation() {
-    return trace.size() > 1;
+  public boolean isAdjacentActivated() {
+    return adjacency.isAdjacentActivated( zone );
   }
 
   @Override
@@ -70,6 +70,11 @@ class ZoneActivationImpl implements ZoneActivation {
     if( !zone.equals( other.zone ) )
       return false;
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return "ZoneActivation [zone=" + zone + "]";
   }
 
   void markForInPathRelease() {

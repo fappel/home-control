@@ -20,7 +20,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.status.ZoneActivation;
@@ -71,7 +70,8 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1 ) );
-    assertThat( actual.iterator().next().getReleaseTime() ).isEmpty();
+    assertThat( actual ).allMatch( activation -> !activation.getReleaseTime().isPresent() );
+    assertThat( actual ).allMatch( activation -> !activation.isAdjacentActivated() );
   }
 
   @Test
@@ -81,19 +81,18 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1, Zone2 ]" ) );
   }
 
   @Test
   public void getStatusAfterReleaseOfFirstEngaging() {
-    Entity<EntityDefinition<?>> expected = ZONE_2;
-
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
-    provider.engagedZonesChanged( newEvent( ON, expected ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
     provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
     Set<ZoneActivation> actual = provider.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_2 ) );
   }
 
   @Test
@@ -108,15 +107,16 @@ public class ZoneActivationProviderImplTest {
 
   @Test
   public void getStatusAfterReleaseOfTheOnlyActiveZone() {
-    Entity<EntityDefinition<?>> expected = ZONE_1;
-
-    provider.engagedZonesChanged( newEvent( ON, expected ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
     reset( logger, eventBus );
-    provider.engagedZonesChanged( newEvent( OFF, expected ) );
+
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
     Set<ZoneActivation> actual = provider.getStatus();
 
-    assertThat( toZoneSet( actual ) ).isEqualTo( $( expected ) );
-    assertThat( actual.iterator().next().getReleaseTime() ).isNotEmpty();
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1 ) );
+    assertThat( actual )
+      .allMatch( activation -> !activation.isAdjacentActivated() )
+      .allMatch( activation -> activation.getReleaseTime().isPresent() );
     ArgumentCaptor<String> loggingCaptor = forClass( String.class );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), loggingCaptor.capture() );
     assertThat( loggingCaptor.getValue() ).contains( ZONE_1.toString(), RELEASED_TAG );
@@ -129,16 +129,17 @@ public class ZoneActivationProviderImplTest {
   public void getStatusAfterRemovalOfNonAdjacentZoneEngagings() {
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
     provider.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+
+    reset( logger );
     provider.engagedZonesChanged( newEvent( OFF, ZONE_1, ZONE_3 ) );
     Set<ZoneActivation> actual = provider.getStatus();
 
     ArgumentCaptor<String> captor = forClass( String.class );
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
-    InOrder order = inOrder( logger );
-    order.verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
-    order.verify( logger, times( 2 ) ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
-    order.verifyNoMoreInteractions();
+    assertThat( actual ).allMatch( activation -> !activation.isAdjacentActivated() );
+    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
     assertThat( asList( captor.getValue().split( "\\|" ) ) )
+      .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( RELEASED_TAG ) && zone.contains( "Zone1" ) || zone.contains( "Zone3" ) )
       .hasSize( 2 );
   }
@@ -155,6 +156,7 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
   }
 
   @Test
@@ -182,6 +184,7 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2, ZONE_3 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
   }
 
   @Test
@@ -194,6 +197,7 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2, ZONE_3 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
   }
 
   @Test
@@ -237,9 +241,11 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
     ArgumentCaptor<String> captor = forClass( String.class );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
     assertThat( asList( captor.getValue().split( "\\|" ) ) )
+      .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( RELEASED_TAG ) && zone.contains( "Zone1" ) || zone.contains( "Zone2" ) )
       .hasSize( 2 );
   }
@@ -257,9 +263,11 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
+    assertThat( actual ).allMatch( activation -> !activation.isAdjacentActivated() );
     ArgumentCaptor<String> captor = forClass( String.class );
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
     assertThat( asList( captor.getValue().split( "\\|" ) ) )
+      .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( "Zone1" ) || zone.contains( "Zone3" ) )
       .hasSize( 2 );
   }
@@ -279,6 +287,7 @@ public class ZoneActivationProviderImplTest {
     Set<ZoneActivation> actual = provider.getStatus();
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+    assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
     verify( logger, never() ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), ( Object )anyObject() );
   }
 

@@ -3,7 +3,7 @@ package com.codeaffine.home.control.application.internal.zone;
 import static com.codeaffine.home.control.application.internal.zone.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -11,21 +11,22 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class ZoneActivationImplTest {
 
+  private static final String ZONE_NAME = "zoneName";
+
   private ZoneActivationImpl activation;
-  private Path trace;
+  private PathAdjacency adjacency;
   private Entity<?> zone;
 
   @Before
   public void setUp() {
-    zone = stubEntity( stubEntityDefinition( "entity" ) );
-    trace = new Path();
-    activation = new ZoneActivationImpl( zone, trace );
+    zone = stubEntity( stubEntityDefinition( ZONE_NAME ) );
+    adjacency = mock( PathAdjacency.class );
+    activation = new ZoneActivationImpl( zone, adjacency );
   }
 
   @Test
@@ -33,7 +34,7 @@ public class ZoneActivationImplTest {
     assertThat( activation.getZone() ).isSameAs( zone );
     assertThat( activation.getReleaseTime() ).isEmpty();
     assertThat( activation.getInPathReleaseMarkTime() ).isEmpty();
-    assertThat( activation.hasAdjacentActivation() ).isFalse();
+    assertThat( activation.isAdjacentActivated() ).isFalse();
   }
 
   @Test
@@ -45,22 +46,12 @@ public class ZoneActivationImplTest {
   }
 
   @Test
-  public void hasAdjacentActivation() {
-    trace.addOrReplace( activation );
-    trace.addOrReplace( mock( ZoneActivation.class ) );
+  public void isAdjacentActivated() {
+    when( adjacency.isAdjacentActivated( zone ) ).thenReturn( true );
 
-    boolean actual = activation.hasAdjacentActivation();
+    boolean actual = activation.isAdjacentActivated();
 
     assertThat( actual ).isTrue();
-  }
-
-  @Test
-  public void hasAdjacentActivationIfCurrentActivationIsOnlyTraceElement() {
-    trace.addOrReplace( activation );
-
-    boolean actual = activation.hasAdjacentActivation();
-
-    assertThat( actual ).isFalse();
   }
 
   @Test
@@ -75,38 +66,45 @@ public class ZoneActivationImplTest {
   public void equalsAndHashcode() {
     EqualsTester<ZoneActivationImpl> instance = EqualsTester.newInstance( activation );
     instance.assertImplementsEqualsAndHashCode();
-    instance.assertEqual( new ZoneActivationImpl( zone, trace ), new ZoneActivationImpl( zone, new Path() ) );
-    instance.assertNotEqual( new ZoneActivationImpl( mock( Entity.class ), trace ),
-                             new ZoneActivationImpl( zone, new Path() ) );
+    instance.assertEqual( new ZoneActivationImpl( zone, adjacency ),
+                          new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
+    instance.assertNotEqual( new ZoneActivationImpl( mock( Entity.class ), adjacency ),
+                             new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
 
-    Path localTrace = new Path();
-    ZoneActivationImpl localActivation1 = new ZoneActivationImpl( zone, localTrace );
+    PathAdjacency localAdjacency = mock( PathAdjacency.class );
+    ZoneActivationImpl localActivation1 = new ZoneActivationImpl( zone, localAdjacency );
     localActivation1.markForInPathRelease();
-    instance.assertEqual( localActivation1, new ZoneActivationImpl( zone, new Path() ) );
+    instance.assertEqual( localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
 
-    localTrace.addOrReplace( localActivation1 );
-    localTrace.addOrReplace( mock( ZoneActivation.class ) );
-    instance.assertEqual( localActivation1, new ZoneActivationImpl( zone, new Path() ) );
-    instance.assertEqual( activation, localActivation1, new ZoneActivationImpl( zone, new Path() ) );
+    when( localAdjacency.isAdjacentActivated( zone ) ).thenReturn( true );
+    instance.assertEqual( localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
+    instance.assertEqual( activation, localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
 
-    ZoneActivationImpl localActivation2 = new ZoneActivationImpl( zone, localTrace );
+    ZoneActivationImpl localActivation2 = new ZoneActivationImpl( zone, localAdjacency );
     localActivation1.markRelease();
     localActivation2.markRelease();
     instance.assertEqual( localActivation1, localActivation2 );
-    instance.assertNotEqual( localActivation1, new ZoneActivationImpl( zone, new Path() ) );
-    instance.assertNotEqual( new ZoneActivationImpl( zone, new Path() ), localActivation1 );
+    instance.assertNotEqual( localActivation1, new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ) );
+    instance.assertNotEqual( new ZoneActivationImpl( zone, mock( PathAdjacency.class ) ), localActivation1 );
 
 
-    ZoneActivationImpl localActivation3 = new ZoneActivationImpl( zone, localTrace );
+    ZoneActivationImpl localActivation3 = new ZoneActivationImpl( zone, localAdjacency );
     localActivation3.markForInPathRelease();
     waitALittle();
     localActivation3.markRelease();
     instance.assertNotEqual( localActivation1, localActivation3 );
   }
 
+  @Test
+  public void toStringImplementation() {
+    String actual = activation.toString();
+
+    assertThat( actual ).contains( ZONE_NAME );
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsZoneArgument() {
-    new ZoneActivationImpl( null, trace );
+    new ZoneActivationImpl( null, adjacency );
   }
 
   @Test( expected = IllegalArgumentException.class )

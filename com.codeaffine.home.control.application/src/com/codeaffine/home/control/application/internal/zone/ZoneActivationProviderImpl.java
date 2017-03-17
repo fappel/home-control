@@ -120,7 +120,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
 
   private void updatePathWithAdditions( Entity<?> zone, Path path ) {
     if( path.isEmpty() || adjacency.belongsToPath( zone, path ) ) {
-      path.addOrReplace( new ZoneActivationImpl( zone, path ) );
+      path.addOrReplace( new ZoneActivationImpl( zone, adjacency ) );
     }
   }
 
@@ -185,7 +185,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     return path.size() - inPathReleases.size() == toRemove.size();
   }
 
-  private static void removeLastActive( Path path, Set<ZoneActivation> toRemove ) {
+  private void removeLastActive( Path path, Set<ZoneActivation> toRemove ) {
     path.remove( path.findInPathReleases() );
     path.remove( toRemove );
     toRemove.forEach( activation -> markAsReleased( activation.getZone(), path ) );
@@ -195,8 +195,8 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     path.findZoneActivation( zone ).forEach( elem -> ( ( ZoneActivationImpl )elem ).markForInPathRelease() );
   }
 
-  private static void markAsReleased( Entity<?> zone, Path path ) {
-    ZoneActivationImpl zoneActivation = new ZoneActivationImpl( zone, path );
+  private void markAsReleased( Entity<?> zone, Path path ) {
+    ZoneActivationImpl zoneActivation = new ZoneActivationImpl( zone, adjacency );
     zoneActivation.markRelease();
     path.addOrReplace( zoneActivation );
   }

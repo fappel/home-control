@@ -15,6 +15,14 @@ class PathAdjacency {
     this.adjacencyDefinition = adjacencyDefinition;
     this.paths = paths;
   }
+
+  boolean isAdjacentActivated( Entity<?> zone ) {
+    return paths
+      .stream()
+      .flatMap( path -> path.getAll().stream() )
+      .anyMatch( activation -> isAdjacent( activation.getZone(), zone ) );
+  }
+
   boolean isAdjacentToInPathRelease( Entity<?> zone, Set<ZoneActivation> inPathReleases ) {
     return    inPathReleases.size() > 0
            && inPathReleases.stream().anyMatch( activation -> isAdjacent( activation.getZone(), zone ) );
@@ -25,7 +33,7 @@ class PathAdjacency {
   }
 
   boolean belongsToPath( Entity<?> zone, Path path ) {
-    if( hasNewPath() ) {
+    if( hasNewPath( zone ) ) {
       return belongsToPathWithActivatedZones( zone, path );
     }
     return !path.find( activation -> isAdjacentOrActual( zone, activation ) ).isEmpty();
@@ -35,8 +43,8 @@ class PathAdjacency {
     return !path.find( activation -> isNonReleasedAdjacentOrActual( zone, activation ) ).isEmpty();
   }
 
-  private boolean hasNewPath() {
-    return paths.stream().anyMatch( path -> path.isEmpty() );
+  private boolean hasNewPath( Entity<?> zone ) {
+    return paths.stream().anyMatch( path -> path.isEmpty() || path.size() == 1 && !path.findZoneActivation( zone ).isEmpty() );
   }
 
   private boolean isNonReleasedAdjacentOrActual( Entity<?> zone, ZoneActivation activation ) {
