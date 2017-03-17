@@ -48,7 +48,7 @@ class PathAdjacency {
   }
 
   private boolean isNonReleasedAdjacentOrActual( Entity<?> zone, ZoneActivation activation ) {
-    return !activation.getReleaseTime().isPresent() && isAdjacentOrActual( zone, activation );
+    return !activation.getReleaseTime().isPresent() && isAdjacent( zone, activation.getZone() ) || zone == activation.getZone();
   }
 
   private boolean isAdjacentOrActual( Entity<?> zone, ZoneActivation activation ) {

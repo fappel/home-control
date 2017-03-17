@@ -58,9 +58,7 @@ public class ZoneActivationProviderImplTest {
   public void engageZonesChanged() {
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
 
-    ArgumentCaptor<StatusEvent> captor = forClass( StatusEvent.class );
-    verify( eventBus ).post( captor.capture() );
-    assertThat( captor.getValue().getSource( ZoneActivationProvider.class ) ).hasValue( provider );
+    verifyEventBusNotification();
     verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
   }
 
@@ -117,12 +115,25 @@ public class ZoneActivationProviderImplTest {
     assertThat( actual )
       .allMatch( activation -> !activation.isAdjacentActivated() )
       .allMatch( activation -> activation.getReleaseTime().isPresent() );
-    ArgumentCaptor<String> loggingCaptor = forClass( String.class );
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), loggingCaptor.capture() );
-    assertThat( loggingCaptor.getValue() ).contains( ZONE_1.toString(), RELEASED_TAG );
-    ArgumentCaptor<StatusEvent> event = forClass( StatusEvent.class );
-    verify( eventBus ).post( event.capture() );
-    assertThat( event.getValue().getSource( ZoneActivationProvider.class ) ).hasValue( provider );
+    assertThat( captureLoggerInfoArgument() ).contains( ZONE_1.toString(), RELEASED_TAG );
+    verifyEventBusNotification();
+  }
+
+  @Test
+  public void getStatusAfterReactivationOfTheOnlyReleasedZone() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
+    reset( logger, eventBus );
+
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    Set<ZoneActivation> actual = provider.getStatus();
+
+    assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1 ) );
+    assertThat( actual )
+      .allMatch( activation -> !activation.isAdjacentActivated() )
+      .allMatch( activation -> !activation.getReleaseTime().isPresent() );
+    assertThat( captureLoggerInfoArgument() ).isEqualTo( "[ Zone1 ]" );
+    verifyEventBusNotification();
   }
 
   @Test
@@ -134,11 +145,9 @@ public class ZoneActivationProviderImplTest {
     provider.engagedZonesChanged( newEvent( OFF, ZONE_1, ZONE_3 ) );
     Set<ZoneActivation> actual = provider.getStatus();
 
-    ArgumentCaptor<String> captor = forClass( String.class );
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     assertThat( actual ).allMatch( activation -> !activation.isAdjacentActivated() );
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
-    assertThat( asList( captor.getValue().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
       .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( RELEASED_TAG ) && zone.contains( "Zone1" ) || zone.contains( "Zone3" ) )
       .hasSize( 2 );
@@ -242,9 +251,7 @@ public class ZoneActivationProviderImplTest {
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual ).allMatch( activation -> activation.isAdjacentActivated() );
-    ArgumentCaptor<String> captor = forClass( String.class );
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
-    assertThat( asList( captor.getValue().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
       .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( RELEASED_TAG ) && zone.contains( "Zone1" ) || zone.contains( "Zone2" ) )
       .hasSize( 2 );
@@ -264,9 +271,7 @@ public class ZoneActivationProviderImplTest {
 
     assertThat( toZoneSet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     assertThat( actual ).allMatch( activation -> !activation.isAdjacentActivated() );
-    ArgumentCaptor<String> captor = forClass( String.class );
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
-    assertThat( asList( captor.getValue().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
       .allMatch( zone -> !zone.contains( "," ) )
       .allMatch( zone -> zone.contains( "Zone1" ) || zone.contains( "Zone3" ) )
       .hasSize( 2 );
@@ -361,6 +366,18 @@ public class ZoneActivationProviderImplTest {
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsLoggerDefinitionArgument() {
     new ZoneActivationProviderImpl( adjacency, eventBus, null );
+  }
+
+  private void verifyEventBusNotification() {
+    ArgumentCaptor<StatusEvent> event = forClass( StatusEvent.class );
+    verify( eventBus ).post( event.capture() );
+    assertThat( event.getValue().getSource( ZoneActivationProvider.class ) ).hasValue( provider );
+  }
+
+  private String captureLoggerInfoArgument() {
+    ArgumentCaptor<String> captor = forClass( String.class );
+    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), captor.capture() );
+    return captor.getValue();
   }
 
   @SafeVarargs
