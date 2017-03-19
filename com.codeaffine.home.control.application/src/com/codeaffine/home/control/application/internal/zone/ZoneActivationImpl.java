@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
-class ZoneActivationImpl implements ZoneActivation {
+public class ZoneActivationImpl implements ZoneActivation {
 
   private final PathAdjacency adjacency;
   private final Entity<?> zone;
@@ -17,7 +17,7 @@ class ZoneActivationImpl implements ZoneActivation {
   private LocalDateTime inPathReleaseMarkTime;
   private LocalDateTime releaseTime;
 
-  ZoneActivationImpl( Entity<?> zone, PathAdjacency adjacency ) {
+  public ZoneActivationImpl( Entity<?> zone, PathAdjacency adjacency ) {
     verifyNotNull( adjacency, "adjacency" );
     verifyNotNull( zone, "zone" );
 
@@ -42,6 +42,14 @@ class ZoneActivationImpl implements ZoneActivation {
 
   public void markAsReleased() {
     releaseTime = now();
+  }
+
+  public void markForInPathRelease() {
+    inPathReleaseMarkTime = now();
+  }
+
+  public Optional<LocalDateTime> getInPathReleaseMarkTime() {
+    return Optional.ofNullable( inPathReleaseMarkTime );
   }
 
   @Override
@@ -75,13 +83,5 @@ class ZoneActivationImpl implements ZoneActivation {
   @Override
   public String toString() {
     return "ZoneActivation [zone=" + zone + "]";
-  }
-
-  void markForInPathRelease() {
-    inPathReleaseMarkTime = now();
-  }
-
-  Optional<LocalDateTime> getInPathReleaseMarkTime() {
-    return Optional.ofNullable( inPathReleaseMarkTime );
   }
 }

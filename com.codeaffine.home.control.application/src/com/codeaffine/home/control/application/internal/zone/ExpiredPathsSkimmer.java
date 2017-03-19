@@ -21,8 +21,7 @@ class ExpiredPathsSkimmer {
   private Set<Path> calculateRemovals() {
     Set<Path> result = paths.stream().filter( path -> path.isExpired() ).collect( toSet() );
     if( result.size() == paths.size() ) {
-      Path last = result.stream().reduce( ( path1, path2 ) -> getMostRecentReleased( path1, path2 ) ).get();
-      result.remove( last );
+      result.remove( result.stream().reduce( ( path1, path2 ) -> getMostRecentReleased( path1, path2 ) ).get() );
     }
     return result;
   }

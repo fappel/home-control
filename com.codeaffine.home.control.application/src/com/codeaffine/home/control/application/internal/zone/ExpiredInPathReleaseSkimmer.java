@@ -27,7 +27,9 @@ class ExpiredInPathReleaseSkimmer {
   }
 
   void execute( Consumer<Entity<?>> rebuilder ) {
-    if( paths.stream().anyMatch( path -> path.remove( collectExpiredInPathReleases() ) ) ) {
+    Set<ZoneActivation> expiredInPathReleases = collectExpiredInPathReleases();
+    if( !expiredInPathReleases.isEmpty() ) {
+      paths.stream().forEach( path -> path.remove( expiredInPathReleases ) );
       Set<Path> clone = new HashSet<>( paths );
       paths.clear();
       clone.stream().forEach( path -> populate( rebuilder, path ) );

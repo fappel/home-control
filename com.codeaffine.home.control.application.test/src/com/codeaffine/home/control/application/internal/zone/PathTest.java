@@ -2,11 +2,11 @@ package com.codeaffine.home.control.application.internal.zone;
 
 import static com.codeaffine.home.control.application.internal.zone.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
+import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
-import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
+import static com.codeaffine.test.util.lang.EqualsTester.newInstance;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -21,13 +21,6 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class PathTest {
-
-  private static final EntityDefinition<?> ZONE_DEFINITION_1 = stubEntityDefinition( "Zone1" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_2 = stubEntityDefinition( "Zone2" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_3 = stubEntityDefinition( "Zone3" );
-  private static final Entity<EntityDefinition<?>> ZONE_1 = stubEntity( ZONE_DEFINITION_1 );
-  private static final Entity<EntityDefinition<?>> ZONE_2 = stubEntity( ZONE_DEFINITION_2 );
-  private static final Entity<EntityDefinition<?>> ZONE_3 = stubEntity( ZONE_DEFINITION_3 );
 
   private Path path;
 
@@ -296,7 +289,7 @@ public class PathTest {
 
   @Test
   public void equalsAndHashCode() {
-    EqualsTester<Path> tester = EqualsTester.newInstance( path );
+    EqualsTester<Path> tester = newInstance( path );
     tester.assertImplementsEqualsAndHashCode();
     tester.assertEqual( new Path(), new Path() );
     tester.assertEqual( createPath( createZoneActivation( ZONE_1 ) ), createPath( createZoneActivation( ZONE_1 ) ) );
@@ -318,21 +311,5 @@ public class PathTest {
 
   private Optional<LocalDateTime> findReleaseTimeOf( Entity<EntityDefinition<?>> zone ) {
     return path.findZoneActivation( zone ).iterator().next().getReleaseTime();
-  }
-
-  private static ZoneActivation createReleasedZoneActivation( Entity<?> zone ) {
-    ZoneActivationImpl result = createZoneActivation( zone );
-    result.markAsReleased();
-    return result;
-  }
-
-  private static ZoneActivation createInPathReleasedZoneActivation( Entity<?> zone ) {
-    ZoneActivationImpl result = createZoneActivation( zone );
-    result.markForInPathRelease();
-    return result;
-  }
-
-  private static ZoneActivationImpl createZoneActivation( Entity<?> zone ) {
-    return new ZoneActivationImpl( zone, mock( PathAdjacency.class ) );
   }
 }

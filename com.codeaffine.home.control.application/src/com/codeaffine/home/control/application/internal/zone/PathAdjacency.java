@@ -6,7 +6,7 @@ import com.codeaffine.home.control.application.status.ZoneActivation;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
-class PathAdjacency {
+public class PathAdjacency {
 
   private final AdjacencyDefinition adjacencyDefinition;
   private final Set<Path> paths;

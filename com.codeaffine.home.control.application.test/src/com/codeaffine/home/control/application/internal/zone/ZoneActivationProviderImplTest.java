@@ -3,9 +3,9 @@ package com.codeaffine.home.control.application.internal.zone;
 import static com.codeaffine.home.control.application.internal.zone.Messages.*;
 import static com.codeaffine.home.control.application.internal.zone.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.*;
+import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
-import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
@@ -32,13 +32,6 @@ import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
 
 public class ZoneActivationProviderImplTest {
-
-  private static final EntityDefinition<?> ZONE_DEFINITION_1 = stubEntityDefinition( "Zone1" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_2 = stubEntityDefinition( "Zone2" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_3 = stubEntityDefinition( "Zone3" );
-  private static final Entity<EntityDefinition<?>> ZONE_1 = stubEntity( ZONE_DEFINITION_1 );
-  private static final Entity<EntityDefinition<?>> ZONE_2 = stubEntity( ZONE_DEFINITION_2 );
-  private static final Entity<EntityDefinition<?>> ZONE_3 = stubEntity( ZONE_DEFINITION_3 );
 
   private ZoneActivationProviderImpl provider;
   private AdjacencyDefinition adjacency;

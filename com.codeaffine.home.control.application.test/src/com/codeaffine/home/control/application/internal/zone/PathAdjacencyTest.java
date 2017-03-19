@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.zone;
 
+import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
-import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashSet;
@@ -16,13 +16,6 @@ import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public class PathAdjacencyTest {
-
-  private static final EntityDefinition<?> ZONE_DEFINITION_1 = stubEntityDefinition( "Zone1" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_2 = stubEntityDefinition( "Zone2" );
-  private static final EntityDefinition<?> ZONE_DEFINITION_3 = stubEntityDefinition( "Zone3" );
-  private static final Entity<EntityDefinition<?>> ZONE_1 = stubEntity( ZONE_DEFINITION_1 );
-  private static final Entity<EntityDefinition<?>> ZONE_2 = stubEntity( ZONE_DEFINITION_2 );
-  private static final Entity<EntityDefinition<?>> ZONE_3 = stubEntity( ZONE_DEFINITION_3 );
 
   private AdjacencyDefinition adjacency;
   private PathAdjacency pathAdjacency;
