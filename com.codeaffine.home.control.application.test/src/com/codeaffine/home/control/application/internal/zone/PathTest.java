@@ -293,8 +293,8 @@ public class PathTest {
     tester.assertImplementsEqualsAndHashCode();
     tester.assertEqual( new Path(), new Path() );
     tester.assertEqual( createPath( createZoneActivation( ZONE_1 ) ), createPath( createZoneActivation( ZONE_1 ) ) );
-    tester.assertEqual( createPath( createReleasedZoneActivation( ZONE_1 ) ),
-                        createPath( createReleasedZoneActivation( ZONE_1 ) ) );
+    ZoneActivation releasedZoneActivation = createReleasedZoneActivation( ZONE_1 );
+    tester.assertEqual( createPath( releasedZoneActivation ), createPath( releasedZoneActivation ) );
     tester.assertEqual( createPath( createInPathReleasedZoneActivation( ZONE_1 ) ),
                         createPath( createZoneActivation( ZONE_1 ) ) );
     tester.assertNotEqual( createPath( createZoneActivation( ZONE_1 ) ),
