@@ -23,7 +23,7 @@ import com.codeaffine.home.control.status.StatusProviderCore;
 
 public class ActivityProviderImpl implements ActivityProvider {
 
-  static final long OBSERVATION_TIME_FRAME = 5L; // Minutes
+  static final long OBSERVATION_TIME_FRAME = 3L; // Minutes
   static final long CALCULATION_INTERVAL = 10L; // Seconds
   static final long SCAN_RATE = 2L; // Seconds
 
