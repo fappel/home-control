@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.operation;
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.application.test.ActivationHelper.stubZone;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.stubZoneActivation;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
@@ -26,9 +26,9 @@ import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
-import com.codeaffine.home.control.application.status.ZoneActivation;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.application.test.RegistryHelper;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -38,7 +38,7 @@ import com.codeaffine.home.control.test.util.status.MyStatusProvider;
 
 public class LampSwitchOperationTest {
 
-  private ZoneActivationProvider zoneActivationProvider;
+  private ActivationProvider zoneActivationProvider;
   private LampSwitchOperation operation;
   private EntityRegistry registry;
   private FollowUpTimer timer;
@@ -47,7 +47,7 @@ public class LampSwitchOperationTest {
   public void setUp() {
     registry = stubRegistry();
     timer = mock( FollowUpTimer.class );
-    zoneActivationProvider = mock( ZoneActivationProvider.class );
+    zoneActivationProvider = mock( ActivationProvider.class );
     operation = new LampSwitchOperation( registry, zoneActivationProvider, timer );
   }
 
@@ -385,7 +385,7 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithLampDelayTimerAndDelayedExplicitlySwitchedOn() {
-    ZoneActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
+    ActivationProvider zoneActivationProvider = stubZoneActivationProvider( LIVING_AREA, HALL );
 
     operation.reset();
     operation.setLampsToSwitchOn( HallCeiling );
@@ -495,17 +495,17 @@ public class LampSwitchOperationTest {
     return registry.findByDefinition( definition );
   }
 
-  private ZoneActivationProvider stubZoneActivationProvider( SectionDefinition... zoneDefinitions ) {
-    Set<ZoneActivation> status = stubStatus( zoneDefinitions );
-    when( zoneActivationProvider.getStatus() ).thenReturn( status );
+  private ActivationProvider stubZoneActivationProvider( SectionDefinition... zoneDefinitions ) {
+    Activation activation = stubStatus( zoneDefinitions );
+    when( zoneActivationProvider.getStatus() ).thenReturn( activation );
     return zoneActivationProvider;
   }
 
-  private Set<ZoneActivation> stubStatus( SectionDefinition... zoneDefinitions ) {
-    return Stream.of( zoneDefinitions )
+  private Activation stubStatus( SectionDefinition... zoneDefinitions ) {
+    return new Activation( Stream.of( zoneDefinitions )
       .map( zoneDefinition -> registry.findByDefinition( zoneDefinition ) )
-      .map( zone -> stubZoneActivation( zone ) )
-      .collect( toSet() );
+      .map( zoneEntity -> stubZone( zoneEntity ) )
+      .collect( toSet() ) );
   }
 
   static EntityRegistry stubRegistry() {

@@ -13,7 +13,7 @@ import com.codeaffine.home.control.application.internal.activity.ActivityProvide
 import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
-import com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl;
+import com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
@@ -25,7 +25,7 @@ import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 import com.codeaffine.home.control.status.ControlCenter;
@@ -72,7 +72,7 @@ public class Configuration implements SystemConfiguration {
 
     Context context = statusProviderRegistry.getContext();
     context.set( AdjacencyDefinition.class, adjacencyDefinition );
-    statusProviderRegistry.register( ZoneActivationProvider.class, ZoneActivationProviderImpl.class );
+    statusProviderRegistry.register( ActivationProvider.class, ActivationProviderImpl.class );
     statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
     statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
     context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );

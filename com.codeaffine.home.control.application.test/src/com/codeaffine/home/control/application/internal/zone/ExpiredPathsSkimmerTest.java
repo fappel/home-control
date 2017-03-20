@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
+import static com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 
 public class ExpiredPathsSkimmerTest {
 
@@ -27,8 +27,8 @@ public class ExpiredPathsSkimmerTest {
 
   @Test
   public void execute() {
-    addOrReplaceInNewPath( createReleasedZoneActivation( ZONE_3 ) );
-    Path survivor = addOrReplaceInNewPath( createZoneActivation( ZONE_1 ) );
+    addOrReplaceInNewPath( createReleasedZone( ZONE_3 ) );
+    Path survivor = addOrReplaceInNewPath( createZone( ZONE_1 ) );
     paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
 
     skimmer.execute();
@@ -38,14 +38,14 @@ public class ExpiredPathsSkimmerTest {
       .contains( survivor );
     assertThat( survivor.getAll() )
       .hasSize( 1 )
-      .contains( createZoneActivation( ZONE_1 ) );
+      .contains( createZone( ZONE_1 ) );
   }
 
   @Test
   public void executeIfAllPathsAreExpired() {
-    addOrReplaceInNewPath( createReleasedZoneActivation( ZONE_3 ) );
+    addOrReplaceInNewPath( createReleasedZone( ZONE_3 ) );
     TimeoutHelper.waitALittle();
-    ZoneActivation expectedSurvivorZone = createReleasedZoneActivation( ZONE_1 );
+    Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
     paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
 
@@ -61,8 +61,8 @@ public class ExpiredPathsSkimmerTest {
 
   @Test
   public void executeIfAllPathsAreExpiredAtSameTime() {
-    ZoneActivation zone1 = createReleasedZoneActivation( ZONE_1 );
-    ZoneActivation zone2 = createReleasedZoneActivation( ZONE_2 );
+    Zone zone1 = createReleasedZone( ZONE_1 );
+    Zone zone2 = createReleasedZone( ZONE_2 );
     Path path1 = addOrReplaceInNewPath( zone1 );
     Path path2 = addOrReplaceInNewPath( zone2 );
     paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
@@ -76,9 +76,9 @@ public class ExpiredPathsSkimmerTest {
 
   @Test
   public void executeIfAllPathsAreExpiredInReversedOrder() {
-    ZoneActivation zone3Activation = createReleasedZoneActivation( ZONE_3 );
+    Zone zone3Activation = createReleasedZone( ZONE_3 );
     TimeoutHelper.waitALittle();
-    ZoneActivation expectedSurvivorZone = createReleasedZoneActivation( ZONE_1 );
+    Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
     addOrReplaceInNewPath( zone3Activation );
     paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
@@ -95,7 +95,7 @@ public class ExpiredPathsSkimmerTest {
 
   @Test
   public void executeIfOnlyOneExpiredPathExists() {
-    ZoneActivation expectedSurvivorZone = createReleasedZoneActivation( ZONE_1 );
+    Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
     paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
 
@@ -109,9 +109,9 @@ public class ExpiredPathsSkimmerTest {
       .contains( expectedSurvivorZone );
   }
 
-  private Path addOrReplaceInNewPath( ZoneActivation ... activations ) {
+  private Path addOrReplaceInNewPath( Zone ... zones ) {
     Path result = new Path();
-    Stream.of( activations ).forEach( activation  -> result.addOrReplace( activation ) );
+    Stream.of( zones ).forEach( zone  -> result.addOrReplace( zone ) );
     paths.add( result );
     return result;
   }

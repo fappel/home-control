@@ -14,8 +14,9 @@ import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
-import com.codeaffine.home.control.application.status.ZoneActivation;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.SensorEvent;
@@ -24,24 +25,24 @@ import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusProviderCore;
 
-public class ZoneActivationProviderImpl implements ZoneActivationProvider {
+public class ActivationProviderImpl implements ActivationProvider {
 
   static final long IN_PATH_RELEASES_EXPIRATION_TIME = 10L;
   static final long RELEASE_TIMEOUT_INTERVAL = 20L;
   static final long PATH_EXPIRED_TIMEOUT = 60L;
 
   private final ExpiredInPathReleaseSkimmer expiredInPathReleaseSkimmer;
-  private final StatusProviderCore<Set<ZoneActivation>> core;
+  private final StatusProviderCore<Activation> core;
   private final ExpiredPathsSkimmer expiredPathsSkimmer;
   private final PathAdjacency adjacency;
   private final Set<Path> paths;
 
-  public ZoneActivationProviderImpl( AdjacencyDefinition adjacencyDefinition, EventBus eventBus, Logger logger ) {
+  public ActivationProviderImpl( AdjacencyDefinition adjacencyDefinition, EventBus eventBus, Logger logger ) {
     verifyNotNull( adjacencyDefinition, "adjacencyDefinition" );
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( logger, "logger" );
 
-    this.core = new StatusProviderCore<>( eventBus, emptySet(), this, logger );
+    this.core = new StatusProviderCore<>( eventBus, new Activation( emptySet() ), this, logger );
     this.paths = new HashSet<>();
     this.expiredInPathReleaseSkimmer = new ExpiredInPathReleaseSkimmer( paths );
     this.adjacency = new PathAdjacency( adjacencyDefinition, paths );
@@ -50,7 +51,7 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
   }
 
   @Override
-  public Set<ZoneActivation> getStatus() {
+  public Activation getStatus() {
     return core.getStatus();
   }
 
@@ -69,18 +70,18 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     core.updateStatus( () -> release(), ZONE_ACTIVATION_STATUS_CHANGED_INFO, status -> createStatusInfo() );
   }
 
-  private Set<ZoneActivation> release() {
+  private Activation release() {
     expiredPathsSkimmer.execute();
-    expiredInPathReleaseSkimmer.execute( zone -> reinsert( zone ) );
+    expiredInPathReleaseSkimmer.execute( zoneEntity -> reinsert( zoneEntity ) );
     return collectStatus();
   }
 
-  private void reinsert( Entity<?> zone ) {
-    ensureDiscretePath( zone );
-    handleAdditions( zone );
+  private void reinsert( Entity<?> zoneEntity ) {
+    ensureDiscretePath( zoneEntity );
+    handleAdditions( zoneEntity );
   }
 
-  private Set<ZoneActivation> update( SensorEvent<OnOff> event ) {
+  private Activation update( SensorEvent<OnOff> event ) {
     doEngagedZonesChanged( event );
     return collectStatus();
   }
@@ -94,72 +95,72 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
 
   private void ensureDiscretePaths( SensorEvent<OnOff> event ) {
     if( ON == event.getSensorStatus() ) {
-      event.getAffected().stream().forEach( zone -> ensureDiscretePath( zone ) );
+      event.getAffected().stream().forEach( zoneEntity -> ensureDiscretePath( zoneEntity ) );
     }
   }
 
-  private void ensureDiscretePath( Entity<?> zone ) {
-    if( paths.isEmpty() || !isRelatedToActivatedZones( zone ) ) {
+  private void ensureDiscretePath( Entity<?> zoneEntity ) {
+    if( paths.isEmpty() || !isRelatedToActivatedZones( zoneEntity ) ) {
       paths.add( new Path() );
     }
   }
 
-  private boolean isRelatedToActivatedZones( Entity<?> zone ) {
-    return paths.stream().anyMatch( path -> adjacency.isRelatedToActivatedZones( zone, path ) );
+  private boolean isRelatedToActivatedZones( Entity<?> zoneEntity ) {
+    return paths.stream().anyMatch( path -> adjacency.isRelatedToActivatedZones( zoneEntity, path ) );
   }
 
   private void handleAdditions( SensorEvent<OnOff> event ) {
     if( ON == event.getSensorStatus() ) {
-      event.getAffected().stream().forEach( zone -> handleAdditions( zone ) );
+      event.getAffected().stream().forEach( zoneEntity -> handleAdditions( zoneEntity ) );
     }
   }
 
-  private void handleAdditions( Entity<?> zone ) {
-    paths.forEach( path -> updatePathWithAdditions( zone, path ) );
+  private void handleAdditions( Entity<?> zoneEntity ) {
+    paths.forEach( path -> updatePathWithAdditions( zoneEntity, path ) );
   }
 
-  private void updatePathWithAdditions( Entity<?> zone, Path path ) {
-    if( path.isEmpty() || adjacency.isRelated( zone, path ) ) {
-      path.addOrReplace( new ZoneActivationImpl( zone, adjacency ) );
+  private void updatePathWithAdditions( Entity<?> zoneEntity, Path path ) {
+    if( path.isEmpty() || adjacency.isRelated( zoneEntity, path ) ) {
+      path.addOrReplace( new ZoneImpl( zoneEntity, adjacency ) );
     }
   }
 
   private void handleRemovals( SensorEvent<OnOff> event ) {
     if( OFF == event.getSensorStatus() ) {
-      event.getAffected().stream().forEach( zone -> handleRemovals( zone ) );
+      event.getAffected().stream().forEach( zoneEntity -> handleRemovals( zoneEntity ) );
     }
   }
 
-  private void handleRemovals( Entity<?> zone ) {
-    paths.forEach( path -> removeZoneFromPath( zone, path ) );
+  private void handleRemovals( Entity<?> zoneEntity ) {
+    paths.forEach( path -> removeZoneFromPath( zoneEntity, path ) );
   }
 
-  private void removeZoneFromPath( Entity<?> zone, Path path ) {
-    if( adjacency.isRelated( zone, path ) ) {
-      doRemoveZoneFromPath( zone, path );
+  private void removeZoneFromPath( Entity<?> zoneEntity, Path path ) {
+    if( adjacency.isRelated( zoneEntity, path ) ) {
+      doRemoveZoneFromPath( zoneEntity, path );
     }
   }
 
-  private void doRemoveZoneFromPath( Entity<?> zone, Path path ) {
+  private void doRemoveZoneFromPath( Entity<?> zoneEntity, Path path ) {
     if( hasMultipleZoneActivations( path ) ) {
-      if( adjacency.isAdjacentToMoreThanOneActivation( zone, path ) ) {
-        markForInPathRelease( zone, path );
+      if( adjacency.isAdjacentToMoreThanOneActivation( zoneEntity, path ) ) {
+        markForInPathRelease( zoneEntity, path );
       } else {
-        removeZoneFromPathWithMultipleZoneActivations( zone, path );
+        removeZoneFromPathWithMultipleZoneActivations( zoneEntity, path );
       }
     } else {
-      markAsReleased( zone, path );
+      markAsReleased( zoneEntity, path );
     }
   }
 
-  private void removeZoneFromPathWithMultipleZoneActivations( Entity<?> zone, Path path ) {
-    Set<ZoneActivation> toRemove = path.findZoneActivation( zone );
+  private void removeZoneFromPathWithMultipleZoneActivations( Entity<?> zoneEntity, Path path ) {
+    Set<Zone> toRemove = path.findZoneActivation( zoneEntity );
     if( isLastActive( path, path.findInPathReleases(), toRemove ) ) {
       removeLastActive( path, toRemove );
-    } else if( adjacency.isAdjacentTo( zone, path.findInPathReleases() ) ) {
-      markForInPathRelease( zone, path );
+    } else if( adjacency.isAdjacentTo( zoneEntity, path.findInPathReleases() ) ) {
+      markForInPathRelease( zoneEntity, path );
     } else {
-      path.remove( path.findZoneActivation( zone ) );
+      path.remove( path.findZoneActivation( zoneEntity ) );
     }
   }
 
@@ -169,8 +170,8 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     paths.addAll( clone );
   }
 
-  private Set<ZoneActivation> collectStatus() {
-    return paths.stream().flatMap( path -> path.getAll().stream() ).collect( toSet() );
+  private Activation collectStatus() {
+    return new Activation( paths.stream().flatMap( path -> path.getAll().stream() ).collect( toSet() ) );
   }
 
   private String createStatusInfo() {
@@ -181,23 +182,23 @@ public class ZoneActivationProviderImpl implements ZoneActivationProvider {
     return path.size() > 1;
   }
 
-  private static boolean isLastActive( Path path, Set<ZoneActivation> inPathReleases, Set<ZoneActivation> toRemove ) {
+  private static boolean isLastActive( Path path, Set<Zone> inPathReleases, Set<Zone> toRemove ) {
     return path.size() - inPathReleases.size() == toRemove.size();
   }
 
-  private void removeLastActive( Path path, Set<ZoneActivation> toRemove ) {
+  private void removeLastActive( Path path, Set<Zone> toRemove ) {
     path.remove( path.findInPathReleases() );
     path.remove( toRemove );
-    toRemove.forEach( activation -> markAsReleased( activation.getZone(), path ) );
+    toRemove.forEach( zone -> markAsReleased( zone.getZoneEntity(), path ) );
   }
 
-  private static void markForInPathRelease( Entity<?> zone, Path path ) {
-    path.findZoneActivation( zone ).forEach( elem -> ( ( ZoneActivationImpl )elem ).markForInPathRelease() );
+  private static void markForInPathRelease( Entity<?> zoneEntity, Path path ) {
+    path.findZoneActivation( zoneEntity ).forEach( zone -> ( ( ZoneImpl )zone ).markForInPathRelease() );
   }
 
-  private void markAsReleased( Entity<?> zone, Path path ) {
-    ZoneActivationImpl zoneActivation = new ZoneActivationImpl( zone, adjacency );
-    zoneActivation.markAsReleased();
-    path.addOrReplace( zoneActivation );
+  private void markAsReleased( Entity<?> zoneEntity, Path path ) {
+    ZoneImpl zone = new ZoneImpl( zoneEntity, adjacency );
+    zone.markAsReleased();
+    path.addOrReplace( zone );
   }
 }

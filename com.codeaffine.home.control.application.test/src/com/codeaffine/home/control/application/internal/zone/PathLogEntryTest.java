@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
@@ -19,8 +19,8 @@ public class PathLogEntryTest {
 
   @Test
   public void toStringImplementation() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
     String actual = pathLogEntry.toString();
 
@@ -29,8 +29,8 @@ public class PathLogEntryTest {
 
   @Test
   public void toStringImplementationWithReversedActivations() {
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
 
     String actual = pathLogEntry.toString();
 
@@ -39,7 +39,7 @@ public class PathLogEntryTest {
 
   @Test
   public void toStringImplementationWithSingleActivation() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
 
     String actual = pathLogEntry.toString();
 
@@ -48,11 +48,10 @@ public class PathLogEntryTest {
 
   @Test
   public void toStringImplementationWithSingleReleasedActivation() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
 
     String actual = pathLogEntry.toString();
 
     assertThat( actual ).isEqualTo( "Zone1 <released>" );
   }
-
 }

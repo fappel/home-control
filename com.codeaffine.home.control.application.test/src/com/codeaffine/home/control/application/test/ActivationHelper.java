@@ -7,15 +7,15 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
 
 import com.codeaffine.home.control.application.internal.zone.PathAdjacency;
-import com.codeaffine.home.control.application.internal.zone.ZoneActivationImpl;
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.internal.zone.ZoneImpl;
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
-public class ZoneActivationHelper {
+public class ActivationHelper {
 
   public static final EntityDefinition<?> ZONE_DEFINITION_1 = stubEntityDefinition( "Zone1" );
   public static final EntityDefinition<?> ZONE_DEFINITION_2 = stubEntityDefinition( "Zone2" );
@@ -24,37 +24,37 @@ public class ZoneActivationHelper {
   public static final Entity<EntityDefinition<?>> ZONE_2 = stubEntity( ZONE_DEFINITION_2 );
   public static final Entity<EntityDefinition<?>> ZONE_3 = stubEntity( ZONE_DEFINITION_3 );
 
-  public static Set<ZoneActivation> asStatus( ZoneActivation ... zoneActivations ) {
-    return asSet( zoneActivations );
+  public static Activation asStatus( Zone ... zoneActivations ) {
+    return new Activation( asSet( zoneActivations ) );
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static ZoneActivation stubZoneActivation( Entity zone ) {
-    ZoneActivation result = mock( ZoneActivation.class );
-    when( result.getZone() ).thenReturn( zone );
+  public static Zone stubZone( Entity zoneEntity ) {
+    Zone result = mock( Zone.class );
+    when( result.getZoneEntity() ).thenReturn( zoneEntity );
     when( result.getReleaseTime() ).thenReturn( empty() );
     return result;
   }
 
-  public static ZoneActivation stubZoneActivation( Entity<?> zone, LocalDateTime releaseTime ) {
-    ZoneActivation result = stubZoneActivation( zone );
+  public static Zone stubZone( Entity<?> zoneEntity, LocalDateTime releaseTime ) {
+    Zone result = stubZone( zoneEntity );
     when( result.getReleaseTime() ).thenReturn( Optional.of( releaseTime ) );
     return result;
   }
 
-  public static ZoneActivation createReleasedZoneActivation( Entity<?> zone ) {
-    ZoneActivationImpl result = createZoneActivation( zone );
+  public static Zone createReleasedZone( Entity<?> zoneEntity ) {
+    ZoneImpl result = createZone( zoneEntity );
     result.markAsReleased();
     return result;
   }
 
-  public static ZoneActivation createInPathReleasedZoneActivation( Entity<?> zone ) {
-    ZoneActivationImpl result = createZoneActivation( zone );
+  public static Zone createInPathReleasedZone( Entity<?> zoneEntity ) {
+    ZoneImpl result = createZone( zoneEntity );
     result.markForInPathRelease();
     return result;
   }
 
-  public static ZoneActivationImpl createZoneActivation( Entity<?> zone ) {
-    return new ZoneActivationImpl( zone, mock( PathAdjacency.class ) );
+  public static ZoneImpl createZone( Entity<?> zoneEntity ) {
+    return new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) );
   }
 }

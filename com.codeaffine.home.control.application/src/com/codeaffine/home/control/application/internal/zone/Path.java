@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
+import static com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toSet;
 
@@ -13,12 +13,12 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 class Path {
 
-  private final List<ZoneActivation> activations;
+  private final List<Zone> activations;
 
   private Supplier<LocalDateTime> timeSupplier;
 
@@ -35,29 +35,29 @@ class Path {
     return activations.size();
   }
 
-  void addOrReplace( ZoneActivation zoneActivation ) {
-    remove( findZoneActivation( zoneActivation.getZone() ) );
-    activations.add( zoneActivation );
+  void addOrReplace( Zone zone ) {
+    remove( findZoneActivation( zone.getZoneEntity() ) );
+    activations.add( zone );
   }
 
-  Collection<ZoneActivation> getAll() {
+  Collection<Zone> getAll() {
     return new LinkedList<>( activations );
   }
 
-  Set<ZoneActivation> find( Predicate<? super ZoneActivation> predicate ) {
+  Set<Zone> find( Predicate<? super Zone> predicate ) {
     return activations.stream().filter( predicate ).collect( toSet() );
   }
 
-  Set<ZoneActivation> findZoneActivation( Entity<?> zone ) {
-    return find( activation -> activation.getZone().equals( zone ) );
+  Set<Zone> findZoneActivation( Entity<?> zoneEntity ) {
+    return find( zone -> zone.getZoneEntity().equals( zoneEntity ) );
   }
 
-  Set<ZoneActivation> findInPathReleases() {
-    return find( activation -> ( ( ZoneActivationImpl )activation ).getInPathReleaseMarkTime().isPresent() );
+  Set<Zone> findInPathReleases() {
+    return find( zone -> ( ( ZoneImpl )zone ).getInPathReleaseMarkTime().isPresent() );
   }
 
-  boolean remove( Set<ZoneActivation> zoneActivations ) {
-    return activations.removeAll( zoneActivations );
+  boolean remove( Set<Zone> zones ) {
+    return activations.removeAll( zones );
   }
 
   boolean isExpired() {
@@ -68,21 +68,21 @@ class Path {
   }
 
   Optional<LocalDateTime> getLatestReleaseTime() {
-    return find( activation -> activation.getReleaseTime().isPresent() )
+    return find( zone -> zone.getReleaseTime().isPresent() )
       .stream()
-      .reduce( ( activation1, activation2 ) -> getLatestReleasedActivation( activation1, activation2 ) )
-      .map( activation -> activation.getReleaseTime().get() );
+      .reduce( ( zone1, zone2 ) -> getLatestReleasedActivation( zone1, zone2 ) )
+      .map( zone -> zone.getReleaseTime().get() );
   }
 
   void setTimeSupplier( Supplier<LocalDateTime> timeSupplier ) {
     this.timeSupplier = timeSupplier;
   }
 
-  private static ZoneActivation getLatestReleasedActivation( ZoneActivation activation1, ZoneActivation activation2 ) {
-    if( activation1.getReleaseTime().get().isBefore( activation2.getReleaseTime().get() ) ) {
-      return activation2;
+  private static Zone getLatestReleasedActivation( Zone zone1, Zone zone2 ) {
+    if( zone1.getReleaseTime().get().isBefore( zone2.getReleaseTime().get() ) ) {
+      return zone2;
     }
-    return activation1;
+    return zone1;
   }
 
   @Override

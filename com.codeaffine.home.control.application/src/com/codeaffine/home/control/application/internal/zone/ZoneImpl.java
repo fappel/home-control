@@ -6,10 +6,10 @@ import static java.time.LocalDateTime.now;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
-public class ZoneActivationImpl implements ZoneActivation {
+public class ZoneImpl implements Zone {
 
   private final PathAdjacency adjacency;
   private final Entity<?> zone;
@@ -17,7 +17,7 @@ public class ZoneActivationImpl implements ZoneActivation {
   private LocalDateTime inPathReleaseMarkTime;
   private LocalDateTime releaseTime;
 
-  public ZoneActivationImpl( Entity<?> zone, PathAdjacency adjacency ) {
+  public ZoneImpl( Entity<?> zone, PathAdjacency adjacency ) {
     verifyNotNull( adjacency, "adjacency" );
     verifyNotNull( zone, "zone" );
 
@@ -26,7 +26,7 @@ public class ZoneActivationImpl implements ZoneActivation {
   }
 
   @Override
-  public Entity<?> getZone() {
+  public Entity<?> getZoneEntity() {
     return zone;
   }
 
@@ -69,7 +69,7 @@ public class ZoneActivationImpl implements ZoneActivation {
       return false;
     if( getClass() != obj.getClass() )
       return false;
-    ZoneActivationImpl other = ( ZoneActivationImpl )obj;
+    ZoneImpl other = ( ZoneImpl )obj;
     if( releaseTime == null ) {
       if( other.releaseTime != null )
         return false;

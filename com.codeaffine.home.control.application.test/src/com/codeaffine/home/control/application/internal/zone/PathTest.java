@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.application.internal.zone;
 
+import static com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
 import static com.codeaffine.home.control.application.internal.zone.TimeoutHelper.waitALittle;
-import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.PATH_EXPIRED_TIMEOUT;
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.test.util.lang.EqualsTester.newInstance;
 import static java.time.LocalDateTime.now;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.test.util.lang.EqualsTester;
@@ -37,7 +37,7 @@ public class PathTest {
 
   @Test
   public void isEmpty() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
 
     boolean actual = path.isEmpty();
 
@@ -46,7 +46,7 @@ public class PathTest {
 
   @Test
   public void size() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
 
     int actual = path.size();
 
@@ -55,124 +55,124 @@ public class PathTest {
 
   @Test
   public void addOrReplace() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    ZoneActivation expected = createZoneActivation( ZONE_1 );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    Zone expected = createZone( ZONE_1 );
 
     path.addOrReplace( expected );
-    Collection<ZoneActivation> actual = path.getAll();
+    Collection<Zone> actual = path.getAll();
 
     assertThat( actual )
       .hasSize( 1 )
-      .allMatch( activation -> activation == expected );
+      .allMatch( zone -> zone == expected );
   }
 
   @Test
   public void getAll() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.getAll();
+    Collection<Zone> actual = path.getAll();
 
     assertThat( actual )
       .hasSize( 2 )
-      .contains( createZoneActivation( ZONE_1 ), createZoneActivation( ZONE_2 ) );
+      .contains( createZone( ZONE_1 ), createZone( ZONE_2 ) );
   }
 
   @Test
   public void find() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.find( activation -> activation.getZone() == ZONE_1 );
+    Collection<Zone> actual = path.find( zone -> zone.getZoneEntity() == ZONE_1 );
 
     assertThat( actual )
     .hasSize( 1 )
-    .contains( createZoneActivation( ZONE_1 ) );
+    .contains( createZone( ZONE_1 ) );
   }
 
   @Test
   public void findWithNonMatchingPredicate() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.find( activation -> activation.getZone() == ZONE_3 );
+    Collection<Zone> actual = path.find( zone -> zone.getZoneEntity() == ZONE_3 );
 
     assertThat( actual ).isEmpty();
   }
 
   @Test
   public void findZoneActivation() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.findZoneActivation( ZONE_1 );
+    Collection<Zone> actual = path.findZoneActivation( ZONE_1 );
 
     assertThat( actual )
       .hasSize( 1 )
-      .contains( createZoneActivation( ZONE_1 ) );
+      .contains( createZone( ZONE_1 ) );
   }
 
   @Test
   public void findZoneActivationIfNotContained() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.findZoneActivation( ZONE_3 );
+    Collection<Zone> actual = path.findZoneActivation( ZONE_3 );
 
     assertThat( actual ).isEmpty();
   }
 
   @Test
   public void findInPathRelease() {
-    path.addOrReplace( createInPathReleasedZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createInPathReleasedZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.findInPathReleases();
+    Collection<Zone> actual = path.findInPathReleases();
 
     assertThat( actual )
       .hasSize( 1 )
-      .contains( createZoneActivation( ZONE_1 ) );
+      .contains( createZone( ZONE_1 ) );
   }
 
   @Test
   public void findInPathReleaseIfNonExists() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    Collection<ZoneActivation> actual = path.findInPathReleases();
+    Collection<Zone> actual = path.findInPathReleases();
 
     assertThat( actual ).isEmpty();
   }
 
   @Test
   public void remove() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    boolean actual = path.remove( asSet( createZoneActivation( ZONE_1 ) ) );
+    boolean actual = path.remove( asSet( createZone( ZONE_1 ) ) );
 
     assertThat( actual ).isTrue();
     assertThat( path.getAll() )
       .hasSize( 1 )
-      .contains( createZoneActivation( ZONE_2 ) );
+      .contains( createZone( ZONE_2 ) );
   }
 
   @Test
   public void removeOfNonMatching() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
 
-    boolean actual = path.remove( asSet( createZoneActivation( ZONE_3 ) ) );
+    boolean actual = path.remove( asSet( createZone( ZONE_3 ) ) );
 
     assertThat( actual ).isFalse();
     assertThat( path.getAll() )
       .hasSize( 2 )
-      .contains( createZoneActivation( ZONE_2 ), createZoneActivation( ZONE_1 ) );
+      .contains( createZone( ZONE_2 ), createZone( ZONE_1 ) );
   }
 
   @Test
   public void isExpired() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
     path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
 
     boolean actual = path.isExpired();
@@ -182,8 +182,8 @@ public class PathTest {
 
   @Test
   public void isExpiredIfMultipleReleaseZoneActivationsExist() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createReleasedZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_2 ) );
     path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
 
     boolean actual = path.isExpired();
@@ -193,8 +193,8 @@ public class PathTest {
 
   @Test
   public void isExpiredIfAdditionalZoneActivationsExist() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
-    path.addOrReplace( createZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_2 ) );
     path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
 
     boolean actual = path.isExpired();
@@ -204,7 +204,7 @@ public class PathTest {
 
   @Test
   public void isExpiredIfReleasedZoneActivationIsNotExpired() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
     path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT - 1 ) );
 
     boolean actual = path.isExpired();
@@ -214,7 +214,7 @@ public class PathTest {
 
   @Test
   public void isExpiredIfZoneActivationIsNotReleased() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
     path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
 
     boolean actual = path.isExpired();
@@ -224,9 +224,9 @@ public class PathTest {
 
   @Test
   public void getLatestReleaseTime() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
     waitALittle();
-    path.addOrReplace( createReleasedZoneActivation( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_2 ) );
 
     Optional<LocalDateTime> latestReleaseTime = path.getLatestReleaseTime();
 
@@ -237,11 +237,11 @@ public class PathTest {
 
   @Test
   public void getLatestReleaseTimeOnReverseAddition() {
-    ZoneActivation activation1 = createReleasedZoneActivation( ZONE_1 );
+    Zone zone1 = createReleasedZone( ZONE_1 );
     waitALittle();
-    ZoneActivation activation2 = createReleasedZoneActivation( ZONE_2 );
-    path.addOrReplace( activation2 );
-    path.addOrReplace( activation1 );
+    Zone zone2 = createReleasedZone( ZONE_2 );
+    path.addOrReplace( zone2 );
+    path.addOrReplace( zone1 );
 
     Optional<LocalDateTime> latestReleaseTime = path.getLatestReleaseTime();
 
@@ -252,8 +252,8 @@ public class PathTest {
 
   @Test
   public void getLatestReleaseTimeIfTimestampIsEqual() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_2 ) );
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_2 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
 
     Optional<LocalDateTime> latestReleaseTime = path.getLatestReleaseTime();
 
@@ -262,7 +262,7 @@ public class PathTest {
 
   @Test
   public void getLatestReleaseTimeOfSingleElementPath() {
-    path.addOrReplace( createReleasedZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createReleasedZone( ZONE_1 ) );
 
     Optional<LocalDateTime> latestReleaseTime = path.getLatestReleaseTime();
 
@@ -273,7 +273,7 @@ public class PathTest {
 
   @Test
   public void getLatestReleaseTimeOfPathWithoutReleasedActivations() {
-    path.addOrReplace( createZoneActivation( ZONE_1 ) );
+    path.addOrReplace( createZone( ZONE_1 ) );
 
     Optional<LocalDateTime> latestReleaseTime = path.getLatestReleaseTime();
 
@@ -292,20 +292,20 @@ public class PathTest {
     EqualsTester<Path> tester = newInstance( path );
     tester.assertImplementsEqualsAndHashCode();
     tester.assertEqual( new Path(), new Path() );
-    tester.assertEqual( createPath( createZoneActivation( ZONE_1 ) ), createPath( createZoneActivation( ZONE_1 ) ) );
-    ZoneActivation releasedZoneActivation = createReleasedZoneActivation( ZONE_1 );
-    tester.assertEqual( createPath( releasedZoneActivation ), createPath( releasedZoneActivation ) );
-    tester.assertEqual( createPath( createInPathReleasedZoneActivation( ZONE_1 ) ),
-                        createPath( createZoneActivation( ZONE_1 ) ) );
-    tester.assertNotEqual( createPath( createZoneActivation( ZONE_1 ) ),
-                           createPath( createZoneActivation( ZONE_2 ) ) );
-    tester.assertNotEqual( createPath( createReleasedZoneActivation( ZONE_1 ) ),
-                           createPath( createZoneActivation( ZONE_1 ) ) );
+    tester.assertEqual( createPath( createZone( ZONE_1 ) ), createPath( createZone( ZONE_1 ) ) );
+    Zone releasedZone = createReleasedZone( ZONE_1 );
+    tester.assertEqual( createPath( releasedZone ), createPath( releasedZone ) );
+    tester.assertEqual( createPath( createInPathReleasedZone( ZONE_1 ) ),
+                        createPath( createZone( ZONE_1 ) ) );
+    tester.assertNotEqual( createPath( createZone( ZONE_1 ) ),
+                           createPath( createZone( ZONE_2 ) ) );
+    tester.assertNotEqual( createPath( createReleasedZone( ZONE_1 ) ),
+                           createPath( createZone( ZONE_1 ) ) );
   }
 
-  private static Path createPath( ZoneActivation activation ) {
+  private static Path createPath( Zone zone ) {
     Path result = new Path();
-    result.addOrReplace( activation );
+    result.addOrReplace( zone );
     return result;
   }
 

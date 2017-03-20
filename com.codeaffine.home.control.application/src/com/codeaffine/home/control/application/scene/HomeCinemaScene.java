@@ -1,21 +1,20 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static java.util.stream.Collectors.toSet;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.LIVING_AREA;
 
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.status.Scene;
 
 public class HomeCinemaScene implements Scene {
 
-  private final ZoneActivationProvider zoneActivationProvider;
   private final LampSwitchOperation lampSwitchOperation;
+  private final ActivationProvider activationProvider;
 
-  public HomeCinemaScene( LampSwitchOperation lampSwitchOperation, ZoneActivationProvider zoneActivationProvider ) {
-    this.zoneActivationProvider = zoneActivationProvider;
+  public HomeCinemaScene( LampSwitchOperation lampSwitchOperation, ActivationProvider activationProvider ) {
     this.lampSwitchOperation = lampSwitchOperation;
+    this.activationProvider = activationProvider;
   }
 
   @Override
@@ -32,12 +31,6 @@ public class HomeCinemaScene implements Scene {
   }
 
   private boolean isLivingAreaActive() {
-    return !zoneActivationProvider
-      .getStatus()
-      .stream()
-      .map( activation -> activation.getZone() )
-      .filter( section -> section.getDefinition().equals( SectionDefinition.LIVING_AREA ) )
-      .collect( toSet() )
-      .isEmpty();
+    return activationProvider.getStatus().getZone( LIVING_AREA ).isPresent();
   }
 }

@@ -4,14 +4,13 @@ import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 
 import java.util.Map;
-import java.util.Set;
 
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.status.ZoneActivation;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector;
@@ -26,9 +25,9 @@ public class SceneConfiguration implements NamedSceneConfiguration {
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     sceneSelector
-      .whenStatusOf( GLOBAL, ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, HALL ) )
+      .whenStatusOf( GLOBAL, ActivationProvider.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
         .thenSelect( AwayScene.class )
-      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> singleZoneReleaseOn( zones, BED ) )
+      .otherwiseWhenStatusOf( ActivationProvider.class ).matches( activation -> singleZoneReleaseOn( activation, BED ) )
         .thenSelect( SleepScene.class )
       .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunZenitIsInTwilightZone( position ) )
         .thenSelect( TwilightScene.class )
@@ -39,15 +38,14 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     sceneSelector
       .whenStatusOf( HOTSPOT, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
         .thenSelect( NamedSceneProvider.class, status -> status.getSceneType() )
-      .otherwiseWhenStatusOf( ZoneActivationProvider.class ).matches( zones -> workAreaIsSolelyActive( zones ) )
+      .otherwiseWhenStatusOf( ActivationProvider.class ).matches( activation -> workAreaIsSolelyActive( activation ) )
         .thenSelect( WorkAreaScene.class )
       .otherwiseSelect( NamedSceneProvider.class, status -> status.getSceneType() );
   }
 
-  private static boolean singleZoneReleaseOn( Set<ZoneActivation> zones, EntityDefinition<?> zoneDefinition ) {
-    return zones.size() == 1
-        && zones.iterator().next().getZone().getDefinition() == zoneDefinition
-        && zones.iterator().next().getReleaseTime().isPresent();
+  private static boolean singleZoneReleaseOn( Activation activation, EntityDefinition<?> zoneDefinition ) {
+    return    activation.getAllZones().size() == 1
+           && activation.getZone( zoneDefinition ).filter( zone -> zone.getReleaseTime().isPresent() ).isPresent();
   }
 
   private static boolean sunIsAboveHorizon( SunPosition position ) {
@@ -58,7 +56,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     return -18 <= position.getZenit() && position.getZenit() <= 0;
   }
 
-  private static boolean workAreaIsSolelyActive( Set<ZoneActivation> zones ) {
-    return zones.size() == 1 && zones.iterator().next().getZone().getDefinition() == WORK_AREA;
+  private static boolean workAreaIsSolelyActive( Activation activation ) {
+    return activation.getAllZones().size() == 1 && activation.getZone( WORK_AREA ).isPresent();
   }
 }

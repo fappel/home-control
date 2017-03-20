@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
@@ -65,7 +65,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentTo() {
-    Set<ZoneActivation> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_2, inPathReleases );
 
@@ -74,7 +74,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToOnContainment() {
-    Set<ZoneActivation> inPathReleases = asSet( createActivation( ZONE_1 ), createActivation( ZONE_2 ) );
+    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ), createActivation( ZONE_2 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_2, inPathReleases );
 
@@ -83,7 +83,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToWithNonAdjacentZone() {
-    Set<ZoneActivation> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_3, inPathReleases );
 
@@ -92,7 +92,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToOnSelfReflection() {
-    Set<ZoneActivation> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_1, inPathReleases );
 
@@ -259,17 +259,17 @@ public class PathAdjacencyTest {
     assertThat( actual ).isTrue();
   }
 
-  private ZoneActivationImpl createReleasedActivation( Entity<EntityDefinition<?>> zone ) {
-    ZoneActivationImpl result = createActivation( zone );
+  private ZoneImpl createReleasedActivation( Entity<EntityDefinition<?>> zone ) {
+    ZoneImpl result = createActivation( zone );
     result.markAsReleased();
     return result;
   }
 
-  private ZoneActivationImpl createActivation( Entity<EntityDefinition<?>> zone ) {
-    return new ZoneActivationImpl( zone, pathAdjacency );
+  private ZoneImpl createActivation( Entity<EntityDefinition<?>> zone ) {
+    return new ZoneImpl( zone, pathAdjacency );
   }
 
-  private Path addOrReplaceInNewPath( ZoneActivationImpl ... activations ) {
+  private Path addOrReplaceInNewPath( ZoneImpl ... activations ) {
     Path result = new Path();
     Stream.of( activations ).forEach( activation  -> result.addOrReplace( activation ) );
     paths.add( result );

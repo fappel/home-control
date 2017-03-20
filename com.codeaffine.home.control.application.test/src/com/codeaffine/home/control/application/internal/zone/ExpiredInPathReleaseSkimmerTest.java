@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.zone;
 
-import static com.codeaffine.home.control.application.internal.zone.ZoneActivationProviderImpl.IN_PATH_RELEASES_EXPIRATION_TIME;
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
+import static com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl.IN_PATH_RELEASES_EXPIRATION_TIME;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.status.ZoneActivation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 public class ExpiredInPathReleaseSkimmerTest {
@@ -33,8 +33,8 @@ public class ExpiredInPathReleaseSkimmerTest {
 
   @Test
   public void execute() {
-    addOrReplaceInNewPath( createZoneActivation( ZONE_1 ), createInPathReleasedZoneActivation( ZONE_2 ) );
-    addOrReplaceInNewPath( createInPathReleasedZoneActivation( ZONE_3 ) );
+    addOrReplaceInNewPath( createZone( ZONE_1 ), createInPathReleasedZone( ZONE_2 ) );
+    addOrReplaceInNewPath( createInPathReleasedZone( ZONE_3 ) );
     skimmer.setTimeSupplier( () -> now().plusSeconds( IN_PATH_RELEASES_EXPIRATION_TIME + 1 ) );
     Consumer<Entity<?>> rebuilder = newRebuilderSpy();
 
@@ -46,8 +46,8 @@ public class ExpiredInPathReleaseSkimmerTest {
 
   @Test
   public void executeWithoutExpiredInPathRelease() {
-    addOrReplaceInNewPath( createZoneActivation( ZONE_1 ), createInPathReleasedZoneActivation( ZONE_2 ) );
-    addOrReplaceInNewPath( createInPathReleasedZoneActivation( ZONE_3 ) );
+    addOrReplaceInNewPath( createZone( ZONE_1 ), createInPathReleasedZone( ZONE_2 ) );
+    addOrReplaceInNewPath( createInPathReleasedZone( ZONE_3 ) );
     skimmer.setTimeSupplier( () -> now() );
     Consumer<Entity<?>> rebuilder = newRebuilderSpy();
 
@@ -69,9 +69,9 @@ public class ExpiredInPathReleaseSkimmerTest {
     return mock( Consumer.class );
   }
 
-  private Path addOrReplaceInNewPath( ZoneActivation ... activations ) {
+  private Path addOrReplaceInNewPath( Zone ... zonesa ) {
     Path result = new Path();
-    Stream.of( activations ).forEach( activation  -> result.addOrReplace( activation ) );
+    Stream.of( zonesa ).forEach( zone  -> result.addOrReplace( zone ) );
     paths.add( result );
     return result;
   }

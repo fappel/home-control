@@ -20,9 +20,9 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
-import com.codeaffine.home.control.application.status.ZoneActivation;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -35,8 +35,8 @@ public class LampSwitchOperation implements HomeControlOperation {
   static final TimeUnit LAMP_DELAY_TIMEUNIT = SECONDS;
   static final long LAMP_DELAY_TIME = 2L;
 
-  private final ZoneActivationProvider zoneActivationProvider;
-  private final Map<Lamp, Set<ZoneActivation>> delayStatus;
+  private final ActivationProvider zoneActivationProvider;
+  private final Map<Lamp, Activation> delayStatus;
   private final EntityRegistry entityRegistry;
   private final FollowUpTimer followUpTimer;
   private final Set<Lamp> lampsToSwitchOff;
@@ -52,7 +52,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   LampSwitchOperation(
-    EntityRegistry entityRegistry, ZoneActivationProvider zoneActivationProvider, FollowUpTimer followUpTimer )
+    EntityRegistry entityRegistry, ActivationProvider zoneActivationProvider, FollowUpTimer followUpTimer )
   {
     verifyNotNull( zoneActivationProvider, "zoneActivationProvider" );
     verifyNotNull( entityRegistry, "entityRegistration" );
@@ -116,7 +116,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
-    if( isRelated( event, NamedSceneProvider.class, ZoneActivationProvider.class ) ) {
+    if( isRelated( event, NamedSceneProvider.class, ActivationProvider.class ) ) {
       execute();
     }
   }
@@ -129,14 +129,14 @@ public class LampSwitchOperation implements HomeControlOperation {
     off.forEach( lamp -> lamp.setOnOffStatus( OFF ) );
   }
 
-  private Set<Lamp> collectLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
+  private Set<Lamp> collectLampsToSwitchOn( ActivationProvider zoneActivation ) {
     Set<Lamp> strategyRelatedLampsToSwitchOn = collectStrategyRelatedLampsToSwitchOn( zoneActivation );
     strategyRelatedLampsToSwitchOn.addAll( lampsToSwitchOn );
     strategyRelatedLampsToSwitchOn.removeAll( lampsToSwitchOff );
     return filterDelayed( strategyRelatedLampsToSwitchOn, zoneActivation.getStatus() );
   }
 
-  private Set<Lamp> collectStrategyRelatedLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
+  private Set<Lamp> collectStrategyRelatedLampsToSwitchOn( ActivationProvider zoneActivation ) {
     Collection<Lamp> on = null;
     switch( lampSelectionStrategy ) {
       case ZONE_ACTIVATION:
@@ -154,13 +154,8 @@ public class LampSwitchOperation implements HomeControlOperation {
     return new HashSet<>( on );
   }
 
-  private Set<Lamp> collectZoneLampsToSwitchOn( ZoneActivationProvider zoneActivation ) {
-    return zoneActivation
-      .getStatus()
-      .stream()
-      .flatMap( activation -> collectZoneLamps( activation.getZone() ).stream() )
-      .filter( filter )
-      .collect( toSet() );
+  private Set<Lamp> collectZoneLampsToSwitchOn( ActivationProvider zoneActivation ) {
+    return collectAffectedLamps( zoneActivation.getStatus() ).stream().filter( filter ).collect( toSet() );
   }
 
   private Set<Lamp> collectAllZoneLampsToSwitchOn() {
@@ -170,19 +165,19 @@ public class LampSwitchOperation implements HomeControlOperation {
         .collect( toSet() );
   }
 
-  private Set<Lamp> filterDelayed( Set<Lamp> lampsToSwitchOn, Set<ZoneActivation> activations ) {
+  private Set<Lamp> filterDelayed( Set<Lamp> lampsToSwitchOn, Activation activation ) {
     Set<Lamp> result = lampsToSwitchOn;
     if( lampSelectionStrategy == ZONE_ACTIVATION ) {
-      result = doFilterDelayed( lampsToSwitchOn, activations );
+      result = doFilterDelayed( lampsToSwitchOn, activation );
     }
     return result;
   }
 
-  private Set<Lamp> doFilterDelayed( Set<Lamp> lampsToSwitchOn, Set<ZoneActivation> activations ) {
-    adjustScheduledAndDelayedStatus( activations );
-    Set<Lamp> result = filter( lampsToSwitchOn, activations );
+  private Set<Lamp> doFilterDelayed( Set<Lamp> lampsToSwitchOn, Activation activation ) {
+    adjustScheduledAndDelayedStatus( activation );
+    Set<Lamp> result = filter( lampsToSwitchOn, activation );
     if( needDelayedActivationTimer( lampsToSwitchOn, result ) )  {
-      scheduleDelayedActivationTimer( lampsToSwitchOn, activations );
+      scheduleDelayedActivationTimer( lampsToSwitchOn, activation );
     }
     return result;
   }
@@ -191,32 +186,33 @@ public class LampSwitchOperation implements HomeControlOperation {
     return !result.equals( lampsToSwitchOn ) && scheduled.isEmpty();
   }
 
-  private void scheduleDelayedActivationTimer( Set<Lamp> lampsToSwitchOn, Set<ZoneActivation> activations ) {
-    Map<Lamp, Set<ZoneActivation>> delayStatus = computeDelayStatus( lampsToSwitchOn, activations );
+  private void scheduleDelayedActivationTimer( Set<Lamp> lampsToSwitchOn, Activation activation ) {
+    Map<Lamp, Activation> delayStatus = computeDelayStatus( lampsToSwitchOn, activation );
     delayStatus.keySet().forEach( lamp -> scheduled.add( lamp ) );
     followUpTimer.schedule( LAMP_DELAY_TIME, LAMP_DELAY_TIMEUNIT, () -> setDelayStatus( delayStatus ) );
   }
 
-  private Set<Lamp> filter( Set<Lamp> lampsToSwitchOn, Set<ZoneActivation> activations ) {
-    return lampsToSwitchOn.stream().filter( lamp -> canSwitchOn( activations, lamp ) ).collect( toSet() );
+  private Set<Lamp> filter( Set<Lamp> lampsToSwitchOn, Activation activation ) {
+    return lampsToSwitchOn.stream().filter( lamp -> canSwitchOn( activation, lamp ) ).collect( toSet() );
   }
 
-  private boolean canSwitchOn( Set<ZoneActivation> activations, Lamp lamp ) {
+  private boolean canSwitchOn( Activation activation, Lamp lamp ) {
     if( delayStatus.containsKey( lamp ) ) {
-      return delayStatus.get( lamp ).equals( activations ) || lamp.getOnOffStatus() == ON;
+      return delayStatus.get( lamp ).equals( activation ) || lamp.getOnOffStatus() == ON;
     }
     return !delayed.contains( lamp ) || lamp.getOnOffStatus() == ON;
   }
 
-  private void setDelayStatus( Map<Lamp, Set<ZoneActivation>> delayStatus ) {
+  private void setDelayStatus( Map<Lamp, Activation> delayStatus ) {
     this.delayStatus.clear();
     delayStatus.forEach( ( key, value ) -> this.delayStatus.put( key, value ) );
   }
 
-  private static Set<Lamp> collectAffectedLamps( Set<ZoneActivation> activations ) {
-    return activations
+  private static Set<Lamp> collectAffectedLamps( Activation activation ) {
+    return activation
+      .getAllZones()
       .stream()
-      .flatMap( activation -> collectZoneLamps( activation.getZone() ).stream() )
+      .flatMap( zone -> collectZoneLamps( zone.getZoneEntity() ).stream() )
       .collect( toSet() );
   }
 
@@ -236,17 +232,15 @@ public class LampSwitchOperation implements HomeControlOperation {
       .collect( toSet() );
   }
 
-  private Map<Lamp, Set<ZoneActivation>> computeDelayStatus(
-    Set<Lamp> lampsToSwitchOn, Set<ZoneActivation> activations )
-  {
+  private Map<Lamp, Activation> computeDelayStatus( Set<Lamp> lampsToSwitchOn, Activation activation ) {
     return lampsToSwitchOn
       .stream()
       .filter( lamp -> delayed.contains( lamp ) )
-      .collect( toMap( lamp -> lamp, lamp -> activations ) );
+      .collect( toMap( lamp -> lamp, lamp -> activation ) );
   }
 
-  private void adjustScheduledAndDelayedStatus( Set<ZoneActivation> activations ) {
-    Set<Lamp> affectedLamps = collectAffectedLamps( activations );
+  private void adjustScheduledAndDelayedStatus( Activation activation ) {
+    Set<Lamp> affectedLamps = collectAffectedLamps( activation );
     if( allActivationZonesHaveScheduledLamps( affectedLamps ) ) {
       scheduled.clear();
       delayed.clear();
@@ -254,7 +248,7 @@ public class LampSwitchOperation implements HomeControlOperation {
     if( !concernsTimerSchedule( affectedLamps ) ) {
       scheduled.clear();
     }
-    if( ignoreDelayOnSingleActivationIfAffected( activations, affectedLamps ) ) {
+    if( ignoreDelayOnSingleActivationIfAffected( activation, affectedLamps ) ) {
       delayed.clear();
     }
   }
@@ -271,8 +265,8 @@ public class LampSwitchOperation implements HomeControlOperation {
     return affectedLamps.stream().anyMatch( lamp -> scheduled.contains( lamp ) );
   }
 
-  private boolean ignoreDelayOnSingleActivationIfAffected( Set<ZoneActivation> activations, Set<Lamp> affected ) {
-    return activations.size() == 1 && belongToZonesWithDelayedLamps( affected );
+  private boolean ignoreDelayOnSingleActivationIfAffected( Activation activation, Set<Lamp> affected ) {
+    return activation.getAllZones().size() == 1 && belongToZonesWithDelayedLamps( affected );
   }
 
   private boolean belongToZonesWithDelayedLamps( Set<Lamp> affectedLamps ) {

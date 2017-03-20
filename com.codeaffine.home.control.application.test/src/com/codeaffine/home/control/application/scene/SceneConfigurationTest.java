@@ -2,25 +2,25 @@ package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
-import static com.codeaffine.home.control.application.test.ZoneActivationHelper.*;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
+import com.codeaffine.home.control.application.status.Activation;
+import com.codeaffine.home.control.application.status.Activation.Zone;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPosition;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.status.ZoneActivation;
-import com.codeaffine.home.control.application.status.ZoneActivationProvider;
 import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
@@ -30,20 +30,20 @@ import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class SceneConfigurationTest {
 
-  private ZoneActivationProvider zoneActivationProvider;
   private SunPositionProvider sunPositionProvider;
+  private ActivationProvider activationProvider;
   private SceneSelectorImpl sceneSelector;
   private TestContext context;
 
   @Before
   public void setUp() {
     sunPositionProvider = mock( SunPositionProvider.class );
-    zoneActivationProvider = mock( ZoneActivationProvider.class );
+    activationProvider = mock( ActivationProvider.class );
     context = new TestContext();
     context.set( SunPositionProvider.class, sunPositionProvider );
     context.set( Logger.class, mock( Logger.class ) );
     context.set( EventBus.class, mock( EventBus.class ) );
-    context.set( ZoneActivationProvider.class, zoneActivationProvider );
+    context.set( ActivationProvider.class, activationProvider );
     context.set( NamedSceneConfiguration.class, mock( NamedSceneConfiguration.class ) );
     context.set( NamedSceneProvider.class, context.create( NamedSceneProviderImpl.class ) );
     sceneSelector = new SceneSelectorImpl( context, mock( Logger.class ) );
@@ -52,7 +52,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithSunPositionHasZenitAboveHorizonAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( WORK_AREA ) ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -65,7 +65,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithSunPositionAfterSunsetOrBeforeSunriseAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( WORK_AREA ) ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( -0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -78,9 +78,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithSunPositionBeforeDawnOrAfterDuskAndArbitraryZoneActivation() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( WORK_AREA ) ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( WORK_AREA ) ) ) );
     stubSunPositionProvider( new SunPosition( -18.1, 4 ) );
-
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -92,7 +91,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsReleasedLeavingZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( HALL ), now() ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( HALL ), now() ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -105,7 +104,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsEngagedLeavingZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( HALL ) ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( HALL ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -118,9 +117,9 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnArbitraySunPositionAndMultipleZoneActivationsIncludingReleasedLeavingZone() {
-    ZoneActivation hallActivation = stubZoneActivation( stubSection( HALL ), now() );
-    ZoneActivation livingRoomActivation = stubZoneActivation( stubSection( WORK_AREA ) );
-    stubZoneActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
+    Zone hallActivation = stubZone( stubSection( HALL ), now() );
+    Zone livingRoomActivation = stubZone( stubSection( WORK_AREA ) );
+    stubActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -133,7 +132,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnAribrarySunPositionAndSingleZoneActivationWhichIsReleasedBedZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( BED ), now() ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( BED ), now() ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -146,7 +145,7 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnArbitrarySunPositionAndSingleZoneActivationWhichIsEngagedBedZone() {
-    stubZoneActivationProvider( asStatus( stubZoneActivation( stubSection( BED ) ) ) );
+    stubActivationProvider( asStatus( stubZone( stubSection( BED ) ) ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -159,9 +158,9 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectOnArbitraySunPositionAndMultipleZoneActivationsIncludingReleasedSleepingZone() {
-    ZoneActivation hallActivation = stubZoneActivation( stubSection( BED ), now() );
-    ZoneActivation livingRoomActivation = stubZoneActivation( stubSection( WORK_AREA ) );
-    stubZoneActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
+    Zone hallActivation = stubZone( stubSection( BED ), now() );
+    Zone livingRoomActivation = stubZone( stubSection( WORK_AREA ) );
+    stubActivationProvider( asStatus( hallActivation, livingRoomActivation ) );
     stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -176,7 +175,7 @@ public class SceneConfigurationTest {
     when( sunPositionProvider.getStatus() ).thenReturn( sunPosition );
   }
 
-  private void stubZoneActivationProvider( Set<ZoneActivation> zoneActivations ) {
-    when( zoneActivationProvider.getStatus() ).thenReturn( zoneActivations );
+  private void stubActivationProvider( Activation activation ) {
+    when( activationProvider.getStatus() ).thenReturn( activation );
   }
 }
