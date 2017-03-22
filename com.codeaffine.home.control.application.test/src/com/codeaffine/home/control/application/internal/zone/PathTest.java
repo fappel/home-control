@@ -31,26 +31,7 @@ public class PathTest {
 
   @Test
   public void initialValues() {
-    assertThat( path.isEmpty() ).isTrue();
-    assertThat( path.size() ).isEqualTo( 0 );
-  }
-
-  @Test
-  public void isEmpty() {
-    path.addOrReplace( createZone( ZONE_1 ) );
-
-    boolean actual = path.isEmpty();
-
-    assertThat( actual ).isFalse();
-  }
-
-  @Test
-  public void size() {
-    path.addOrReplace( createZone( ZONE_1 ) );
-
-    int actual = path.size();
-
-    assertThat( actual ).isEqualTo( 1 );
+    assertThat( path.getAll() ).isEmpty();
   }
 
   @Test

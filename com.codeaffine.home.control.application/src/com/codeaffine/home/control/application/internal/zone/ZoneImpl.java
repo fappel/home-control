@@ -2,37 +2,69 @@ package com.codeaffine.home.control.application.internal.zone;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.time.LocalDateTime.now;
+import static java.util.Arrays.asList;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.Sensor;
 
 public class ZoneImpl implements Zone {
 
+  private final LocalDateTime inPathReleaseMarkTime;
+  private final Set<Sensor> activationSensors;
+  private final LocalDateTime releaseTime;
   private final PathAdjacency adjacency;
-  private final Entity<?> zone;
+  private final Entity<?> zoneEntity;
 
-  private LocalDateTime inPathReleaseMarkTime;
-  private LocalDateTime releaseTime;
+  public ZoneImpl( Entity<?> zoneEntity, PathAdjacency adjacency, Sensor ... activationSensors ) {
+    this( zoneEntity, adjacency, null, null, activationSensors );
+  }
 
-  public ZoneImpl( Entity<?> zone, PathAdjacency adjacency ) {
+  private ZoneImpl( Entity<?> zoneEntity,
+                    PathAdjacency adjacency,
+                    LocalDateTime inPathReleaseMarkTime,
+                    LocalDateTime releaseTime,
+                    Sensor ... activationSensors ) {
+    verifyNotNull( activationSensors, "activationSensors" );
+    verifyNotNull( zoneEntity, "zoneEntity" );
     verifyNotNull( adjacency, "adjacency" );
-    verifyNotNull( zone, "zone" );
 
+    this.activationSensors = new HashSet<>( asList( activationSensors ) );
+    this.inPathReleaseMarkTime = inPathReleaseMarkTime;
+    this.releaseTime = releaseTime;
+    this.zoneEntity = zoneEntity;
     this.adjacency = adjacency;
-    this.zone = zone;
   }
 
   @Override
   public Entity<?> getZoneEntity() {
-    return zone;
+    return zoneEntity;
+  }
+
+  public Set<Sensor> getActivationSensors() {
+    return new HashSet<>( activationSensors );
+  }
+
+  public ZoneImpl addActivationSensor( Sensor sensor ) {
+    Set<Sensor> sensors = getActivationSensors();
+    sensors.add( sensor );
+    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
+  }
+
+  public ZoneImpl removeActivationSensor( Sensor sensor ) {
+    Set<Sensor> sensors = getActivationSensors();
+    sensors.remove( sensor );
+    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
   }
 
   @Override
   public boolean isAdjacentActivated() {
-    return adjacency.isAdjacentActivated( zone );
+    return adjacency.isAdjacentActivated( zoneEntity );
   }
 
   @Override
@@ -40,12 +72,12 @@ public class ZoneImpl implements Zone {
     return Optional.ofNullable( releaseTime );
   }
 
-  public void markAsReleased() {
-    releaseTime = now();
+  public ZoneImpl markAsReleased() {
+    return new ZoneImpl( zoneEntity, adjacency, inPathReleaseMarkTime, now(), asArray( activationSensors ) );
   }
 
-  public void markForInPathRelease() {
-    inPathReleaseMarkTime = now();
+  public ZoneImpl markForInPathRelease() {
+    return new ZoneImpl( zoneEntity, adjacency, now(), releaseTime, asArray( activationSensors ) );
   }
 
   public Optional<LocalDateTime> getInPathReleaseMarkTime() {
@@ -57,7 +89,7 @@ public class ZoneImpl implements Zone {
     final int prime = 31;
     int result = 1;
     result = prime * result + ( ( releaseTime == null ) ? 0 : releaseTime.hashCode() );
-    result = prime * result + zone.hashCode();
+    result = prime * result + zoneEntity.hashCode();
     return result;
   }
 
@@ -75,13 +107,17 @@ public class ZoneImpl implements Zone {
         return false;
     } else if( !releaseTime.equals( other.releaseTime ) )
       return false;
-    if( !zone.equals( other.zone ) )
+    if( !zoneEntity.equals( other.zoneEntity ) )
       return false;
     return true;
   }
 
   @Override
   public String toString() {
-    return "ZoneActivation [zone=" + zone + "]";
+    return "ZoneActivation [zone=" + zoneEntity + "]";
+  }
+
+  private static Sensor[] asArray( Set<Sensor> sensors ) {
+    return sensors.toArray( new Sensor[ sensors.size() ] );
   }
 }

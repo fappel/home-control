@@ -7,11 +7,13 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class ZoneImplTest {
@@ -35,14 +37,19 @@ public class ZoneImplTest {
     assertThat( zone.getReleaseTime() ).isEmpty();
     assertThat( zone.getInPathReleaseMarkTime() ).isEmpty();
     assertThat( zone.isAdjacentActivated() ).isFalse();
+    assertThat( zone.getActivationSensors() ).isEmpty();
   }
 
   @Test
   public void markAsReleased() {
-    zone.markAsReleased();
-    Optional<LocalDateTime> actual = zone.getReleaseTime();
+    ZoneImpl markedAsReleased = zone.markForInPathRelease().markAsReleased();
+    Optional<LocalDateTime> originalReleaseTime = zone.getReleaseTime();
+    Optional<LocalDateTime> actualReleaseTime = markedAsReleased.getReleaseTime();
+    Optional<LocalDateTime> actualInPathReleaseMarkTime = markedAsReleased.getInPathReleaseMarkTime();
 
-    assertThat( actual ).isNotEmpty();
+    assertThat( originalReleaseTime ).isEmpty();
+    assertThat( actualReleaseTime ).isNotEmpty();
+    assertThat( actualInPathReleaseMarkTime ).isNotEmpty();
   }
 
   @Test
@@ -56,10 +63,42 @@ public class ZoneImplTest {
 
   @Test
   public void markForInPathRelease() {
-    zone.markForInPathRelease();
-    Optional<LocalDateTime> actual = zone.getInPathReleaseMarkTime();
+    ZoneImpl markedForInPathRelease = zone.markAsReleased().markForInPathRelease();
+    Optional<LocalDateTime> originalInPathReleaseMarkTime = zone.getInPathReleaseMarkTime();
+    Optional<LocalDateTime> actualInPathReleaseMarkTime = markedForInPathRelease.getInPathReleaseMarkTime();
+    Optional<LocalDateTime> actualReleaseTime = markedForInPathRelease.getReleaseTime();
 
-    assertThat( actual ).isNotEmpty();
+    assertThat( originalInPathReleaseMarkTime ).isEmpty();
+    assertThat( actualInPathReleaseMarkTime ).isNotEmpty();
+    assertThat( actualReleaseTime ).isNotEmpty();
+  }
+
+  @Test
+  public void addActivitySensor() {
+    Sensor expected = mock( Sensor.class );
+
+    ZoneImpl actual = zone.markAsReleased().markForInPathRelease().addActivationSensor( expected );
+    Set<Sensor> newSensors = actual.getActivationSensors();
+    Set<Sensor> originalSensors = zone.getActivationSensors();
+
+    assertThat( originalSensors ).isEmpty();
+    assertThat( actual.getReleaseTime() ).isEmpty();
+    assertThat( actual.getInPathReleaseMarkTime() ).isEmpty();
+    assertThat( newSensors ).containsExactly( expected );
+  }
+
+  @Test
+  public void removeActivitySensor() {
+    Sensor sensor1 = mock( Sensor.class );
+    Sensor sensor2 = mock( Sensor.class );
+    ZoneImpl zoneWithSensors = zone.addActivationSensor( sensor1 ).addActivationSensor( sensor2 );
+
+    ZoneImpl actual = zoneWithSensors.markAsReleased().markForInPathRelease().removeActivationSensor( sensor1 );
+    Set<Sensor> newSensors = actual.getActivationSensors();
+
+    assertThat( actual.getReleaseTime() ).isEmpty();
+    assertThat( actual.getInPathReleaseMarkTime() ).isEmpty();
+    assertThat( newSensors ).containsExactly( sensor2 );
   }
 
   @Test
@@ -72,27 +111,24 @@ public class ZoneImplTest {
                              new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
 
     PathAdjacency localAdjacency = mock( PathAdjacency.class );
-    ZoneImpl localZone1 = new ZoneImpl( zoneEntity, localAdjacency );
-    localZone1.markForInPathRelease();
+    ZoneImpl localZone1 = new ZoneImpl( zoneEntity, localAdjacency ).markForInPathRelease();
     instance.assertEqual( localZone1, new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
 
     when( localAdjacency.isAdjacentActivated( zoneEntity ) ).thenReturn( true );
     instance.assertEqual( localZone1, new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
     instance.assertEqual( zone, localZone1, new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
 
-    ZoneImpl localZone2 = new ZoneImpl( zoneEntity, localAdjacency );
-    localZone1.markAsReleased();
-    localZone2.markAsReleased();
-    instance.assertEqual( localZone1, localZone2 );
-    instance.assertNotEqual( localZone1, new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
-    instance.assertNotEqual( new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ), localZone1 );
+    ZoneImpl markAsReleased1 = localZone1.markAsReleased();
+    ZoneImpl markAsReleased2 = new ZoneImpl( zoneEntity, localAdjacency ).markAsReleased();
+    instance.assertEqual( markAsReleased1, markAsReleased2 );
+    instance.assertNotEqual( markAsReleased1, new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ) );
+    instance.assertNotEqual( new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) ), markAsReleased1 );
+    instance.assertNotEqual( markAsReleased1, localZone1 );
 
-
-    ZoneImpl localZone3 = new ZoneImpl( zoneEntity, localAdjacency );
-    localZone3.markForInPathRelease();
+    ZoneImpl markedForInPathRelease = new ZoneImpl( zoneEntity, localAdjacency ).markForInPathRelease();
     waitALittle();
-    localZone3.markAsReleased();
-    instance.assertNotEqual( localZone1, localZone3 );
+    ZoneImpl markedAsReleased = markedForInPathRelease.markAsReleased();
+    instance.assertNotEqual( markedAsReleased, new ZoneImpl( zoneEntity, localAdjacency ) );
   }
 
   @Test

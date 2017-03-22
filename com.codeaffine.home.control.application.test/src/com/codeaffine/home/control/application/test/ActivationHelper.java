@@ -14,6 +14,7 @@ import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 
 public class ActivationHelper {
 
@@ -42,19 +43,15 @@ public class ActivationHelper {
     return result;
   }
 
-  public static Zone createReleasedZone( Entity<?> zoneEntity ) {
-    ZoneImpl result = createZone( zoneEntity );
-    result.markAsReleased();
-    return result;
+  public static Zone createReleasedZone( Entity<?> zoneEntity, Sensor ... sensors ) {
+    return createZone( zoneEntity, sensors ).markAsReleased();
   }
 
-  public static Zone createInPathReleasedZone( Entity<?> zoneEntity ) {
-    ZoneImpl result = createZone( zoneEntity );
-    result.markForInPathRelease();
-    return result;
+  public static Zone createInPathReleasedZone( Entity<?> zoneEntity, Sensor ... sensors ) {
+    return createZone( zoneEntity, sensors ).markForInPathRelease();
   }
 
-  public static ZoneImpl createZone( Entity<?> zoneEntity ) {
-    return new ZoneImpl( zoneEntity, mock( PathAdjacency.class ) );
+  public static ZoneImpl createZone( Entity<?> zoneEntity, Sensor ... sensors ) {
+    return new ZoneImpl( zoneEntity, mock( PathAdjacency.class ), sensors );
   }
 }

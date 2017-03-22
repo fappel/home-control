@@ -47,7 +47,7 @@ public class PathAdjacency {
   }
 
   private static boolean isNewPathOrZoneMatchesSingleElementPath( Entity<?> zoneEntity, Path path ) {
-    return path.isEmpty() || path.size() == 1 && !path.findZoneActivation( zoneEntity ).isEmpty();
+    return path.getAll().isEmpty() || path.getAll().size() == 1 && !path.findZoneActivation( zoneEntity ).isEmpty();
   }
 
   private boolean isNonReleasedAdjacentOrActual( Entity<?> zoneEntity, Zone zone ) {

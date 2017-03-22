@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.application.status.Activation.Zone;
-import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 class ExpiredInPathReleaseSkimmer {
 
@@ -26,7 +25,7 @@ class ExpiredInPathReleaseSkimmer {
     this.timeSupplier = timeSupplier;
   }
 
-  void execute( Consumer<Entity<?>> rebuilder ) {
+  void execute( Consumer<Zone> rebuilder ) {
     Set<Zone> expiredInPathReleases = collectExpiredInPathReleases();
     if( !expiredInPathReleases.isEmpty() ) {
       paths.stream().forEach( path -> path.remove( expiredInPathReleases ) );
@@ -52,10 +51,9 @@ class ExpiredInPathReleaseSkimmer {
     return inPathReleaseMark.plusSeconds( IN_PATH_RELEASES_EXPIRATION_TIME ).isBefore( timeSupplier.get() );
   }
 
-  private static void populate( Consumer<Entity<?>> rebuilder, Path path ) {
+  private static void populate( Consumer<Zone> rebuilder, Path path ) {
     path.getAll()
       .stream()
-      .map( zone -> zone.getZoneEntity() )
       .collect( toSet() )
       .forEach( rebuilder );
   }

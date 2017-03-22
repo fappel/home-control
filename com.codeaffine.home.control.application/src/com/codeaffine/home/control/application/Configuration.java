@@ -12,8 +12,8 @@ import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
 import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
-import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl;
+import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
@@ -21,11 +21,11 @@ import com.codeaffine.home.control.application.operation.AdjustColorTemperatureO
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 import com.codeaffine.home.control.status.ControlCenter;
@@ -89,5 +89,10 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     new SceneConfiguration().configureSceneSelection( sceneSelector );
+  }
+
+  @Override
+  public void configureSystem( Context context ) {
+    context.set( ComputerIdleTime.class, context.create( ComputerIdleTime.class ) );
   }
 }

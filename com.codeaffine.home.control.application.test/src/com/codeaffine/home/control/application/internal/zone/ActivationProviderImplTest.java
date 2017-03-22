@@ -27,6 +27,7 @@ import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
@@ -37,9 +38,11 @@ public class ActivationProviderImplTest {
   private AdjacencyDefinition adjacency;
   private EventBus eventBus;
   private Logger logger;
+  private Sensor sensor;
 
   @Before
   public void setUp() {
+    sensor = stubSensor( "sensor" );
     adjacency = new AdjacencyDefinition( asSet( ZONE_DEFINITION_1, ZONE_DEFINITION_2, ZONE_DEFINITION_3 ) );
     adjacency.link( ZONE_DEFINITION_1, ZONE_DEFINITION_2 ).link( ZONE_DEFINITION_2, ZONE_DEFINITION_3 );
     eventBus = mock( EventBus.class );
@@ -52,7 +55,7 @@ public class ActivationProviderImplTest {
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
 
     verifyEventBusNotification();
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1 ]" ) );
+    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
   }
 
   @Test
@@ -73,7 +76,7 @@ public class ActivationProviderImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> zone.isAdjacentActivated() );
-    verify( logger ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), eq( "[ Zone1, Zone2 ]" ) );
+    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
   }
 
   @Test
@@ -253,6 +256,94 @@ public class ActivationProviderImplTest {
   }
 
   @Test
+  public void getStatusAfterEngagingTheSameZoneMoreThanOnce() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
+    assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
+    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
+  }
+
+  @Test
+  public void getStatusAfterReleasingSameZoneMoreThanOnce() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_2 ) );
+    assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
+    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone2 ]" );
+  }
+
+  @Test
+  public void getStatusAfterSingleReleaseOfMultiSensorEngagment() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    provider.engagedZonesChanged( newEvent( stubSensor( "secondSensor" ), ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+    assertThat( actual.getAllZones() ).allMatch( zone -> zone.isAdjacentActivated() );
+    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
+  }
+
+  @Test
+  public void getStatusAfterMultiSensorEngagementInCaseOfMultiplePaths() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_3 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_3 ) );
+
+    reset( logger );
+    provider.engagedZonesChanged( newEvent( stubSensor( "otherSensor" ), ON, ZONE_3 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
+    assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
+    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
+      .allMatch( info -> !info.contains( "," ) )
+      .allMatch( info -> !info.contains( RELEASED_TAG ) )
+      .allMatch( info -> info.contains( "Zone1" ) || info.contains( "Zone3" ) )
+      .hasSize( 2 );
+  }
+
+  @Test
+  public void getStatusAfterCompleteReleaseOfMultiSensorEngagment() {
+    Sensor secondSensor = stubSensor( "secondSensor" );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    provider.engagedZonesChanged( newEvent( secondSensor, ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( secondSensor, OFF, ZONE_1 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_2 ) );
+  }
+
+  @Test
+  public void getStatusAfterReleaseOfZoneThatIsNotEngaged() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( OFF, ZONE_2 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
+  }
+
+  @Test
+  public void getStatusAfterReleaseOfZoneThatIsEngagedByNonRelatedSensor() {
+    provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
+    provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
+    provider.engagedZonesChanged( newEvent( stubSensor( "otherSensor" ), OFF, ZONE_2 ) );
+    Activation actual = provider.getStatus();
+
+    assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
+  }
+
+  @Test
   public void releaseTimeoutsOfInPathReleases() {
     provider.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
     provider.engagedZonesChanged( newEvent( ON, ZONE_2 ) );
@@ -381,8 +472,15 @@ public class ActivationProviderImplTest {
   }
 
   @SafeVarargs
-  private static MotionSensorEvent newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
-    return new MotionSensorEvent( stubSensor( "sensor" ), sensorStatus, affected );
+  private final MotionSensorEvent newEvent( OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected ) {
+    return newEvent( sensor, sensorStatus, affected );
+  }
+
+  @SafeVarargs
+  private static MotionSensorEvent newEvent(
+    Sensor sensor, OnOff sensorStatus, Entity<EntityDefinition<?>> ... affected )
+  {
+    return new MotionSensorEvent( sensor, sensorStatus, affected );
   }
 
   private static Set<Entity<?>> toZoneEntitySet( Activation activation ) {

@@ -260,9 +260,7 @@ public class PathAdjacencyTest {
   }
 
   private ZoneImpl createReleasedActivation( Entity<EntityDefinition<?>> zone ) {
-    ZoneImpl result = createActivation( zone );
-    result.markAsReleased();
-    return result;
+    return createActivation( zone ).markAsReleased();
   }
 
   private ZoneImpl createActivation( Entity<EntityDefinition<?>> zone ) {

@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.application.status.Activation.Zone;
-import com.codeaffine.home.control.entity.EntityProvider.Entity;
 
 public class ExpiredInPathReleaseSkimmerTest {
 
@@ -33,14 +32,15 @@ public class ExpiredInPathReleaseSkimmerTest {
 
   @Test
   public void execute() {
-    addOrReplaceInNewPath( createZone( ZONE_1 ), createInPathReleasedZone( ZONE_2 ) );
+    ZoneImpl expected = createZone( ZONE_1 );
+    addOrReplaceInNewPath( expected, createInPathReleasedZone( ZONE_2 ) );
     addOrReplaceInNewPath( createInPathReleasedZone( ZONE_3 ) );
     skimmer.setTimeSupplier( () -> now().plusSeconds( IN_PATH_RELEASES_EXPIRATION_TIME + 1 ) );
-    Consumer<Entity<?>> rebuilder = newRebuilderSpy();
+    Consumer<Zone> rebuilder = newRebuilderSpy();
 
     skimmer.execute( rebuilder );
 
-    assertThat( captureZoneForRepopulation( rebuilder ) ).isSameAs( ZONE_1 );
+    assertThat( captureZoneForRepopulation( rebuilder ) ).isSameAs( expected );
     assertThat( paths.isEmpty() );
   }
 
@@ -49,23 +49,22 @@ public class ExpiredInPathReleaseSkimmerTest {
     addOrReplaceInNewPath( createZone( ZONE_1 ), createInPathReleasedZone( ZONE_2 ) );
     addOrReplaceInNewPath( createInPathReleasedZone( ZONE_3 ) );
     skimmer.setTimeSupplier( () -> now() );
-    Consumer<Entity<?>> rebuilder = newRebuilderSpy();
+    Consumer<Zone> rebuilder = newRebuilderSpy();
 
     skimmer.execute( rebuilder );
 
-    verify( rebuilder, never() ).accept( any( Entity.class ) );
+    verify( rebuilder, never() ).accept( any( Zone.class ) );
     assertThat( paths ).hasSize( 2 );
   }
 
-  @SuppressWarnings({ "cast", "rawtypes" })
-  private static Entity<?> captureZoneForRepopulation( Consumer<Entity<?>> rebuilder ) {
-    ArgumentCaptor<Entity> captor = forClass( Entity.class );
+  private static Zone captureZoneForRepopulation( Consumer<Zone> rebuilder ) {
+    ArgumentCaptor<Zone> captor = forClass( Zone.class );
     verify( rebuilder ).accept( captor.capture() );
-    return ( Entity<?> )captor.getValue();
+    return captor.getValue();
   }
 
   @SuppressWarnings("unchecked")
-  private static Consumer<Entity<?>> newRebuilderSpy() {
+  private static Consumer<Zone> newRebuilderSpy() {
     return mock( Consumer.class );
   }
 

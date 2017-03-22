@@ -27,14 +27,6 @@ class Path {
     this.timeSupplier = () -> now();
   }
 
-  boolean isEmpty() {
-    return activations.isEmpty();
-  }
-
-  int size() {
-    return activations.size();
-  }
-
   void addOrReplace( Zone zone ) {
     remove( findZoneActivation( zone.getZoneEntity() ) );
     activations.add( zone );

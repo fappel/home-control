@@ -32,6 +32,7 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
   }
 
   public static class MotionSensorEvent extends SensorEvent<OnOff> {
+    
 
     @SafeVarargs
     public MotionSensorEvent( Sensor sensor, OnOff sensorStatus, Entity<?> ... affected ) {
