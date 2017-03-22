@@ -16,7 +16,7 @@ import com.codeaffine.home.control.type.DecimalType;
 
 public class ComputerStatusProviderImpl implements ComputerStatusProvider {
 
-  static final DecimalType MIN_IDLE_TIME = new DecimalType( 180 );
+  static final DecimalType MIN_IDLE_TIME_IN_SECONDS = new DecimalType( 120 );
 
   private final StatusProviderCore<OnOff> core;
 
@@ -38,7 +38,7 @@ public class ComputerStatusProviderImpl implements ComputerStatusProvider {
   }
 
   private static OnOff calculate( UpdateEvent<NumberItem, DecimalType> event ) {
-    DecimalType computerIdleTime = event.getUpdatedStatus().orElse( MIN_IDLE_TIME );
-    return computerIdleTime.compareTo( MIN_IDLE_TIME ) < 0 ? ON : OFF;
+    DecimalType computerIdleTime = event.getUpdatedStatus().orElse( MIN_IDLE_TIME_IN_SECONDS );
+    return computerIdleTime.compareTo( MIN_IDLE_TIME_IN_SECONDS ) < 0 ? ON : OFF;
   }
 }

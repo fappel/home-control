@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.internal.computer;
 
-import static com.codeaffine.home.control.application.internal.computer.ComputerStatusProviderImpl.MIN_IDLE_TIME;
+import static com.codeaffine.home.control.application.internal.computer.ComputerStatusProviderImpl.MIN_IDLE_TIME_IN_SECONDS;
 import static com.codeaffine.home.control.application.internal.computer.Messages.INFO_COMPUTER_ACTIVITY_STATUS;
 import static com.codeaffine.home.control.application.test.EventBusHelper.captureEvent;
 import static com.codeaffine.home.control.application.test.LoggerHelper.captureSingleInfoArgument;
@@ -25,7 +25,7 @@ import com.codeaffine.home.control.type.DecimalType;
 
 public class ComputerStatusProviderImplTest {
 
-  private static final DecimalType MAX_ACTIVATION_TIME = new DecimalType( MIN_IDLE_TIME.longValue() - 1 );
+  private static final DecimalType MAX_ACTIVATION_TIME = new DecimalType( MIN_IDLE_TIME_IN_SECONDS.longValue() - 1 );
 
   private ComputerStatusProviderImpl statusProvider;
   private EventBus eventBus;
@@ -48,7 +48,7 @@ public class ComputerStatusProviderImplTest {
     statusProvider.onUpdate( stubEvent( ZERO ) );
     reset( eventBus, logger );
 
-    statusProvider.onUpdate( stubEvent( MIN_IDLE_TIME ) );
+    statusProvider.onUpdate( stubEvent( MIN_IDLE_TIME_IN_SECONDS ) );
     OnOff actual = statusProvider.getStatus();
 
     assertThat( actual ).isSameAs( OFF );
@@ -59,10 +59,10 @@ public class ComputerStatusProviderImplTest {
   @Test
   @SuppressWarnings( "cast" )
   public void onUpdateAboveActivationThresholdWithoutStatusChange() {
-    statusProvider.onUpdate( stubEvent( new DecimalType( MIN_IDLE_TIME.longValue() + 1 ) ) );
+    statusProvider.onUpdate( stubEvent( new DecimalType( MIN_IDLE_TIME_IN_SECONDS.longValue() + 1 ) ) );
     reset( eventBus, logger );
 
-    statusProvider.onUpdate( stubEvent( MIN_IDLE_TIME ) );
+    statusProvider.onUpdate( stubEvent( MIN_IDLE_TIME_IN_SECONDS ) );
     OnOff actual = statusProvider.getStatus();
 
     assertThat( actual ).isSameAs( OFF );
