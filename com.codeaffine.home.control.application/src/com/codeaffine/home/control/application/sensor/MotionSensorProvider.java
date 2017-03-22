@@ -1,11 +1,11 @@
-package com.codeaffine.home.control.application.motion;
+package com.codeaffine.home.control.application.sensor;
 
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.internal.motion.MotionSensorFactory;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.internal.sensor.MotionSensorFactory;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.BaseEntityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
@@ -32,7 +32,6 @@ public class MotionSensorProvider extends BaseEntityProvider<MotionSensor, Motio
   }
 
   public static class MotionSensorEvent extends SensorEvent<OnOff> {
-    
 
     @SafeVarargs
     public MotionSensorEvent( Sensor sensor, OnOff sensorStatus, Entity<?> ... affected ) {

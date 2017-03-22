@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.internal.activity;
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 
 class SectionActivityProvider {

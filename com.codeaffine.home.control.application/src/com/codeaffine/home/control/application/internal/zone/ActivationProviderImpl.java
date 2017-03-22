@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.application.status.ActivationProvider;

@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.*;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
@@ -15,12 +15,12 @@ import com.codeaffine.home.control.application.internal.sun.SunPositionProviderI
 import com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl;
 import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.lamp.LampProvider;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;

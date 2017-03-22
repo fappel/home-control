@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.activity;
 
-import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.BED_MOTION;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.BED;
+import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.BED_MOTION;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
 import static com.codeaffine.home.control.application.type.Percent.P_004;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.application.type.Percent;
 
 public class SectionActivityProviderTest {

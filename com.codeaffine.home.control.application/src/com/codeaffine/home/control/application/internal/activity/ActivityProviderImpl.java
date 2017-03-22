@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;

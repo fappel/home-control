@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application.motion;
+package com.codeaffine.home.control.application.sensor;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +10,8 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;
 

@@ -1,13 +1,13 @@
-package com.codeaffine.home.control.application.internal.motion;
+package com.codeaffine.home.control.application.internal.sensor;
 
 import static com.codeaffine.home.control.type.OnOffType.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
 
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.SensorControl;

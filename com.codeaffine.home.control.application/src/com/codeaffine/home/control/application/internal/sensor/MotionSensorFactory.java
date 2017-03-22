@@ -1,10 +1,10 @@
-package com.codeaffine.home.control.application.internal.motion;
+package com.codeaffine.home.control.application.internal.sensor;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityFactory;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;

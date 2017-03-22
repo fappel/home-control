@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application.internal.motion;
+package com.codeaffine.home.control.application.internal.sensor;
 
-import static com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorDefinition.BATH_ROOM_MOTION;
+import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.BATH_ROOM_MOTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -8,7 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.internal.sensor.MotionSensorFactory;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.item.SwitchItem;
 

@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;

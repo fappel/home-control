@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.application.motion.MotionSensorProvider.MotionSensorEvent;
+import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorEvent;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.type.OnOff;
