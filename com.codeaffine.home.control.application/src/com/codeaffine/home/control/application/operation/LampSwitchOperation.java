@@ -1,7 +1,6 @@
 package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.HallCeiling;
-import static com.codeaffine.home.control.application.operation.HomeControlOperations.isRelated;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.ZONE_ACTIVATION;
 import static com.codeaffine.home.control.application.type.OnOff.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
@@ -22,6 +21,7 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.ActivationProvider;
+import com.codeaffine.home.control.application.status.ComputerStatusProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
@@ -29,6 +29,7 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
+import com.codeaffine.home.control.status.StatusProvider;
 
 public class LampSwitchOperation implements HomeControlOperation {
 
@@ -103,6 +104,11 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   @Override
+  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
+    return asList( NamedSceneProvider.class, ActivationProvider.class, ComputerStatusProvider.class );
+  }
+
+  @Override
   public void reset() {
     setDelayed( HallCeiling );
     lampSelectionStrategy = ZONE_ACTIVATION;
@@ -116,12 +122,6 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
-    if( isRelated( event, NamedSceneProvider.class, ActivationProvider.class ) ) {
-      execute();
-    }
-  }
-
-  private void execute() {
     Set<Lamp> on = collectLampsToSwitchOn( zoneActivationProvider );
     Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
     Set<Lamp> off = lamps.stream().filter( lamp -> !on.contains( lamp ) ).collect( toSet() );

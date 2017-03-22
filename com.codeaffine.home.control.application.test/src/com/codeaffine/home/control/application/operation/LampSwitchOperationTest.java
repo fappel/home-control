@@ -34,7 +34,6 @@ import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
 
 public class LampSwitchOperationTest {
 
@@ -407,19 +406,6 @@ public class LampSwitchOperationTest {
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
-    assertThat( findLamp( KitchenCeiling ).getOnOffStatus() ).isSameAs( OFF );
-    assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( OFF );
-  }
-
-  @Test
-  public void operateOnUnrelatedStatusEvent() {
-    stubZoneActivationProvider( LIVING_AREA );
-
-    operation.reset();
-    operation.executeOn( new StatusEvent( new MyStatusProvider() ) );
-
-    assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( OFF );
-    assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( KitchenCeiling ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( OFF );
   }

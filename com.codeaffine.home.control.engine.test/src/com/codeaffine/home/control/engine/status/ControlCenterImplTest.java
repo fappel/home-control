@@ -3,6 +3,7 @@ package com.codeaffine.home.control.engine.status;
 import static com.codeaffine.home.control.test.util.status.MyScope.*;
 import static com.codeaffine.home.control.test.util.status.MyStatus.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -10,6 +11,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -24,6 +26,7 @@ import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector;
 import com.codeaffine.home.control.status.StatusEvent;
+import com.codeaffine.home.control.status.StatusProvider;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
 import com.codeaffine.home.control.test.util.status.MyStatusProvider;
@@ -213,6 +216,11 @@ public class ControlCenterImplTest {
     public void executeOn( StatusEvent event ) {
       log.add( event );
     }
+
+    @Override
+    public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
+      return asList( MyStatusProvider.class );
+    }
   }
 
   @Before
@@ -378,6 +386,19 @@ public class ControlCenterImplTest {
                         LOG_PREPARE_SCENE_1,
                         LOG_PREPARE_SCENE_4,
                         fifthEvent );
+  }
+
+  @Test
+  public void onEventOfUnrelatedStatusProvider() {
+    StatusEvent evt = new StatusEvent( mock( StatusProvider.class ) );
+    new ScopedSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
+
+    controlCenter.onEvent( evt );
+
+    assertThat( log ).containsExactly( LOG_CONFIGURE_SCENE_SELECTOR,
+                                       LOG_RESET_OPERATION,
+                                       LOG_PREPARE_SCENE_3,
+                                       LOG_PREPARE_SCENE_4 );
   }
 
   @Test

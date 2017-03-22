@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.activity;
 
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.BED;
-import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.BED_MOTION;
+import static com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition.BED_MOTION;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
 import static com.codeaffine.home.control.application.type.Percent.P_004;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,22 +15,22 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensor;
 import com.codeaffine.home.control.application.type.Percent;
 
 public class SectionActivityProviderTest {
 
   private SectionActivityProvider provider;
-  private MotionActivationTracker tracker;
-  private MotionSensor motionSensor;
+  private ActivationTracker tracker;
+  private ActivationSensor sensor;
   private Section section;
 
   @Before
   public void setUp() {
-    tracker = mock( MotionActivationTracker.class );
+    tracker = mock( ActivationTracker.class );
     section = stubSection( BED );
-    motionSensor = stubMotionSensor( BED_MOTION );
-    equipWithMotionSensor( section, motionSensor );
+    sensor = stubActivationSensor( BED_MOTION );
+    equipWithActivationSensor( section, sensor );
     provider = new SectionActivityProvider( section, tracker );
   }
 
@@ -44,22 +44,22 @@ public class SectionActivityProviderTest {
   }
 
   @Test
-  public void captureMotionActivations() {
-    when( motionSensor.isEngaged() ).thenReturn( true );
+  public void captureSensorActivations() {
+    when( sensor.isEngaged() ).thenReturn( true );
 
-    provider.captureMotionActivations();
+    provider.captureSensorActivations();
 
     InOrder order = inOrder( tracker );
-    order.verify( tracker ).captureMotionActivation();
+    order.verify( tracker ).captureActivation();
     order.verify( tracker ).removeExpired();
     order.verifyNoMoreInteractions();
   }
 
   @Test
-  public void captureMotionActivationsIfSensorIsNotEngaged() {
-    provider.captureMotionActivations();
+  public void captureSensorActivationsIfSensorIsNotEngaged() {
+    provider.captureSensorActivations();
 
-    verify( tracker, never() ).captureMotionActivation();
+    verify( tracker, never() ).captureActivation();
     verify( tracker ).removeExpired();
   }
 

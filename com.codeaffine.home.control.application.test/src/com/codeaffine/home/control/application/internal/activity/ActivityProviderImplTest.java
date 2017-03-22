@@ -4,7 +4,7 @@ import static com.codeaffine.home.control.application.internal.activity.Activity
 import static com.codeaffine.home.control.application.internal.activity.Messages.INFO_ACTIVITY_RATE;
 import static com.codeaffine.home.control.application.internal.activity.Util.calculateMaxActivations;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.*;
+import static com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition.*;
 import static com.codeaffine.home.control.application.test.ActivityAssert.assertThat;
 import static com.codeaffine.home.control.application.test.EventBusHelper.captureEvent;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensor;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -36,8 +36,8 @@ public class ActivityProviderImplTest {
     = calculateMaxActivations( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
 
   private ActivityProviderImpl activity;
-  private MotionSensor bedSensor;
-  private MotionSensor bathRoomSensor;
+  private ActivationSensor bedSensor;
+  private ActivationSensor bathRoomSensor;
   private EventBus eventBus;
   private Section bed;
   private Section bathroom;
@@ -48,10 +48,10 @@ public class ActivityProviderImplTest {
     bed = stubSection( BED );
     bathroom = stubSection( BATH_ROOM );
     Section section3 = stubSection( LIVING_ROOM );
-    bedSensor = stubMotionSensor( BED_MOTION );
-    bathRoomSensor = stubMotionSensor( BATH_ROOM_MOTION );
-    equipWithMotionSensor( bed, bedSensor );
-    equipWithMotionSensor( bathroom, bathRoomSensor );
+    bedSensor = stubActivationSensor( BED_MOTION );
+    bathRoomSensor = stubActivationSensor( BATH_ROOM_MOTION );
+    equipWithActivationSensor( bed, bedSensor );
+    equipWithActivationSensor( bathroom, bathRoomSensor );
     EntityRegistry registry
       = stubRegistry( asList( bed, bathroom, section3 ), emptySet(), asList( bedSensor, bathRoomSensor ) );
     eventBus = mock( EventBus.class );
@@ -61,12 +61,12 @@ public class ActivityProviderImplTest {
 
   @Test
   public void calculateRate() {
-    int dryRun = captureMotionActivations( MAX_ACTIVATIONS.intValue() / 2 );
-    stubMotionSensorAsEngaged( bedSensor );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue() / 3 );
-    stubMotionSensorAsReleased( bedSensor );
-    stubMotionSensorAsEngaged( bathRoomSensor );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue() / 6 );
+    int dryRun = captureActivations( MAX_ACTIVATIONS.intValue() / 2 );
+    stubActivationSensorAsEngaged( bedSensor );
+    captureActivations( MAX_ACTIVATIONS.intValue() / 3 );
+    stubActivationSensorAsReleased( bedSensor );
+    stubActivationSensorAsEngaged( bathRoomSensor );
+    captureActivations( MAX_ACTIVATIONS.intValue() / 6 );
 
     activity.calculateRate();
     Activity actual = activity.getStatus();
@@ -82,8 +82,8 @@ public class ActivityProviderImplTest {
 
   @Test
   public void calculateRateOnMaximumOfExpectedActivations() {
-    stubMotionSensorAsEngaged( bedSensor );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue()  );
+    stubActivationSensorAsEngaged( bedSensor );
+    captureActivations( MAX_ACTIVATIONS.intValue()  );
 
     activity.calculateRate();
     Activity actual = activity.getStatus();
@@ -98,8 +98,8 @@ public class ActivityProviderImplTest {
 
   @Test
   public void calculateRateOnExpectedActivationOverflow() {
-    stubMotionSensorAsEngaged( bedSensor );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue() + 1 );
+    stubActivationSensorAsEngaged( bedSensor );
+    captureActivations( MAX_ACTIVATIONS.intValue() + 1 );
 
     activity.calculateRate();
     Activity actual = activity.getStatus();
@@ -128,8 +128,8 @@ public class ActivityProviderImplTest {
   }
 
   @Test
-  public void calculateRateIfNoMotionActivationHasBeenCaptured() {
-    int dryRun = captureMotionActivations( MAX_ACTIVATIONS.intValue() / 2 );
+  public void calculateRateIfNoActivationHasBeenCaptured() {
+    int dryRun = captureActivations( MAX_ACTIVATIONS.intValue() / 2 );
 
     activity.calculateRate();
     Activity actual = activity.getStatus();
@@ -146,14 +146,14 @@ public class ActivityProviderImplTest {
 
   @Test
   public void calculateRateWithExpiredTimestamps() {
-    int dryRun = captureMotionActivations( MAX_ACTIVATIONS.intValue() / 3 );
-    stubMotionSensorAsEngaged( bedSensor );
+    int dryRun = captureActivations( MAX_ACTIVATIONS.intValue() / 3 );
+    stubActivationSensorAsEngaged( bedSensor );
     activity.setTimestampSupplier( () -> now().minusMinutes( ActivityProviderImpl.OBSERVATION_TIME_FRAME + 1 ) );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue() / 3 );
-    stubMotionSensorAsReleased( bedSensor );
-    stubMotionSensorAsEngaged( bathRoomSensor );
+    captureActivations( MAX_ACTIVATIONS.intValue() / 3 );
+    stubActivationSensorAsReleased( bedSensor );
+    stubActivationSensorAsEngaged( bathRoomSensor );
     activity.setTimestampSupplier( () -> now() );
-    captureMotionActivations( MAX_ACTIVATIONS.intValue() / 3 );
+    captureActivations( MAX_ACTIVATIONS.intValue() / 3 );
 
     activity.calculateRate();
     Activity actual = activity.getStatus();
@@ -187,18 +187,18 @@ public class ActivityProviderImplTest {
     verify( logger ).info( INFO_ACTIVITY_RATE, activity.getStatus() );
   }
 
-  private static void stubMotionSensorAsEngaged( MotionSensor motionSensor ) {
-    when( motionSensor.isEngaged() ).thenReturn( true );
+  private static void stubActivationSensorAsEngaged( ActivationSensor sensor ) {
+    when( sensor.isEngaged() ).thenReturn( true );
   }
 
-  private static void stubMotionSensorAsReleased( MotionSensor motionSensor ) {
-    when( motionSensor.isEngaged() ).thenReturn( false );
+  private static void stubActivationSensorAsReleased( ActivationSensor sensor ) {
+    when( sensor.isEngaged() ).thenReturn( false );
   }
 
-  private int captureMotionActivations( int times ) {
-    for( int i = 0; i < times; i++ ) {
-      activity.captureMotionActivations();
+  private int captureActivations( int times ) {
+      for( int i = 0; i < times; i++ ) {
+        activity.captureActivations();
+      }
+      return times;
     }
-    return times;
-  }
 }

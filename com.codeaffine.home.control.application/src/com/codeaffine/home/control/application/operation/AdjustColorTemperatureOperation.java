@@ -2,6 +2,7 @@ package com.codeaffine.home.control.application.operation;
 
 import static java.lang.Math.*;
 import static java.time.LocalDateTime.now;
+import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
@@ -12,6 +13,7 @@ import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
+import com.codeaffine.home.control.status.StatusProvider;
 
 public class AdjustColorTemperatureOperation implements HomeControlOperation {
 
@@ -19,6 +21,11 @@ public class AdjustColorTemperatureOperation implements HomeControlOperation {
 
   public AdjustColorTemperatureOperation( EntityRegistry entityRegistry ) {
     this.entityRegistry = entityRegistry;
+  }
+
+  @Override
+  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
+    return asList( SunPositionProvider.class );
   }
 
   @Override
@@ -32,8 +39,8 @@ public class AdjustColorTemperatureOperation implements HomeControlOperation {
       double temperatureFactor = max( 2.0, ( abs( ( 10 + now().getDayOfYear() ) % 366 - 183 ) / 31 ) );
       double value = min( ( ( zenitAngle + 7 ) * temperatureFactor ), 100.0 );
       Percent colorTemperature = Percent.valueOf( ( int )( 100.0 - max( 0.0, value ) ) );
-      Collection<Lamp> bulbs = entityRegistry.findByDefinitionType( LampDefinition.class );
-      bulbs.forEach( bulb -> bulb.setColorTemperature( colorTemperature ) );
+      Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
+      lamps.forEach( lamp -> lamp.setColorTemperature( colorTemperature ) );
     } );
   }
 }

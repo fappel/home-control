@@ -8,8 +8,8 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.codeaffine.home.control.application.internal.zone.PathAdjacency;
-import com.codeaffine.home.control.application.internal.zone.ZoneImpl;
+import com.codeaffine.home.control.application.internal.activation.PathAdjacency;
+import com.codeaffine.home.control.application.internal.activation.ZoneImpl;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;

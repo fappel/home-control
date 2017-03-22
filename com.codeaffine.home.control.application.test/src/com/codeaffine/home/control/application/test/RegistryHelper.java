@@ -17,8 +17,8 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensor;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensor;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
 import com.codeaffine.home.control.application.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -50,14 +50,14 @@ public class RegistryHelper {
     return result;
   }
 
-  public static MotionSensor stubMotionSensor( MotionSensorDefinition motionSensorDefinition ) {
-    MotionSensor result = mock( MotionSensor.class );
+  public static ActivationSensor stubActivationSensor( ActivationSensorDefinition motionSensorDefinition ) {
+    ActivationSensor result = mock( ActivationSensor.class );
     when( result.getDefinition() ).thenReturn( motionSensorDefinition );
     return result;
   }
 
   public static EntityRegistry stubRegistry(
-    Collection<Section> sections, Collection<Lamp> lamps, Collection<MotionSensor> motionSensors )
+    Collection<Section> sections, Collection<Lamp> lamps, Collection<ActivationSensor> motionSensors )
   {
     Set<Entity<?>> all = new HashSet<>( sections );
     all.addAll( lamps );
@@ -66,15 +66,15 @@ public class RegistryHelper {
     when( result.findAll() ).thenReturn( all );
     when( result.findByDefinitionType( SectionDefinition.class ) ).thenReturn( sections );
     when( result.findByDefinitionType( LampDefinition.class ) ).thenReturn( lamps );
-    when( result.findByDefinitionType( MotionSensorDefinition.class ) ).thenReturn( motionSensors );
+    when( result.findByDefinitionType( ActivationSensorDefinition.class ) ).thenReturn( motionSensors );
     when( result.findByDefinition( any( EntityDefinition.class ) ) )
       .thenAnswer( invocation -> doFindByDefinition( all, invocation.getArguments()[ 0 ] ) );
     return result;
   }
 
-  public static void equipWithMotionSensor( Section section, MotionSensor motionSensor ) {
+  public static void equipWithActivationSensor( Section section, ActivationSensor motionSensor ) {
     when( section.getChildren() ).thenReturn( ( asList( motionSensor ) ) );
-    when( section.getChildren( MotionSensorDefinition.class ) ).thenReturn( asList( motionSensor ) );
+    when( section.getChildren( ActivationSensorDefinition.class ) ).thenReturn( asList( motionSensor ) );
   }
 
   public static void equipWithLamp(

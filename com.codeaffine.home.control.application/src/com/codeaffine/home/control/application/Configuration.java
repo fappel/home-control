@@ -2,27 +2,29 @@ package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition.*;
+import static com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition.*;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.application.internal.activation.ActivationProviderImpl;
+import com.codeaffine.home.control.application.internal.activation.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
+import com.codeaffine.home.control.application.internal.computer.ComputerStatusProviderImpl;
 import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
 import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
-import com.codeaffine.home.control.application.internal.zone.ActivationProviderImpl;
-import com.codeaffine.home.control.application.internal.zone.AdjacencyDefinition;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
+import com.codeaffine.home.control.application.status.ComputerStatusProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
@@ -36,7 +38,7 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureEntities( EntityRegistry entityRegistry ) {
-    entityRegistry.register( MotionSensorProvider.class );
+    entityRegistry.register( ActivationSensorProvider.class );
     entityRegistry.register( LampProvider.class );
     entityRegistry.register( SectionProvider.class );
   }
@@ -77,6 +79,7 @@ public class Configuration implements SystemConfiguration {
     statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
     context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );
     statusProviderRegistry.register( NamedSceneProvider.class, NamedSceneProviderImpl.class );
+    statusProviderRegistry.register( ComputerStatusProvider.class, ComputerStatusProviderImpl.class );
   }
 
   @Override
@@ -89,10 +92,5 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     new SceneConfiguration().configureSceneSelection( sceneSelector );
-  }
-
-  @Override
-  public void configureSystem( Context context ) {
-    context.set( ComputerIdleTime.class, context.create( ComputerIdleTime.class ) );
   }
 }

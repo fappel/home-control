@@ -3,6 +3,7 @@ package com.codeaffine.home.control.application.operation;
 import static com.codeaffine.home.control.application.type.Percent.*;
 import static java.lang.Math.*;
 import static java.time.LocalDateTime.now;
+import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
@@ -14,6 +15,7 @@ import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
+import com.codeaffine.home.control.status.StatusProvider;
 
 
 public class AdjustBrightnessOperation implements HomeControlOperation {
@@ -43,6 +45,11 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
 
   public void setBrightnessMinimumAboveThreshold( Percent brightnessMinimumAboveThreshold ) {
     this.brightnessMinimumAboveThreshold = brightnessMinimumAboveThreshold;
+  }
+
+  @Override
+  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
+    return asList( ActivityProviderImpl.class, SunPositionProvider.class );
   }
 
   @Override

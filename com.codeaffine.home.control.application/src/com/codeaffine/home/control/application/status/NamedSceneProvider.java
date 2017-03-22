@@ -12,7 +12,4 @@ public interface NamedSceneProvider extends StatusProvider<NamedScene> {
   public interface NamedSceneConfiguration {
     void configureNamedScenes( Map<String, Class<? extends Scene>> nameToSceneTypeMapping );
   }
-
-  @Override
-  NamedScene getStatus();
 }

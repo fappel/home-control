@@ -4,35 +4,35 @@ import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 
 class SectionActivityProvider {
 
-  private final MotionActivationTracker motionActivationTracker;
+  private final ActivationTracker activationTracker;
   private final Section section;
 
-  SectionActivityProvider( Section section, MotionActivationTracker motionActivationTracker ) {
-    this.motionActivationTracker = motionActivationTracker;
+  SectionActivityProvider( Section section, ActivationTracker activationTracker ) {
+    this.activationTracker = activationTracker;
     this.section = section;
   }
 
   void setTimestampSupplier( Supplier<LocalDateTime> timestampSupplier ) {
-    motionActivationTracker.setTimestampSupplier( timestampSupplier );
+    activationTracker.setTimestampSupplier( timestampSupplier );
   }
 
   Percent calculateRate() {
-    return motionActivationTracker.calculateRate();
+    return activationTracker.calculateRate();
   }
 
-  void captureMotionActivations() {
-    if( hasActiveMotionSensor() ) {
-      motionActivationTracker.captureMotionActivation();
+  void captureSensorActivations() {
+    if( hasActiveSensor() ) {
+      activationTracker.captureActivation();
     }
-    motionActivationTracker.removeExpired();
+    activationTracker.removeExpired();
   }
 
-  private boolean hasActiveMotionSensor() {
-    return section.getChildren( MotionSensorDefinition.class ).stream().anyMatch( sensor -> sensor.isEngaged() );
+  private boolean hasActiveSensor() {
+    return section.getChildren( ActivationSensorDefinition.class ).stream().anyMatch( sensor -> sensor.isEngaged() );
   }
 }

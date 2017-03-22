@@ -5,6 +5,7 @@ import static java.lang.Long.valueOf;
 import static java.util.Collections.reverse;
 import static java.util.stream.Collectors.toList;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,16 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   }
 
   private void executeOperations( StatusEvent event ) {
-    operations.values().forEach( operation -> operation.executeOn( event ) );
+    operations.values().forEach( operation -> executeIfRelated( event, operation ) );
+  }
+
+  private static void executeIfRelated( StatusEvent event, HomeControlOperation operation ) {
+    if( isRelated( event, operation.getRelatedStatusProviderTypes() ) ) {
+      operation.executeOn( event );
+    }
+  }
+
+  private static boolean isRelated( StatusEvent event, Collection<Class<? extends StatusProvider<?>>> providerTypes ) {
+    return providerTypes.stream().anyMatch( type -> event.getSource( type ).isPresent() );
   }
 }

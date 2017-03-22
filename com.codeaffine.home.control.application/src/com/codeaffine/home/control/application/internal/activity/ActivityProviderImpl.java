@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.sensor.MotionSensorProvider.MotionSensorDefinition;
+import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
@@ -29,7 +29,7 @@ public class ActivityProviderImpl implements ActivityProvider {
 
   private final Map<Section, SectionActivityProvider> sectionProviders;
   private final StatusProviderCore<Activity> statusProviderCore;
-  private final MotionActivationTracker motionActivationTracker;
+  private final ActivationTracker activationTracker;
   private final EntityRegistry entityRegistry;
 
   public ActivityProviderImpl( EntityRegistry entityRegistry, EventBus eventBus, Logger logger ) {
@@ -38,7 +38,7 @@ public class ActivityProviderImpl implements ActivityProvider {
     verifyNotNull( logger, "logger" );
 
     this.sectionProviders = createSectionProviders( entityRegistry, OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
-    this.motionActivationTracker = newMotionActivationTracker( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
+    this.activationTracker = newActivationTracker( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
     this.statusProviderCore = new StatusProviderCore<>( eventBus, calculateStatus(), this, logger );
     this.entityRegistry = entityRegistry;
   }
@@ -54,21 +54,21 @@ public class ActivityProviderImpl implements ActivityProvider {
   }
 
   @Schedule( period = CALCULATION_INTERVAL )
-  void captureMotionActivations() {
-    if( hasActiveMotionSensors() ) {
-      motionActivationTracker.captureMotionActivation();
+  void captureActivations() {
+    if( hasActiveSensors() ) {
+      activationTracker.captureActivation();
     }
-    motionActivationTracker.removeExpired();
-    sectionProviders.values().forEach( provider -> provider.captureMotionActivations() );
+    activationTracker.removeExpired();
+    sectionProviders.values().forEach( provider -> provider.captureSensorActivations() );
   }
 
   void setTimestampSupplier( Supplier<LocalDateTime> timestampSupplier ) {
-    motionActivationTracker.setTimestampSupplier( timestampSupplier );
+    activationTracker.setTimestampSupplier( timestampSupplier );
     sectionProviders.values().forEach( provider -> provider.setTimestampSupplier( timestampSupplier ) );
   }
 
-  private boolean hasActiveMotionSensors() {
-    return entityRegistry.findByDefinitionType( MotionSensorDefinition.class )
+  private boolean hasActiveSensors() {
+    return entityRegistry.findByDefinitionType( ActivationSensorDefinition.class )
       .stream()
       .map( sensor -> valueOf( sensor.isEngaged() ) )
       .reduce( ( engaged1, engaged2 ) -> valueOf( logicalOr( engaged1.booleanValue(), engaged2.booleanValue() ) ) )
@@ -77,7 +77,7 @@ public class ActivityProviderImpl implements ActivityProvider {
   }
 
   private Activity calculateStatus() {
-    Percent overallRate = motionActivationTracker.calculateRate();
+    Percent overallRate = activationTracker.calculateRate();
     Map<SectionDefinition, Percent> sectionActivities = calculateSectionActivityRate();
     return new Activity( overallRate, sectionActivities );
   }
@@ -96,7 +96,7 @@ public class ActivityProviderImpl implements ActivityProvider {
     return entityRegistry
       .findByDefinitionType( SectionDefinition.class )
       .stream()
-      .filter( section -> !section.getChildren( MotionSensorDefinition.class ).isEmpty() )
+      .filter( section -> !section.getChildren( ActivationSensorDefinition.class ).isEmpty() )
       .collect( toMap( section -> section,
                        section -> newSectionActivityProvider( section, timeFrame, intervalDuration ) ) );
   }
@@ -104,10 +104,10 @@ public class ActivityProviderImpl implements ActivityProvider {
   private static SectionActivityProvider newSectionActivityProvider(
     Section section, long timeFrame, long intervalDuration )
   {
-    return new SectionActivityProvider( section, newMotionActivationTracker( timeFrame, intervalDuration ) );
+    return new SectionActivityProvider( section, newActivationTracker( timeFrame, intervalDuration ) );
   }
 
-  private static MotionActivationTracker newMotionActivationTracker( long timeFrame, long intervalDuration ) {
-    return new MotionActivationTracker( timeFrame, intervalDuration );
+  private static ActivationTracker newActivationTracker( long timeFrame, long intervalDuration ) {
+    return new ActivationTracker( timeFrame, intervalDuration );
   }
 }
