@@ -18,6 +18,7 @@ import com.codeaffine.home.control.application.internal.sun.SunPositionProviderI
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
+import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
@@ -75,6 +76,7 @@ public class Configuration implements SystemConfiguration {
     Context context = statusProviderRegistry.getContext();
     context.set( AdjacencyDefinition.class, adjacencyDefinition );
     statusProviderRegistry.register( ActivationProvider.class, ActivationProviderImpl.class );
+    context.set( LampCollector.class, context.create( LampCollector.class ) );
     statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
     statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
     context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );

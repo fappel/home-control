@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.NONE;
+import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.NONE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;

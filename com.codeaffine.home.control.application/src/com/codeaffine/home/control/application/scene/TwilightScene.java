@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static com.codeaffine.home.control.application.operation.LampSwitchOperation.LampSelectionStrategy.ALL;
+import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ALL;
 import static com.codeaffine.home.control.application.type.Percent.*;
 import static java.util.Arrays.asList;
 
