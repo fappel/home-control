@@ -45,8 +45,10 @@ public class LivingRoomScene implements Scene {
   @Override
   public void prepare() {
     Activation status = activationProvider.getStatus();
-    if( status.getZone( WORK_AREA ).get().isAdjacentActivated() ) {
+    if( !status.getZone( WORK_AREA ).isPresent() || status.getZone( WORK_AREA ).get().isAdjacentActivated() ) {
       configureWorkAreaAdditions();
+    } else {
+      setLampsToSwitchOn( WORK_AREA );
     }
   }
 

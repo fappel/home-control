@@ -7,7 +7,7 @@ public class HomeScope implements Scope {
   private static int ordinalCount = 0;
   static final String GLOBAL_NAME = "GLOBAL";
   static final int GLOBAL_ORDINAL = ordinalCount++;
-  static final String LIVING_ROOM_NAME = "HOTSPOT";
+  static final String LIVING_ROOM_NAME = "LIVING_ROOM";
   static final int LIVING_ROOM_ORDINAL = ordinalCount++;
 
   public final static Scope LIVING_ROOM = new HomeScope( LIVING_ROOM_NAME, LIVING_ROOM_ORDINAL );
