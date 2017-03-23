@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
+import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ZONE_ACTIVATION;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.ActivationHelper.stubZone;
@@ -93,6 +94,20 @@ public class LampSwitchOperationTest {
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( ON );
+    assertThat( findLamp( KitchenCeiling ).getOnOffStatus() ).isSameAs( ON );
+    assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( OFF );
+  }
+
+  @Test
+  public void operateOnMultipleZoneEngagementWithLampFilterAndFilterableLampAdditions() {
+    operation.reset();
+    operation.setLampSelectionStrategy( ZONE_ACTIVATION );
+    operation.setLampFilter( lamp -> asList( KitchenCeiling, DeskUplight ).contains( lamp.getDefinition() ) );
+    operation.addFilterableLamps( DeskUplight );
+    operation.executeOn( new StatusEvent( stubActivationProvider( DINING_AREA ) ) );
+
+    assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
+    assertThat( findLamp( WindowUplight ).getOnOffStatus() ).isSameAs( OFF );
     assertThat( findLamp( KitchenCeiling ).getOnOffStatus() ).isSameAs( ON );
     assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( OFF );
   }
@@ -451,6 +466,15 @@ public class LampSwitchOperationTest {
   @Test( expected = IllegalArgumentException.class )
   public void setLampsToSwitchOffWithNullAsElementOfArgumentArray() {
     operation.setLampsToSwitchOff( new LampDefinition[ 1 ] );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void addFilterableLampsWithNullAsArgument() {
+    operation.addFilterableLamps( ( LampDefinition[] )null );
+  }
+  @Test( expected = IllegalArgumentException.class )
+  public void addFilterableLampsWithNullAsElementOfArgumentArray() {
+    operation.addFilterableLamps( new LampDefinition[ 1 ] );
   }
 
   @Test( expected = IllegalArgumentException.class )

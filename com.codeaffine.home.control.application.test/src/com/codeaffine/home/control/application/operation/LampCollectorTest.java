@@ -77,6 +77,22 @@ public class LampCollectorTest {
   }
 
   @Test
+  public void collectZoneLamps() {
+    Set<Lamp> expected = asSet( findLamp( DeskUplight ), findLamp( WindowUplight ) );
+
+    Set<Lamp> actual = collector.collectZoneLamps( LIVING_AREA );
+
+    assertThat( actual ).isEqualTo( expected );
+  }
+
+  @Test
+  public void collectZoneLampsWithNonCompositeZoneEntityDefinitionArgument() {
+    Set<Lamp> actual = collector.collectZoneLamps( DeskUplight );
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
   public void collectWithZoneActivationStrategy() {
     Set<Lamp> expected = asSet( findLamp( DeskUplight ), findLamp( WindowUplight ) );
     stubActivationProvider( LIVING_AREA );
@@ -127,6 +143,11 @@ public class LampCollectorTest {
   @Test( expected = IllegalArgumentException.class )
   public void collectWithSameZoneWithNullAsLampArgument() {
     collector.collectWithSameZone( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void collectZoneLampsWithNullAsZoneEntityDefinitionArgument() {
+    collector.collectZoneLamps( null );
   }
 
   @Test( expected = IllegalArgumentException.class )

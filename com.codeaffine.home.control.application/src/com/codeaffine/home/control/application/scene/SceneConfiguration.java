@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.scene.HomeScope.*;
+import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 
 import java.util.Map;
@@ -36,10 +37,10 @@ public class SceneConfiguration implements NamedSceneConfiguration {
       .otherwiseSelect( NightScene.class );
 
     sceneSelector
-      .whenStatusOf( HOTSPOT, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
+      .whenStatusOf( LIVING_ROOM, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
         .thenSelect( NamedSceneProvider.class, status -> status.getSceneType() )
-      .otherwiseWhenStatusOf( ActivationProvider.class ).matches( activation -> workAreaIsSolelyActive( activation ) )
-        .thenSelect( WorkAreaScene.class )
+      .otherwiseWhenStatusOf( ActivationProvider.class ).matches( activation -> isLivingRoomActivated( activation ) )
+        .thenSelect( LivingRoomScene.class )
       .otherwiseSelect( NamedSceneProvider.class, status -> status.getSceneType() );
   }
 
@@ -56,7 +57,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     return -18 <= position.getZenit() && position.getZenit() <= 0;
   }
 
-  private static boolean workAreaIsSolelyActive( Activation activation ) {
-    return activation.getAllZones().size() == 1 && activation.getZone( WORK_AREA ).isPresent();
+  private static boolean isLivingRoomActivated( Activation activation ) {
+    return activation.isZoneActivated( WORK_AREA ) || activation.isZoneActivated( LIVING_AREA );
   }
 }

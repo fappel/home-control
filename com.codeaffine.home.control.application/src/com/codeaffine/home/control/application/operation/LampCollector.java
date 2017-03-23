@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
@@ -15,6 +16,7 @@ import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
 public class LampCollector {
@@ -78,7 +80,26 @@ public class LampCollector {
     return entityRegistry.findByDefinition( definition );
   }
 
+  public Set<Lamp> collectZoneLamps( EntityDefinition<?> zoneEntityDefinition ) {
+    verifyNotNull( zoneEntityDefinition, "zoneEntityDefinition" );
+
+    Set<Lamp> result = new HashSet<>();
+    findZoneEntity( zoneEntityDefinition ).ifPresent( entity -> result.addAll( collectZoneLamps( entity ) ) );
+    return result;
+  }
+
+  private Optional<Entity<?>> findZoneEntity( EntityDefinition<?> zoneEntityDefinition ) {
+    return entityRegistry
+      .findAll()
+      .stream()
+      .filter( entity -> entity.getDefinition() == zoneEntityDefinition )
+      .findAny();
+  }
+
   private static Collection<Lamp> collectZoneLamps( Entity<?> zoneEntity ) {
-    return ( ( CompositeEntity<?> )zoneEntity ).getChildren( LampDefinition.class );
+    if( zoneEntity instanceof CompositeEntity<?> ) {
+      return ( ( CompositeEntity<?> )zoneEntity ).getChildren( LampDefinition.class );
+    }
+    return emptySet();
   }
 }

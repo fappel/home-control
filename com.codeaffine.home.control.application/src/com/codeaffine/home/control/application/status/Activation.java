@@ -34,6 +34,10 @@ public class Activation {
     return zones.stream().filter( zone -> zone.getZoneEntity().getDefinition() == zoneDefinition ).findAny();
   }
 
+  public boolean isZoneActivated( EntityDefinition<?> zoneDefinition ) {
+    return getZone( zoneDefinition ).isPresent();
+  }
+
   private static Set<Zone> defensiveCopy( Set<Zone> zones ) {
     return new HashSet<>( zones );
   }

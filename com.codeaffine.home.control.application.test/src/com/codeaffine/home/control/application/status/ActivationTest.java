@@ -53,7 +53,6 @@ public class ActivationTest {
       .isNotEqualTo( manipulated );
   }
 
-
   @Test
   public void getZone() {
     Activation activation = new Activation( asSet( createZone( ZONE_1 ), createZone( ZONE_2 ) ) );
@@ -70,6 +69,24 @@ public class ActivationTest {
     Optional<Zone> actual = activation.getZone( ZONE_DEFINITION_3 );
 
     assertThat( actual ).isEmpty();
+  }
+
+  @Test
+  public void isZoneActivated() {
+    Activation activation = new Activation( asSet( createZone( ZONE_1 ) ) );
+
+    boolean actual = activation.isZoneActivated( ZONE_DEFINITION_1 );
+
+    assertThat( actual ).isTrue();
+  }
+
+  @Test
+  public void isZoneActivatedOnInActiveZoneDefinition() {
+    Activation activation = new Activation( asSet( createZone( ZONE_1 ) ) );
+
+    boolean actual = activation.isZoneActivated( ZONE_DEFINITION_2 );
+
+    assertThat( actual ).isFalse();
   }
 
   @Test

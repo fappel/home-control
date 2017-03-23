@@ -38,6 +38,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   private final FollowUpTimer followUpTimer;
   private final Set<Lamp> lampsToSwitchOff;
   private final Set<Lamp> lampsToSwitchOn;
+  private final Set<Lamp> filterableLamps;
   private final Set<Lamp> scheduled;
   private final Set<Lamp> delayed;
 
@@ -56,6 +57,7 @@ public class LampSwitchOperation implements HomeControlOperation {
     this.lampCollector = lampCollector;
     this.lampsToSwitchOff = new HashSet<>();
     this.lampsToSwitchOn = new HashSet<>();
+    this.filterableLamps = new HashSet<>();
     this.delayStatus = new HashMap<>();
     this.scheduled = new HashSet<>();
     this.delayed = new HashSet<>();
@@ -72,6 +74,13 @@ public class LampSwitchOperation implements HomeControlOperation {
     verifyNotNull( filter, "filter" );
 
     this.filter = filter;
+  }
+
+  public void addFilterableLamps( LampDefinition ... filterableLamps ) {
+    verifyNotNull( filterableLamps, "filterableLamps" );
+
+    this.filterableLamps.clear();
+    this.filterableLamps.addAll( mapToLamps( filterableLamps ) );
   }
 
   public void setLampsToSwitchOn( LampDefinition ... lampsToSwitchOn ) {
@@ -107,6 +116,7 @@ public class LampSwitchOperation implements HomeControlOperation {
     filter = lamp -> true;
     lampsToSwitchOff.clear();
     lampsToSwitchOn.clear();
+    filterableLamps.clear();
     delayStatus.clear();
   }
 
@@ -129,7 +139,10 @@ public class LampSwitchOperation implements HomeControlOperation {
   }
 
   private Set<Lamp> collectStrategyRelatedLampsToSwitchOncollect() {
-    return lampCollector.collect( lampSelectionStrategy ).stream().filter( filter ).collect( toSet() );
+    Set<Lamp> collected = new HashSet<>();
+    collected.addAll( lampCollector.collect( lampSelectionStrategy ) );
+    collected.addAll( filterableLamps );
+    return collected.stream().filter( filter ).collect( toSet() );
   }
 
   private Set<Lamp> filterDelayed( Set<Lamp> lampsToSwitchOn, Activation activation ) {

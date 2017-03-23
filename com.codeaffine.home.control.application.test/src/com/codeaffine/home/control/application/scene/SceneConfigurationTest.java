@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.scene.HomeScope.*;
+import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
@@ -59,7 +60,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -72,7 +73,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( TwilightScene.class ) );
   }
 
@@ -85,7 +86,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( NightScene.class ) );
   }
 
@@ -98,7 +99,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( AwayScene.class ) );
   }
 
@@ -111,7 +112,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -126,7 +127,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -139,7 +140,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( SleepScene.class ) );
   }
 
@@ -152,7 +153,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -167,7 +168,7 @@ public class SceneConfigurationTest {
 
     assertThat( actual )
       .hasSize( 2 )
-      .containsKey( HOTSPOT )
+      .containsKey( LIVING_ROOM )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
