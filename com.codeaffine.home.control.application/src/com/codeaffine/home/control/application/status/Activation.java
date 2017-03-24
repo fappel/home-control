@@ -38,10 +38,6 @@ public class Activation {
     return getZone( zoneDefinition ).isPresent();
   }
 
-  private static Set<Zone> defensiveCopy( Set<Zone> zones ) {
-    return new HashSet<>( zones );
-  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -62,5 +58,9 @@ public class Activation {
     if( !zones.equals( other.zones ) )
       return false;
     return true;
+  }
+
+  private static Set<Zone> defensiveCopy( Set<Zone> zones ) {
+    return new HashSet<>( zones );
   }
 }
