@@ -13,7 +13,6 @@ public class NightScene implements Scene {
 
   private static final Collection<LampDefinition> EVENING_LAMPS
     = asList( SinkUplight,
-              KitchenCeiling,
               ChimneyUplight, WindowUplight,
               BedStand, BedRoomCeiling,
               BathRoomCeiling,

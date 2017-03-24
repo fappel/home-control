@@ -12,7 +12,7 @@ import com.codeaffine.home.control.status.Scene;
 public class DayScene implements Scene {
 
   private static final Collection<LampDefinition> DAY_LAMPS
-    = asList( SinkUplight, KitchenCeiling,
+    = asList( KitchenCeiling,
               FanLight1, FanLight2,
               BedRoomCeiling, BedStand,
               BathRoomCeiling,

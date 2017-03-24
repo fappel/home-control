@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.ActivationHelper.*;
@@ -31,6 +32,8 @@ import com.codeaffine.home.control.test.util.context.TestContext;
 
 public class SceneConfigurationTest {
 
+  private static final int HOME_SCOPE_VALUE_COUNT = HomeScope.values().length;
+
   private SunPositionProvider sunPositionProvider;
   private ActivationProvider activationProvider;
   private SceneSelectorImpl sceneSelector;
@@ -59,8 +62,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -72,8 +76,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( TwilightScene.class ) );
   }
 
@@ -85,8 +90,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( NightScene.class ) );
   }
 
@@ -98,8 +104,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( AwayScene.class ) );
   }
 
@@ -111,8 +118,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -126,8 +134,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -139,8 +148,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( SleepScene.class ) );
   }
 
@@ -152,8 +162,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 
@@ -167,8 +178,9 @@ public class SceneConfigurationTest {
     Map<Scope, Scene> actual = sceneSelector.select();
 
     assertThat( actual )
-      .hasSize( 2 )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
       .containsKey( LIVING_ROOM )
+      .containsKey( KITCHEN )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
   }
 

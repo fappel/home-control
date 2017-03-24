@@ -1,11 +1,15 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.HomeScope.GLOBAL;
+import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
+import com.codeaffine.home.control.application.internal.scene.NamedSceneDefaultSelection;
+import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
@@ -39,9 +43,16 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     sceneSelector
       .whenStatusOf( LIVING_ROOM, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
         .thenSelect( NamedSceneProvider.class, status -> status.getSceneType() )
-      .otherwiseWhenStatusOf( ActivationProvider.class ).matches( activation -> isLivingRoomActivated( activation ) )
+      .otherwiseWhenStatusOf( ActivationProvider.class )
+        .matches( activation -> hasZones( activation, WORK_AREA, LIVING_AREA ) )
         .thenSelect( LivingRoomScene.class )
       .otherwiseSelect( NamedSceneProvider.class, status -> status.getSceneType() );
+
+    sceneSelector
+      .whenStatusOf( KITCHEN, ActivationProvider.class )
+        .matches( activation -> hasZones( activation, COOKING_AREA, DINING_AREA ) )
+        .thenSelect( KitchenScene.class )
+      .otherwiseSelect( NamedSceneDefaultSelection.class );
   }
 
   private static boolean singleZoneReleaseOn( Activation activation, EntityDefinition<?> zoneDefinition ) {
@@ -57,7 +68,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     return -18 <= position.getZenit() && position.getZenit() <= 0;
   }
 
-  private static boolean isLivingRoomActivated( Activation activation ) {
-    return activation.isZoneActivated( WORK_AREA ) || activation.isZoneActivated( LIVING_AREA );
+  private static boolean hasZones( Activation activation, SectionDefinition ... zones ) {
+    return Stream.of( zones ).anyMatch( zoneDefinition -> activation.isZoneActivated( zoneDefinition ) );
   }
 }

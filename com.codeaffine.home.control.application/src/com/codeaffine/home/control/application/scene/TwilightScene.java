@@ -16,8 +16,7 @@ import com.codeaffine.home.control.status.Scene;
 public class TwilightScene implements Scene {
 
   private static final Collection<LampDefinition> TWILIGHT_LAMPS
-    = asList( SinkUplight,
-              KitchenCeiling,
+    = asList( SinkUplight, KitchenCeiling,
               ChimneyUplight, WindowUplight,
               BedStand, BedRoomCeiling,
               BathRoomCeiling,

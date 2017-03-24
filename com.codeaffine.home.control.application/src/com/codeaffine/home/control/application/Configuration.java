@@ -55,7 +55,7 @@ public class Configuration implements SystemConfiguration {
     facility.equip( HALL ).with( HallCeiling, HALL_MOTION );
     facility.equip( KITCHEN ).with( COOKING_AREA, DINING_AREA );
     facility.equip( COOKING_AREA ).with( KitchenCeiling, COOKING_AREA_MOTION );
-    facility.equip( DINING_AREA ).with( SinkUplight, DINING_AREA_MOTION );
+    facility.equip( DINING_AREA ).with( KitchenCeiling, SinkUplight, DINING_AREA_MOTION );
     facility.equip( BATH_ROOM ).with( BathRoomCeiling, BATH_ROOM_MOTION );
   }
 
