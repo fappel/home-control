@@ -1,6 +1,8 @@
 package com.codeaffine.home.control.application.internal.activation;
 
 import static com.codeaffine.home.control.application.internal.activation.TimeoutHelper.waitALittle;
+import static com.codeaffine.home.control.application.test.ActivationHelper.*;
+import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.test.util.entity.EntityHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -12,9 +14,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
-import com.codeaffine.home.control.application.internal.activation.PathAdjacency;
-import com.codeaffine.home.control.application.internal.activation.ZoneImpl;
 import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.test.util.lang.EqualsTester;
 
@@ -31,6 +32,7 @@ public class ZoneImplTest {
     zoneEntity = stubEntity( stubEntityDefinition( ZONE_NAME ) );
     adjacency = mock( PathAdjacency.class );
     zone = new ZoneImpl( zoneEntity, adjacency );
+    stubZonesOfPath( zone );
   }
 
   @Test
@@ -40,6 +42,7 @@ public class ZoneImplTest {
     assertThat( zone.getInPathReleaseMarkTime() ).isEmpty();
     assertThat( zone.isAdjacentActivated() ).isFalse();
     assertThat( zone.getActivationSensors() ).isEmpty();
+    assertThat( zone.getZonesOfRelatedPaths() ).containsExactly( zone );
   }
 
   @Test
@@ -52,6 +55,17 @@ public class ZoneImplTest {
     assertThat( originalReleaseTime ).isEmpty();
     assertThat( actualReleaseTime ).isNotEmpty();
     assertThat( actualInPathReleaseMarkTime ).isNotEmpty();
+  }
+
+  @Test
+  public void getZonesOfRelatedPaths() {
+    stubZonesOfPath( zone, createZone( ZONE_1 ) );
+
+    Set<Zone> actual = zone.getZonesOfRelatedPaths();
+
+    assertThat( actual )
+      .hasSize( 2 )
+      .contains( zone, createZone( ZONE_1 ) );
   }
 
   @Test
@@ -148,5 +162,11 @@ public class ZoneImplTest {
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsTraceArgument() {
     new ZoneImpl( zoneEntity, null );
+  }
+
+  private void stubZonesOfPath( Zone zone, ZoneImpl ... relatedPathZones ) {
+    Set<Zone> zones = asSet( relatedPathZones );
+    zones.add( zone );
+    when( adjacency.getZonesOfRelatedPaths( zone ) ).thenReturn( zones );
   }
 }

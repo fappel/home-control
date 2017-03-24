@@ -46,20 +46,9 @@ public class ZoneImpl implements Zone {
     return zoneEntity;
   }
 
-  public Set<Sensor> getActivationSensors() {
-    return new HashSet<>( activationSensors );
-  }
-
-  public ZoneImpl addActivationSensor( Sensor sensor ) {
-    Set<Sensor> sensors = getActivationSensors();
-    sensors.add( sensor );
-    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
-  }
-
-  public ZoneImpl removeActivationSensor( Sensor sensor ) {
-    Set<Sensor> sensors = getActivationSensors();
-    sensors.remove( sensor );
-    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
+  @Override
+  public Set<Zone> getZonesOfRelatedPaths() {
+    return adjacency.getZonesOfRelatedPaths( this );
   }
 
   @Override
@@ -70,18 +59,6 @@ public class ZoneImpl implements Zone {
   @Override
   public Optional<LocalDateTime> getReleaseTime() {
     return Optional.ofNullable( releaseTime );
-  }
-
-  public ZoneImpl markAsReleased() {
-    return new ZoneImpl( zoneEntity, adjacency, inPathReleaseMarkTime, now(), asArray( activationSensors ) );
-  }
-
-  public ZoneImpl markForInPathRelease() {
-    return new ZoneImpl( zoneEntity, adjacency, now(), releaseTime, asArray( activationSensors ) );
-  }
-
-  public Optional<LocalDateTime> getInPathReleaseMarkTime() {
-    return Optional.ofNullable( inPathReleaseMarkTime );
   }
 
   @Override
@@ -117,7 +94,35 @@ public class ZoneImpl implements Zone {
     return "ZoneActivation [zone=" + zoneEntity + "]";
   }
 
+  public ZoneImpl markAsReleased() {
+    return new ZoneImpl( zoneEntity, adjacency, inPathReleaseMarkTime, now(), asArray( activationSensors ) );
+  }
+
+  public Set<Sensor> getActivationSensors() {
+    return new HashSet<>( activationSensors );
+  }
+
+  public ZoneImpl addActivationSensor( Sensor sensor ) {
+    Set<Sensor> sensors = getActivationSensors();
+    sensors.add( sensor );
+    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
+  }
+
+  public ZoneImpl removeActivationSensor( Sensor sensor ) {
+    Set<Sensor> sensors = getActivationSensors();
+    sensors.remove( sensor );
+    return new ZoneImpl( zoneEntity, adjacency, asArray( sensors ) );
+  }
+
+  public ZoneImpl markForInPathRelease() {
+    return new ZoneImpl( zoneEntity, adjacency, now(), releaseTime, asArray( activationSensors ) );
+  }
+
+  public Optional<LocalDateTime> getInPathReleaseMarkTime() {
+    return Optional.ofNullable( inPathReleaseMarkTime );
+  }
+
   private static Sensor[] asArray( Set<Sensor> sensors ) {
-    return sensors.toArray( new Sensor[ sensors.size() ] );
+    return sensors.stream().toArray( Sensor[]::new );
   }
 }

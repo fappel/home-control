@@ -18,6 +18,7 @@ public class Activation {
     Entity<?> getZoneEntity();
     Optional<LocalDateTime> getReleaseTime();
     boolean isAdjacentActivated();
+    Set<Zone> getZonesOfRelatedPaths();
   }
 
   public Activation( Set<Zone> zones ) {

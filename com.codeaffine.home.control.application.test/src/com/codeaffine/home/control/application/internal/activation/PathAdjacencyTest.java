@@ -11,10 +11,6 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.internal.activation.AdjacencyDefinition;
-import com.codeaffine.home.control.application.internal.activation.Path;
-import com.codeaffine.home.control.application.internal.activation.PathAdjacency;
-import com.codeaffine.home.control.application.internal.activation.ZoneImpl;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -34,8 +30,34 @@ public class PathAdjacencyTest {
   }
 
   @Test
+  public void getZonesOfRelatedPaths() {
+    ZoneImpl lookupZone = createZone( ZONE_1 );
+    addOrReplaceInNewPath( lookupZone, createZone( ZONE_2 ) );
+    addOrReplaceInNewPath( createZone( ZONE_3 ) );
+
+    Set<Zone> actual = pathAdjacency.getZonesOfRelatedPaths( lookupZone );
+
+    assertThat( actual )
+      .hasSize( 2 )
+      .contains( lookupZone, createZone( ZONE_2 ) );
+  }
+
+  @Test
+  public void getZonesOfRelatedPathsIfLookUpZoneBelongsToMultiplePaths() {
+    ZoneImpl lookupZone = createZone( ZONE_1 );
+    addOrReplaceInNewPath( lookupZone, createZone( ZONE_2 ) );
+    addOrReplaceInNewPath( lookupZone, createZone( ZONE_3 ) );
+
+    Set<Zone> actual = pathAdjacency.getZonesOfRelatedPaths( lookupZone );
+
+    assertThat( actual )
+      .hasSize( 3 )
+      .contains( lookupZone, createZone( ZONE_2 ), createZone( ZONE_3 ) );
+  }
+
+  @Test
   public void isAdjacentActivated() {
-    addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentActivated( ZONE_2 );
 
@@ -44,7 +66,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentActivatedWithNonAdjacentZone() {
-    addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentActivated( ZONE_3 );
 
@@ -53,7 +75,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentActivatedOnSelfReflection() {
-    addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentActivated( ZONE_1 );
 
@@ -69,7 +91,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentTo() {
-    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_2, inPathReleases );
 
@@ -78,7 +100,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToOnContainment() {
-    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ), createActivation( ZONE_2 ) );
+    Set<Zone> inPathReleases = asSet( createZone( ZONE_1 ), createZone( ZONE_2 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_2, inPathReleases );
 
@@ -87,7 +109,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToWithNonAdjacentZone() {
-    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_3, inPathReleases );
 
@@ -96,7 +118,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToOnSelfReflection() {
-    Set<Zone> inPathReleases = asSet( createActivation( ZONE_1 ) );
+    Set<Zone> inPathReleases = asSet( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isAdjacentTo( ZONE_1, inPathReleases );
 
@@ -112,7 +134,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToMoreThanOneActivation() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ), createActivation( ZONE_3 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ), createZone( ZONE_3 ) );
 
     boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_2, path );
 
@@ -121,7 +143,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToMoreThanOneActivationIfAdjacentToEndOfPath() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_2 ), createActivation( ZONE_3 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_2 ), createZone( ZONE_3 ) );
 
     boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_1, path );
 
@@ -130,7 +152,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToMoreThanOneActivationIfIsEndOfPath() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_2 ), createActivation( ZONE_3 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_2 ), createZone( ZONE_3 ) );
 
     boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_2, path );
 
@@ -139,7 +161,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToMoreThanOneActivationIfPathHasOnlyOneElement() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_3 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_3 ) );
 
     boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_2, path );
 
@@ -155,7 +177,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelated() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_2, path );
 
@@ -164,7 +186,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnContainment() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_1, path );
 
@@ -173,7 +195,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnNonAdjacent() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_3, path );
 
@@ -182,7 +204,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnReleased() {
-    Path path = addOrReplaceInNewPath( createReleasedActivation( ZONE_1 ), createReleasedActivation( ZONE_2 ) );
+    Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ), createReleasedZone( ZONE_2 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_3, path );
 
@@ -191,7 +213,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnReleasedButNewPathAwaitsInsert() {
-    Path path = addOrReplaceInNewPath( createReleasedActivation( ZONE_1 ), createReleasedActivation( ZONE_2 ) );
+    Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ), createReleasedZone( ZONE_2 ) );
     paths.add( new Path() );
 
     boolean actual = pathAdjacency.isRelated( ZONE_3, path );
@@ -201,8 +223,8 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnReleasedButHasSelfContainedPath() {
-    Path path = addOrReplaceInNewPath( createReleasedActivation( ZONE_1 ) );
-    addOrReplaceInNewPath( createActivation( ZONE_2 ) );
+    Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ) );
+    addOrReplaceInNewPath( createZone( ZONE_2 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_2, path );
 
@@ -211,7 +233,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedOnSelfContainement() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ), createActivation( ZONE_2 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ), createZone( ZONE_2 ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_1, path );
 
@@ -220,7 +242,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedToActivatedZones() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelatedToActivatedZones( ZONE_2, path );
 
@@ -229,7 +251,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedToActivatedZonesOnContainment() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelatedToActivatedZones( ZONE_1, path );
 
@@ -238,7 +260,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedToActivatedZonesIfNotAdjacent() {
-    Path path = addOrReplaceInNewPath( createActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelatedToActivatedZones( ZONE_3, path );
 
@@ -247,7 +269,7 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedToActivatedZonesIfReleased() {
-    Path path = addOrReplaceInNewPath( createReleasedActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelatedToActivatedZones( ZONE_2, path );
 
@@ -256,18 +278,18 @@ public class PathAdjacencyTest {
 
   @Test
   public void isRelatedToActivatedZonesIfReleasedButContained() {
-    Path path = addOrReplaceInNewPath( createReleasedActivation( ZONE_1 ) );
+    Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ) );
 
     boolean actual = pathAdjacency.isRelatedToActivatedZones( ZONE_1, path );
 
     assertThat( actual ).isTrue();
   }
 
-  private ZoneImpl createReleasedActivation( Entity<EntityDefinition<?>> zone ) {
-    return createActivation( zone ).markAsReleased();
+  private ZoneImpl createReleasedZone( Entity<EntityDefinition<?>> zone ) {
+    return createZone( zone ).markAsReleased();
   }
 
-  private ZoneImpl createActivation( Entity<EntityDefinition<?>> zone ) {
+  private ZoneImpl createZone( Entity<EntityDefinition<?>> zone ) {
     return new ZoneImpl( zone, pathAdjacency );
   }
 

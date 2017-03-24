@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.application.internal.activation;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Set;
 
 import com.codeaffine.home.control.application.status.Activation.Zone;
@@ -14,6 +16,14 @@ public class PathAdjacency {
   PathAdjacency( AdjacencyDefinition adjacencyDefinition, Set<Path> paths ) {
     this.adjacencyDefinition = adjacencyDefinition;
     this.paths = paths;
+  }
+
+  Set<Zone> getZonesOfRelatedPaths( Zone zone ) {
+    return paths
+      .stream()
+      .filter( path -> !path.findZoneActivation( zone.getZoneEntity() ).isEmpty() )
+      .flatMap( path -> path.getAll().stream() )
+      .collect( toSet() );
   }
 
   boolean isAdjacentActivated( Entity<?> zoneEntity ) {
