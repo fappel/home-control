@@ -17,7 +17,7 @@ public class EntityHelper {
   }
 
   @SuppressWarnings("rawtypes")
-  public static EntityDefinition stubEntityDefinition( String name) {
+  public static EntityDefinition stubEntityDefinition( String name ) {
     EntityDefinition result = mock( EntityDefinition.class );
     when( result.toString() ).thenReturn( name );
     return result;

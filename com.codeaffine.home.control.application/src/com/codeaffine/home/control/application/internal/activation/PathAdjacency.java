@@ -18,7 +18,7 @@ public class PathAdjacency {
     this.paths = paths;
   }
 
-  Set<Zone> getZonesOfRelatedPaths( Zone zone ) {
+  public Set<Zone> getZonesOfRelatedPaths( Zone zone ) {
     return paths
       .stream()
       .filter( path -> !path.findZoneActivation( zone.getZoneEntity() ).isEmpty() )
@@ -26,29 +26,29 @@ public class PathAdjacency {
       .collect( toSet() );
   }
 
-  boolean isAdjacentActivated( Entity<?> zoneEntity ) {
+  public boolean isAdjacentActivated( Entity<?> zoneEntity ) {
     return paths
       .stream()
       .flatMap( path -> path.getAll().stream() )
       .anyMatch( zone -> isAdjacent( zone.getZoneEntity(), zoneEntity ) );
   }
 
-  boolean isAdjacentTo( Entity<?> zoneEntity, Set<Zone> range ) {
+  public boolean isAdjacentTo( Entity<?> zoneEntity, Set<Zone> range ) {
     return range.stream().anyMatch( zone -> isAdjacent( zone.getZoneEntity(), zoneEntity ) );
   }
 
-  boolean isAdjacentToMoreThanOneActivation( Entity<?> zoneEntity, Path path ) {
+  public boolean isAdjacentToMoreThanOneActivation( Entity<?> zoneEntity, Path path ) {
     return path.find( zone -> isAdjacent( zone.getZoneEntity(), zoneEntity ) ).size() > 1;
   }
 
-  boolean isRelated( Entity<?> zoneEntity, Path path ) {
+  public boolean isRelated( Entity<?> zoneEntity, Path path ) {
     if( pathsContainsNewOrZoneMatchesSingleElementPath( zoneEntity ) ) {
       return isRelatedToActivatedZones( zoneEntity, path );
     }
     return !path.find( zone -> isAdjacentOrActual( zoneEntity, zone ) ).isEmpty();
   }
 
-  boolean isRelatedToActivatedZones( Entity<?> zoneEntity, Path path ) {
+  public boolean isRelatedToActivatedZones( Entity<?> zoneEntity, Path path ) {
     return !path.find( zone -> isNonReleasedAdjacentOrActual( zoneEntity, zone ) ).isEmpty();
   }
 

@@ -14,6 +14,7 @@ import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.ComputerStatusProvider;
+import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.status.Scene;
 
 public class LivingRoomScene implements Scene {
@@ -23,6 +24,7 @@ public class LivingRoomScene implements Scene {
   private final ActivationProvider activationProvider;
   private final ActivityProvider activityProvider;
   private final LampCollector lampCollector;
+  private final ActivityMath activityMath;
 
   public LivingRoomScene( ComputerStatusProvider computerStatusProvider,
                           LampSwitchOperation lampSwitchOperation,
@@ -30,6 +32,7 @@ public class LivingRoomScene implements Scene {
                           ActivityProvider activityProvider,
                           LampCollector lampCollector )
   {
+    this.activityMath = new ActivityMath( activityProvider, activationProvider );
     this.computerStatusProvider = computerStatusProvider;
     this.lampSwitchOperation = lampSwitchOperation;
     this.activationProvider = activationProvider;
@@ -44,8 +47,8 @@ public class LivingRoomScene implements Scene {
 
   @Override
   public void prepare() {
-    Activation status = activationProvider.getStatus();
-    if( !status.getZone( WORK_AREA ).isPresent() || status.getZone( WORK_AREA ).get().isAdjacentActivated() ) {
+    Activation activation = activationProvider.getStatus();
+    if( !activation.getZone( WORK_AREA ).isPresent() || activation.getZone( WORK_AREA ).get().isAdjacentActivated() ) {
       configureWorkAreaAdditions();
     } else {
       setLampsToSwitchOn( WORK_AREA );
@@ -53,6 +56,21 @@ public class LivingRoomScene implements Scene {
   }
 
   private void configureWorkAreaAdditions() {
+    Activity activity = activityProvider.getStatus();
+
+    Percent maximum = activityMath.calculateMaximumOfPathActivityFor( WORK_AREA ).get();
+    Percent geometric = activityMath.calculateGeometricMeanOfPathActivityFor( WORK_AREA ).get();
+    Percent arithmetic = activityMath.calculateArithmeticMeanOfPathActivityFor( WORK_AREA ).get();
+    int delta = arithmetic.intValue() - geometric.intValue();
+    if(    activity.getOverallActivity().compareTo( Percent.P_010 ) > 0
+        && (    ( activity.getSectionActivity( WORK_AREA ).get().compareTo( maximum ) == 0 && delta > 10 )
+             || computeWorkAreaActivity() > 0.5 )
+        || computerStatusProvider.getStatus() == ON )
+    {
+
+    }
+
+
     if( computeWorkAreaActivity() > 0.5 || computerStatusProvider.getStatus() == ON ) {
       setLampsToSwitchOn( WORK_AREA );
     } else {

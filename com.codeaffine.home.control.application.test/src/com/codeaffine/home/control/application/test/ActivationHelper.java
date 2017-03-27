@@ -52,6 +52,10 @@ public class ActivationHelper {
   }
 
   public static ZoneImpl createZone( Entity<?> zoneEntity, Sensor ... sensors ) {
-    return new ZoneImpl( zoneEntity, mock( PathAdjacency.class ), sensors );
+    return createZone( zoneEntity, mock( PathAdjacency.class ), sensors );
+  }
+
+  public static ZoneImpl createZone( Entity<?> zoneEntity, PathAdjacency pathAdjacency, Sensor... sensors ) {
+    return new ZoneImpl( zoneEntity, pathAdjacency, sensors );
   }
 }
