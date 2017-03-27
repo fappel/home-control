@@ -19,6 +19,7 @@ import com.codeaffine.home.control.application.internal.scene.NamedSceneProvider
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.application.status.ActivationProvider;
+import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
 import com.codeaffine.home.control.application.status.SunPosition;
@@ -43,11 +44,13 @@ public class SceneConfigurationTest {
   public void setUp() {
     sunPositionProvider = mock( SunPositionProvider.class );
     activationProvider = mock( ActivationProvider.class );
+    ActivityProvider activityProvider = mock( ActivityProvider.class );
     context = new TestContext();
     context.set( SunPositionProvider.class, sunPositionProvider );
     context.set( Logger.class, mock( Logger.class ) );
     context.set( EventBus.class, mock( EventBus.class ) );
     context.set( ActivationProvider.class, activationProvider );
+    context.set( ActivityProvider.class, activityProvider );
     context.set( NamedSceneConfiguration.class, mock( NamedSceneConfiguration.class ) );
     context.set( NamedSceneProvider.class, context.create( NamedSceneProviderImpl.class ) );
     sceneSelector = new SceneSelectorImpl( context, mock( Logger.class ) );
