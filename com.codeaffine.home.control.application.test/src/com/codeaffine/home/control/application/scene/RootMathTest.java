@@ -23,6 +23,42 @@ public class RootMathTest {
   }
 
   @Test
+  public void nthRootOfOneWithScaleZero() {
+    BigDecimal radical = ONE;
+
+    BigDecimal actual = RootMath.nthRootOf( radical, EXPONENT, 0 );
+
+    assertThat( actual ).isEqualTo( ONE );
+  }
+
+  @Test
+  public void nthRootOfTwoWithExponentFourAndScaleZero() {
+    BigDecimal radical = BigDecimal.valueOf( 2L );
+
+    BigDecimal actual = RootMath.nthRootOf( radical, 4, 0 );
+
+    assertThat( actual ).isEqualTo( ONE );
+  }
+
+  @Test
+  public void nthRootOfThreeWithExponentTwoAndScaleZero() {
+    BigDecimal radical = BigDecimal.valueOf( 3L );
+
+    BigDecimal actual = RootMath.nthRootOf( radical, 2, 0 );
+
+    assertThat( actual ).isEqualTo( ONE );
+  }
+
+  @Test
+  public void nthRootOfThreeWithExponentTwoAndScaleOne() {
+    BigDecimal radical = BigDecimal.valueOf( 3L );
+
+    BigDecimal actual = RootMath.nthRootOf( radical, 2, 1 );
+
+    assertThat( actual ).isEqualTo( BigDecimal.valueOf( 1.7D ) );
+  }
+
+  @Test
   public void nthRootOfWithZeroAsExponent() {
     BigDecimal radical = VALUE.pow( EXPONENT );
 

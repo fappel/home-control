@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.status;
 
+import com.codeaffine.home.control.Context;
+
 public interface ControlCenter {
 
   public interface ControlCenterConfiguration {
@@ -9,4 +11,5 @@ public interface ControlCenter {
   }
 
   <T extends HomeControlOperation> void registerOperation( Class<T> operationType );
+  Context getContext();
 }

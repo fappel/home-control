@@ -4,15 +4,14 @@ import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
 import com.codeaffine.home.control.application.type.Percent;
 
-class SectionActivityProvider {
+abstract class RateCalculator {
 
   private final ActivationTracker activationTracker;
   private final Section section;
 
-  SectionActivityProvider( Section section, ActivationTracker activationTracker ) {
+  RateCalculator( Section section, ActivationTracker activationTracker ) {
     this.activationTracker = activationTracker;
     this.section = section;
   }
@@ -21,18 +20,22 @@ class SectionActivityProvider {
     activationTracker.setTimestampSupplier( timestampSupplier );
   }
 
-  Percent calculateRate() {
+  Section getSection() {
+    return section;
+  }
+
+  Percent calculate() {
     return activationTracker.calculateRate();
   }
 
-  void captureSensorActivations() {
-    if( hasActiveSensor() ) {
+  void captureActivations() {
+    if( isActive() ) {
       activationTracker.captureActivation();
+    } else {
+      activationTracker.removeOldest();
     }
     activationTracker.removeExpired();
   }
 
-  private boolean hasActiveSensor() {
-    return section.getChildren( ActivationSensorDefinition.class ).stream().anyMatch( sensor -> sensor.isEngaged() );
-  }
+  protected abstract boolean isActive();
 }

@@ -41,6 +41,11 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   }
 
   @Override
+  public Context getContext() {
+    return context;
+  }
+
+  @Override
   public <T extends HomeControlOperation> void registerOperation( Class<T> operationType ) {
     verifyNotNull( operationType, "operationType" );
 
@@ -73,9 +78,10 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   private void prepareOperations() {
     operations.values().forEach( operation -> operation.reset() );
     sortScopesReversely( activeScenes ).forEach( scope -> activeScenes.get( scope ).close() );
+    Map<Scope, Scene> oldSelection = new HashMap<>( activeScenes );
     activeScenes.clear();
     activeScenes.putAll( sceneSelector.select() );
-    sortScopes( activeScenes ).forEach( scope -> activeScenes.get( scope ).prepare() );
+    sortScopes( activeScenes ).forEach( scope -> activeScenes.get( scope ).prepare( oldSelection.get( scope ) ) );
   }
 
   private static List<Scope> sortScopesReversely( Map<Scope, Scene> scenes ) {

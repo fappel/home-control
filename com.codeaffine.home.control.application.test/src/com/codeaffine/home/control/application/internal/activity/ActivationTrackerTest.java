@@ -16,13 +16,13 @@ import com.codeaffine.home.control.application.type.Percent;
 public class ActivationTrackerTest {
 
   private static final BigDecimal MAX_ACTIVATIONS
-    = calculateMaxActivations( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
+    = calculateMaxActivations( OBSERVATION_TIME, CALCULATION_INTERVAL );
 
   private ActivationTracker tracker;
 
   @Before
   public void setUp() {
-    tracker = new ActivationTracker( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
+    tracker = new ActivationTracker( OBSERVATION_TIME, CALCULATION_INTERVAL );
   }
 
   @Test
@@ -43,7 +43,7 @@ public class ActivationTrackerTest {
 
   @Test
   public void removeExpired() {
-    tracker.setTimestampSupplier( () -> now().minusMinutes( ActivityProviderImpl.OBSERVATION_TIME_FRAME + 1 ) );
+    tracker.setTimestampSupplier( () -> now().minusMinutes( ActivityProviderImpl.OBSERVATION_TIME + 1 ) );
     captureActivations( MAX_ACTIVATIONS.intValue() / 2 );
 
     tracker.removeExpired();
@@ -60,6 +60,20 @@ public class ActivationTrackerTest {
     Percent actual = tracker.calculateRate();
 
     assertThat( actual ).isSameAs( P_050 );
+  }
+
+  @Test
+  public void removeOldest() {
+    tracker.captureActivation();
+    tracker.captureActivation();
+
+    Percent beforeRemoval = tracker.calculateRate();
+    tracker.removeOldest();
+    Percent afterRemoval = tracker.calculateRate();
+
+    assertThat( afterRemoval.intValue() )
+      .isNotEqualTo( 0 )
+      .isSameAs( beforeRemoval.intValue() / 2 );
   }
 
   private void captureActivations( int times ) {

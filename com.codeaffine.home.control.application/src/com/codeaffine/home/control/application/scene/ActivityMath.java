@@ -3,12 +3,15 @@ package com.codeaffine.home.control.application.scene;
 import static com.codeaffine.home.control.application.scene.RootMath.nthRootOf;
 import static com.codeaffine.home.control.application.type.Percent.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static java.math.RoundingMode.HALF_UP;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toSet;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.status.Activation.Zone;
@@ -24,6 +27,8 @@ public class ActivityMath {
   private static final BigDecimal MULTIPLICATION_IDENTIY = toBigDecimal( 1 );
   private static final BigDecimal SUM_IDENTITY = toBigDecimal( 0 );
 
+  private final BiFunction<Activity, Zone, Optional<Percent>> allocationFinder;
+  private final BiFunction<Activity, Zone, Optional<Percent>> activityFinder;
   private final ActivationProvider activationProvider;
   private final ActivityProvider activityProvider;
 
@@ -31,6 +36,8 @@ public class ActivityMath {
     verifyNotNull( activationProvider, "activationProvider" );
     verifyNotNull( activityProvider, "activityProvider" );
 
+    this.allocationFinder = ( activity, zone ) -> findSectionAllocation( activity, zone );
+    this.activityFinder = ( activity, zone ) -> findSectionActivity( activity, zone );
     this.activationProvider = activationProvider;
     this.activityProvider = activityProvider;
   }
@@ -38,80 +45,123 @@ public class ActivityMath {
   public Optional<Percent> calculateArithmeticMeanOfPathActivityFor( SectionDefinition sectionDefinition ) {
     verifyNotNull( sectionDefinition, "sectionDefinition" );
 
-    if( isPresent( sectionDefinition ) ) {
-      return percentOptionalOf( calculateArithmeticMeanFor( sectionDefinition ) );
-    }
-    return empty();
+    return performFor( sectionDefinition, section -> calculateArithmeticMean( section, activityFinder ) );
+  }
+
+  public Optional<Percent> calculateArithmeticMeanOfPathAllocationFor( SectionDefinition sectionDefinition ) {
+    verifyNotNull( sectionDefinition, "sectionDefinition" );
+
+    return performFor( sectionDefinition, section -> calculateArithmeticMean( section, allocationFinder ) );
   }
 
   public Optional<Percent> calculateGeometricMeanOfPathActivityFor( SectionDefinition sectionDefinition ) {
     verifyNotNull( sectionDefinition, "sectionDefinition" );
 
-    if( isPresent( sectionDefinition ) ) {
-      return percentOptionalOf( calculateGeometricMeanFor( sectionDefinition ) );
-    }
-    return empty();
+    return performFor( sectionDefinition, section -> calculateGeometricMean( section, activityFinder ) );
+  }
+
+  public Optional<Percent> calculateGeometricMeanOfPathAllocationFor( SectionDefinition sectionDefinition ) {
+    verifyNotNull( sectionDefinition, "sectionDefinition" );
+
+    return performFor( sectionDefinition, section -> calculateGeometricMean( section, allocationFinder ) );
   }
 
   public Optional<Percent> calculateMinimumOfPathActivityFor( SectionDefinition sectionDefinition ) {
     verifyNotNull( sectionDefinition, "sectionDefinition" );
 
-    if( isPresent( sectionDefinition ) ) {
-      return percentOptionalOf( calculateMinimumFor( sectionDefinition ) );
-    }
-    return empty();
+    return performFor( sectionDefinition, section -> calculateMinimum( section, activityFinder ) );
+  }
+
+  public Optional<Percent> calculateMinimumOfPathAllocationFor( SectionDefinition sectionDefinition ) {
+    verifyNotNull( sectionDefinition, "sectionDefinition" );
+
+    return performFor( sectionDefinition, section -> calculateMinimum( section, allocationFinder ) );
   }
 
   public Optional<Percent> calculateMaximumOfPathActivityFor( SectionDefinition sectionDefinition ) {
     verifyNotNull( sectionDefinition, "sectionDefinition" );
 
-    if( isPresent( sectionDefinition ) ) {
-      return percentOptionalOf( calculateMaximumFor( sectionDefinition ) );
-    }
-    return empty();
+    return performFor( sectionDefinition, section -> calculateMaximum( section, activityFinder ) );
+  }
+
+  public Optional<Percent> calculateMaximumOfPathAllocationFor( SectionDefinition sectionDefinition ) {
+    verifyNotNull( sectionDefinition, "sectionDefinition" );
+
+    return performFor( sectionDefinition, section -> calculateMaximum( section, allocationFinder ) );
   }
 
   private boolean isPresent( SectionDefinition sectionDefinition ) {
     return activationProvider.getStatus().getZone( sectionDefinition ).isPresent();
   }
 
-  private static Optional<Percent> percentOptionalOf( int value ) {
-    return Optional.of( Percent.valueOf( value ) );
+  private static Optional<Percent> percentOptionalOf( Integer value) {
+    return Optional.of( Percent.valueOf( value.intValue() ) );
   }
 
-  private int calculateArithmeticMeanFor( SectionDefinition sectionDefinition ) {
-    BigDecimal sum = collectZoneActivities( sectionDefinition )
+  private Integer calculateArithmeticMean(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
+    int activationCount = countNonZeroActivityZones( sectionDefinition, rateFinder );
+    if( activationCount != 0 ) {
+      return calculateArithmeticMeanOfNonZeroActivations( sectionDefinition, rateFinder, activationCount );
+    }
+    return Integer.valueOf( 0 );
+  }
+
+  private Integer calculateArithmeticMeanOfNonZeroActivations(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder, int activationCount )
+  {
+    BigDecimal sum = collectZoneActivities( sectionDefinition, rateFinder )
       .stream()
       .reduce( SUM_IDENTITY, ( value, percent ) -> sum( value, percent ) );
-    return sum.divide( toBigDecimal( calculateZoneActivityCount( sectionDefinition ) ) ).intValue();
+    return toInteger( sum.divide( toBigDecimal( activationCount ), HALF_UP ).intValue() );
   }
 
-  private int calculateGeometricMeanFor( SectionDefinition sectionDefinition ) {
-    BigDecimal product = collectZoneActivities( sectionDefinition )
+  private Integer calculateGeometricMean(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
+    BigDecimal product = collectZoneActivities( sectionDefinition, rateFinder )
       .stream()
       .reduce( MULTIPLICATION_IDENTIY, ( value, percent ) -> multiply( value, percent ) );
-    return nthRootOf( product, calculateZoneActivityCount( sectionDefinition ), 0 ).intValue();
+    return toInteger( nthRootOf( product, countNonZeroActivityZones( sectionDefinition, rateFinder ), 0 ).intValue() );
   }
 
-  private int calculateZoneActivityCount( SectionDefinition sectionDefinition ) {
-    return collectZoneActivities( sectionDefinition ).size();
+  private int countNonZeroActivityZones(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
+    return collectZoneActivities( sectionDefinition, rateFinder ).size();
   }
 
-  private int calculateMinimumFor( SectionDefinition sectionDefinition ) {
-    return collectZoneActivities( sectionDefinition )
+  private Integer calculateMinimum(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
+    return toInteger( collectZoneActivities( sectionDefinition, rateFinder )
      .stream()
      .reduce( MINIMUM_IDENTITY, ( value, percent ) -> minimum( value, percent ) )
-     .intValue();
+     .intValue() );
   }
 
-  private int calculateMaximumFor( SectionDefinition sectionDefinition ) {
-    return collectZoneActivities( sectionDefinition )
+  private Integer calculateMaximum(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
+    return toInteger( collectZoneActivities( sectionDefinition, rateFinder )
       .stream()
       .reduce( MAXIMUM_IDENTITY, ( value, percent ) -> maximum( value, percent ) )
-      .intValue();
+      .intValue() );
   }
 
-  private Set<BigDecimal> collectZoneActivities( SectionDefinition sectionDefinition ) {
+  private Optional<Percent> performFor(
+    SectionDefinition sectionDefinition, Function<SectionDefinition, Integer> calculator )
+  {
+    if( isPresent( sectionDefinition ) ) {
+      return percentOptionalOf( calculator.apply( sectionDefinition ) );
+    }
+    return empty();
+  }
+
+  private Set<BigDecimal> collectZoneActivities(
+    SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
+  {
     Activity activity = activityProvider.getStatus();
     return activationProvider
       .getStatus()
@@ -119,8 +169,8 @@ public class ActivityMath {
       .get()
       .getZonesOfRelatedPaths()
       .stream()
-      .filter( zone -> findSectionActivity( activity, zone ).isPresent() )
-      .map( zone -> toBigDecimal( getSectionActivity( activity, zone ).intValue() ) )
+      .filter( zone -> rateFinder.apply( activity, zone ).isPresent() )
+      .map( zone -> toBigDecimal( rateFinder.apply( activity, zone ).get().intValue() ) )
       .filter( zoneActivity -> zoneActivity.intValue() > 0 )
       .collect( toSet() );
   }
@@ -129,8 +179,8 @@ public class ActivityMath {
     return activity.getSectionActivity( ( SectionDefinition )zone.getZoneEntity().getDefinition() );
   }
 
-  private static BigDecimal getSectionActivity( Activity activity, Zone zone ) {
-    return toBigDecimal( findSectionActivity( activity, zone ).get().intValue() );
+  private static Optional<Percent> findSectionAllocation( Activity activity, Zone zone ) {
+    return activity.getSectionAllocation( ( SectionDefinition )zone.getZoneEntity().getDefinition() );
   }
 
   private static BigDecimal sum( BigDecimal value1, BigDecimal value2 ) {
@@ -151,5 +201,9 @@ public class ActivityMath {
 
   private static BigDecimal toBigDecimal( int value ) {
     return BigDecimal.valueOf( value );
+  }
+
+  private static Integer toInteger( int value ) {
+    return Integer.valueOf( value );
   }
 }

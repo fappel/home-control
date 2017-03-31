@@ -9,6 +9,7 @@ import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.application.analysis.Analysis;
 import com.codeaffine.home.control.application.internal.activation.ActivationProviderImpl;
 import com.codeaffine.home.control.application.internal.activation.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
@@ -20,6 +21,7 @@ import com.codeaffine.home.control.application.operation.AdjustBrightnessOperati
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
+import com.codeaffine.home.control.application.scene.LampControl;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
 import com.codeaffine.home.control.application.sensor.ActivationSensorProvider;
@@ -54,7 +56,7 @@ public class Configuration implements SystemConfiguration {
     facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION );
     facility.equip( HALL ).with( HallCeiling, HALL_MOTION );
     facility.equip( KITCHEN ).with( COOKING_AREA, DINING_AREA );
-    facility.equip( COOKING_AREA ).with( KitchenCeiling, COOKING_AREA_MOTION );
+    facility.equip( COOKING_AREA ).with( KitchenCeiling, SinkUplight, COOKING_AREA_MOTION );
     facility.equip( DINING_AREA ).with( KitchenCeiling, SinkUplight, DINING_AREA_MOTION );
     facility.equip( BATH_ROOM ).with( BathRoomCeiling, BATH_ROOM_MOTION );
   }
@@ -75,11 +77,12 @@ public class Configuration implements SystemConfiguration {
 
     Context context = statusProviderRegistry.getContext();
     context.set( AdjacencyDefinition.class, adjacencyDefinition );
-    statusProviderRegistry.register( ActivationProvider.class, ActivationProviderImpl.class );
-    context.set( LampCollector.class, context.create( LampCollector.class ) );
-    statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
-    statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
     context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );
+    statusProviderRegistry.register( ActivationProvider.class, ActivationProviderImpl.class );
+    statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
+    context.set( LampCollector.class, context.create( LampCollector.class ) );
+    context.set( Analysis.class, context.create( Analysis.class ) );
+    statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
     statusProviderRegistry.register( NamedSceneProvider.class, NamedSceneProviderImpl.class );
     statusProviderRegistry.register( ComputerStatusProvider.class, ComputerStatusProviderImpl.class );
   }
@@ -89,6 +92,8 @@ public class Configuration implements SystemConfiguration {
     controlCenter.registerOperation( LampSwitchOperation.class );
     controlCenter.registerOperation( AdjustBrightnessOperation.class );
     controlCenter.registerOperation( AdjustColorTemperatureOperation.class );
+    Context context = controlCenter.getContext();
+    context.set( LampControl.class, context.create( LampControl.class ) );
   }
 
   @Override

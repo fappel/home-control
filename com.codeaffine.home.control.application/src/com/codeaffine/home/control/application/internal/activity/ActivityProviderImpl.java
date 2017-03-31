@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.internal.activity;
 
 import static com.codeaffine.home.control.application.internal.activity.Messages.INFO_ACTIVITY_RATE;
+import static com.codeaffine.home.control.application.internal.activity.RateCalculators.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.Boolean.*;
 import static java.util.stream.Collectors.toMap;
@@ -13,6 +14,7 @@ import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.section.SectionProvider.Section;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
+import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
@@ -21,24 +23,29 @@ import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusProviderCore;
 
-public class ActivityProviderImpl implements ActivityProvider {
+public class ActivityProviderImpl extends RateCalculator implements ActivityProvider {
 
-  static final long OBSERVATION_TIME_FRAME = 3L; // Minutes
+  static final long OBSERVATION_TIME = 5L; // Minutes
   static final long CALCULATION_INTERVAL = 10L; // Seconds
   static final long SCAN_RATE = 2L; // Seconds
 
-  private final Map<Section, SectionActivityProvider> sectionProviders;
+  private final Map<Section, AllocationRateCalculator> allocationCalculators;
+  private final Map<Section, ActivityRateCalculator> activityCalculators;
   private final StatusProviderCore<Activity> statusProviderCore;
-  private final ActivationTracker activationTracker;
   private final EntityRegistry entityRegistry;
 
-  public ActivityProviderImpl( EntityRegistry entityRegistry, EventBus eventBus, Logger logger ) {
+  public ActivityProviderImpl(
+    ActivationProvider activationProvider, EntityRegistry entityRegistry, EventBus eventBus, Logger logger )
+  {
+    super( null, new ActivationTracker( OBSERVATION_TIME, CALCULATION_INTERVAL ) );
+    verifyNotNull( activationProvider, "activationProvider" );
     verifyNotNull( entityRegistry, "entityRegistry" );
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( logger, "logger" );
 
-    this.sectionProviders = createSectionProviders( entityRegistry, OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
-    this.activationTracker = newActivationTracker( OBSERVATION_TIME_FRAME, CALCULATION_INTERVAL );
+    this.allocationCalculators
+      = createAllocationCalculators( entityRegistry, activationProvider, OBSERVATION_TIME, CALCULATION_INTERVAL );
+    this.activityCalculators = createActivityCalculators( entityRegistry, OBSERVATION_TIME, CALCULATION_INTERVAL );
     this.statusProviderCore = new StatusProviderCore<>( eventBus, calculateStatus(), this, logger );
     this.entityRegistry = entityRegistry;
   }
@@ -53,21 +60,23 @@ public class ActivityProviderImpl implements ActivityProvider {
     statusProviderCore.updateStatus( () -> calculateStatus(), INFO_ACTIVITY_RATE );
   }
 
+  @Override
   @Schedule( period = CALCULATION_INTERVAL )
   void captureActivations() {
-    if( hasActiveSensors() ) {
-      activationTracker.captureActivation();
-    }
-    activationTracker.removeExpired();
-    sectionProviders.values().forEach( provider -> provider.captureSensorActivations() );
+    super.captureActivations();
+    allocationCalculators.values().forEach( provider -> provider.captureActivations() );
+    activityCalculators.values().forEach( provider -> provider.captureActivations() );
   }
 
+  @Override
   void setTimestampSupplier( Supplier<LocalDateTime> timestampSupplier ) {
-    activationTracker.setTimestampSupplier( timestampSupplier );
-    sectionProviders.values().forEach( provider -> provider.setTimestampSupplier( timestampSupplier ) );
+    super.setTimestampSupplier( timestampSupplier );
+    allocationCalculators.values().forEach( provider -> provider.setTimestampSupplier( timestampSupplier ) );
+    activityCalculators.values().forEach( provider -> provider.setTimestampSupplier( timestampSupplier ) );
   }
 
-  private boolean hasActiveSensors() {
+  @Override
+  protected boolean isActive() {
     return entityRegistry.findByDefinitionType( ActivationSensorDefinition.class )
       .stream()
       .map( sensor -> valueOf( sensor.isEngaged() ) )
@@ -77,37 +86,24 @@ public class ActivityProviderImpl implements ActivityProvider {
   }
 
   private Activity calculateStatus() {
-    Percent overallRate = activationTracker.calculateRate();
+    Map<SectionDefinition, Percent> sectionAllocations = calculateSectionAllocationRate();
     Map<SectionDefinition, Percent> sectionActivities = calculateSectionActivityRate();
-    return new Activity( overallRate, sectionActivities );
+    return new Activity( super.calculate(), sectionActivities, sectionAllocations );
+  }
+
+  private Map<SectionDefinition, Percent> calculateSectionAllocationRate() {
+    return allocationCalculators
+        .keySet()
+        .stream()
+        .collect( toMap( section -> section.getDefinition(),
+                         section -> allocationCalculators.get( section ).calculate() ) );
   }
 
   private Map<SectionDefinition, Percent> calculateSectionActivityRate() {
-    return sectionProviders
+    return activityCalculators
       .keySet()
       .stream()
       .collect( toMap( section -> section.getDefinition(),
-                       section -> sectionProviders.get( section ).calculateRate() ) );
-  }
-
-  private static Map<Section, SectionActivityProvider> createSectionProviders(
-    EntityRegistry entityRegistry, long timeFrame, long intervalDuration )
-  {
-    return entityRegistry
-      .findByDefinitionType( SectionDefinition.class )
-      .stream()
-      .filter( section -> !section.getChildren( ActivationSensorDefinition.class ).isEmpty() )
-      .collect( toMap( section -> section,
-                       section -> newSectionActivityProvider( section, timeFrame, intervalDuration ) ) );
-  }
-
-  private static SectionActivityProvider newSectionActivityProvider(
-    Section section, long timeFrame, long intervalDuration )
-  {
-    return new SectionActivityProvider( section, newActivationTracker( timeFrame, intervalDuration ) );
-  }
-
-  private static ActivationTracker newActivationTracker( long timeFrame, long intervalDuration ) {
-    return new ActivationTracker( timeFrame, intervalDuration );
+                       section -> activityCalculators.get( section ).calculate() ) );
   }
 }

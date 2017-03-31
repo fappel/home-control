@@ -16,7 +16,7 @@ import com.codeaffine.home.control.type.DecimalType;
 
 public class ComputerStatusProviderImpl implements ComputerStatusProvider {
 
-  static final DecimalType MIN_IDLE_TIME_IN_SECONDS = new DecimalType( 120 );
+  static final DecimalType MIN_IDLE_TIME_IN_SECONDS = new DecimalType( 60 );
 
   private final StatusProviderCore<OnOff> core;
 

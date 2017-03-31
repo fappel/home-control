@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.FollowUpTimer;
@@ -142,8 +143,11 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public void prepare() {
+    public void prepare( Scene previous ) {
       log.add( LOG_PREPARE_SCENE_4 );
+      if( previous != null ) {
+        log.add( previous.getName() );
+      }
     }
 
     @Override
@@ -367,12 +371,14 @@ public class ControlCenterImplTest {
                         LOG_CLOSE_SCENE_1,
                         LOG_PREPARE_SCENE_3,
                         LOG_PREPARE_SCENE_4,
+                        Scene2.class.getSimpleName(),
                         secondEvent,
                         LOG_RESET_OPERATION,
                         LOG_CLOSE_SCENE_4,
                         LOG_CLOSE_SCENE_3,
                         LOG_PREPARE_SCENE_3,
                         LOG_PREPARE_SCENE_4,
+                        Scene4.class.getSimpleName(),
                         thirdEvent,
                         LOG_RESET_OPERATION,
                         LOG_CLOSE_SCENE_4,
@@ -385,6 +391,7 @@ public class ControlCenterImplTest {
                         LOG_CLOSE_SCENE_1,
                         LOG_PREPARE_SCENE_1,
                         LOG_PREPARE_SCENE_4,
+                        Scene2.class.getSimpleName(),
                         fifthEvent );
   }
 
@@ -442,6 +449,13 @@ public class ControlCenterImplTest {
                         LOG_CLOSE_SCENE_1,
                         LOG_PREPARE_SCENE_2,
                         secondEvent );
+  }
+
+  @Test
+  public void getContext() {
+    Context actual = controlCenter.getContext();
+
+    assertThat( actual ).isSameAs( context );
   }
 
   @Test( expected = IllegalArgumentException.class )

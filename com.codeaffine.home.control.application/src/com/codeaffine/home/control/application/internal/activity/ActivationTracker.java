@@ -48,6 +48,10 @@ class ActivationTracker {
     }
   }
 
+  void removeOldest() {
+    activations.poll();
+  }
+
   private boolean hasExpiredTimestamps() {
     return    !activations.isEmpty()
            && activations.peek().plusMinutes( observationTimeFrame ).isBefore( now() );

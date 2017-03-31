@@ -12,18 +12,31 @@ public class SleepScene implements Scene {
   private final LampSwitchOperation lampSwitchOperation;
   private final FollowUpTimer followUpTimer;
 
+  private boolean sleepMode;
+
   public SleepScene( LampSwitchOperation lampSwitchOperation, FollowUpTimer followUpTimer ) {
     this.lampSwitchOperation = lampSwitchOperation;
     this.followUpTimer = followUpTimer;
   }
 
   @Override
-  public void prepare() {
-    followUpTimer.schedule( 20L, SECONDS, activateAwayMode() );
+  public void prepare( Scene previous ) {
+    if( previous != this ) {
+      followUpTimer.schedule( 10L, SECONDS, activateSleepMode() );
+      sleepMode = false;
+    }
+    if( sleepMode ) {
+      switchAllLampsOff();
+    }
   }
 
-  private Runnable activateAwayMode() {
-    return () -> lampSwitchOperation.setLampSelectionStrategy( NONE );
+  private Runnable activateSleepMode() {
+    return () -> switchAllLampsOff();
+  }
+
+  private void switchAllLampsOff() {
+    sleepMode = true;
+    lampSwitchOperation.setLampSelectionStrategy( NONE );
   }
 
   @Override

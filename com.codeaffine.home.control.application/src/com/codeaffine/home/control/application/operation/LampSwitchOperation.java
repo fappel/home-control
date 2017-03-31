@@ -20,6 +20,7 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.status.Activation;
 import com.codeaffine.home.control.application.status.ActivationProvider;
+import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.ComputerStatusProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.status.FollowUpTimer;
@@ -64,6 +65,14 @@ public class LampSwitchOperation implements HomeControlOperation {
     reset();
   }
 
+  @Override
+  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
+    return asList( NamedSceneProvider.class,
+                   ActivationProvider.class,
+                   ActivityProvider.class,
+                   ComputerStatusProvider.class );
+  }
+
   public void setLampSelectionStrategy( LampSelectionStrategy lampSelectionStrategy ) {
     verifyNotNull( lampSelectionStrategy, "lampSelectionStrategy" );
 
@@ -102,11 +111,6 @@ public class LampSwitchOperation implements HomeControlOperation {
 
     this.delayed.clear();
     this.delayed.addAll( mapToLamps( delayed ) );
-  }
-
-  @Override
-  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
-    return asList( NamedSceneProvider.class, ActivationProvider.class, ComputerStatusProvider.class );
   }
 
   @Override

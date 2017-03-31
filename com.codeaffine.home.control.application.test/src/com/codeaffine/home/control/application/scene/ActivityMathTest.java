@@ -5,11 +5,10 @@ import static com.codeaffine.home.control.application.test.ActivationHelper.crea
 import static com.codeaffine.home.control.application.type.Percent.*;
 import static com.codeaffine.home.control.test.util.entity.EntityHelper.stubEntity;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,6 +76,39 @@ public class ActivityMathTest {
   }
 
   @Test
+  public void calculateGeometricMeanOfPathAllocationFor() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_003 );
+  }
+
+  @Test
+  public void calculateGeometricMeanOfPathAllocationForASingleActivation() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_009 );
+  }
+
+  @Test
+  public void calculateGeometricMeanOfPathAllocationForNonRelevantSection() {
+    stubActivationProvider( createZones( WORK_AREA, LIVING_AREA, HALL ) );
+
+    Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( COOKING_AREA );
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
   public void calculateArithmeticMeanOfPathActivityFor() {
     stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
@@ -101,10 +133,67 @@ public class ActivityMathTest {
   }
 
   @Test
+  public void calculateArithmeticMeanOfPathActivityForZeroActivations() {
+    stubActivityProvider( newActivity( P_010 ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_000 );
+  }
+
+  @Test
   public void calculateArithmeticMeanOfPathActivityForNonRelevantSection() {
     stubActivationProvider( createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( COOKING_AREA );
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
+  public void calculateArithmeticMeanOfPathAllocationFor() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_005 );
+  }
+
+  @Test
+  public void calculateArithmeticMeanOfPathAllocationForASingleActivation() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_009 );
+  }
+
+  @Test
+  public void calculateArithmeticMeanOfPathAllocationForZeroActivations() {
+    stubActivityProvider( newActivity( P_010 ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_000 );
+  }
+
+  @Test
+  public void calculateArithmeticMeanOfPathAllocationForNonRelevantSection() {
+    stubActivationProvider( createZones( WORK_AREA, LIVING_AREA, HALL ) );
+
+    Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( COOKING_AREA );
 
     assertThat( actual ).isEmpty();
   }
@@ -143,6 +232,39 @@ public class ActivityMathTest {
   }
 
   @Test
+  public void calculateMaximumOfPathAllocationFor() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_009 );
+  }
+
+  @Test
+  public void calculateMaximumOfPathAllocationForASingleActivation() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_009 );
+  }
+
+  @Test
+  public void calculateMaximumOfPathAllocationForNonRelevantSection() {
+    stubActivationProvider( createZones( WORK_AREA, LIVING_AREA, HALL ) );
+
+    Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( COOKING_AREA );
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
   public void calculateMinimumOfPathActivityFor() {
     stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
@@ -175,6 +297,39 @@ public class ActivityMathTest {
     assertThat( actual ).isEmpty();
   }
 
+  @Test
+  public void calculateMinimumOfPathAllocationFor() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA, LIVING_AREA, HALL );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_001 );
+  }
+
+  @Test
+  public void calculateMinimumOfPathAllocationForASingleActivation() {
+    stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    Set<Zone> zones = createZones( WORK_AREA );
+    stubAdjacency( WORK_AREA, zones );
+    stubActivationProvider( zones );
+
+    Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( WORK_AREA );
+
+    assertThat( actual ).hasValue( P_009 );
+  }
+
+  @Test
+  public void calculateMinimumOfPathAllocationForNonRelevantSection() {
+    stubActivationProvider( createZones( WORK_AREA, LIVING_AREA, HALL ) );
+
+    Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( COOKING_AREA );
+
+    assertThat( actual ).isEmpty();
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void calculateGeometricMeanOfPathActivityForWithNullAsSectionDefinitionArgument() {
     activityMath.calculateGeometricMeanOfPathActivityFor( null );
@@ -196,6 +351,26 @@ public class ActivityMathTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
+  public void calculateGeometricMeanOfPathAllocationForWithNullAsSectionDefinitionArgument() {
+    activityMath.calculateGeometricMeanOfPathAllocationFor( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void calculateArithmeticMeanOfPathAllocationForWithNullAsSectionDefinitionArgument() {
+    activityMath.calculateArithmeticMeanOfPathAllocationFor( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void calculateMaximumOfPathAllocationForWithNullAsSectionDefinitionArgument() {
+    activityMath.calculateMaximumOfPathAllocationFor( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void calculateMinimumOfPathAllocationForWithNullAsSectionDefinitionArgument() {
+    activityMath.calculateMinimumOfPathAllocationFor( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsActivityProviderArgument() {
     new ActivityMath( null, activationProvider );
   }
@@ -206,12 +381,16 @@ public class ActivityMathTest {
   }
 
   @SafeVarargs
-  private static Activity newActivity( Percent overallActivity, List<Object> ... sectionActivityEntries ) {
-    Map<SectionDefinition, Percent> activities = new HashMap<>();
-    Stream.of( sectionActivityEntries ).forEach( sectionActivityEntry -> {
-      activities.put( ( SectionDefinition )sectionActivityEntry.get( 0 ), ( Percent )sectionActivityEntry.get( 1 ) );
-    } );
-    return new Activity( overallActivity, activities );
+  private static Activity newActivity( Percent overallActivity, List<Object> ... activationEntries ) {
+    Map<SectionDefinition, Percent> activations = collectActivations( activationEntries );
+    return new Activity( overallActivity, activations, activations );
+  }
+
+  @SafeVarargs
+  private static Map<SectionDefinition, Percent> collectActivations( List<Object>... activationEntries ) {
+    return Stream.of( activationEntries )
+      .collect( toMap( activationEntry -> ( SectionDefinition )activationEntry.get( 0 ),
+                       activationEntry -> ( Percent )activationEntry.get( 1 ) ) );
   }
 
   private void stubActivityProvider( Activity activity ) {

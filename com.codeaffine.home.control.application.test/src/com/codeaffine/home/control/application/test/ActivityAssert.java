@@ -62,4 +62,39 @@ public class ActivityAssert extends AbstractAssert<ActivityAssert, Activity> {
     toCheck.forEach( sectionDefinition -> sectionActivityIsNotPresentFor( sectionDefinition ) );
     return this;
   }
+
+  public ActivityAssert sectionAllocationIsPresentFor( SectionDefinition sectionDefinition ) {
+    isNotNull();
+    if( !actual.getSectionAllocation( sectionDefinition ).isPresent() ) {
+      failWithMessage( "Expected section allocation for section <%s> to be present but wasn't.", sectionDefinition );
+    }
+    return this;
+  }
+
+  public ActivityAssert sectionAllocationIsNotPresentFor( SectionDefinition sectionDefinition ) {
+    isNotNull();
+    if( actual.getSectionAllocation( sectionDefinition ).isPresent() ) {
+      failWithMessage( "Expected section allocation for section <%s> not to be present but it was.", sectionDefinition );
+    }
+    return this;
+  }
+
+  public ActivityAssert hasSectionAllocation( SectionDefinition sectionDefinition, Percent expected ) {
+    isNotNull();
+    sectionAllocationIsPresentFor( sectionDefinition );
+    if( !actual.getSectionAllocation( sectionDefinition ).get().equals( expected ) ) {
+      failWithMessage( "Expected section allocation for section <%s> to be <%s> but was <%s>.",
+                       sectionDefinition,
+                       expected,
+                       actual.getSectionAllocation( sectionDefinition ) );
+    }
+    return this;
+  }
+
+  public ActivityAssert hasNoOtherSectionAllocationThanFor( SectionDefinition ... sectionDefinitions ) {
+    Set<SectionDefinition> toCheck = new HashSet<>( Arrays.asList( SectionDefinition.values() ) );
+    toCheck.removeAll( Arrays.asList( sectionDefinitions ) );
+    toCheck.forEach( sectionDefinition -> sectionAllocationIsNotPresentFor( sectionDefinition ) );
+    return this;
+  }
 }
