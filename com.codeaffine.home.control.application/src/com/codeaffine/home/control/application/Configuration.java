@@ -9,7 +9,6 @@ import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.application.analysis.Analysis;
 import com.codeaffine.home.control.application.internal.activation.ActivationProviderImpl;
 import com.codeaffine.home.control.application.internal.activation.AdjacencyDefinition;
 import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
@@ -21,7 +20,6 @@ import com.codeaffine.home.control.application.operation.AdjustBrightnessOperati
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.scene.LampControl;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
 import com.codeaffine.home.control.application.section.SectionProvider;
 import com.codeaffine.home.control.application.sensor.ActivationSensorProvider;
@@ -30,6 +28,8 @@ import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.status.ComputerStatusProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider;
 import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
+import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.status.SunPositionProvider;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
@@ -49,8 +49,8 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void configureFacility( Facility facility ) {
     facility.equip( BEDROOM ).with( BED, DRESSING_AREA );
-    facility.equip( BED ).with( BedStand, BED_MOTION );
-    facility.equip( DRESSING_AREA ).with( BedRoomCeiling, DRESSING_AREA_MOTION );
+    facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION );
+    facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION );
     facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
     facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION );
     facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION );

@@ -1,7 +1,7 @@
-package com.codeaffine.home.control.application.scene;
+package com.codeaffine.home.control.application.util;
 
-import static com.codeaffine.home.control.application.scene.RootMath.nthRootOf;
 import static com.codeaffine.home.control.application.type.Percent.*;
+import static com.codeaffine.home.control.application.util.RootMath.nthRootOf;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.Optional.empty;

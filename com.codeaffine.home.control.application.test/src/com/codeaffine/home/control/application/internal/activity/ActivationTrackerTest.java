@@ -42,6 +42,15 @@ public class ActivationTrackerTest {
   }
 
   @Test
+  public void calculateRateWithMaxActivations() {
+    captureActivations( MAX_ACTIVATIONS.intValue() );
+
+    Percent actual = tracker.calculateRate();
+
+    assertThat( actual ).isSameAs( P_100 );
+  }
+
+  @Test
   public void removeExpired() {
     tracker.setTimestampSupplier( () -> now().minusMinutes( ActivityProviderImpl.OBSERVATION_TIME + 1 ) );
     captureActivations( MAX_ACTIVATIONS.intValue() / 2 );
@@ -64,16 +73,14 @@ public class ActivationTrackerTest {
 
   @Test
   public void removeOldest() {
-    tracker.captureActivation();
-    tracker.captureActivation();
+    captureActivations( MAX_ACTIVATIONS.intValue() );
 
-    Percent beforeRemoval = tracker.calculateRate();
     tracker.removeOldest();
-    Percent afterRemoval = tracker.calculateRate();
+    Percent actual = tracker.calculateRate();
 
-    assertThat( afterRemoval.intValue() )
-      .isNotEqualTo( 0 )
-      .isSameAs( beforeRemoval.intValue() / 2 );
+    assertThat( actual.intValue() )
+      .isGreaterThan( P_050.intValue() )
+      .isNotSameAs( P_100.intValue() );
   }
 
   private void captureActivations( int times ) {

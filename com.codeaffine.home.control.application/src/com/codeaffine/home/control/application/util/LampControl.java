@@ -1,8 +1,10 @@
-package com.codeaffine.home.control.application.scene;
+package com.codeaffine.home.control.application.util;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
@@ -23,21 +25,28 @@ public class LampControl {
     this.lampCollector = lampCollector;
   }
 
-  void switchOnZoneLamps( SectionDefinition zoneDefinition ) {
-    verifyNotNull( zoneDefinition, "zoneDefinition" );
+  public void switchOnZoneLamps( SectionDefinition ... zoneDefinitions ) {
+    verifyNotNull( zoneDefinitions, "zoneDefinitionsa" );
 
-    lampSwitchOperation.setLampsToSwitchOn( collectZoneLampDefinitions( zoneDefinition ) );
+    lampSwitchOperation.setLampsToSwitchOn( collectZoneLampDefinitions( zoneDefinitions ) );
   }
 
-  void provideZoneLampsForFiltering( SectionDefinition zoneDefinition ) {
-    verifyNotNull( zoneDefinition, "zoneDefinition" );
+  public void switchOffZoneLamps( SectionDefinition ... zoneDefinitions ) {
+    verifyNotNull( zoneDefinitions, "zoneDefinitions" );
 
-    LampDefinition[] filterableLamps = collectZoneLampDefinitions( zoneDefinition );
-    lampSwitchOperation.addFilterableLamps( filterableLamps );
+    lampSwitchOperation.setLampsToSwitchOff( collectZoneLampDefinitions( zoneDefinitions ) );
   }
 
-  private LampDefinition[] collectZoneLampDefinitions( SectionDefinition zoneDefinition ) {
-    return toDefinitions( lampCollector.collectZoneLamps( zoneDefinition ) );
+  public void provideZoneLampsForFiltering( SectionDefinition ... zoneDefinitions ) {
+    verifyNotNull( zoneDefinitions, "zoneDefinitions" );
+
+    lampSwitchOperation.addFilterableLamps( collectZoneLampDefinitions( zoneDefinitions ) );
+  }
+
+  private LampDefinition[] collectZoneLampDefinitions( SectionDefinition ... definitions ) {
+    return toDefinitions( Stream.of( definitions )
+      .flatMap( definition -> lampCollector.collectZoneLamps( definition ).stream() )
+      .collect( toSet() ) );
   }
 
   private static LampDefinition[] toDefinitions( Set<Lamp> lamps ) {

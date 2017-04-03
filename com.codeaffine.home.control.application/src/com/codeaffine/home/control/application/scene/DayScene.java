@@ -14,7 +14,7 @@ public class DayScene implements Scene {
   private static final Collection<LampDefinition> DAY_LAMPS
     = asList( KitchenCeiling,
               FanLight1, FanLight2,
-              BedRoomCeiling, BedStand,
+              BedRoomCeiling,
               BathRoomCeiling,
               HallCeiling );
 

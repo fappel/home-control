@@ -1,17 +1,16 @@
-package com.codeaffine.home.control.application.analysis;
+package com.codeaffine.home.control.application.util;
 
-import static com.codeaffine.home.control.application.analysis.Analysis.ActivityStatus.*;
-import static com.codeaffine.home.control.application.analysis.Analysis.AllocationStatus.*;
-import static com.codeaffine.home.control.application.analysis.Analysis.MotionStatus.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.type.Percent.*;
+import static com.codeaffine.home.control.application.util.Analysis.ActivityStatus.*;
+import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.*;
+import static com.codeaffine.home.control.application.util.Analysis.MotionStatus.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Schedule;
-import com.codeaffine.home.control.application.scene.ActivityMath;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.application.status.ActivationProvider;
@@ -35,11 +34,11 @@ public class Analysis {
   private final StringItem bed;
 
   public enum ActivityStatus {
-    IDLE, QUIET, AROUSED, LIVELY, BUSY
+    IDLE, QUIET, AROUSED, LIVELY, BRISK, BUSY, RUSH
   }
 
   public enum AllocationStatus {
-    UNUSED, CASUAL, FREQUENTLY, SUBSTANTIAL, PERMANENT
+    UNUSED, RARE, OCCASIONAL, FREQUENT, SUBSTANTIAL, CONTINUAL, PERMANENT
   }
 
   public enum MotionStatus {
@@ -144,17 +143,23 @@ public class Analysis {
 
   public AllocationStatus getAllocationStatus( SectionDefinition sectionDefinition ) {
     Optional<Percent> sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition );
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_060 ) > 0 ) {
+    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_079 ) > 0 ) {
       return PERMANENT;
     }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_030 ) > 0 ) {
+    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_049 ) > 0 ) {
+      return CONTINUAL;
+    }
+    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_029 ) > 0 ) {
       return SUBSTANTIAL;
     }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_015 ) > 0 ) {
-      return FREQUENTLY;
+    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_019 ) > 0 ) {
+      return FREQUENT;
+    }
+    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_009 ) > 0 ) {
+      return OCCASIONAL;
     }
     if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_000 ) != 0 ) {
-      return CASUAL;
+      return RARE;
     }
     return UNUSED;
   }
@@ -185,7 +190,7 @@ public class Analysis {
       Percent arithmetic = activityMath.calculateArithmeticMeanOfPathAllocationFor( sectionDefinition ).get();
       int delta = arithmetic.intValue() - geometric.intValue();
       Percent sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition ).get();
-      if( sectionAllocation.compareTo( maximum ) == 0 && delta > 4 ) {
+      if( sectionAllocation.compareTo( maximum ) == 0 && delta > 10 ) {
         result = FOCUSSED;
       }
     }
@@ -223,13 +228,19 @@ public class Analysis {
   }
 
   private static ActivityStatus getActivityStatus( Percent activity ) {
-    if( activity.compareTo( P_060 ) > 0 ) {
+    if( activity.compareTo( P_079 ) > 0 ) {
+      return RUSH;
+    }
+    if( activity.compareTo( P_049 ) > 0 ) {
       return BUSY;
     }
-    if( activity.compareTo( P_030 ) > 0 ) {
+    if( activity.compareTo( P_029 ) > 0 ) {
+      return BRISK;
+    }
+    if( activity.compareTo( P_019 ) > 0 ) {
       return LIVELY;
     }
-    if( activity.compareTo( P_015 ) > 0 ) {
+    if( activity.compareTo( P_009 ) > 0 ) {
       return AROUSED;
     }
     if( activity.compareTo( P_000 ) != 0 ) {

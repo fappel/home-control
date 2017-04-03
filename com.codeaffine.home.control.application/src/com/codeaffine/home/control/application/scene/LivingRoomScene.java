@@ -1,12 +1,13 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.analysis.Analysis.AllocationStatus.SUBSTANTIAL;
-import static com.codeaffine.home.control.application.analysis.Analysis.MotionStatus.FOCUSSED;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.type.OnOff.ON;
+import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.*;
 
-import com.codeaffine.home.control.application.analysis.Analysis;
 import com.codeaffine.home.control.application.status.ComputerStatusProvider;
+import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.application.util.LampControl;
+import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
 
 public class LivingRoomScene implements Scene {
@@ -34,13 +35,10 @@ public class LivingRoomScene implements Scene {
   public void prepare() {
     if(    computerStatusProvider.getStatus() == ON
         || analysis.isZoneActivated( WORK_AREA ) && !analysis.isAdjacentZoneActivated( WORK_AREA )
-        || analysis.isMotionStatusAtLeast( WORK_AREA, FOCUSSED )
-        || analysis.isZoneAllocationAtLeast( WORK_AREA, SUBSTANTIAL ) )
+        || analysis.isZoneAllocationAtLeast( WORK_AREA, PERMANENT ) )
     {
       workAreaTimeout.set();
-      if(    analysis.isMotionStatusAtLeast( LIVING_AREA, FOCUSSED )
-          || analysis.isZoneAllocationAtLeast( LIVING_AREA, SUBSTANTIAL ) )
-      {
+      if( analysis.isZoneAllocationAtLeast( LIVING_AREA, CONTINUAL ) ) {
         livingAreaTimeout.set();
       }
     } else {

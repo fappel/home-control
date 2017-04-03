@@ -4,7 +4,7 @@ import static com.codeaffine.home.control.status.SceneSelector.loadScene;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.Context;
-import com.codeaffine.home.control.application.internal.scene.NamedSceneDefaultSelection;
+import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 
 public class NamedScene {
@@ -21,7 +21,7 @@ public class NamedScene {
   }
 
   public boolean isActive() {
-    return sceneType != NamedSceneDefaultSelection.class;
+    return sceneType != EmptyScene.class;
   }
 
   public Class<? extends Scene> getSceneType() {

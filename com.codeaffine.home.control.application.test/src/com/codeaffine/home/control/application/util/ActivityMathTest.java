@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application.scene;
+package com.codeaffine.home.control.application.util;
 
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.test.ActivationHelper.createZone;
@@ -26,6 +26,7 @@ import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.Activity;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
+import com.codeaffine.home.control.application.util.ActivityMath;
 
 public class ActivityMathTest {
 

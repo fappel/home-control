@@ -14,6 +14,7 @@ import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.item.StringItem;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.StatusProviderCore;
 import com.codeaffine.home.control.type.StringType;
@@ -32,14 +33,14 @@ public class NamedSceneProviderImpl implements NamedSceneProvider {
     verifyNotNull( context, "context" );
     verifyNotNull( logger, "logger" );
 
-    this.nameScene = new NamedScene( context, NamedSceneDefaultSelection.class );
+    this.nameScene = new NamedScene( context, EmptyScene.class );
     this.statusProviderCore = new StatusProviderCore<>( eventBus, nameScene, this, logger );
     this.namedScenes = configure( configuration );
     this.context = context;
   }
 
   @Observe( "activeScene" )
-  void onActiveSceneItemChange( ChangeEvent<StringItem, StringType> event ) {
+  public void onActiveSceneItemChange( ChangeEvent<StringItem, StringType> event ) {
     event.getNewStatus().ifPresent( sceneName -> update( sceneName.toString() ) );
   }
 
@@ -62,7 +63,7 @@ public class NamedSceneProviderImpl implements NamedSceneProvider {
   private static Map<String, Class<? extends Scene>> configure( NamedSceneConfiguration configuration ) {
     Map<String, Class<? extends Scene>> result = new HashMap<>();
     configuration.configureNamedScenes( result );
-    result.put( OFF, NamedSceneDefaultSelection.class );
+    result.put( OFF, EmptyScene.class );
     return result;
   }
 }

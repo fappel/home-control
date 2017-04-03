@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.internal.scene.NamedSceneDefaultSelection;
+import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.test.util.status.Scene2;
@@ -30,7 +30,7 @@ public class NamedSceneTest {
 
   @Test
   public void isActiveWithDefaultSelection() {
-    NamedScene namedScene = new NamedScene( context, NamedSceneDefaultSelection.class );
+    NamedScene namedScene = new NamedScene( context, EmptyScene.class );
 
     boolean actual = namedScene.isActive();
 

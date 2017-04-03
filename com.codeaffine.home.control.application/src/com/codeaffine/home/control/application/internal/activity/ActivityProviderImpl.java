@@ -25,7 +25,7 @@ import com.codeaffine.home.control.status.StatusProviderCore;
 
 public class ActivityProviderImpl extends RateCalculator implements ActivityProvider {
 
-  static final long OBSERVATION_TIME = 5L; // Minutes
+  static final long OBSERVATION_TIME = 3L; // Minutes
   static final long CALCULATION_INTERVAL = 10L; // Seconds
   static final long SCAN_RATE = 2L; // Seconds
 

@@ -1,10 +1,12 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.analysis.Analysis.ActivityStatus.AROUSED;
-import static com.codeaffine.home.control.application.analysis.Analysis.AllocationStatus.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.application.util.Analysis.ActivityStatus.LIVELY;
+import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.FREQUENT;
 
-import com.codeaffine.home.control.application.analysis.Analysis;
+import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.application.util.LampControl;
+import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
 
 public class KitchenScene implements Scene {
@@ -29,10 +31,10 @@ public class KitchenScene implements Scene {
   @Override
   public void prepare() {
     if(    analysis.isZoneActivated( COOKING_AREA ) && !analysis.isAdjacentZoneActivated( COOKING_AREA )
-        || analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENTLY ) )
+        || analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENT ) )
     {
       cookingAreaTimeout.set();
-      if( analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENTLY ) ) {
+      if( analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENT ) ) {
         diningAreaTimeout.set();
       }
     } else {
@@ -44,15 +46,15 @@ public class KitchenScene implements Scene {
     }
 
     if( !cookingAreaTimeout.isExpired() ) {
-      if( analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENTLY ) ) {
+      if( analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENT ) ) {
         lampControl.switchOnZoneLamps( COOKING_AREA );
       } else {
         lampControl.provideZoneLampsForFiltering( COOKING_AREA );
       }
     }
     if( !diningAreaTimeout.isExpired() ) {
-      if(    analysis.isOverallActivityAtLeast( AROUSED )
-          && analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENTLY ) )
+      if(    analysis.isOverallActivityAtLeast( LIVELY )
+          && analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENT ) )
       {
         lampControl.switchOnZoneLamps( DINING_AREA );
       } else {

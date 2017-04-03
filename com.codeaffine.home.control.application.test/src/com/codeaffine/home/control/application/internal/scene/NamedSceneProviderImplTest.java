@@ -20,6 +20,7 @@ import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.item.StringItem;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.Scene1;
@@ -73,7 +74,7 @@ public class NamedSceneProviderImplTest {
     Optional<NamedSceneProvider> actual = captureEvent( eventBus, NamedSceneProvider.class );
 
     assertThat( actual ).hasValue( provider );
-    assertThat( provider.getStatus().getSceneType() ).isSameAs( NamedSceneDefaultSelection.class );
+    assertThat( provider.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( provider.getStatus().isActive() ).isFalse();
     verify( logger ).info( INFO_NAMED_SCENE_SELECTION, provider.getStatus() );
   }
@@ -82,7 +83,7 @@ public class NamedSceneProviderImplTest {
   public void onActiveSceneItemChangeIfEventValueIsEmpty() {
     provider.onActiveSceneItemChange( stubChangeEvent( null ) );
 
-    assertThat( provider.getStatus().getSceneType() ).isSameAs( NamedSceneDefaultSelection.class );
+    assertThat( provider.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( provider.getStatus().isActive() ).isFalse();
     verify( eventBus, never() ).post( any() );
     verify( logger, never() ).info( INFO_NAMED_SCENE_SELECTION, provider.getStatus() );
@@ -99,7 +100,7 @@ public class NamedSceneProviderImplTest {
       .hasMessageContaining( SCENE_SELECTION_NAME.toString() )
       .hasMessageContaining( OFF )
       .isInstanceOf( IllegalArgumentException.class );
-    assertThat( provider.getStatus().getSceneType() ).isSameAs( NamedSceneDefaultSelection.class );
+    assertThat( provider.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( provider.getStatus().isActive() ).isFalse();
     verify( eventBus, never() ).post( any() );
     verify( logger, never() ).info( INFO_NAMED_SCENE_SELECTION, provider.getStatus() );
@@ -127,8 +128,8 @@ public class NamedSceneProviderImplTest {
 
   @SuppressWarnings( "unchecked" )
   private static ChangeEvent<StringItem, StringType> stubChangeEvent( StringType sceneSelectionName ) {
-    ChangeEvent<StringItem, StringType> changeEvent = mock( ChangeEvent.class );
-    when( changeEvent.getNewStatus() ).thenReturn( Optional.ofNullable( sceneSelectionName ) );
-    return changeEvent;
+    ChangeEvent<StringItem, StringType> result = mock( ChangeEvent.class );
+    when( result.getNewStatus() ).thenReturn( Optional.ofNullable( sceneSelectionName ) );
+    return result;
   }
 }
