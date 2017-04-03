@@ -49,7 +49,7 @@ public class KitchenScene implements Scene {
       if( analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENT ) ) {
         lampControl.switchOnZoneLamps( COOKING_AREA );
       } else {
-        lampControl.provideZoneLampsForFiltering( COOKING_AREA );
+        lampControl.setZoneLampsForFiltering( COOKING_AREA );
       }
     }
     if( !diningAreaTimeout.isExpired() ) {
@@ -58,7 +58,7 @@ public class KitchenScene implements Scene {
       {
         lampControl.switchOnZoneLamps( DINING_AREA );
       } else {
-        lampControl.provideZoneLampsForFiltering( DINING_AREA );
+        lampControl.setZoneLampsForFiltering( DINING_AREA );
       }
     }
   }

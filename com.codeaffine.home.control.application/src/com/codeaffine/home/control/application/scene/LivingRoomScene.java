@@ -53,7 +53,7 @@ public class LivingRoomScene implements Scene {
       lampControl.switchOnZoneLamps( WORK_AREA );
     }
     if( !livingAreaTimeout.isExpired() ) {
-      lampControl.provideZoneLampsForFiltering( LIVING_AREA );
+      lampControl.setZoneLampsForFiltering( LIVING_AREA );
     }
   }
 }
