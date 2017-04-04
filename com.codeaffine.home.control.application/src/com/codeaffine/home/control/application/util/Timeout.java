@@ -45,4 +45,12 @@ public class Timeout {
   public boolean isExpired() {
     return now().minus( expirationTime, timeUnit ).isAfter( lastActivation );
   }
+
+  public void executeIfNotExpired( Runnable command ) {
+    verifyNotNull( command, "command" );
+
+    if( !isExpired() ) {
+      command.run();
+    }
+  }
 }

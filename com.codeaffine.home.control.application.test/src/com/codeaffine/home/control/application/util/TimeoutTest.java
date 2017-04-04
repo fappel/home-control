@@ -2,6 +2,7 @@ package com.codeaffine.home.control.application.util;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.time.temporal.ChronoUnit;
 
@@ -56,6 +57,27 @@ public class TimeoutTest {
   }
 
   @Test
+  public void executeIfNotExpired() {
+    timeout.set();
+
+    Runnable command = mock( Runnable.class );
+    timeout.executeIfNotExpired( command );
+
+    verify( command ).run();
+  }
+
+  @Test
+  public void executeIfNotExpiredIfExpired() {
+    timeout.set();
+
+    sleep( EXPIRATION_TIME * 2 );
+    Runnable command = mock( Runnable.class );
+    timeout.executeIfNotExpired( command );
+
+    verify( command, never() ).run();
+  }
+
+  @Test
   public void setWithinExpirationTime() {
     timeout.set();
     sleep( EXPIRATION_TIME / 2 );
@@ -73,6 +95,11 @@ public class TimeoutTest {
   @Test( expected = IllegalArgumentException.class )
   public void constructWithExpirationTimeArgumentBelowLowerBound() {
     new Timeout( Timeout.LOWER_BOUND - 1L, MILLIS );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void executeIfNotExpiredWithNullAsCommandArgument() {
+    timeout.executeIfNotExpired( null );
   }
 
   private static void sleep( long millis ) {

@@ -33,27 +33,23 @@ public class LivingRoomScene implements Scene {
 
   @Override
   public void prepare() {
-    if(    computerStatusProvider.getStatus() == ON
-        || analysis.isZoneActivated( WORK_AREA ) && !analysis.isAdjacentZoneActivated( WORK_AREA )
-        || analysis.isAllocationStatusAtLeast( WORK_AREA, PERMANENT ) )
-    {
-      workAreaTimeout.set();
-      if( analysis.isAllocationStatusAtLeast( LIVING_AREA, CONTINUAL ) ) {
-        livingAreaTimeout.set();
-      }
-    } else {
-      livingAreaTimeout.set();
-    }
+    workAreaTimeout.setIf( isWorkAreaHot() );
+    livingAreaTimeout.setIf( !isWorkAreaHot() || isWorkAreaHot() && isLivingAreaUsedALot() || isLivingAreaHot() );
+    workAreaTimeout.executeIfNotExpired( () -> lampControl.switchOnZoneLamps( WORK_AREA ) );
+    livingAreaTimeout.executeIfNotExpired( () -> lampControl.setZoneLampsForFiltering( LIVING_AREA ) );
+  }
 
-    if( analysis.isZoneActivated( LIVING_AREA ) ) {
-      livingAreaTimeout.set();
-    }
+  private boolean isWorkAreaHot() {
+    return    computerStatusProvider.getStatus() == ON
+           || analysis.isZoneActivated( WORK_AREA ) && !analysis.isAdjacentZoneActivated( WORK_AREA )
+           || analysis.isAllocationStatusAtLeast( WORK_AREA, PERMANENT );
+  }
 
-    if( !workAreaTimeout.isExpired() ) {
-      lampControl.switchOnZoneLamps( WORK_AREA );
-    }
-    if( !livingAreaTimeout.isExpired() ) {
-      lampControl.setZoneLampsForFiltering( LIVING_AREA );
-    }
+  private boolean isLivingAreaHot() {
+    return analysis.isZoneActivated( LIVING_AREA );
+  }
+
+  private boolean isLivingAreaUsedALot() {
+    return analysis.isAllocationStatusAtLeast( LIVING_AREA, CONTINUAL );
   }
 }
