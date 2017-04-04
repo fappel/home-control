@@ -1,218 +1,116 @@
 package com.codeaffine.home.control.application.util;
 
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.type.Percent.*;
-import static com.codeaffine.home.control.application.util.Analysis.ActivityStatus.*;
-import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.*;
-import static com.codeaffine.home.control.application.util.Analysis.MotionStatus.*;
+import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.WORK_AREA;
+import static com.codeaffine.home.control.application.type.Percent.P_000;
+import static com.codeaffine.home.control.application.util.AnalysisComparator.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
 
-import com.codeaffine.home.control.ByName;
-import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.application.status.Activation.Zone;
 import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.application.status.ActivityProvider;
 import com.codeaffine.home.control.application.type.Percent;
-import com.codeaffine.home.control.item.StringItem;
 
 public class Analysis {
 
+  private static final SectionDefinition DUMMY_SECTION = WORK_AREA;
+
+  private final MotionStatusCalculator motionStatusCalculator;
   private final ActivationProvider activationProvider;
   private final ActivityProvider activityProvider;
-  private final StringItem overallActivity;
-  private final ActivityMath activityMath;
-  private final StringItem dressingArea;
-  private final StringItem cookingArea;
-  private final StringItem diningArea;
-  private final StringItem livingArea;
-  private final StringItem bathroom;
-  private final StringItem workArea;
-  private final StringItem hall;
-  private final StringItem bed;
 
-  public enum ActivityStatus {
-    IDLE, QUIET, AROUSED, LIVELY, BRISK, BUSY, RUSH
-  }
-
-  public enum AllocationStatus {
-    UNUSED, RARE, OCCASIONAL, FREQUENT, SUBSTANTIAL, CONTINUAL, PERMANENT
-  }
-
-  public enum MotionStatus {
-    EVEN, FOCUSSED
-  }
-
-  Analysis( @ByName( "S_OVERALL_ACTIVITY" ) StringItem overallActivity,
-            @ByName( "S_BED" ) StringItem bed,
-            @ByName( "S_DRESSING_AREA" ) StringItem dressingArea,
-            @ByName( "S_LIVING_AREA" ) StringItem livingArea,
-            @ByName( "S_WORK_AREA" ) StringItem workArea,
-            @ByName( "S_HALL" ) StringItem hall,
-            @ByName( "S_COOKING_AREA" ) StringItem cookingArea,
-            @ByName( "S_DINING_AREA" ) StringItem diningArea,
-            @ByName( "S_BATH_ROOM" ) StringItem bathroom,
-            ActivationProvider activationProvider,
-            ActivityProvider activityProvider )
+  Analysis(
+    MotionStatusCalculator motionStatusCalculator,
+    ActivationProvider activationProvider,
+    ActivityProvider activityProvider )
   {
-    this.activityMath = new ActivityMath( activityProvider, activationProvider );
-    this.activationProvider = activationProvider;
-    this.overallActivity = overallActivity;
-    this.activityProvider = activityProvider;
-    this.dressingArea = dressingArea;
-    this.cookingArea = cookingArea;
-    this.diningArea = diningArea;
-    this.livingArea = livingArea;
-    this.bathroom = bathroom;
-    this.workArea = workArea;
-    this.hall = hall;
-    this.bed = bed;
-  }
+    verifyNotNull( motionStatusCalculator, "motionStatusCalculator" );
+    verifyNotNull( activationProvider, "activationProvider" );
+    verifyNotNull( activityProvider, "activityProvider" );
 
-  @Schedule( period = 2L )
-  void update() {
-    overallActivity.updateStatus( getOverallActivityStatus().toString() + " (" + getOverallActivity() + ")" );
-    bed.updateStatus( getAreaStatus( BED ) );
-    dressingArea.updateStatus( getAreaStatus( DRESSING_AREA ) );
-    livingArea.updateStatus( getAreaStatus( LIVING_AREA ) );
-    workArea.updateStatus( getAreaStatus( WORK_AREA ) );
-    hall.updateStatus( getAreaStatus( HALL ) );
-    cookingArea.updateStatus( getAreaStatus( COOKING_AREA ) );
-    diningArea.updateStatus( getAreaStatus( DINING_AREA ) );
-    bathroom.updateStatus( getAreaStatus( BATH_ROOM ) );
+    this.motionStatusCalculator = motionStatusCalculator;
+    this.activationProvider = activationProvider;
+    this.activityProvider = activityProvider;
   }
 
   public Percent getOverallActivity() {
     return activityProvider.getStatus().getOverallActivity();
   }
 
+  public ActivityStatus getOverallActivityStatus() {
+    return ActivityStatus.valueOf( getOverallActivity() );
+  }
+
+  public boolean isOverallActivityStatusSameAs( ActivityStatus activityStatus ) {
+    return isEqualTo( DUMMY_SECTION, definition -> getOverallActivityStatus(), activityStatus );
+  }
+
+  public boolean isOverallActivityStatusAtLeast( ActivityStatus activityStatus ) {
+    return isAtLeast( DUMMY_SECTION, definition -> getOverallActivityStatus(), activityStatus );
+  }
+
+  public boolean isOverallActivityStatusAtMost( ActivityStatus activityStatus ) {
+    return isAtMost( DUMMY_SECTION, definition -> getOverallActivityStatus(), activityStatus );
+  }
+
   public Percent getActivity( SectionDefinition sectionDefinition ) {
     return activityProvider.getStatus().getSectionActivity( sectionDefinition ).orElse( P_000 );
+  }
+
+  public ActivityStatus getActivityStatus( SectionDefinition sectionDefinition ) {
+    Optional<Percent> sectionActivity = activityProvider.getStatus().getSectionActivity( sectionDefinition );
+    return ActivityStatus.valueOf( sectionActivity.orElse( P_000 ) );
+  }
+
+  public boolean isActivityStatusSameAs( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
+    return isEqualTo( sectionDefinition, definition -> getActivityStatus( definition ), activityStatus );
+  }
+
+  public boolean isActivityStatusAtLeast( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
+    return isAtLeast( sectionDefinition, definition -> getActivityStatus( definition ), activityStatus );
+  }
+
+  public boolean isActivityStatusAtMost( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
+    return isAtMost( sectionDefinition, definition -> getActivityStatus( definition ), activityStatus );
   }
 
   public Percent getAllocation( SectionDefinition sectionDefinition ) {
     return activityProvider.getStatus().getSectionAllocation( sectionDefinition ).orElse( P_000 );
   }
 
-  public ActivityStatus getOverallActivityStatus() {
-    return getActivityStatus( getOverallActivity() );
-  }
-
-  public boolean isOverallActivitySameAs( ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getOverallActivityStatus().compareTo( activityStatus ) == 0;
-  }
-
-  public boolean isOverallActivityAtLeast( ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getOverallActivityStatus().compareTo( activityStatus ) >= 0;
-  }
-
-  public boolean isOverallActivityAtMost( ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getOverallActivityStatus().compareTo( activityStatus ) <= 0;
-  }
-
-  private ActivityStatus getActivityStatus( SectionDefinition sectionDefinition ) {
-    Optional<Percent> sectionActivity = activityProvider.getStatus().getSectionActivity( sectionDefinition );
-    return getActivityStatus( sectionActivity.orElse( P_000 ) );
-  }
-
-  public boolean isZoneActivitySameAs( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getActivityStatus( sectionDefinition ).compareTo( activityStatus ) == 0;
-  }
-
-  public boolean isZoneActivityAtLeast( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getActivityStatus( sectionDefinition ).compareTo( activityStatus ) >= 0;
-  }
-
-  public boolean isZoneActivityAtMost( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
-    verifyNotNull( activityStatus, "activityStatus" );
-
-    return getActivityStatus( sectionDefinition ).compareTo( activityStatus ) <= 0;
-  }
-
   public AllocationStatus getAllocationStatus( SectionDefinition sectionDefinition ) {
     Optional<Percent> sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition );
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_079 ) > 0 ) {
-      return PERMANENT;
-    }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_049 ) > 0 ) {
-      return CONTINUAL;
-    }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_029 ) > 0 ) {
-      return SUBSTANTIAL;
-    }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_019 ) > 0 ) {
-      return FREQUENT;
-    }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_009 ) > 0 ) {
-      return OCCASIONAL;
-    }
-    if( sectionAllocation.isPresent() && sectionAllocation.get().compareTo( P_000 ) != 0 ) {
-      return RARE;
-    }
-    return UNUSED;
+    return AllocationStatus.valueOf( sectionAllocation.orElse( P_000 ) );
   }
 
-  public boolean isZoneAllocationSameAs( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
-    verifyNotNull( allocationStatus, "allocationStatus" );
-
-    return getAllocationStatus( sectionDefinition ).compareTo( allocationStatus ) == 0;
+  public boolean isAllocationStatusSameAs( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
+    return isEqualTo( sectionDefinition, definition -> getAllocationStatus( definition ), allocationStatus );
   }
 
-  public boolean isZoneAllocationAtLeast( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
-    verifyNotNull( allocationStatus, "allocationStatus" );
-
-    return getAllocationStatus( sectionDefinition ).compareTo( allocationStatus ) >= 0;
+  public boolean isAllocationStatusAtLeast( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
+    return isAtLeast( sectionDefinition, definition -> getAllocationStatus( definition ), allocationStatus );
   }
 
-  public boolean isZoneAllocationAtMost( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
-    verifyNotNull( allocationStatus, "allocationStatus" );
-
-    return getAllocationStatus( sectionDefinition ).compareTo( allocationStatus ) <= 0;
+  public boolean isAllocationStatusAtMost( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {
+    return isAtMost( sectionDefinition, definition -> getAllocationStatus( definition ), allocationStatus );
   }
 
   public MotionStatus getMotionStatus( SectionDefinition sectionDefinition ) {
-    MotionStatus result = EVEN;
-    if( activationProvider.getStatus().isZoneActivated( sectionDefinition ) ) {
-      Percent maximum = activityMath.calculateMaximumOfPathAllocationFor( sectionDefinition ).get();
-      Percent geometric = activityMath.calculateGeometricMeanOfPathAllocationFor( sectionDefinition ).get();
-      Percent arithmetic = activityMath.calculateArithmeticMeanOfPathAllocationFor( sectionDefinition ).get();
-      int delta = arithmetic.intValue() - geometric.intValue();
-      Percent sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition ).get();
-      if( sectionAllocation.compareTo( maximum ) == 0 && delta > 10 ) {
-        result = FOCUSSED;
-      }
-    }
-    return result;
+    return motionStatusCalculator.getMotionStatus( sectionDefinition );
   }
 
   public boolean isMotionStatusSameAs( SectionDefinition sectionDefinition, MotionStatus motionStatus ) {
-    verifyNotNull( motionStatus, "motionStatus" );
-
-    return getMotionStatus( sectionDefinition ).compareTo( motionStatus ) == 0;
+    return isEqualTo( sectionDefinition, definition -> getMotionStatus( definition ), motionStatus );
   }
 
   public boolean isMotionStatusAtLeast( SectionDefinition sectionDefinition, MotionStatus motionStatus ) {
-    verifyNotNull( motionStatus, "motionStatus" );
-
-    return getMotionStatus( sectionDefinition ).compareTo( motionStatus ) >= 0;
+    return isAtLeast( sectionDefinition, definition -> getMotionStatus( definition ), motionStatus );
   }
 
   public boolean isMotionStatusAtMost( SectionDefinition sectionDefinition, MotionStatus motionStatus ) {
-    verifyNotNull( motionStatus, "motionStatus" );
-
-    return getMotionStatus( sectionDefinition ).compareTo( motionStatus ) <= 0;
+    return isAtMost( sectionDefinition, definition -> getMotionStatus( definition ), motionStatus );
   }
 
   public boolean isZoneActivated( SectionDefinition sectionDefinition ) {
@@ -225,40 +123,5 @@ public class Analysis {
       return zone.get().isAdjacentActivated();
     }
     return false;
-  }
-
-  private static ActivityStatus getActivityStatus( Percent activity ) {
-    if( activity.compareTo( P_079 ) > 0 ) {
-      return RUSH;
-    }
-    if( activity.compareTo( P_049 ) > 0 ) {
-      return BUSY;
-    }
-    if( activity.compareTo( P_029 ) > 0 ) {
-      return BRISK;
-    }
-    if( activity.compareTo( P_019 ) > 0 ) {
-      return LIVELY;
-    }
-    if( activity.compareTo( P_009 ) > 0 ) {
-      return AROUSED;
-    }
-    if( activity.compareTo( P_000 ) != 0 ) {
-      return QUIET;
-    }
-    return IDLE;
-  }
-
-  private String getAreaStatus( SectionDefinition sectionDefinition ) {
-    return   getActivityStatus( sectionDefinition ).toString()
-           + ", "
-           + getAllocationStatus( sectionDefinition ).toString()
-           + ", "
-           + getMotionStatus( sectionDefinition ).toString()
-           + " ("
-           + getActivity( sectionDefinition ).toString()
-           + ", "
-           + getAllocation( sectionDefinition ).toString()
-           + ")";
   }
 }

@@ -2,7 +2,7 @@ package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.type.OnOff.ON;
-import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.*;
+import static com.codeaffine.home.control.application.util.AllocationStatus.*;
 
 import com.codeaffine.home.control.application.status.ComputerStatusProvider;
 import com.codeaffine.home.control.application.util.Analysis;
@@ -35,10 +35,10 @@ public class LivingRoomScene implements Scene {
   public void prepare() {
     if(    computerStatusProvider.getStatus() == ON
         || analysis.isZoneActivated( WORK_AREA ) && !analysis.isAdjacentZoneActivated( WORK_AREA )
-        || analysis.isZoneAllocationAtLeast( WORK_AREA, PERMANENT ) )
+        || analysis.isAllocationStatusAtLeast( WORK_AREA, PERMANENT ) )
     {
       workAreaTimeout.set();
-      if( analysis.isZoneAllocationAtLeast( LIVING_AREA, CONTINUAL ) ) {
+      if( analysis.isAllocationStatusAtLeast( LIVING_AREA, CONTINUAL ) ) {
         livingAreaTimeout.set();
       }
     } else {

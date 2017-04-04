@@ -32,10 +32,14 @@ public class Activation {
   }
 
   public Optional<Zone> getZone( EntityDefinition<?> zoneDefinition ) {
+    verifyNotNull( zoneDefinition, "zoneDefinition" );
+
     return zones.stream().filter( zone -> zone.getZoneEntity().getDefinition() == zoneDefinition ).findAny();
   }
 
   public boolean isZoneActivated( EntityDefinition<?> zoneDefinition ) {
+    verifyNotNull( zoneDefinition, "zoneDefinition" );
+
     return getZone( zoneDefinition ).isPresent();
   }
 

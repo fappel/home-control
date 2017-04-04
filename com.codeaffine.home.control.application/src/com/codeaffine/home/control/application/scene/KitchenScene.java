@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.util.Analysis.ActivityStatus.LIVELY;
-import static com.codeaffine.home.control.application.util.Analysis.AllocationStatus.FREQUENT;
+import static com.codeaffine.home.control.application.util.ActivityStatus.LIVELY;
+import static com.codeaffine.home.control.application.util.AllocationStatus.FREQUENT;
 
 import com.codeaffine.home.control.application.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
@@ -31,10 +31,10 @@ public class KitchenScene implements Scene {
   @Override
   public void prepare() {
     if(    analysis.isZoneActivated( COOKING_AREA ) && !analysis.isAdjacentZoneActivated( COOKING_AREA )
-        || analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENT ) )
+        || analysis.isAllocationStatusAtLeast( COOKING_AREA, FREQUENT ) )
     {
       cookingAreaTimeout.set();
-      if( analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENT ) ) {
+      if( analysis.isAllocationStatusAtLeast( DINING_AREA, FREQUENT ) ) {
         diningAreaTimeout.set();
       }
     } else {
@@ -46,15 +46,15 @@ public class KitchenScene implements Scene {
     }
 
     if( !cookingAreaTimeout.isExpired() ) {
-      if( analysis.isZoneAllocationAtLeast( COOKING_AREA, FREQUENT ) ) {
+      if( analysis.isAllocationStatusAtLeast( COOKING_AREA, FREQUENT ) ) {
         lampControl.switchOnZoneLamps( COOKING_AREA );
       } else {
         lampControl.setZoneLampsForFiltering( COOKING_AREA );
       }
     }
     if( !diningAreaTimeout.isExpired() ) {
-      if(    analysis.isOverallActivityAtLeast( LIVELY )
-          && analysis.isZoneAllocationAtLeast( DINING_AREA, FREQUENT ) )
+      if(    analysis.isOverallActivityStatusAtLeast( LIVELY )
+          && analysis.isAllocationStatusAtLeast( DINING_AREA, FREQUENT ) )
       {
         lampControl.switchOnZoneLamps( DINING_AREA );
       } else {

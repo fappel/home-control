@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.scene;
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ALL;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.values;
-import static com.codeaffine.home.control.application.util.Analysis.ActivityStatus.BRISK;
-import static com.codeaffine.home.control.application.util.Analysis.MotionStatus.FOCUSSED;
+import static com.codeaffine.home.control.application.util.ActivityStatus.BRISK;
+import static com.codeaffine.home.control.application.util.MotionStatus.FOCUSSED;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 
@@ -41,7 +41,7 @@ public class NightScene implements Scene {
     lampSwitchOperation.setLampFilter( lamp -> NIGHT_LAMPS.contains( lamp.getDefinition() ) );
     allOnTimeout.setIf(    allOnTimeout.isExpired()
                         && Stream.of( values() ).anyMatch( section -> analysis.isMotionStatusAtLeast( section, FOCUSSED ) )
-                        && analysis.isOverallActivityAtMost( BRISK ) );
+                        && analysis.isOverallActivityStatusAtMost( BRISK ) );
     if( !allOnTimeout.isExpired() ) {
       lampSwitchOperation.setLampSelectionStrategy( ALL );
     }

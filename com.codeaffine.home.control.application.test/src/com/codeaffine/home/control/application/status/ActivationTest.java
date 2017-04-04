@@ -3,6 +3,7 @@ package com.codeaffine.home.control.application.status;
 import static com.codeaffine.home.control.application.test.ActivationHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.test.util.lang.EqualsTester.newInstance;
+import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,5 +105,23 @@ public class ActivationTest {
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsZonesArgument() {
     new Activation( null );
+  }
+
+  @Test
+  public void getZoneWithNullAsZoneArgument() {
+    Activation activation = new Activation( emptySet() );
+
+    Throwable actual = thrownBy( () -> activation.getZone( null ) );
+
+    assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
+  }
+
+  @Test
+  public void isZoneActivatedWithNullAsZoneArgument() {
+    Activation activation = new Activation( emptySet() );
+
+    Throwable actual = thrownBy( () -> activation.isZoneActivated( null ) );
+
+    assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
   }
 }

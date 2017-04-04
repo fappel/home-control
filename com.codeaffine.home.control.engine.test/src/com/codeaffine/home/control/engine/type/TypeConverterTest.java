@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codeaffine.home.control.Status;
-import com.codeaffine.home.control.engine.type.TypeConverter;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.OpenClosedType;
@@ -26,6 +25,10 @@ import junitparams.Parameters;
 @RunWith( JUnitParamsRunner.class )
 public class TypeConverterTest {
 
+  private static final int DECIMAL_VALUE = 2;
+  private static final int PERCENT_VALUE = 4;
+  private static final String STRING_VALUE = "2";
+
   public static class StatusToState {
 
     public final Status status;
@@ -37,32 +40,25 @@ public class TypeConverterTest {
     }
   }
 
-  public static class StatusToStateMappingProvider {
-
-    private static final int DECIMAL_VALUE = 2;
-    private static final int PERCENT_VALUE = 4;
-    private static final String STRING_VALUE = "2";
-
-    public static Object[] provideData() {
-      return new Object[] {
-        new StatusToState( OpenClosedType.OPEN,
-                           org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN ),
-        new StatusToState( OnOffType.ON,
-                           org.eclipse.smarthome.core.library.types.OnOffType.ON ),
-        new StatusToState( new DecimalType( DECIMAL_VALUE ),
-                           new org.eclipse.smarthome.core.library.types.DecimalType( DECIMAL_VALUE ) ),
-        new StatusToState( new PercentType( PERCENT_VALUE ),
-                           new org.eclipse.smarthome.core.library.types.PercentType( PERCENT_VALUE ) ),
-        new StatusToState( new StringType( STRING_VALUE ),
-                           new org.eclipse.smarthome.core.library.types.StringType( STRING_VALUE ) )
-      };
-    }
-  }
-
   static class UnknownStatus implements Status {}
 
+  public static Object[] provideData() {
+    return new Object[] {
+      new StatusToState( OpenClosedType.OPEN,
+                         org.eclipse.smarthome.core.library.types.OpenClosedType.OPEN ),
+      new StatusToState( OnOffType.ON,
+                         org.eclipse.smarthome.core.library.types.OnOffType.ON ),
+      new StatusToState( new DecimalType( DECIMAL_VALUE ),
+                         new org.eclipse.smarthome.core.library.types.DecimalType( DECIMAL_VALUE ) ),
+      new StatusToState( new PercentType( PERCENT_VALUE ),
+                         new org.eclipse.smarthome.core.library.types.PercentType( PERCENT_VALUE ) ),
+      new StatusToState( new StringType( STRING_VALUE ),
+                         new org.eclipse.smarthome.core.library.types.StringType( STRING_VALUE ) )
+    };
+  }
+
   @Test
-  @Parameters( source = StatusToStateMappingProvider.class )
+  @Parameters( source = TypeConverterTest.class )
   @SuppressWarnings("unchecked")
   public <T extends Status> void convertToStatusType( StatusToState mapEntry ) {
      Optional<T> actual = TypeConverter.convert( mapEntry.state, ( Class<T>)mapEntry.status.getClass() );
@@ -71,7 +67,7 @@ public class TypeConverterTest {
   }
 
   @Test
-  @Parameters( source = StatusToStateMappingProvider.class )
+  @Parameters( source = TypeConverterTest.class )
   @SuppressWarnings("unchecked")
   public <T extends Status> void convertToStateType( StatusToState mapEntry ) {
     State actual = TypeConverter.convert( ( T )mapEntry.status, ( Class<T>)mapEntry.status.getClass() );
