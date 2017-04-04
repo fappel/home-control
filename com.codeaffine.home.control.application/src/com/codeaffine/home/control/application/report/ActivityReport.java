@@ -8,6 +8,8 @@ import com.codeaffine.home.control.item.StringItem;
 
 public class ActivityReport {
 
+  private static final long REPORT_UPDATE_SCHEDULE = 2L;
+
   private final ActivityReportCompiler reportCompiler;
   private final StringItem overallActivity;
   private final StringItem dressingArea;
@@ -43,16 +45,16 @@ public class ActivityReport {
     this.bed = bed;
   }
 
-  @Schedule( period = 2L )
-  void update() {
-    overallActivity.updateStatus( reportCompiler.getOverallActivityStatus() );
-    bed.updateStatus( reportCompiler.getStatusFor( BED ) );
-    dressingArea.updateStatus( reportCompiler.getStatusFor( DRESSING_AREA ) );
-    livingArea.updateStatus( reportCompiler.getStatusFor( LIVING_AREA ) );
-    workArea.updateStatus( reportCompiler.getStatusFor( WORK_AREA ) );
-    hall.updateStatus( reportCompiler.getStatusFor( HALL ) );
-    cookingArea.updateStatus( reportCompiler.getStatusFor( COOKING_AREA ) );
-    diningArea.updateStatus( reportCompiler.getStatusFor( DINING_AREA ) );
-    bathroom.updateStatus( reportCompiler.getStatusFor( BATH_ROOM ) );
+  @Schedule( period = REPORT_UPDATE_SCHEDULE )
+  void report() {
+    overallActivity.updateStatus( reportCompiler.getOverallActivityReport() );
+    bed.updateStatus( reportCompiler.getReportFor( BED ) );
+    dressingArea.updateStatus( reportCompiler.getReportFor( DRESSING_AREA ) );
+    livingArea.updateStatus( reportCompiler.getReportFor( LIVING_AREA ) );
+    workArea.updateStatus( reportCompiler.getReportFor( WORK_AREA ) );
+    hall.updateStatus( reportCompiler.getReportFor( HALL ) );
+    cookingArea.updateStatus( reportCompiler.getReportFor( COOKING_AREA ) );
+    diningArea.updateStatus( reportCompiler.getReportFor( DINING_AREA ) );
+    bathroom.updateStatus( reportCompiler.getReportFor( BATH_ROOM ) );
   }
 }

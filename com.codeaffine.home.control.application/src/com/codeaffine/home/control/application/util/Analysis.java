@@ -60,8 +60,7 @@ public class Analysis {
   }
 
   public ActivityStatus getActivityStatus( SectionDefinition sectionDefinition ) {
-    Optional<Percent> sectionActivity = activityProvider.getStatus().getSectionActivity( sectionDefinition );
-    return ActivityStatus.valueOf( sectionActivity.orElse( P_000 ) );
+    return ActivityStatus.valueOf( getActivity( sectionDefinition ) );
   }
 
   public boolean isActivityStatusSameAs( SectionDefinition sectionDefinition, ActivityStatus activityStatus ) {
@@ -81,8 +80,7 @@ public class Analysis {
   }
 
   public AllocationStatus getAllocationStatus( SectionDefinition sectionDefinition ) {
-    Optional<Percent> sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition );
-    return AllocationStatus.valueOf( sectionAllocation.orElse( P_000 ) );
+    return AllocationStatus.valueOf( getAllocation( sectionDefinition ) );
   }
 
   public boolean isAllocationStatusSameAs( SectionDefinition sectionDefinition, AllocationStatus allocationStatus ) {

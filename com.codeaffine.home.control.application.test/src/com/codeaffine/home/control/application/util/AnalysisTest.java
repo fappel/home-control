@@ -101,6 +101,15 @@ public class AnalysisTest {
   }
 
   @Test
+  public void getActivityOfSectionThatHasNoActivity() {
+    bone.stubActivityProvider( newActivity( P_003 ) );
+
+    Percent actual = analysis.getActivity( WORK_AREA );
+
+    assertThat( actual ).isSameAs( P_000 );
+  }
+
+  @Test
   public void getActivityStatus() {
     bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
 
@@ -155,6 +164,15 @@ public class AnalysisTest {
     Percent actual = analysis.getAllocation( WORK_AREA );
 
     assertThat( actual ).isSameAs( P_003 );
+  }
+
+  @Test
+  public void getAllocationOfSectionThatHasNoAllocation() {
+    bone.stubActivityProvider( newActivity( P_003 ) );
+
+    Percent actual = analysis.getAllocation( WORK_AREA );
+
+    assertThat( actual ).isSameAs( P_000 );
   }
 
   @Test
