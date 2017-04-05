@@ -3,6 +3,7 @@ package com.codeaffine.home.control.application.scene;
 import static org.mockito.Mockito.*;
 
 import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.application.util.ActivityStatus;
 import com.codeaffine.home.control.application.util.AllocationStatus;
 import com.codeaffine.home.control.application.util.Analysis;
 
@@ -28,5 +29,9 @@ class AnalysisStub {
 
   void stubIsAllocationStatusAtLeast( SectionDefinition sectionDefinition, AllocationStatus status, boolean result ) {
     when( analysis.isAllocationStatusAtLeast( sectionDefinition, status ) ).thenReturn( result );
+  }
+
+  void stubIsOverallActivityStatusAtLeast( ActivityStatus status, boolean result ) {
+    when( analysis.isOverallActivityStatusAtLeast( status ) ).thenReturn( result );
   }
 }

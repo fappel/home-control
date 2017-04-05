@@ -4,21 +4,35 @@ import static com.codeaffine.home.control.application.section.SectionProvider.Se
 import static com.codeaffine.home.control.application.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.application.util.AllocationStatus.FREQUENT;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.application.util.ActivityStatus;
+import com.codeaffine.home.control.application.util.AllocationStatus;
 import com.codeaffine.home.control.application.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
 
-public class KitchenScene implements Scene {
+class KitchenScene implements Scene {
+
+  static final AllocationStatus DINING_AREA_ALLOCATION_THRESHOLD = FREQUENT;
+  static final AllocationStatus COOKING_AREA_ALLOCATION_THRESHOLD = FREQUENT;
+  static final ActivityStatus DINING_AREA_OVERALL_ACTIVITY_THRESHOLD = LIVELY;
 
   private final Timeout cookingAreaTimeout;
   private final Timeout diningAreaTimeout;
   private final LampControl lampControl;
   private final Analysis analysis;
+  private final List<SectionDefinition> zonesToSwitchOn;
+  private final List<SectionDefinition> zonesForFiltering;
 
-  public KitchenScene( LampControl lampControl, Analysis analysis ) {
+  KitchenScene( LampControl lampControl, Analysis analysis ) {
     this.lampControl = lampControl;
     this.analysis = analysis;
+    this.zonesForFiltering = new ArrayList<>( 2 );
+    this.zonesToSwitchOn = new ArrayList<>( 2 );
     this.cookingAreaTimeout = new Timeout();
     this.diningAreaTimeout = new Timeout();
   }
@@ -30,36 +44,63 @@ public class KitchenScene implements Scene {
 
   @Override
   public void prepare() {
-    if(    analysis.isZoneActivated( COOKING_AREA ) && !analysis.isAdjacentZoneActivated( COOKING_AREA )
-        || analysis.isAllocationStatusAtLeast( COOKING_AREA, FREQUENT ) )
-    {
-      cookingAreaTimeout.set();
-      if( analysis.isAllocationStatusAtLeast( DINING_AREA, FREQUENT ) ) {
-        diningAreaTimeout.set();
-      }
+    setTimeouts();
+    selectZoneLampsSwitchMode();
+    switchZoneLamps();
+    cleanup();
+  }
+
+  private void setTimeouts() {
+    cookingAreaTimeout.setIf( isCookingAreaHot() );
+    diningAreaTimeout.setIf( isDiningAreaHot() || !isCookingAreaHot() || isCookingAreaHot() && isDiningAreaUsedALot() );
+  }
+
+  private boolean isDiningAreaHot() {
+    return analysis.isZoneActivated( DINING_AREA );
+  }
+
+  private boolean isDiningAreaUsedALot() {
+    return analysis.isAllocationStatusAtLeast( DINING_AREA, DINING_AREA_ALLOCATION_THRESHOLD );
+  }
+
+  private boolean isCookingAreaHot() {
+    return    analysis.isZoneActivated( COOKING_AREA ) && !analysis.isAdjacentZoneActivated( COOKING_AREA )
+           || isCookingAreaUsedALot();
+  }
+
+  private void selectZoneLampsSwitchMode() {
+    cookingAreaTimeout.executeIfNotExpired( () -> selectLampSwitchMode( COOKING_AREA, isCookingAreaUsedALot() ) );
+    diningAreaTimeout.executeIfNotExpired( () -> selectLampSwitchMode( DINING_AREA, isDiningAreaActivivelyUsed() ) );
+  }
+
+  private void selectLampSwitchMode( SectionDefinition sectionDefinition, boolean condition ) {
+    if( condition ) {
+      zonesToSwitchOn.add( sectionDefinition );
     } else {
-      diningAreaTimeout.set();
+      zonesForFiltering.add( sectionDefinition );
     }
+  }
 
-    if( analysis.isZoneActivated( DINING_AREA ) ) {
-      diningAreaTimeout.set();
-    }
+  private boolean isCookingAreaUsedALot() {
+    return analysis.isAllocationStatusAtLeast( COOKING_AREA, COOKING_AREA_ALLOCATION_THRESHOLD );
+  }
 
-    if( !cookingAreaTimeout.isExpired() ) {
-      if( analysis.isAllocationStatusAtLeast( COOKING_AREA, FREQUENT ) ) {
-        lampControl.switchOnZoneLamps( COOKING_AREA );
-      } else {
-        lampControl.setZoneLampsForFiltering( COOKING_AREA );
-      }
+  private boolean isDiningAreaActivivelyUsed() {
+    return    analysis.isOverallActivityStatusAtLeast( DINING_AREA_OVERALL_ACTIVITY_THRESHOLD )
+          && isDiningAreaUsedALot();
+  }
+
+  private void switchZoneLamps() {
+    if( !zonesToSwitchOn.isEmpty() ) {
+      lampControl.switchOnZoneLamps( zonesToSwitchOn.stream().toArray( SectionDefinition[]::new ) );
     }
-    if( !diningAreaTimeout.isExpired() ) {
-      if(    analysis.isOverallActivityStatusAtLeast( LIVELY )
-          && analysis.isAllocationStatusAtLeast( DINING_AREA, FREQUENT ) )
-      {
-        lampControl.switchOnZoneLamps( DINING_AREA );
-      } else {
-        lampControl.setZoneLampsForFiltering( DINING_AREA );
-      }
+    if( !zonesForFiltering.isEmpty() ) {
+      lampControl.setZoneLampsForFiltering( zonesForFiltering.stream().toArray( SectionDefinition[]::new ) );
     }
+  }
+
+  private void cleanup() {
+    zonesToSwitchOn.clear();
+    zonesForFiltering.clear();
   }
 }

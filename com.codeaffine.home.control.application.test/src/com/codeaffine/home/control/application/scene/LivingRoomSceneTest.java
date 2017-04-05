@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.application.scene;
 
+import static com.codeaffine.home.control.application.scene.LivingRoomScene.*;
 import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.application.type.OnOff.*;
-import static com.codeaffine.home.control.application.util.AllocationStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +51,7 @@ public class LivingRoomSceneTest {
 
   @Test
   public void prepareIfAllocationStatusOfWorkAreaIsHighEnough() {
-    analysis.stubIsAllocationStatusAtLeast( WORK_AREA, PERMANENT, true );
+    analysis.stubIsAllocationStatusAtLeast( WORK_AREA, WORK_AREA_ALLOCATION_THRESHOLD, true );
 
     scene.prepare();
 
@@ -81,7 +81,7 @@ public class LivingRoomSceneTest {
   @Test
   public void prepareIfWorkAreaIsHotAndAllocationStatusOfLivingAreaIsHighEnough() {
     stubComputerStatusProvider( ON );
-    analysis.stubIsAllocationStatusAtLeast( LIVING_AREA, CONTINUAL, true );
+    analysis.stubIsAllocationStatusAtLeast( LIVING_AREA, LIVING_AREA_ALLOCATION_THRESHOLD, true );
 
     scene.prepare();
 
