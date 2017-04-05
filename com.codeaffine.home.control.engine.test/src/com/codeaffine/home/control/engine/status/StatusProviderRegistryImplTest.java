@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.engine.status.StatusProviderRegistryImpl;
 import com.codeaffine.home.control.test.util.context.TestContext;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class StatusProviderRegistryImplTest {
 
@@ -30,20 +30,20 @@ public class StatusProviderRegistryImplTest {
 
   @Test
   public void register() {
-    registry.register( MyStatusProvider.class, MyStatusProvider.class );
-    MyStatusProvider actual = context.get( MyStatusProvider.class );
+    registry.register( MyStatusSupplier.class, MyStatusSupplier.class );
+    MyStatusSupplier actual = context.get( MyStatusSupplier.class );
 
     assertThat( actual ).isNotNull();
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void registerWithNullAsTypeArgument() {
-    registry.register( null, MyStatusProvider.class );
+    registry.register( null, MyStatusSupplier.class );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void registerWithNullAsImplementationArgument() {
-    registry.register( MyStatusProvider.class, null );
+    registry.register( MyStatusSupplier.class, null );
   }
 
   @Test( expected = IllegalArgumentException.class )

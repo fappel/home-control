@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.test.util.lang.EqualsTester;
 
 public class FollowUpKeyTest {
@@ -27,7 +27,7 @@ public class FollowUpKeyTest {
   public void setUp() {
     scene = mock( Scene.class );
     scenes = newSceneSelection( GLOBAL, scene );
-    event = new StatusEvent( new MyStatusProvider() );
+    event = new StatusEvent( new MyStatusSupplier() );
     key = new FollowUpKey( scenes, event );
   }
 
@@ -41,11 +41,11 @@ public class FollowUpKeyTest {
   public void equalsAndHashcode() {
     EqualsTester<FollowUpKey> tester = EqualsTester.newInstance( key );
     tester.assertImplementsEqualsAndHashCode();
-    tester.assertNotEqual( new FollowUpKey( scenes, new StatusEvent( new MyStatusProvider() ) ), key );
+    tester.assertNotEqual( new FollowUpKey( scenes, new StatusEvent( new MyStatusSupplier() ) ), key );
     tester.assertNotEqual( new FollowUpKey( newSceneSelection( GLOBAL, mock( Scene.class ) ), event ), key );
     tester.assertNotEqual( new FollowUpKey( newSceneSelection( LOCAL, scene ), event ), key );
     tester.assertNotEqual( new FollowUpKey( newSceneSelection( GLOBAL, mock( Scene.class ) ),
-                                            new StatusEvent( new MyStatusProvider() ) ),
+                                            new StatusEvent( new MyStatusSupplier() ) ),
                                             key );
     tester.assertEqual( new FollowUpKey( scenes, event ),
                         new FollowUpKey( newSceneSelection( GLOBAL, scene ), event ),

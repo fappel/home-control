@@ -2,10 +2,10 @@ package com.codeaffine.home.control.application.scene;
 
 import static org.mockito.Mockito.*;
 
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.util.ActivityStatus;
-import com.codeaffine.home.control.application.util.AllocationStatus;
-import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.util.ActivityStatus;
+import com.codeaffine.home.control.status.util.AllocationStatus;
+import com.codeaffine.home.control.status.util.Analysis;
 
 class AnalysisStub {
 

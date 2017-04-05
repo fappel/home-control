@@ -2,8 +2,8 @@ package com.codeaffine.home.control.application.operation;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.*;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.test.ActivationHelper.stubZone;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.stubZone;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static java.util.Collections.emptySet;
@@ -19,24 +19,24 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.status.Activation;
-import com.codeaffine.home.control.application.status.ActivationProvider;
+import com.codeaffine.home.control.status.model.SectionProvider.Section;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.application.test.RegistryHelper;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
 public class LampCollectorTest {
 
-  private ActivationProvider activationProvider;
+  private ActivationSupplier activationSupplier;
   private EntityRegistry registry;
   private LampCollector collector;
 
   @Before
   public void setUp() {
     registry = stubRegistry();
-    activationProvider = mock( ActivationProvider.class );
-    collector = new LampCollector( registry, activationProvider );
+    activationSupplier = mock( ActivationSupplier.class );
+    collector = new LampCollector( registry, activationSupplier );
   }
 
   @Test
@@ -60,7 +60,7 @@ public class LampCollectorTest {
   @Test
   public void collectActivatedZoneLamps() {
     Set<Lamp> expected = asSet( findLamp( DeskUplight ), findLamp( WindowUplight ) );
-    stubActivationProvider( LIVING_AREA );
+    stubActivationSupplier( LIVING_AREA );
 
     Set<Lamp> actual = collector.collectActivatedZoneLamps();
 
@@ -69,7 +69,7 @@ public class LampCollectorTest {
 
   @Test
   public void collectActivatedZoneLampsIfActivationIsEmpty() {
-    stubActivationProvider();
+    stubActivationSupplier();
 
     Set<Lamp> actual = collector.collectActivatedZoneLamps();
 
@@ -95,7 +95,7 @@ public class LampCollectorTest {
   @Test
   public void collectWithZoneActivationStrategy() {
     Set<Lamp> expected = asSet( findLamp( DeskUplight ), findLamp( WindowUplight ) );
-    stubActivationProvider( LIVING_AREA );
+    stubActivationSupplier( LIVING_AREA );
 
     Set<Lamp> actual = collector.collect( ZONE_ACTIVATION );
 
@@ -127,7 +127,7 @@ public class LampCollectorTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEntityRegistryArgument() {
-    new LampCollector( null, activationProvider );
+    new LampCollector( null, activationSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -159,10 +159,10 @@ public class LampCollectorTest {
     return registry.findByDefinition( definition );
   }
 
-  private ActivationProvider stubActivationProvider( SectionDefinition... zoneDefinitions ) {
+  private ActivationSupplier stubActivationSupplier( SectionDefinition... zoneDefinitions ) {
     Activation activation = stubStatus( zoneDefinitions );
-    when( activationProvider.getStatus() ).thenReturn( activation );
-    return activationProvider;
+    when( activationSupplier.getStatus() ).thenReturn( activation );
+    return activationSupplier;
   }
 
   private Activation stubStatus( SectionDefinition... zoneDefinitions ) {

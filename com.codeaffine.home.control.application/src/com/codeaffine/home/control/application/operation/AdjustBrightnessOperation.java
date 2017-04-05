@@ -1,21 +1,21 @@
 package com.codeaffine.home.control.application.operation;
 
-import static com.codeaffine.home.control.application.type.Percent.*;
+import static com.codeaffine.home.control.status.type.Percent.*;
 import static java.lang.Math.*;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
-import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.type.Percent;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
+import com.codeaffine.home.control.status.supplier.ActivitySupplier;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
+import com.codeaffine.home.control.status.type.Percent;
 
 
 public class AdjustBrightnessOperation implements HomeControlOperation {
@@ -48,8 +48,8 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
   }
 
   @Override
-  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
-    return asList( ActivityProviderImpl.class, SunPositionProvider.class );
+  public Collection<Class<? extends StatusSupplier<?>>> getRelatedStatusSupplierTypes() {
+    return asList( ActivitySupplier.class, SunPositionSupplier.class );
   }
 
   @Override
@@ -61,7 +61,7 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
 
   @Override
   public void executeOn( StatusEvent event ) {
-    event.getSource( ActivityProviderImpl.class ).ifPresent( activity -> {
+    event.getSource( ActivitySupplier.class ).ifPresent( activity -> {
       brightnessMinimum = brightnessMiniumumBelowThreshold;
       if( activity.getStatus().getOverallActivity().compareTo( activityThreshold ) > 1 ) {
         brightnessMinimum = brightnessMinimumAboveThreshold;
@@ -69,7 +69,7 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
       adjustBrightnessOfLamps();
     } );
 
-    event.getSource( SunPositionProvider.class ).ifPresent( sunPositionProvider -> {
+    event.getSource( SunPositionSupplier.class ).ifPresent( sunPositionProvider -> {
       double zenitAngle = sunPositionProvider.getStatus().getZenit();
       double brightnessFactor = min( 3.33, max( 2.0, ( abs( ( 10 + now().getDayOfYear() ) % 366 - 183 ) / 51.85 ) ) );
       brightness = Percent.valueOf( ( int )max( brightnessMinimum.intValue(), min( ( ( zenitAngle + 18 ) * brightnessFactor ), 99.0 ) ) );

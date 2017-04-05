@@ -2,9 +2,9 @@ package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ALL;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.values;
-import static com.codeaffine.home.control.application.util.ActivityStatus.BRISK;
-import static com.codeaffine.home.control.application.util.MotionStatus.FOCUSSED;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.values;
+import static com.codeaffine.home.control.status.util.ActivityStatus.BRISK;
+import static com.codeaffine.home.control.status.util.MotionStatus.FOCUSSED;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.status.util.Analysis;
 import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
 

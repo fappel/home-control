@@ -8,6 +8,6 @@ Bundle-Vendor: CODEAFFINE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.osgi.framework;version="1.3.0"
 Require-Bundle: com.codeaffine.util;bundle-version="0.1.0",
- com.codeaffine.home.control.api;bundle-version="1.0.0"
-Bundle-ClassPath: lib/solarpositioning-0.0.9.jar,
- .
+ com.codeaffine.home.control.api;bundle-version="1.0.0",
+ com.codeaffine.home.control.status;bundle-version="1.0.0"
+Bundle-ClassPath: .

@@ -10,33 +10,33 @@ import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.home.control.test.util.status.Scene1;
 
 public class NodeDefinitionImplTest {
 
   private NodeDefinitionImpl nodeDefinition;
-  private MyStatusProvider statusProvider;
+  private MyStatusSupplier statusSupplier;
   private Node<MyStatus> node;
   private TestContext context;
 
   @Before
   public void setUp() {
     context = new TestContext();
-    statusProvider = new MyStatusProvider();
-    context.set( MyStatusProvider.class, statusProvider );
+    statusSupplier = new MyStatusSupplier();
+    context.set( MyStatusSupplier.class, statusSupplier );
     node = new Node<>();
     nodeDefinition = new NodeDefinitionImpl( node, context );
   }
 
   @Test
   public void whenStatusOf() {
-    NodeCondition<MyStatus> actual = nodeDefinition.whenStatusOf( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.whenStatusOf( MyStatusSupplier.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();
     assertThat( node.nextIs( CHILD ) ).isTrue();
-    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusProvider );
+    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -59,7 +59,7 @@ public class NodeDefinitionImplTest {
 
   @Test
   public void thenSelectWithDynamicSceneSelection() {
-    Branch actual = nodeDefinition.thenSelect( MyStatusProvider.class, status -> Scene1.class );
+    Branch actual = nodeDefinition.thenSelect( MyStatusSupplier.class, status -> Scene1.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getScene() ).isInstanceOf( DynamicSceneProxy.class );
@@ -73,17 +73,17 @@ public class NodeDefinitionImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void thenSelectWithDynamicSceneSelectionWithNullAsSceneProviderTypeArgument() {
-    nodeDefinition.thenSelect( MyStatusProvider.class, null );
+    nodeDefinition.thenSelect( MyStatusSupplier.class, null );
   }
 
   @Test
   public void or() {
-    NodeCondition<MyStatus> actual = nodeDefinition.or( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.or( MyStatusSupplier.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();
     assertThat( node.nextIs( OR ) ).isTrue();
-    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusProvider );
+    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -93,12 +93,12 @@ public class NodeDefinitionImplTest {
 
   @Test
   public void and() {
-    NodeCondition<MyStatus> actual = nodeDefinition.and( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = nodeDefinition.and( MyStatusSupplier.class );
 
     assertThat( actual ).isNotNull();
     assertThat( node.getNext() ).isNotNull();
     assertThat( node.nextIs( AND ) ).isTrue();
-    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusProvider );
+    assertThat( node.getNext().getStatusProvider() ).isSameAs( statusSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )

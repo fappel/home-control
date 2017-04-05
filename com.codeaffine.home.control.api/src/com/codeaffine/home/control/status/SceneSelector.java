@@ -14,18 +14,18 @@ public interface SceneSelector {
   }
 
   public interface NodeDefinition {
-    <S, T extends StatusProvider<S>> NodeCondition<S> and( Class<T> statusProviderType );
-    <S, T extends StatusProvider<S>> NodeCondition<S> or( Class<T> statusProviderType );
+    <S, T extends StatusSupplier<S>> NodeCondition<S> and( Class<T> statusProviderType );
+    <S, T extends StatusSupplier<S>> NodeCondition<S> or( Class<T> statusProviderType );
     <T extends Scene> Branch thenSelect( Class<T> sceneType );
-    <S, T extends StatusProvider<S>, U extends Scene> Branch
+    <S, T extends StatusSupplier<S>, U extends Scene> Branch
       thenSelect( Class<T> statusProviderType, Function<S, Class<U>> sceneProvider );
-    <S, T extends StatusProvider<S>> NodeCondition<S> whenStatusOf( Class<T> statusProviderType );
+    <S, T extends StatusSupplier<S>> NodeCondition<S> whenStatusOf( Class<T> statusProviderType );
   }
 
   public interface Branch {
-    <S, T extends StatusProvider<S>>  NodeCondition<S> otherwiseWhenStatusOf( Class<T> statusProviderType );
+    <S, T extends StatusSupplier<S>>  NodeCondition<S> otherwiseWhenStatusOf( Class<T> statusProviderType );
     <T extends Scene> Branch otherwiseSelect( Class<T> sceneType );
-    <S, T extends StatusProvider<S>, U extends Scene> Branch
+    <S, T extends StatusSupplier<S>, U extends Scene> Branch
       otherwiseSelect( Class<T> statusProviderType, Function<S, Class<U>> sceneProvider );
   }
 
@@ -34,7 +34,7 @@ public interface SceneSelector {
     int getOrdinal();
   }
 
-  <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusProvider<S>> statusProviderType );
+  <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusSupplier<S>> statusProviderType );
 
   static <T extends Scene> T loadScene( Context context, Class<T> sceneType ) {
     verifyNotNull( sceneType, "sceneType" );

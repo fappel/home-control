@@ -82,7 +82,7 @@ public class SystemWiring {
     contextAdapter.set( EntityRelationProvider.class, entityRelationProvider );
     configuration.configureEntities( entityRegistry );
     entityRelationProvider.establishRelations( configuration );
-    configuration.configureStatusProvider( new StatusProviderRegistryImpl( contextAdapter ) );
+    configuration.configureStatusSupplier( new StatusProviderRegistryImpl( contextAdapter ) );
     ControlCenterImpl controlCenter = contextAdapter.create( ControlCenterImpl.class );
     contextAdapter.set( FollowUpTimer.class, controlCenter );
     configuration.configureHomeControlOperations( controlCenter );

@@ -1,16 +1,16 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.util.ActivityStatus.LIVELY;
-import static com.codeaffine.home.control.application.util.AllocationStatus.FREQUENT;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
+import static com.codeaffine.home.control.status.util.AllocationStatus.FREQUENT;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.util.ActivityStatus;
-import com.codeaffine.home.control.application.util.AllocationStatus;
-import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.util.ActivityStatus;
+import com.codeaffine.home.control.status.util.AllocationStatus;
+import com.codeaffine.home.control.status.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;

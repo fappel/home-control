@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.test;
 
-import static com.codeaffine.home.control.application.type.OnOff.OFF;
+import static com.codeaffine.home.control.status.type.OnOff.OFF;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.mockito.Matchers.any;
@@ -15,11 +15,11 @@ import org.mockito.invocation.InvocationOnMock;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.section.SectionProvider.Section;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensor;
-import com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition;
-import com.codeaffine.home.control.application.type.OnOff;
+import com.codeaffine.home.control.status.model.SectionProvider.Section;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensor;
+import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensorDefinition;
+import com.codeaffine.home.control.status.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;

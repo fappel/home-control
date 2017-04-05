@@ -10,7 +10,7 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 
 public class LampControl {
 

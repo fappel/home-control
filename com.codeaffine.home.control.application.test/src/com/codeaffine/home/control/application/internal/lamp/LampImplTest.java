@@ -4,6 +4,7 @@ import static com.codeaffine.home.control.application.internal.lamp.LampItemHelp
 import static com.codeaffine.home.control.application.internal.lamp.LampImpl.*;
 import static com.codeaffine.home.control.application.internal.lamp.Messages.*;
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
+import static com.codeaffine.home.control.status.type.Percent.*;
 import static com.codeaffine.home.control.type.PercentType.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,8 +19,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.application.internal.lamp.LampImpl;
-import com.codeaffine.home.control.application.type.OnOff;
-import com.codeaffine.home.control.application.type.Percent;
+import com.codeaffine.home.control.status.type.OnOff;
+import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.Logger;
@@ -28,8 +29,8 @@ import com.codeaffine.home.control.type.PercentType;
 
 public class LampImplTest {
 
-  private static final Percent BRIGHTNESS = Percent.P_020;
-  private static final Percent COLOR_TEMPERATURE = Percent.P_010;
+  private static final Percent BRIGHTNESS = P_020;
+  private static final Percent COLOR_TEMPERATURE = P_010;
   private static final PercentType BRIGHTNESS_OF_ITEM = new PercentType( BRIGHTNESS.intValue() );
   private static final PercentType COLOR_TEMPERATURE_OF_ITEM = new PercentType( COLOR_TEMPERATURE.intValue() );
 

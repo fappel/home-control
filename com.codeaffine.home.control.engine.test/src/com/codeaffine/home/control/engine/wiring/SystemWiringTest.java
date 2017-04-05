@@ -41,13 +41,13 @@ import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.home.control.status.ControlCenter;
 import com.codeaffine.home.control.status.SceneSelector;
-import com.codeaffine.home.control.status.StatusProviderRegistry;
+import com.codeaffine.home.control.status.StatusSupplierRegistry;
 import com.codeaffine.home.control.test.util.entity.MyEntityDefinition;
 import com.codeaffine.home.control.test.util.entity.MyEntityProvider;
 import com.codeaffine.home.control.test.util.status.MyHomeControlOperation;
 import com.codeaffine.home.control.test.util.status.MyScope;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.test.util.status.Scene2;
 import com.codeaffine.home.control.type.DecimalType;
@@ -96,8 +96,8 @@ public class SystemWiringTest {
     }
 
     @Override
-    public void configureStatusProvider( StatusProviderRegistry statusProviderRegistry ) {
-      statusProviderRegistry.register( MyStatusProvider.class, MyStatusProvider.class );
+    public void configureStatusSupplier( StatusSupplierRegistry statusProviderRegistry ) {
+      statusProviderRegistry.register( MyStatusSupplier.class, MyStatusSupplier.class );
     }
 
     @Override
@@ -107,7 +107,7 @@ public class SystemWiringTest {
 
     @Override
     public void configureSceneSelection( SceneSelector sceneSelector ) {
-      sceneSelector.whenStatusOf( MyScope.GLOBAL, MyStatusProvider.class ).matches( status -> status == MyStatus.ONE )
+      sceneSelector.whenStatusOf( MyScope.GLOBAL, MyStatusSupplier.class ).matches( status -> status == MyStatus.ONE )
         .thenSelect( Scene1.class )
       .otherwiseSelect( Scene2.class );
     }
@@ -257,7 +257,7 @@ public class SystemWiringTest {
     order.verify( contextFactory ).create();
     order.verify( configuration ).configureEntities( any( EntityRegistry.class ) );
     order.verify( configuration ).configureFacility( any( Facility.class ) );
-    order.verify( configuration ).configureStatusProvider( any( StatusProviderRegistry.class ) );
+    order.verify( configuration ).configureStatusSupplier( any( StatusSupplierRegistry.class ) );
     order.verify( configuration ).configureHomeControlOperations( any( ControlCenter.class ) );
     order.verify( configuration ).configureSceneSelection( any( SceneSelector.class ) );
     order.verify( configuration ).configureSystem( contextCaptor.capture() );
@@ -283,9 +283,9 @@ public class SystemWiringTest {
   }
 
   private void verifyControlCenterSetup() {
-    assertThat( context.get( MyStatusProvider.class ) ).isNotNull();
+    assertThat( context.get( MyStatusSupplier.class ) ).isNotNull();
     assertThat( context.get( MyHomeControlOperation.class ) ).isNotNull();
-    assertThat( context.get( MyHomeControlOperation.class ).getMyStatusProvider() ).isNotNull();
+    assertThat( context.get( MyHomeControlOperation.class ).getMyStatusSupplier() ).isNotNull();
     assertThat( context.get( Scene1.class ) ).isNotNull();
     assertThat( context.get( Scene2.class ) ).isNotNull();
   }

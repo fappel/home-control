@@ -23,16 +23,16 @@ import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class FollowUpControllerTest {
 
   private static final Map<Scope, Scene> ACTIVE_SCENE = newSceneSelection( GLOBAL, mock( Scene.class ) );
-  private static final StatusEvent STATUS_EVENT = new StatusEvent( new MyStatusProvider() );
+  private static final StatusEvent STATUS_EVENT = new StatusEvent( new MyStatusSupplier() );
   private static final long DELAY = 10L;
 
-  private SystemExecutor executor;
   private FollowUpController controller;
+  private SystemExecutor executor;
 
   @Before
   public void setUp() {

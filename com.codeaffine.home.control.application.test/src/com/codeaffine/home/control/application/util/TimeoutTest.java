@@ -72,7 +72,7 @@ public class TimeoutTest {
     timeout.set();
 
     Runnable command = mock( Runnable.class );
-    timeout.executeIfNotExpired( command );
+    timeout.executeIfExpired( command );
 
     verify( command, never() ).run();
   }

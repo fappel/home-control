@@ -12,4 +12,5 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.codeaffine.test.util;bundle-version="0.2.0",
  junitparams;bundle-version="1.0.3",
  com.codeaffine.home.control.test.util;bundle-version="1.0.0",
- com.codeaffine.home.control.engine;bundle-version="1.0.0"
+ com.codeaffine.home.control.engine;bundle-version="1.0.0",
+ com.codeaffine.home.control.status.test.util;bundle-version="1.0.0"

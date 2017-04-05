@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.util;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.DeskUplight;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.WORK_AREA;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.WORK_AREA;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -13,7 +13,7 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 
 public class LampControlTest {

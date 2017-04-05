@@ -1,20 +1,20 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.LIVING_AREA;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.LIVING_AREA;
 
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.status.ActivationProvider;
 import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 
 public class HomeCinemaScene implements Scene {
 
   private final LampSwitchOperation lampSwitchOperation;
-  private final ActivationProvider activationProvider;
+  private final ActivationSupplier activationSupplier;
 
-  public HomeCinemaScene( LampSwitchOperation lampSwitchOperation, ActivationProvider activationProvider ) {
+  public HomeCinemaScene( LampSwitchOperation lampSwitchOperation, ActivationSupplier activationSupplier ) {
     this.lampSwitchOperation = lampSwitchOperation;
-    this.activationProvider = activationProvider;
+    this.activationSupplier = activationSupplier;
   }
 
   @Override
@@ -31,6 +31,6 @@ public class HomeCinemaScene implements Scene {
   }
 
   private boolean isLivingAreaActive() {
-    return activationProvider.getStatus().getZone( LIVING_AREA ).isPresent();
+    return activationSupplier.getStatus().getZone( LIVING_AREA ).isPresent();
   }
 }

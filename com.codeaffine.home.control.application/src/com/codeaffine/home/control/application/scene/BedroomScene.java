@@ -1,30 +1,30 @@
 package com.codeaffine.home.control.application.scene;
 
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.util.ActivityStatus.*;
-import static com.codeaffine.home.control.application.util.AllocationStatus.*;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.util.ActivityStatus.*;
+import static com.codeaffine.home.control.status.util.AllocationStatus.*;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.util.ActivityStatus;
-import com.codeaffine.home.control.application.util.AllocationStatus;
-import com.codeaffine.home.control.application.util.Analysis;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
+import com.codeaffine.home.control.status.util.ActivityStatus;
+import com.codeaffine.home.control.status.util.AllocationStatus;
+import com.codeaffine.home.control.status.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
 
 public class BedroomScene implements Scene {
 
-  private final SunPositionProvider sunPositionProvider;
+  private final SunPositionSupplier sunPositionSupplier;
   private final LampControl lampControl;
   private final Timeout actionTimeout;
   private final Timeout bedTimeout;
   private final Analysis analysis;
 
-  public BedroomScene( LampControl lampControl, Analysis analysis, SunPositionProvider sunPositionProvider ) {
+  public BedroomScene( LampControl lampControl, Analysis analysis, SunPositionSupplier sunPositionSupplier ) {
     this.lampControl = lampControl;
     this.analysis = analysis;
-    this.sunPositionProvider = sunPositionProvider;
+    this.sunPositionSupplier = sunPositionSupplier;
     this.actionTimeout = new Timeout( 20L, SECONDS );
     this.bedTimeout = new Timeout( 20L, SECONDS );
   }
@@ -44,12 +44,12 @@ public class BedroomScene implements Scene {
   }
 
   private ActivityStatus getBedActivityMinimum() {
-    return sunPositionProvider.getStatus().getZenit() > 0 ? AROUSED : LIVELY;
+    return sunPositionSupplier.getStatus().getZenit() > 0 ? AROUSED : LIVELY;
   }
 
   private AllocationStatus getDressingAreaAllocationMinimum() {
     AllocationStatus nightStatus = analysis.isOverallActivityStatusAtLeast( AROUSED ) ? OCCASIONAL : FREQUENT;
-    return sunPositionProvider.getStatus().getZenit() > 0 ? CONTINUAL : nightStatus;
+    return sunPositionSupplier.getStatus().getZenit() > 0 ? CONTINUAL : nightStatus;
   }
 
   @Override

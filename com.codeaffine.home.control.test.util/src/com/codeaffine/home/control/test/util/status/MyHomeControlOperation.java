@@ -7,21 +7,21 @@ import java.util.Collection;
 
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 public class MyHomeControlOperation implements HomeControlOperation {
 
-  private final MyStatusProvider myStatusProvider;
+  private final MyStatusSupplier myStatusSupplier;
 
-  public MyHomeControlOperation( MyStatusProvider myStatusProvider ) {
-    verifyNotNull( myStatusProvider, "myStatusProvider" );
+  public MyHomeControlOperation( MyStatusSupplier myStatusSupplier ) {
+    verifyNotNull( myStatusSupplier, "myStatusSupplier" );
 
-    this.myStatusProvider = myStatusProvider;
+    this.myStatusSupplier = myStatusSupplier;
   }
 
   @Override
-  public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
-    return asList( MyStatusProvider.class );
+  public Collection<Class<? extends StatusSupplier<?>>> getRelatedStatusSupplierTypes() {
+    return asList( MyStatusSupplier.class );
   }
 
   @Override
@@ -32,7 +32,7 @@ public class MyHomeControlOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
   }
 
-  public MyStatusProvider getMyStatusProvider() {
-    return myStatusProvider;
+  public MyStatusSupplier getMyStatusSupplier() {
+    return myStatusSupplier;
   }
 }

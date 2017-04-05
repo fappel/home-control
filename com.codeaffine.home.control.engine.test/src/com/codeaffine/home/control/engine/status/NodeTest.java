@@ -12,27 +12,27 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.engine.status.Node;
 import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.home.control.test.util.status.Scene1;
 
 public class NodeTest {
 
   private Node<MyStatus> node;
-  private MyStatusProvider statusProvider;
+  private MyStatusSupplier statusSupplier;
 
   @Before
   public void setUp() {
     node = new Node<>();
-    statusProvider = new MyStatusProvider();
+    statusSupplier = new MyStatusSupplier();
   }
 
   @Test
   public void evaluateWithValidPrediate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setScene( expected );
     node.setPredicate( status -> status == ONE );
 
@@ -44,11 +44,11 @@ public class NodeTest {
   @Test
   public void evaluateWithValidPrediateAndChildWithValidPredicate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == ONE );
     Node<MyStatus> childNode = new Node<>();
-    childNode.setStatusProvider( statusProvider );
+    childNode.setStatusProvider( statusSupplier );
     childNode.setPredicate( status -> status == ONE );
     childNode.setScene( expected );
     node.setChild( childNode );
@@ -61,11 +61,11 @@ public class NodeTest {
   @Test
   public void evaluateWithValidPrediateAndAndConjunctionWithValidPredicate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == ONE );
     Node<MyStatus> andConjunction = new Node<>();
-    andConjunction.setStatusProvider( statusProvider );
+    andConjunction.setStatusProvider( statusSupplier );
     andConjunction.setPredicate( status -> status == ONE );
     andConjunction.setScene( expected );
     node.setAndConjunction( andConjunction );
@@ -78,11 +78,11 @@ public class NodeTest {
   @Test
   public void evaluateWithValidPrediateAndOrConjunctionWithValidPredicate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == ONE );
     Node<MyStatus> orConjunction = new Node<>();
-    orConjunction.setStatusProvider( statusProvider );
+    orConjunction.setStatusProvider( statusSupplier );
     orConjunction.setPredicate( status -> status == ONE );
     orConjunction.setScene( expected );
     node.setOrConjunction( orConjunction );
@@ -95,15 +95,15 @@ public class NodeTest {
   @Test
   public void evaluateWithValidPrediateAndOrConjunctionWithValidPredicateAndNestedConjunction() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == ONE );
     Node<MyStatus> orConjunction = new Node<>();
-    orConjunction.setStatusProvider( statusProvider );
+    orConjunction.setStatusProvider( statusSupplier );
     orConjunction.setPredicate( status -> status == ONE );
     node.setOrConjunction( orConjunction );
     Node<MyStatus> andConjunction = new Node<>();
-    andConjunction.setStatusProvider( statusProvider );
+    andConjunction.setStatusProvider( statusSupplier );
     andConjunction.setPredicate( status -> status == ONE );
     andConjunction.setScene( expected );
     orConjunction.setAndConjunction( andConjunction );
@@ -116,11 +116,11 @@ public class NodeTest {
   @Test
   public void evaluateWithInvalidPrediateAndSuccessorWithValidPredicate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( ONE );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( ONE );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == TWO );
     Node<MyStatus> successor = new Node<>();
-    successor.setStatusProvider( statusProvider );
+    successor.setStatusProvider( statusSupplier );
     successor.setPredicate( status -> status == ONE );
     successor.setScene( expected );
     node.setSuccessor( successor );
@@ -133,11 +133,11 @@ public class NodeTest {
   @Test
   public void evaluateWithInvalidPrediateAndOrConjunctionWithValidPredicate() {
     Scene1 expected = new Scene1();
-    statusProvider.setStatus( TWO );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( TWO );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == ONE );
     Node<MyStatus> orConjunction = new Node<>();
-    orConjunction.setStatusProvider( statusProvider );
+    orConjunction.setStatusProvider( statusSupplier );
     orConjunction.setPredicate( status -> status == TWO );
     orConjunction.setScene( expected );
     node.setOrConjunction( orConjunction );
@@ -160,11 +160,11 @@ public class NodeTest {
 
   @Test
   public void evaluateWithValidPrediateAndOrConjunctionWithValidPredicateButMissingSceneSelection() {
-    statusProvider.setStatus( TWO );
-    node.setStatusProvider( statusProvider );
+    statusSupplier.setStatus( TWO );
+    node.setStatusProvider( statusSupplier );
     node.setPredicate( status -> status == TWO );
     Node<MyStatus> orConjunction = new Node<>();
-    orConjunction.setStatusProvider( statusProvider );
+    orConjunction.setStatusProvider( statusSupplier );
     orConjunction.setPredicate( status -> status == ONE );
     node.setOrConjunction( orConjunction );
 
@@ -177,11 +177,11 @@ public class NodeTest {
 
   @Test
   public void getStatusProvider() {
-    node.setStatusProvider( statusProvider );
+    node.setStatusProvider( statusSupplier );
 
-    StatusProvider<MyStatus> actual = node.getStatusProvider();
+    StatusSupplier<MyStatus> actual = node.getStatusProvider();
 
-    assertThat( actual ).isSameAs( statusProvider );
+    assertThat( actual ).isSameAs( statusSupplier );
   }
 
   @Test

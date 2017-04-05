@@ -9,7 +9,7 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 class BranchImpl implements Branch {
 
@@ -30,7 +30,7 @@ class BranchImpl implements Branch {
   }
 
   @Override
-  public <S, T extends StatusProvider<S>, U extends Scene> Branch
+  public <S, T extends StatusSupplier<S>, U extends Scene> Branch
     otherwiseSelect( Class<T> statusProviderType, Function<S, Class<U>> sceneProvider )
   {
     verifyNotNull( sceneProvider, "sceneProviderProviderType" );
@@ -42,7 +42,7 @@ class BranchImpl implements Branch {
   }
 
   @Override
-  public <S, T extends StatusProvider<S>> NodeCondition<S> otherwiseWhenStatusOf( Class<T> statusProviderType ) {
+  public <S, T extends StatusSupplier<S>> NodeCondition<S> otherwiseWhenStatusOf( Class<T> statusProviderType ) {
     verifyNotNull( statusProviderType, "statusProviderType" );
 
     NodeConditionImpl<S> result = new NodeConditionImpl<>( context, statusProviderType );

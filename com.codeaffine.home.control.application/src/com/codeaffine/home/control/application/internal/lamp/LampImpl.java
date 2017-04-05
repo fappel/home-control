@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.lamp;
 
 import static com.codeaffine.home.control.application.internal.lamp.Messages.*;
-import static com.codeaffine.home.control.application.internal.type.TypeConverter.*;
+import static com.codeaffine.home.control.status.type.TypeConverter.*;
 import static com.codeaffine.home.control.type.OnOffType.ON;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.String.format;
@@ -13,8 +13,8 @@ import java.util.Optional;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.type.OnOff;
-import com.codeaffine.home.control.application.type.Percent;
+import com.codeaffine.home.control.status.type.OnOff;
+import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.Logger;

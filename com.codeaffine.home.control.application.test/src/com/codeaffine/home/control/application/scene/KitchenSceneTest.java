@@ -1,9 +1,9 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.KitchenScene.*;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.util.ActivityStatus.LIVELY;
-import static com.codeaffine.home.control.application.util.AllocationStatus.UNUSED;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
+import static com.codeaffine.home.control.status.util.AllocationStatus.UNUSED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 

@@ -23,31 +23,31 @@ import com.codeaffine.home.control.status.SceneSelector.NodeDefinition;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.test.util.status.Scene2;
 
 public class SceneSelectorImplTest {
 
-  private MyStatusProvider myStatusProvider;
+  private MyStatusSupplier statusSupplier;
   private SceneSelectorImpl sceneSelector;
   private Context context;
   private Logger logger;
 
   @Before
   public void setUp() {
-    myStatusProvider = new MyStatusProvider();
+    statusSupplier = new MyStatusSupplier();
     context = new TestContext();
-    context.set( MyStatusProvider.class, myStatusProvider );
+    context.set( MyStatusSupplier.class, statusSupplier );
     logger = mock( Logger.class );
     sceneSelector = new SceneSelectorImpl( context, logger );
   }
 
   @Test
   public void selectWithMatchOfFirstCondition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -60,9 +60,9 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectSameSceneTwice() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> first = sceneSelector.select();
     Map<Scope, Scene> second = sceneSelector.select();
@@ -77,11 +77,11 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfSecondCondition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
-    .otherwiseWhenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
+    .otherwiseWhenStatusOf( MyStatusSupplier.class ).matches( status -> status == TWO )
       .thenSelect( Scene2.class );
-    myStatusProvider.setStatus( TWO );
+    statusSupplier.setStatus( TWO );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -95,10 +95,10 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfFallback() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseSelect( Scene2.class );
-    myStatusProvider.setStatus( TWO );
+    statusSupplier.setStatus( TWO );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -111,10 +111,10 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatcthOfFirstNestedCondition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .whenStatusOf( MyStatusSupplier.class ).matches( status -> status == ONE )
         .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -127,12 +127,12 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfSecondNestedCondition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .whenStatusOf( MyStatusSupplier.class ).matches( status -> status == TWO )
         .thenSelect( Scene1.class )
-      .otherwiseWhenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
+      .otherwiseWhenStatusOf( MyStatusSupplier.class ).matches( status -> status == ONE )
         .thenSelect( Scene2.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -145,11 +145,11 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfNestedFallBack() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .whenStatusOf( MyStatusProvider.class ).matches( status -> status == TWO )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .whenStatusOf( MyStatusSupplier.class ).matches( status -> status == TWO )
         .thenSelect( Scene1.class )
       .otherwiseSelect( Scene2.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -162,10 +162,10 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfAndConjunctionExpression() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .and( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .and( MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -178,10 +178,10 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfFirstOrConjunctionOperand() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .or( MyStatusProvider.class ).matches( status -> status == TWO )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .or( MyStatusSupplier.class ).matches( status -> status == TWO )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -195,10 +195,10 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfSecondOrConjunctionOperand() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO )
-      .or( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO )
+      .or( MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -211,11 +211,11 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectWithMatchOfThirdOrConjunctionOperand() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO )
-      .and( MyStatusProvider.class ).matches( status -> status == TWO )
-      .or( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO )
+      .and( MyStatusSupplier.class ).matches( status -> status == TWO )
+      .or( MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -228,14 +228,14 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectSceneASecondTimeAfterDefinitionChange() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
     Map<Scope, Scene> first = sceneSelector.select();
 
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO )
       .thenSelect( Scene1.class );
-    myStatusProvider.setStatus( TWO );
+    statusSupplier.setStatus( TWO );
     Map<Scope, Scene> second = sceneSelector.select();
 
     assertThat( first )
@@ -249,13 +249,13 @@ public class SceneSelectorImplTest {
 
   @Test
   public void selectSceneASecondTimeAfterStatusChange() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseSelect( Scene2.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> first = sceneSelector.select();
-    myStatusProvider.setStatus( TWO );
+    statusSupplier.setStatus( TWO );
     Map<Scope, Scene> second = sceneSelector.select();
 
     assertThat( first )
@@ -274,7 +274,7 @@ public class SceneSelectorImplTest {
 
   @Test
   public void validate() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseSelect( Scene1.class );
 
@@ -285,7 +285,7 @@ public class SceneSelectorImplTest {
 
   @Test
   public void validateWithIncompleteFirstLevelDefinition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
 
     Throwable actual = thrownBy( () -> sceneSelector.validate() );
@@ -297,8 +297,8 @@ public class SceneSelectorImplTest {
 
   @Test
   public void validateWithValidNestedLevelDefinition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .whenStatusOf( MyStatusSupplier.class ).matches( status -> status == ONE )
         .thenSelect( Scene1.class )
       .otherwiseSelect( Scene2.class )
     .otherwiseSelect( Scene1.class );
@@ -310,8 +310,8 @@ public class SceneSelectorImplTest {
 
   @Test
   public void validateWithIncompleteSecondLevelDefinition() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-      .whenStatusOf( MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+      .whenStatusOf( MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
 
     Throwable actual = thrownBy( () -> sceneSelector.validate() );
@@ -323,7 +323,7 @@ public class SceneSelectorImplTest {
 
   @Test
   public void validateWithSuperfluousOtherwiseSelect() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class )
     .otherwiseSelect( Scene1.class )
     .otherwiseSelect( Scene2.class );
@@ -337,11 +337,11 @@ public class SceneSelectorImplTest {
 
   @Test
   public void computeSelectedScenesInfoOnSelection() {
-    sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene1.class );
-    sceneSelector.whenStatusOf( LOCAL, MyStatusProvider.class ).matches( status -> status == ONE )
+    sceneSelector.whenStatusOf( LOCAL, MyStatusSupplier.class ).matches( status -> status == ONE )
       .thenSelect( Scene2.class );
-    myStatusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
     Map<Scope, Scene> selection = sceneSelector.select();
     String actual = computeSelectedScenesInfo( selection );
@@ -355,7 +355,7 @@ public class SceneSelectorImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void whenStatusOfWithNullAsScopeArgument() {
-    sceneSelector.whenStatusOf( null, MyStatusProvider.class );
+    sceneSelector.whenStatusOf( null, MyStatusSupplier.class );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -365,7 +365,7 @@ public class SceneSelectorImplTest {
 
   @Test
   public void matchesWithNullAsPredicateArgument() {
-    NodeCondition<MyStatus> nodeCondition = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class );
+    NodeCondition<MyStatus> nodeCondition = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class );
 
     Throwable actual = thrownBy( () -> nodeCondition.matches( null ) );
 
@@ -375,7 +375,7 @@ public class SceneSelectorImplTest {
   @Test
   public void thenSelectWithNullAsSceneArgument() {
     NodeDefinition nodeDefinition
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO );
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO );
 
     Throwable actual = thrownBy( () -> nodeDefinition.thenSelect( null ) );
 
@@ -385,7 +385,7 @@ public class SceneSelectorImplTest {
   @Test
   public void andWithNullAsStatusProviderTypeArgument() {
     NodeDefinition nodeDefinition
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO );
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO );
 
     Throwable actual = thrownBy( () -> nodeDefinition.and( null ) );
 
@@ -395,7 +395,7 @@ public class SceneSelectorImplTest {
   @Test
   public void orWithNullAsStatusProviderTypeArgument() {
     NodeDefinition nodeDefinition
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == TWO );
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == TWO );
 
     Throwable actual = thrownBy( () -> nodeDefinition.or( null ) );
 
@@ -405,7 +405,7 @@ public class SceneSelectorImplTest {
   @Test
   public void otherwiseWhenStatusOfWithNullAsStatusProviderTypeArgument() {
     Branch branch
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
           .thenSelect( Scene1.class );
 
     Throwable actual = thrownBy( () -> branch.otherwiseWhenStatusOf( null ) );
@@ -416,7 +416,7 @@ public class SceneSelectorImplTest {
   @Test
   public void otherwiseSelectWithNullAsSceneArgument() {
     Branch branch
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
           .thenSelect( Scene1.class );
 
     Throwable actual = thrownBy( () -> branch.otherwiseSelect( null ) );
@@ -427,7 +427,7 @@ public class SceneSelectorImplTest {
   @Test
   public void nestedWhenStatusOfWithNullAsStatusProviderTypeArgument() {
     NodeDefinition nodeDefinition
-      = sceneSelector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE );
+      = sceneSelector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE );
 
     Throwable actual = thrownBy( () -> nodeDefinition.whenStatusOf( null ) );
 

@@ -1,52 +1,44 @@
 package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.sensor.ActivationSensorProvider.ActivationSensorDefinition.*;
+import static com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensorDefinition.*;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemConfiguration;
-import com.codeaffine.home.control.application.internal.activation.ActivationProviderImpl;
-import com.codeaffine.home.control.application.internal.activation.AdjacencyDefinition;
-import com.codeaffine.home.control.application.internal.activity.ActivityProviderImpl;
-import com.codeaffine.home.control.application.internal.computer.ComputerStatusProviderImpl;
-import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
-import com.codeaffine.home.control.application.internal.sun.SunPositionProviderImpl;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.operation.AdjustBrightnessOperation;
 import com.codeaffine.home.control.application.operation.AdjustColorTemperatureOperation;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.application.report.ActivityReport;
-import com.codeaffine.home.control.application.report.ActivityReportCompiler;
 import com.codeaffine.home.control.application.scene.SceneConfiguration;
-import com.codeaffine.home.control.application.section.SectionProvider;
-import com.codeaffine.home.control.application.sensor.ActivationSensorProvider;
-import com.codeaffine.home.control.application.status.ActivationProvider;
-import com.codeaffine.home.control.application.status.ActivityProvider;
-import com.codeaffine.home.control.application.status.ComputerStatusProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
-import com.codeaffine.home.control.application.status.SunPositionProvider;
-import com.codeaffine.home.control.application.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
-import com.codeaffine.home.control.application.util.MotionStatusCalculator;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider.Facility;
 import com.codeaffine.home.control.status.ControlCenter;
 import com.codeaffine.home.control.status.SceneSelector;
-import com.codeaffine.home.control.status.StatusProviderRegistry;
+import com.codeaffine.home.control.status.StatusConfiguration;
+import com.codeaffine.home.control.status.StatusSupplierRegistry;
+import com.codeaffine.home.control.status.supplier.AdjacencyDefinition;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
 
 public class Configuration implements SystemConfiguration {
 
+  private final StatusConfiguration statusConfiguration;
+  private final SceneConfiguration sceneConfiguration;
+
+  public Configuration() {
+    statusConfiguration = new StatusConfiguration();
+    sceneConfiguration = new SceneConfiguration();
+  }
+
   @Override
   public void configureEntities( EntityRegistry entityRegistry ) {
-    entityRegistry.register( ActivationSensorProvider.class );
+    statusConfiguration.configureEntities( entityRegistry );
     entityRegistry.register( LampProvider.class );
-    entityRegistry.register( SectionProvider.class );
   }
 
   @Override
@@ -65,7 +57,7 @@ public class Configuration implements SystemConfiguration {
   }
 
   @Override
-  public void configureStatusProvider( StatusProviderRegistry statusProviderRegistry ) {
+  public void configureStatusSupplier( StatusSupplierRegistry statusSupplierRegistry ) {
     AdjacencyDefinition adjacencyDefinition
       = new AdjacencyDefinition( new HashSet<>(
           asList( COOKING_AREA, DINING_AREA, BED, DRESSING_AREA, WORK_AREA, LIVING_AREA, HALL, BATH_ROOM ) ) );
@@ -78,19 +70,11 @@ public class Configuration implements SystemConfiguration {
       .link( COOKING_AREA, DINING_AREA )
       .link( DINING_AREA, BATH_ROOM );
 
-    Context context = statusProviderRegistry.getContext();
+    Context context = statusSupplierRegistry.getContext();
     context.set( AdjacencyDefinition.class, adjacencyDefinition );
-    context.set( NamedSceneConfiguration.class, context.create( SceneConfiguration.class ) );
-    statusProviderRegistry.register( ActivationProvider.class, ActivationProviderImpl.class );
-    statusProviderRegistry.register( ActivityProvider.class, ActivityProviderImpl.class );
+    context.set( NamedSceneConfiguration.class, sceneConfiguration );
+    statusConfiguration.configureStatusSupplier( statusSupplierRegistry );
     context.set( LampCollector.class, context.create( LampCollector.class ) );
-    context.set( MotionStatusCalculator.class, context.create( MotionStatusCalculator.class ) );
-    context.set( Analysis.class, context.create( Analysis.class ) );
-    context.set( ActivityReportCompiler.class, context.create( ActivityReportCompiler.class ) );
-    context.set( ActivityReport.class, context.create( ActivityReport.class ) );
-    statusProviderRegistry.register( SunPositionProvider.class, SunPositionProviderImpl.class );
-    statusProviderRegistry.register( NamedSceneProvider.class, NamedSceneProviderImpl.class );
-    statusProviderRegistry.register( ComputerStatusProvider.class, ComputerStatusProviderImpl.class );
   }
 
   @Override
@@ -104,6 +88,6 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureSceneSelection( SceneSelector sceneSelector ) {
-    new SceneConfiguration().configureSceneSelection( sceneSelector );
+    sceneConfiguration.configureSceneSelection( sceneSelector );
   }
 }

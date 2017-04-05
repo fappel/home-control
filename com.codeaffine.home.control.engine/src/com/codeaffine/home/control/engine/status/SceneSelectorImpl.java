@@ -13,7 +13,7 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 public class SceneSelectorImpl implements SceneSelector {
 
@@ -30,7 +30,7 @@ public class SceneSelectorImpl implements SceneSelector {
   }
 
   @Override
-  public <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusProvider<S>> statusProviderType ) {
+  public <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusSupplier<S>> statusProviderType ) {
     verifyNotNull( statusProviderType, "statusProviderType" );
     verifyNotNull( scope, "scope" );
 

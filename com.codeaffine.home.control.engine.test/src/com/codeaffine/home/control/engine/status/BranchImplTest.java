@@ -10,12 +10,12 @@ import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 import com.codeaffine.home.control.test.util.status.Scene1;
 
 public class BranchImplTest {
 
-  private MyStatusProvider myStatusProvider;
+  private MyStatusSupplier myStatusSupplier;
   private TestContext context;
   private BranchImpl branch;
   private Node<?> parent;
@@ -24,8 +24,8 @@ public class BranchImplTest {
   public void setUp() {
     parent = new Node<>();
     context = new TestContext();
-    myStatusProvider = new MyStatusProvider();
-    context.set( MyStatusProvider.class, myStatusProvider );
+    myStatusSupplier = new MyStatusSupplier();
+    context.set( MyStatusSupplier.class, myStatusSupplier );
     branch = new BranchImpl( parent, context );
   }
 
@@ -45,7 +45,7 @@ public class BranchImplTest {
 
   @Test
   public void otherwiseSelectWithDynamicSceneSelection() {
-    Branch actual = branch.otherwiseSelect( MyStatusProvider.class, status -> Scene1.class );
+    Branch actual = branch.otherwiseSelect( MyStatusSupplier.class, status -> Scene1.class );
 
     assertThat( actual ).isNotNull();
     assertThat( parent.getNext().evaluate() ).isInstanceOf( DynamicSceneProxy.class );
@@ -59,16 +59,16 @@ public class BranchImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void otherwiseSelectWithDynamicSceneSelectionWithNullAsSceneProviderTypeArgument() {
-    branch.otherwiseSelect( MyStatusProvider.class, null );
+    branch.otherwiseSelect( MyStatusSupplier.class, null );
   }
 
   @Test
   public void otherwiseWhenStatusOf() {
-    NodeCondition<MyStatus> actual = branch.otherwiseWhenStatusOf( MyStatusProvider.class );
+    NodeCondition<MyStatus> actual = branch.otherwiseWhenStatusOf( MyStatusSupplier.class );
 
     assertThat( actual ).isNotNull();
     assertThat( parent.nextIs( CHILD ) );
-    assertThat( parent.getNext().getStatusProvider() ).isSameAs( myStatusProvider );
+    assertThat( parent.getNext().getStatusProvider() ).isSameAs( myStatusSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )

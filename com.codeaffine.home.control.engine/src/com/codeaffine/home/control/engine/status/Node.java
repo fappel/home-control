@@ -6,11 +6,11 @@ import static com.codeaffine.home.control.engine.status.NodeType.*;
 import java.util.function.Predicate;
 
 import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 class Node<S> {
 
-  private StatusProvider<S> statusProvider;
+  private StatusSupplier<S> statusProvider;
   private Predicate<S> predicate;
   private NextNode next;
   private Scene scene;
@@ -40,11 +40,11 @@ class Node<S> {
     return predicate;
   }
 
-  void setStatusProvider( StatusProvider<S> statusProvider ) {
+  void setStatusProvider( StatusSupplier<S> statusProvider ) {
     this.statusProvider = statusProvider;
   }
 
-  StatusProvider<S> getStatusProvider() {
+  StatusSupplier<S> getStatusProvider() {
     return statusProvider;
   }
 

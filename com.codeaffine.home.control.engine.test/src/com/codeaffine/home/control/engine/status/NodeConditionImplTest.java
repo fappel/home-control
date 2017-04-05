@@ -12,26 +12,26 @@ import com.codeaffine.home.control.engine.status.NodeConditionImpl;
 import com.codeaffine.home.control.status.SceneSelector.NodeDefinition;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class NodeConditionImplTest {
 
   private NodeConditionImpl<MyStatus> nodeCondition;
-  private MyStatusProvider statusProvider;
+  private MyStatusSupplier statusSupplier;
 
   @Before
   public void setUp() {
     TestContext context = new TestContext();
-    statusProvider = new MyStatusProvider();
-    context.set( MyStatusProvider.class, statusProvider );
-    nodeCondition = new NodeConditionImpl<>( context, MyStatusProvider.class );
+    statusSupplier = new MyStatusSupplier();
+    context.set( MyStatusSupplier.class, statusSupplier );
+    nodeCondition = new NodeConditionImpl<>( context, MyStatusSupplier.class );
   }
 
   @Test
   public void construction() {
     Node<MyStatus> actual = nodeCondition.getNode();
 
-    assertThat( actual.getStatusProvider() ).isSameAs( statusProvider );
+    assertThat( actual.getStatusProvider() ).isSameAs( statusSupplier );
   }
 
   @Test

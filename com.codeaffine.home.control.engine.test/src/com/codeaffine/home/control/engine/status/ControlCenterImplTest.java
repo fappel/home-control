@@ -27,10 +27,10 @@ import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class ControlCenterImplTest {
 
@@ -49,7 +49,7 @@ public class ControlCenterImplTest {
   private static final int DELAY_VALUE_BELOW_LOWER_BOUND = 0;
 
   private ControlCenterImpl controlCenter;
-  private MyStatusProvider statusProvider;
+  private MyStatusSupplier statusSupplier;
   private SystemExecutor executor;
   private TestContext context;
   private List<Object> log;
@@ -169,9 +169,9 @@ public class ControlCenterImplTest {
       log.add( LOG_CONFIGURE_SCENE_SELECTOR );
       Predicate<MyStatus> predicate = status -> status == ONE;
       if( useInvalidSelectorConfiguration ) {
-        selector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( predicate ).thenSelect( Scene1.class );
+        selector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( predicate ).thenSelect( Scene1.class );
       } else {
-        selector.whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( predicate ).thenSelect( Scene1.class )
+        selector.whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( predicate ).thenSelect( Scene1.class )
           .otherwiseSelect( Scene2.class );
       }
     }
@@ -192,12 +192,12 @@ public class ControlCenterImplTest {
     void configureSceneSelection( SceneSelector selector ) {
       log.add( LOG_CONFIGURE_SCENE_SELECTOR );
       selector
-        .whenStatusOf( GLOBAL, MyStatusProvider.class ).matches( status -> status == ONE )
-        .or( MyStatusProvider.class ).matches( status -> status == THREE )
+        .whenStatusOf( GLOBAL, MyStatusSupplier.class ).matches( status -> status == ONE )
+        .or( MyStatusSupplier.class ).matches( status -> status == THREE )
           .thenSelect( Scene1.class )
         .otherwiseSelect( Scene3.class );
       selector
-        .whenStatusOf( LOCAL, MyStatusProvider.class ).matches( status -> status == ONE )
+        .whenStatusOf( LOCAL, MyStatusSupplier.class ).matches( status -> status == ONE )
           .thenSelect( Scene2.class )
         .otherwiseSelect( Scene4.class );
     }
@@ -222,8 +222,8 @@ public class ControlCenterImplTest {
     }
 
     @Override
-    public Collection<Class<? extends StatusProvider<?>>> getRelatedStatusProviderTypes() {
-      return asList( MyStatusProvider.class );
+    public Collection<Class<? extends StatusSupplier<?>>> getRelatedStatusSupplierTypes() {
+      return asList( MyStatusSupplier.class );
     }
   }
 
@@ -231,8 +231,8 @@ public class ControlCenterImplTest {
   public void setUp() {
     log = new ArrayList<>();
     context = new TestContext();
-    statusProvider = new MyStatusProvider();
-    context.set( MyStatusProvider.class, statusProvider );
+    statusSupplier = new MyStatusSupplier();
+    context.set( MyStatusSupplier.class, statusSupplier );
     context.set( List.class, log );
     context.set( Logger.class, mock( Logger.class ) );
     executor = mock( SystemExecutor.class );
@@ -244,8 +244,8 @@ public class ControlCenterImplTest {
 
   @Test
   public void onEvent() {
-    statusProvider.setStatus( ONE );
-    StatusEvent evt = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent evt = new StatusEvent( statusSupplier );
     new SingleScopeSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
 
     controlCenter.onEvent( evt );
@@ -255,8 +255,8 @@ public class ControlCenterImplTest {
 
   @Test
   public void onEventWithDifferentStatus() {
-    statusProvider.setStatus( TWO );
-    StatusEvent evt = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent evt = new StatusEvent( statusSupplier );
     new SingleScopeSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
 
     controlCenter.onEvent( evt );
@@ -267,17 +267,17 @@ public class ControlCenterImplTest {
   @Test
   public void onEventWithEventSequence() {
     new SingleScopeSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
-    statusProvider.setStatus( ONE );
-    StatusEvent firstEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent firstEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( firstEvent );
-    statusProvider.setStatus( TWO );
-    StatusEvent secondEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent secondEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( secondEvent );
-    statusProvider.setStatus( TWO );
-    StatusEvent thirdEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent thirdEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( thirdEvent );
-    statusProvider.setStatus( ONE );
-    StatusEvent fourthEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent fourthEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( fourthEvent );
 
     assertThat( log )
@@ -304,17 +304,17 @@ public class ControlCenterImplTest {
     SingleScopeSceneSelectionConfigurer sceneSelectionConfigurer = new SingleScopeSceneSelectionConfigurer( log );
     sceneSelectionConfigurer.useInvalidSelectorConfiguration();
     sceneSelectionConfigurer.configureSceneSelection( controlCenter );
-    statusProvider.setStatus( ONE );
+    statusSupplier.setStatus( ONE );
 
-    Throwable actual = thrownBy( () -> controlCenter.onEvent( new StatusEvent( statusProvider ) ) );
+    Throwable actual = thrownBy( () -> controlCenter.onEvent( new StatusEvent( statusSupplier ) ) );
 
     assertThat( actual ).isInstanceOf( IllegalStateException.class );
   }
 
   @Test
   public void onEventWithScopedSceneSelection() {
-    statusProvider.setStatus( ONE );
-    StatusEvent evt = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent evt = new StatusEvent( statusSupplier );
     new ScopedSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
 
     controlCenter.onEvent( evt );
@@ -328,8 +328,8 @@ public class ControlCenterImplTest {
 
   @Test
   public void onEventWithDifferentStatusAndScopedSelection() {
-    statusProvider.setStatus( TWO );
-    StatusEvent evt = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent evt = new StatusEvent( statusSupplier );
     new ScopedSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
 
     controlCenter.onEvent( evt );
@@ -344,20 +344,20 @@ public class ControlCenterImplTest {
   @Test
   public void onEventWithEventSequenceAndScopedSelection() {
     new ScopedSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
-    statusProvider.setStatus( ONE );
-    StatusEvent firstEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent firstEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( firstEvent );
-    statusProvider.setStatus( TWO );
-    StatusEvent secondEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent secondEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( secondEvent );
-    statusProvider.setStatus( TWO );
-    StatusEvent thirdEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent thirdEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( thirdEvent );
-    statusProvider.setStatus( ONE );
-    StatusEvent fourthEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent fourthEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( fourthEvent );
-    statusProvider.setStatus( THREE );
-    StatusEvent fifthEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( THREE );
+    StatusEvent fifthEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( fifthEvent );
 
     assertThat( log )
@@ -397,7 +397,7 @@ public class ControlCenterImplTest {
 
   @Test
   public void onEventOfUnrelatedStatusProvider() {
-    StatusEvent evt = new StatusEvent( mock( StatusProvider.class ) );
+    StatusEvent evt = new StatusEvent( mock( StatusSupplier.class ) );
     new ScopedSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
 
     controlCenter.onEvent( evt );
@@ -411,8 +411,8 @@ public class ControlCenterImplTest {
   @Test
   public void processFollowUp() {
     new SingleScopeSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
-    statusProvider.setStatus( ONE );
-    StatusEvent event = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent event = new StatusEvent( statusSupplier );
     controlCenter.onEvent( event );
     Runnable command = captureFollowUpCallback();
 
@@ -430,12 +430,12 @@ public class ControlCenterImplTest {
   @Test
   public void processFollowUpIfRelatedSceneHasBeenDeactivated() {
     new SingleScopeSceneSelectionConfigurer( log ).configureSceneSelection( controlCenter );
-    statusProvider.setStatus( ONE );
-    StatusEvent firstEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( ONE );
+    StatusEvent firstEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( firstEvent );
     Runnable command = captureFollowUpCallback();
-    statusProvider.setStatus( TWO );
-    StatusEvent secondEvent = new StatusEvent( statusProvider );
+    statusSupplier.setStatus( TWO );
+    StatusEvent secondEvent = new StatusEvent( statusSupplier );
     controlCenter.onEvent( secondEvent );
 
     command.run();

@@ -1,31 +1,31 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.LivingRoomScene.*;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.type.OnOff.*;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.type.OnOff.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.status.ComputerStatusProvider;
-import com.codeaffine.home.control.application.type.OnOff;
+import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
+import com.codeaffine.home.control.status.type.OnOff;
 import com.codeaffine.home.control.application.util.LampControl;
 
 public class LivingRoomSceneTest {
 
-  private ComputerStatusProvider computerStatusProvider;
+  private ComputerStatusSupplier computerStatusSupplier;
   private LampControl lampControl;
   private LivingRoomScene scene;
   private AnalysisStub analysis;
 
   @Before
   public void setUp() {
-    computerStatusProvider = mock( ComputerStatusProvider.class );
+    computerStatusSupplier = mock( ComputerStatusSupplier.class );
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
-    scene = new LivingRoomScene( lampControl, computerStatusProvider, analysis.getStub() );
+    scene = new LivingRoomScene( lampControl, computerStatusSupplier, analysis.getStub() );
   }
 
   @Test
@@ -140,6 +140,6 @@ public class LivingRoomSceneTest {
   }
 
   private void stubComputerStatusProvider( OnOff status ) {
-    when( computerStatusProvider.getStatus() ).thenReturn( status );
+    when( computerStatusSupplier.getStatus() ).thenReturn( status );
   }
 }

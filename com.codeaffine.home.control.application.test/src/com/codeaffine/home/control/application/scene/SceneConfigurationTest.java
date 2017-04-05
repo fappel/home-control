@@ -3,8 +3,8 @@ package com.codeaffine.home.control.application.scene;
 import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
-import static com.codeaffine.home.control.application.test.ActivationHelper.*;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptySet;
@@ -17,16 +17,16 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.application.internal.scene.NamedSceneProviderImpl;
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.status.Activation;
-import com.codeaffine.home.control.application.status.Activation.Zone;
-import com.codeaffine.home.control.application.status.ActivationProvider;
-import com.codeaffine.home.control.application.status.ActivityProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
-import com.codeaffine.home.control.application.status.SunPosition;
-import com.codeaffine.home.control.application.status.SunPositionProvider;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
+import com.codeaffine.home.control.status.supplier.ActivitySupplier;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
+import com.codeaffine.home.control.status.supplier.SunPosition;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
+import com.codeaffine.home.control.status.test.util.supplier.NamedSceneSupplierTestProvider;
 import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.EventBus;
@@ -44,8 +44,9 @@ public class SceneConfigurationTest {
   private static final int HOME_SCOPE_VALUE_COUNT = HomeScope.values().length;
   private static final String NAMED_SCENE = "namedScene";
 
-  private SunPositionProvider sunPositionProvider;
-  private ActivationProvider activationProvider;
+  private NamedSceneSupplierTestProvider namedSceneSupplierFactory;
+  private SunPositionSupplier sunPositionSupplier;
+  private ActivationSupplier activationSupplier;
   private SceneSelectorImpl sceneSelector;
   private TestContext context;
 
@@ -59,17 +60,18 @@ public class SceneConfigurationTest {
 
   @Before
   public void setUp() {
-    sunPositionProvider = mock( SunPositionProvider.class );
-    activationProvider = mock( ActivationProvider.class );
-    ActivityProvider activityProvider = mock( ActivityProvider.class );
+    sunPositionSupplier = mock( SunPositionSupplier.class );
+    activationSupplier = mock( ActivationSupplier.class );
+    ActivitySupplier activitySupplier = mock( ActivitySupplier.class );
     context = new TestContext();
-    context.set( SunPositionProvider.class, sunPositionProvider );
+    namedSceneSupplierFactory = new NamedSceneSupplierTestProvider( context );
+    context.set( SunPositionSupplier.class, sunPositionSupplier );
     context.set( Logger.class, mock( Logger.class ) );
     context.set( EventBus.class, mock( EventBus.class ) );
-    context.set( ActivationProvider.class, activationProvider );
-    context.set( ActivityProvider.class, activityProvider );
+    context.set( ActivationSupplier.class, activationSupplier );
+    context.set( ActivitySupplier.class, activitySupplier );
     context.set( NamedSceneConfiguration.class, new TestNamedSceneConfiguration() );
-    context.set( NamedSceneProvider.class, context.create( NamedSceneProviderImpl.class ) );
+    context.set( NamedSceneSupplier.class, namedSceneSupplierFactory.get() );
     sceneSelector = new SceneSelectorImpl( context, mock( Logger.class ) );
     new SceneConfiguration().configureSceneSelection( sceneSelector );
   }
@@ -166,7 +168,7 @@ public class SceneConfigurationTest {
   }
 
   private void stubSunPositionProvider( SunPosition sunPosition ) {
-    when( sunPositionProvider.getStatus() ).thenReturn( sunPosition );
+    when( sunPositionSupplier.getStatus() ).thenReturn( sunPosition );
   }
 
   private static Zone zoneOf( SectionDefinition section ) {
@@ -174,12 +176,12 @@ public class SceneConfigurationTest {
   }
 
   private void stubActivationProvider( Activation activation ) {
-    when( activationProvider.getStatus() ).thenReturn( activation );
+    when( activationSupplier.getStatus() ).thenReturn( activation );
   }
 
   private void selectNamedScene( String sceneName ) {
     ChangeEvent<StringItem, StringType> event = stubChangeEvent( new StringType( sceneName ) );
-    (( NamedSceneProviderImpl )context.get( NamedSceneProvider.class ) ).onActiveSceneItemChange( event );
+    namedSceneSupplierFactory.onActiveSceneItemChange( event );
   }
 
   @SuppressWarnings( "unchecked" )

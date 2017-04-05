@@ -13,7 +13,7 @@ import java.util.Set;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.status.ActivationProvider;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.entity.EntityProvider.CompositeEntity;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
@@ -21,14 +21,14 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 
 public class LampCollector {
 
-  private final ActivationProvider activationProvider;
+  private final ActivationSupplier activationSupplier;
   private final EntityRegistry entityRegistry;
 
-  public LampCollector( EntityRegistry entityRegistry, ActivationProvider activationProvider ) {
-    verifyNotNull( activationProvider, "activationProvider" );
+  public LampCollector( EntityRegistry entityRegistry, ActivationSupplier activationSupplier ) {
+    verifyNotNull( activationSupplier, "activationSupplier" );
     verifyNotNull( entityRegistry, "entityRegistry" );
 
-    this.activationProvider = activationProvider;
+    this.activationSupplier = activationSupplier;
     this.entityRegistry = entityRegistry;
   }
 
@@ -66,7 +66,7 @@ public class LampCollector {
   }
 
   public Set<Lamp> collectActivatedZoneLamps() {
-    return activationProvider
+    return activationSupplier
       .getStatus()
       .getAllZones()
       .stream()

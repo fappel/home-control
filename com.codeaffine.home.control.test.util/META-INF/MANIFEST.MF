@@ -14,4 +14,6 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  com.codeaffine.home.control.api;bundle-version="1.0.0"
 Export-Package: com.codeaffine.home.control.test.util.context,
  com.codeaffine.home.control.test.util.entity,
+ com.codeaffine.home.control.test.util.event,
+ com.codeaffine.home.control.test.util.logger,
  com.codeaffine.home.control.test.util.status

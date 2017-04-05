@@ -1,0 +1,92 @@
+package com.codeaffine.home.control.status.util;
+
+import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.createZone;
+import static com.codeaffine.home.control.test.util.entity.EntityHelper.stubEntity;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import com.codeaffine.home.control.status.internal.activation.PathAdjacency;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
+import com.codeaffine.home.control.status.supplier.Activity;
+import com.codeaffine.home.control.status.supplier.ActivitySupplier;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.type.Percent;
+import com.codeaffine.home.control.status.util.ActivityMath;
+
+class AnalysisTestsDoubleHelper {
+
+  private final ActivationSupplier activationProvider;
+  private final ActivitySupplier activityProvider;
+  private final ActivityMath activityMath;
+  private final PathAdjacency adjacency;
+
+  AnalysisTestsDoubleHelper() {
+    adjacency = mock( PathAdjacency.class );
+    activationProvider = mock( ActivationSupplier.class );
+    activityProvider = mock( ActivitySupplier.class );
+    activityMath = new ActivityMath( activityProvider, activationProvider );
+  }
+
+  PathAdjacency getAdjacency() {
+    return adjacency;
+  }
+
+  ActivationSupplier getActivationProvider() {
+    return activationProvider;
+  }
+
+  ActivitySupplier getActivityProvider() {
+    return activityProvider;
+  }
+
+  ActivityMath getActivityMath() {
+    return activityMath;
+  }
+
+  void stubActivityProvider( Activity activity ) {
+    when( activityProvider.getStatus() ).thenReturn( activity );
+  }
+
+  Set<Zone> createZones( SectionDefinition ... sectionDefinitions  ) {
+    return Stream.of( sectionDefinitions )
+      .map( sectionDefinition -> createZone( stubEntity( sectionDefinition ), adjacency ) )
+      .collect( toSet() );
+  }
+
+  void stubAdjacency( SectionDefinition sectionDefinition, Set<Zone> zones ) {
+    Predicate<Zone> filter = zone -> zone.getZoneEntity().getDefinition().equals( sectionDefinition );
+    Zone lookup = zones.stream().filter( filter ).findAny().get();
+    when( adjacency.getZonesOfRelatedPaths( lookup ) ).thenReturn( zones );
+    when( adjacency.isAdjacentActivated( lookup.getZoneEntity() ) ).thenReturn( zones.size() > 1 );
+  }
+
+  void stubActivationProvider( Set<Zone> zones ) {
+    when( activationProvider.getStatus() ).thenReturn( new Activation( zones ) );
+  }
+
+  static List<Object> $( SectionDefinition sectionDefinition, Percent sectionActivity ) {
+    return asList( sectionDefinition, sectionActivity );
+  }
+
+  @SafeVarargs
+  static Activity newActivity( Percent overallActivity, List<Object> ... activationEntries ) {
+    Map<SectionDefinition, Percent> activations = collectActivations( activationEntries );
+    return new Activity( overallActivity, activations, activations );
+  }
+
+  @SafeVarargs
+  private static Map<SectionDefinition, Percent> collectActivations( List<Object>... activationEntries ) {
+    return Stream.of( activationEntries )
+        .collect( toMap( activationEntry -> ( SectionDefinition )activationEntry.get( 0 ),
+                         activationEntry -> ( Percent )activationEntry.get( 1 ) ) );
+  }
+}

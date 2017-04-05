@@ -8,32 +8,32 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class StatusEventTest {
 
   @Test
   public void getSource() {
-    MyStatusProvider expected = mock( MyStatusProvider.class );
+    MyStatusSupplier expected = mock( MyStatusSupplier.class );
     StatusEvent event = new StatusEvent( expected );
 
-    Optional<MyStatusProvider> actual = event.getSource( MyStatusProvider.class );
+    Optional<MyStatusSupplier> actual = event.getSource( MyStatusSupplier.class );
 
     assertThat( actual ).hasValue( expected );
   }
 
   @Test
   public void getSourceIfTypeDoesNotMatch() {
-    StatusEvent event = new StatusEvent( mock( StatusProvider.class ) );
+    StatusEvent event = new StatusEvent( mock( StatusSupplier.class ) );
 
-    Optional<MyStatusProvider> actual = event.getSource( MyStatusProvider.class );
+    Optional<MyStatusSupplier> actual = event.getSource( MyStatusSupplier.class );
 
     assertThat( actual ).isEmpty();
   }
 
   @Test
   public void getSourceWithNullAsTypeArgument() {
-    StatusEvent event = new StatusEvent( mock( StatusProvider.class ) );
+    StatusEvent event = new StatusEvent( mock( StatusSupplier.class ) );
 
     Throwable actual = thrownBy( () -> event.getSource( null ) );
 

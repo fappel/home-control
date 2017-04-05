@@ -10,7 +10,7 @@ import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Branch;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.status.SceneSelector.NodeDefinition;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 class NodeDefinitionImpl implements NodeDefinition {
 
@@ -23,7 +23,7 @@ class NodeDefinitionImpl implements NodeDefinition {
   }
 
   @Override
-  public <S, T extends StatusProvider<S>> NodeCondition<S> whenStatusOf( Class<T> statusProviderType ) {
+  public <S, T extends StatusSupplier<S>> NodeCondition<S> whenStatusOf( Class<T> statusProviderType ) {
     verifyNotNull( statusProviderType, "statusProviderType" );
 
     NodeConditionImpl<S> result = new NodeConditionImpl<>( context, statusProviderType );
@@ -40,7 +40,7 @@ class NodeDefinitionImpl implements NodeDefinition {
   }
 
   @Override
-  public <S, T extends StatusProvider<S>, U extends Scene> Branch
+  public <S, T extends StatusSupplier<S>, U extends Scene> Branch
     thenSelect( Class<T> statusProviderType, Function<S, Class<U>> sceneProvider )
   {
     verifyNotNull( statusProviderType, "statusProviderType" );
@@ -51,7 +51,7 @@ class NodeDefinitionImpl implements NodeDefinition {
   }
 
   @Override
-  public <S, T extends StatusProvider<S>> NodeCondition<S> or( Class<T> statusProviderType ) {
+  public <S, T extends StatusSupplier<S>> NodeCondition<S> or( Class<T> statusProviderType ) {
     verifyNotNull( statusProviderType, "statusProviderType" );
 
     NodeConditionImpl<S> result = new NodeConditionImpl<>( context, statusProviderType );
@@ -59,7 +59,7 @@ class NodeDefinitionImpl implements NodeDefinition {
     return result;    }
 
   @Override
-  public <S, T extends StatusProvider<S>> NodeCondition<S> and( Class<T> statusProviderType ) {
+  public <S, T extends StatusSupplier<S>> NodeCondition<S> and( Class<T> statusProviderType ) {
     verifyNotNull( statusProviderType, "statusProviderType" );
 
     NodeConditionImpl<S> result = new NodeConditionImpl<>( context, statusProviderType );

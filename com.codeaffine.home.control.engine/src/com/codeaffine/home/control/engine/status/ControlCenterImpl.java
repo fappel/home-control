@@ -19,7 +19,7 @@ import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
 public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSelector {
 
@@ -54,7 +54,7 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   }
 
   @Override
-  public <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusProvider<S>> statusProviderType ) {
+  public <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusSupplier<S>> statusProviderType ) {
     return sceneSelector.whenStatusOf( scope, statusProviderType );
   }
 
@@ -99,12 +99,12 @@ public class ControlCenterImpl implements ControlCenter, FollowUpTimer, SceneSel
   }
 
   private static void executeIfRelated( StatusEvent event, HomeControlOperation operation ) {
-    if( isRelated( event, operation.getRelatedStatusProviderTypes() ) ) {
+    if( isRelated( event, operation.getRelatedStatusSupplierTypes() ) ) {
       operation.executeOn( event );
     }
   }
 
-  private static boolean isRelated( StatusEvent event, Collection<Class<? extends StatusProvider<?>>> providerTypes ) {
+  private static boolean isRelated( StatusEvent event, Collection<Class<? extends StatusSupplier<?>>> providerTypes ) {
     return providerTypes.stream().anyMatch( type -> event.getSource( type ).isPresent() );
   }
 }

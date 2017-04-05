@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.MyStatus;
-import com.codeaffine.home.control.test.util.status.MyStatusProvider;
+import com.codeaffine.home.control.test.util.status.MyStatusSupplier;
 
 public class DynamicSceneProxyTest {
 
@@ -20,7 +20,7 @@ public class DynamicSceneProxyTest {
   private static final String ACTIVATE_SCENE2 = "activate Scene2";
   private static final String DEACTIVATE_SCENE2 = "deactivate Scene2";
 
-  private MyStatusProvider statusProvider;
+  private MyStatusSupplier statusSupplier;
   private ArrayList<Object> log;
   private TestContext context;
   private Scene proxy;
@@ -78,17 +78,17 @@ public class DynamicSceneProxyTest {
     log = new ArrayList<>();
     context = new TestContext();
     context.set( List.class, log );
-    statusProvider = new MyStatusProvider();
-    proxy = new DynamicSceneProxy<>( context, statusProvider, DynamicSceneProxyTest::determineSceneType );
+    statusSupplier = new MyStatusSupplier();
+    proxy = new DynamicSceneProxy<>( context, statusSupplier, DynamicSceneProxyTest::determineSceneType );
   }
 
   @Test
   public void delegateToAppropriateSceneInstance() {
-    statusProvider.setStatus( MyStatus.TWO );
+    statusSupplier.setStatus( MyStatus.TWO );
     proxy.prepare();
     proxy.close();
     String firstDelegationName = proxy.getName();
-    statusProvider.setStatus( MyStatus.ONE );
+    statusSupplier.setStatus( MyStatus.ONE );
     proxy.prepare();
     proxy.close();
     String secondDelegationName = proxy.getName();
@@ -104,7 +104,7 @@ public class DynamicSceneProxyTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsContextArgument() {
-    new DynamicSceneProxy<>( null, statusProvider, DynamicSceneProxyTest::determineSceneType );
+    new DynamicSceneProxy<>( null, statusSupplier, DynamicSceneProxyTest::determineSceneType );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -114,7 +114,7 @@ public class DynamicSceneProxyTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsSceneProviderArgument() {
-    new DynamicSceneProxy<>( context, statusProvider, null );
+    new DynamicSceneProxy<>( context, statusSupplier, null );
   }
 
   private static Class<? extends Scene> determineSceneType( MyStatus status ){

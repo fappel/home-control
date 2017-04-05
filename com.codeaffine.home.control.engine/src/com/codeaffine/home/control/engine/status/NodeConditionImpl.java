@@ -5,7 +5,7 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import java.util.function.Predicate;
 
 import com.codeaffine.home.control.Context;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 import com.codeaffine.home.control.status.SceneSelector.NodeCondition;
 import com.codeaffine.home.control.status.SceneSelector.NodeDefinition;
 
@@ -14,7 +14,7 @@ class NodeConditionImpl<S> implements NodeCondition<S> {
   private final Context context;
   private final Node<S> node;
 
-  NodeConditionImpl( Context context, Class<? extends StatusProvider<S>> statusProviderType ) {
+  NodeConditionImpl( Context context, Class<? extends StatusSupplier<S>> statusProviderType ) {
     this.context = context;
     this.node = new Node<>();
     node.setStatusProvider( context.get( statusProviderType ) );

@@ -3,18 +3,18 @@ package com.codeaffine.home.control.application.scene;
 import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
-import static com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.codeaffine.home.control.application.section.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.application.status.Activation;
-import com.codeaffine.home.control.application.status.ActivationProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider;
-import com.codeaffine.home.control.application.status.NamedSceneProvider.NamedSceneConfiguration;
-import com.codeaffine.home.control.application.status.SunPosition;
-import com.codeaffine.home.control.application.status.SunPositionProvider;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
+import com.codeaffine.home.control.status.supplier.SunPosition;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
@@ -30,28 +30,28 @@ public class SceneConfiguration implements NamedSceneConfiguration {
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     sceneSelector
-      .whenStatusOf( GLOBAL, ActivationProvider.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
+      .whenStatusOf( GLOBAL, ActivationSupplier.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
         .thenSelect( AwayScene.class )
-      .otherwiseWhenStatusOf( SunPositionProvider.class ).matches( position -> sunIsAboveHorizon( position ) )
+      .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> sunIsAboveHorizon( position ) )
         .thenSelect( DayScene.class )
       .otherwiseSelect( NightScene.class );
 
     sceneSelector
-      .whenStatusOf( LIVING_ROOM, NamedSceneProvider.class ).matches( selection -> selection.isActive() )
-        .thenSelect( NamedSceneProvider.class, status -> status.getSceneType() )
-      .otherwiseWhenStatusOf( ActivationProvider.class )
+      .whenStatusOf( LIVING_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive() )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType() )
+      .otherwiseWhenStatusOf( ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, WORK_AREA, LIVING_AREA ) )
         .thenSelect( LivingRoomScene.class )
-      .otherwiseSelect( NamedSceneProvider.class, status -> status.getSceneType() );
+      .otherwiseSelect( NamedSceneSupplier.class, status -> status.getSceneType() );
 
     sceneSelector
-      .whenStatusOf( KITCHEN, ActivationProvider.class )
+      .whenStatusOf( KITCHEN, ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, COOKING_AREA, DINING_AREA ) )
         .thenSelect( KitchenScene.class )
       .otherwiseSelect( EmptyScene.class );
 
     sceneSelector
-      .whenStatusOf( BED_ROOM, ActivationProvider.class )
+      .whenStatusOf( BED_ROOM, ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, BED, DRESSING_AREA ) )
         .thenSelect( BedroomScene.class )
       .otherwiseSelect( EmptyScene.class );

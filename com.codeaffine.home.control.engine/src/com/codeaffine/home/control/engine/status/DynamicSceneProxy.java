@@ -7,9 +7,9 @@ import java.util.function.Function;
 
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.StatusProvider;
+import com.codeaffine.home.control.status.StatusSupplier;
 
-class DynamicSceneProxy<S, T extends StatusProvider<S>, U extends Scene> implements Scene {
+class DynamicSceneProxy<S, T extends StatusSupplier<S>, U extends Scene> implements Scene {
 
   private final Function<S, Class<U>> sceneProvider;
   private final T statusProvider;
