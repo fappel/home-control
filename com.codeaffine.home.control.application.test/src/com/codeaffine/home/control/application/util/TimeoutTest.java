@@ -57,6 +57,27 @@ public class TimeoutTest {
   }
 
   @Test
+  public void executeIfExpired() {
+    timeout.set();
+
+    sleep( EXPIRATION_TIME * 2 );
+    Runnable command = mock( Runnable.class );
+    timeout.executeIfExpired( command );
+
+    verify( command ).run();
+  }
+
+  @Test
+  public void executeIfExpiredIfNotExpired() {
+    timeout.set();
+
+    Runnable command = mock( Runnable.class );
+    timeout.executeIfNotExpired( command );
+
+    verify( command, never() ).run();
+  }
+
+  @Test
   public void executeIfNotExpired() {
     timeout.set();
 
@@ -100,6 +121,11 @@ public class TimeoutTest {
   @Test( expected = IllegalArgumentException.class )
   public void executeIfNotExpiredWithNullAsCommandArgument() {
     timeout.executeIfNotExpired( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void executeIfExpiredWithNullAsCommandArgument() {
+    timeout.executeIfExpired( null );
   }
 
   private static void sleep( long millis ) {

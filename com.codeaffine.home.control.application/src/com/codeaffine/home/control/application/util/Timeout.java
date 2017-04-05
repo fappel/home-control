@@ -46,6 +46,14 @@ public class Timeout {
     return now().minus( expirationTime, timeUnit ).isAfter( lastActivation );
   }
 
+  public void executeIfExpired( Runnable command ) {
+    verifyNotNull( command, "command" );
+
+    if( isExpired() ) {
+      command.run();
+    }
+  }
+
   public void executeIfNotExpired( Runnable command ) {
     verifyNotNull( command, "command" );
 
