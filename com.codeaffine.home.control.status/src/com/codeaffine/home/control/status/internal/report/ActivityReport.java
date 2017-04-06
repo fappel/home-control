@@ -18,12 +18,14 @@ public class ActivityReport {
   private final StringItem livingArea;
   private final StringItem bathroom;
   private final StringItem workArea;
+  private final StringItem bedSide;
   private final StringItem hall;
   private final StringItem bed;
 
   ActivityReport(
     @ByName( "S_OVERALL_ACTIVITY" ) StringItem overallActivity,
     @ByName( "S_BED" ) StringItem bed,
+    @ByName( "S_BED_SIDE" ) StringItem bedSide,
     @ByName( "S_DRESSING_AREA" ) StringItem dressingArea,
     @ByName( "S_LIVING_AREA" ) StringItem livingArea,
     @ByName( "S_WORK_AREA" ) StringItem workArea,
@@ -41,6 +43,7 @@ public class ActivityReport {
     this.livingArea = livingArea;
     this.bathroom = bathroom;
     this.workArea = workArea;
+    this.bedSide = bedSide;
     this.hall = hall;
     this.bed = bed;
   }
@@ -49,6 +52,7 @@ public class ActivityReport {
   void report() {
     overallActivity.updateStatus( reportCompiler.getOverallActivityReport() );
     bed.updateStatus( reportCompiler.getReportFor( BED ) );
+    bedSide.updateStatus( reportCompiler.getReportFor( BED_SIDE ) );
     dressingArea.updateStatus( reportCompiler.getReportFor( DRESSING_AREA ) );
     livingArea.updateStatus( reportCompiler.getReportFor( LIVING_AREA ) );
     workArea.updateStatus( reportCompiler.getReportFor( WORK_AREA ) );

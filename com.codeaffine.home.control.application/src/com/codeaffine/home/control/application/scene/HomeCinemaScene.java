@@ -25,8 +25,8 @@ public class HomeCinemaScene implements Scene {
   @Override
   public void prepare() {
     if( isLivingAreaActive() ) {
-      lampSwitchOperation.setLampsToSwitchOn( ChimneyUplight, WindowUplight );
-      lampSwitchOperation.setLampsToSwitchOff( DeskUplight, FanLight1, FanLight2 );
+      lampSwitchOperation.addLampsToSwitchOn( ChimneyUplight, WindowUplight );
+      lampSwitchOperation.addLampsToSwitchOff( DeskUplight, FanLight1, FanLight2 );
     }
   }
 

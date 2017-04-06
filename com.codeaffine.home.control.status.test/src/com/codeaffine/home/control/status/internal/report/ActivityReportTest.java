@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.item.StringItem;
-import com.codeaffine.home.control.status.internal.report.ActivityReport;
-import com.codeaffine.home.control.status.internal.report.ActivityReportCompiler;
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 
 public class ActivityReportTest {
@@ -25,6 +23,7 @@ public class ActivityReportTest {
   private StringItem diningArea;
   private StringItem workArea;
   private StringItem bathroom;
+  private StringItem bedSide;
   private StringItem hall;
   private StringItem bed;
 
@@ -32,6 +31,7 @@ public class ActivityReportTest {
   public void setUp() {
     overallActivity = mock( StringItem.class );
     bed = mock( StringItem.class );
+    bedSide = mock( StringItem.class );
     dressingArea = mock( StringItem.class );
     livingArea = mock( StringItem.class );
     workArea = mock( StringItem.class );
@@ -57,6 +57,7 @@ public class ActivityReportTest {
 
     verify( overallActivity ).updateStatus( OVER_ALL_ACTIVITY );
     verify( bed ).updateStatus( BED.toString() );
+    verify( bedSide ).updateStatus( BED_SIDE.toString() );
     verify( dressingArea ).updateStatus( DRESSING_AREA.toString() );
     verify( livingArea ).updateStatus( LIVING_AREA.toString() );
     verify( workArea ).updateStatus( WORK_AREA.toString() );
@@ -69,6 +70,7 @@ public class ActivityReportTest {
   private ActivityReport createActivityReport() {
     return new ActivityReport( overallActivity,
                                bed,
+                               bedSide,
                                dressingArea,
                                livingArea,
                                workArea,

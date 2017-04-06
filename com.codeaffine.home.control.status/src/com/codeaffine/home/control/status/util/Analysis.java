@@ -6,6 +6,7 @@ import static com.codeaffine.home.control.status.util.AnalysisComparator.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
@@ -136,6 +137,10 @@ public class Analysis {
 
   public boolean isSunLightStatusAtMost( SunLightStatus sunLightStatus ) {
     return isAtMost( DUMMY_SECTION, definition -> getSunLightStatus(), sunLightStatus );
+  }
+
+  public Set<Zone> getActivatedZones() {
+    return activationSupplier.getStatus().getAllZones();
   }
 
   public boolean isZoneActivated( SectionDefinition sectionDefinition ) {

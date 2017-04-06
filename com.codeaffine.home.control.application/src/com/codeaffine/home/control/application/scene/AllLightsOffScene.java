@@ -19,6 +19,6 @@ public class AllLightsOffScene implements Scene {
 
   @Override
   public void prepare() {
-    lampSwitchOperation.setLampsToSwitchOff( LampDefinition.values() );
+    lampSwitchOperation.addLampsToSwitchOff( LampDefinition.values() );
   }
 }

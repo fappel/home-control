@@ -46,13 +46,13 @@ public class LampControl {
   public void switchOnLamps( LampDefinition ... lampDefinitions ) {
     verifyNotNull( lampDefinitions, "lampDefinitions" );
 
-    lampSwitchOperation.setLampsToSwitchOn( lampDefinitions );
+    lampSwitchOperation.addLampsToSwitchOn( lampDefinitions );
   }
 
   public void switchOffLamps( LampDefinition ... lampDefinitions ) {
     verifyNotNull( lampDefinitions, "lampDefinitions" );
 
-    lampSwitchOperation.setLampsToSwitchOff( lampDefinitions );
+    lampSwitchOperation.addLampsToSwitchOff( lampDefinitions );
   }
 
   public void setLampsForFiltering( LampDefinition ... lampDefinitions ) {

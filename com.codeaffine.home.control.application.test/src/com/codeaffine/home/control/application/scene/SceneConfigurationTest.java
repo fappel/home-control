@@ -3,9 +3,10 @@ package com.codeaffine.home.control.application.scene;
 import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
+import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
-import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
+import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,16 +18,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
-import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.status.supplier.Activation;
-import com.codeaffine.home.control.status.supplier.Activation.Zone;
-import com.codeaffine.home.control.status.supplier.ActivationSupplier;
-import com.codeaffine.home.control.status.supplier.ActivitySupplier;
-import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
-import com.codeaffine.home.control.status.supplier.SunPosition;
-import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
-import com.codeaffine.home.control.status.test.util.supplier.NamedSceneSupplierTestProvider;
 import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.EventBus;
@@ -35,6 +26,16 @@ import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.supplier.ActivationSupplier;
+import com.codeaffine.home.control.status.supplier.ActivitySupplier;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
+import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
+import com.codeaffine.home.control.status.supplier.SunPosition;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
+import com.codeaffine.home.control.status.test.util.supplier.NamedSceneSupplierTestProvider;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.type.StringType;
@@ -94,7 +95,7 @@ public class SceneConfigurationTest {
   @Test
   public void selectAtNightTime() {
     stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
-    stubSunPositionSupplier( new SunPosition( -0.1, 4 ) );
+    stubSunPositionSupplier( new SunPosition( NIGHT.threshold, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 

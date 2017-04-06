@@ -18,6 +18,7 @@ public class ActivationSensorProvider extends BaseEntityProvider<ActivationSenso
     COOKING_AREA_MOTION,
     DINING_AREA_MOTION,
     BED_MOTION,
+    BED_SIDE_MOTION,
     DRESSING_AREA_MOTION,
     WORK_AREA_MOTION,
     LIVING_AREA_MOTION,

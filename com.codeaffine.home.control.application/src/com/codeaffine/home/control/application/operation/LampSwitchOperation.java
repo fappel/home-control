@@ -88,21 +88,18 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void addFilterableLamps( LampDefinition ... filterableLamps ) {
     verifyNotNull( filterableLamps, "filterableLamps" );
 
-    this.filterableLamps.clear();
     this.filterableLamps.addAll( mapToLamps( filterableLamps ) );
   }
 
-  public void setLampsToSwitchOn( LampDefinition ... lampsToSwitchOn ) {
+  public void addLampsToSwitchOn( LampDefinition ... lampsToSwitchOn ) {
     verifyNotNull( lampsToSwitchOn, "lampsToSwitchOn" );
 
-    this.lampsToSwitchOn.clear();
     this.lampsToSwitchOn.addAll( mapToLamps( lampsToSwitchOn ) );
   }
 
-  public void setLampsToSwitchOff( LampDefinition ... lampsToSwitchOff ) {
+  public void addLampsToSwitchOff( LampDefinition ... lampsToSwitchOff ) {
     verifyNotNull( lampsToSwitchOff, "lampsToSwitchOff" );
 
-    this.lampsToSwitchOff.clear();
     this.lampsToSwitchOff.addAll( mapToLamps( lampsToSwitchOff ) );
   }
 
@@ -115,13 +112,14 @@ public class LampSwitchOperation implements HomeControlOperation {
 
   @Override
   public void reset() {
-    setDelayed( HallCeiling );
-    setLampSelectionStrategy( ZONE_ACTIVATION );
     filter = lamp -> true;
     lampsToSwitchOff.clear();
     lampsToSwitchOn.clear();
     filterableLamps.clear();
+    delayed.clear();
     delayStatus.clear();
+    setDelayed( HallCeiling );
+    setLampSelectionStrategy( ZONE_ACTIVATION );
   }
 
   @Override

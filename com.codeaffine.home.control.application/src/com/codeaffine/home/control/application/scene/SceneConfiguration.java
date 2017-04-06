@@ -8,6 +8,10 @@ import static com.codeaffine.home.control.status.model.SectionProvider.SectionDe
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.status.EmptyScene;
+import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.SceneSelector;
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.Activation;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
@@ -15,10 +19,7 @@ import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
 import com.codeaffine.home.control.status.supplier.SunPosition;
 import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
-import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
-import com.codeaffine.home.control.status.EmptyScene;
-import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.SceneSelector;
+import com.codeaffine.home.control.status.util.SunLightStatus;
 
 public class SceneConfiguration implements NamedSceneConfiguration {
 
@@ -32,7 +33,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     sceneSelector
       .whenStatusOf( GLOBAL, ActivationSupplier.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
         .thenSelect( AwayScene.class )
-      .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> sunIsAboveHorizon( position ) )
+      .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> !isNight( position ) )
         .thenSelect( DayScene.class )
       .otherwiseSelect( NightScene.class );
 
@@ -52,7 +53,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
 
     sceneSelector
       .whenStatusOf( BED_ROOM, ActivationSupplier.class )
-        .matches( activation -> hasAnyZoneActivationsOf( activation, BED, DRESSING_AREA ) )
+        .matches( activation -> hasAnyZoneActivationsOf( activation, BED, BED_SIDE, DRESSING_AREA ) )
         .thenSelect( BedroomScene.class )
       .otherwiseSelect( EmptyScene.class );
   }
@@ -62,8 +63,8 @@ public class SceneConfiguration implements NamedSceneConfiguration {
            && activation.getZone( zoneDefinition ).filter( zone -> zone.getReleaseTime().isPresent() ).isPresent();
   }
 
-  private static boolean sunIsAboveHorizon( SunPosition position ) {
-    return position.getZenit() > 0;
+  private static boolean isNight( SunPosition position ) {
+    return SunLightStatus.valueOf( position ) == SunLightStatus.NIGHT;
   }
 
   private static boolean hasAnyZoneActivationsOf( Activation activation, SectionDefinition ... zones ) {

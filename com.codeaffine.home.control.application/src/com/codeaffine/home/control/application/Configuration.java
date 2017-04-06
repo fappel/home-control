@@ -43,8 +43,9 @@ public class Configuration implements SystemConfiguration {
 
   @Override
   public void configureFacility( Facility facility ) {
-    facility.equip( BEDROOM ).with( BED, DRESSING_AREA );
+    facility.equip( BEDROOM ).with( BED, BED_SIDE, DRESSING_AREA );
     facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION );
+    facility.equip( BED_SIDE ).with( BedStand, BedRoomCeiling, BED_SIDE_MOTION );
     facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION );
     facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
     facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION );
@@ -60,8 +61,9 @@ public class Configuration implements SystemConfiguration {
   public void configureStatusSupplier( StatusSupplierRegistry statusSupplierRegistry ) {
     AdjacencyDefinition adjacencyDefinition
       = new AdjacencyDefinition( new HashSet<>(
-          asList( COOKING_AREA, DINING_AREA, BED, DRESSING_AREA, WORK_AREA, LIVING_AREA, HALL, BATH_ROOM ) ) );
+          asList( COOKING_AREA, DINING_AREA, BED_SIDE, BED, DRESSING_AREA, WORK_AREA, LIVING_AREA, HALL, BATH_ROOM ) ) );
     adjacencyDefinition
+      .link( BED_SIDE, BED )
       .link( BED, DRESSING_AREA )
       .link( DRESSING_AREA, LIVING_AREA )
       .link( LIVING_AREA, WORK_AREA )

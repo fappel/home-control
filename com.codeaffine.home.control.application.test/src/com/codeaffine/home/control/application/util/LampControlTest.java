@@ -34,14 +34,14 @@ public class LampControlTest {
   public void switchOnZoneLamps() {
     control.switchOnZoneLamps( ZONE );
 
-    verify( operation ).setLampsToSwitchOn( LAMP.getDefinition() );
+    verify( operation ).addLampsToSwitchOn( LAMP.getDefinition() );
   }
 
   @Test
   public void switchOffZoneLamps() {
     control.switchOffZoneLamps( ZONE );
 
-    verify( operation ).setLampsToSwitchOff( LAMP.getDefinition() );
+    verify( operation ).addLampsToSwitchOff( LAMP.getDefinition() );
   }
 
   @Test
@@ -55,22 +55,22 @@ public class LampControlTest {
   public void switchOnLamps() {
     control.switchOnLamps( LAMP.getDefinition() );
 
-    verify( operation ).setLampsToSwitchOn( LAMP.getDefinition() );
+    verify( operation ).addLampsToSwitchOn( LAMP.getDefinition() );
   }
 
   @Test
   public void switchOffLamps() {
     control.switchOffLamps( LAMP.getDefinition() );
 
-    verify( operation ).setLampsToSwitchOff( LAMP.getDefinition() );
+    verify( operation ).addLampsToSwitchOff( LAMP.getDefinition() );
   }
 
   @Test
-  public void setLampsForFiltering() {
-    control.setLampsForFiltering( LAMP.getDefinition() );
-
-    verify( operation ).addFilterableLamps( LAMP.getDefinition() );
-  }
+      public void setLampsForFiltering() {
+        control.setLampsForFiltering( LAMP.getDefinition() );
+    
+        verify( operation ).addFilterableLamps( LAMP.getDefinition() );
+      }
 
   @Test
   public void toDefinitions() {
@@ -130,14 +130,14 @@ public class LampControlTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsForFilteringWithNullAsLampDefinitionsArgument() {
-    control.setLampsForFiltering( ( LampDefinition[] )null );
-  }
+      public void setLampsForFilteringWithNullAsLampDefinitionsArgument() {
+        control.setLampsForFiltering( ( LampDefinition[] )null );
+      }
 
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsForFilteringWithNullElementInLampDefinitionsArgumentArray() {
-    control.setLampsForFiltering( ( LampDefinition[] )null );
-  }
+      public void setLampsForFilteringWithNullElementInLampDefinitionsArgumentArray() {
+        control.setLampsForFiltering( ( LampDefinition[] )null );
+      }
 
   @Test( expected = IllegalArgumentException.class )
   public void toDefinitionsWithNullAsLampsArgument() {

@@ -116,8 +116,8 @@ public class LampSwitchOperationTest {
   public void operateOnMultipleZoneEngagementWithLampFilterAndExplicitOnOffSettings() {
     operation.reset();
     operation.setLampFilter( lamp -> asList( WindowUplight, KitchenCeiling ).contains( lamp.getDefinition() ) );
-    operation.setLampsToSwitchOff( KitchenCeiling );
-    operation.setLampsToSwitchOn( DeskUplight );
+    operation.addLampsToSwitchOff( KitchenCeiling );
+    operation.addLampsToSwitchOn( DeskUplight );
     operation.executeOn( new StatusEvent( stubActivationSupplier( LIVING_AREA, DINING_AREA ) ) );
 
     assertThat( findLamp( DeskUplight ).getOnOffStatus() ).isSameAs( ON );
@@ -403,7 +403,7 @@ public class LampSwitchOperationTest {
     ActivationSupplier zoneActivationSupplier = stubActivationSupplier( LIVING_AREA, HALL );
 
     operation.reset();
-    operation.setLampsToSwitchOn( HallCeiling );
+    operation.addLampsToSwitchOn( HallCeiling );
     operation.executeOn( new StatusEvent( zoneActivationSupplier ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
     captureTimerCommand().run();
@@ -451,22 +451,22 @@ public class LampSwitchOperationTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsToSwitchOnWithNullAsArgument() {
-    operation.setLampsToSwitchOn( ( LampDefinition[] )null );
-  }
+      public void addLampsToSwitchOnWithNullAsArgument() {
+        operation.addLampsToSwitchOn( ( LampDefinition[] )null );
+      }
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsToSwitchOnWithNullAsElementOfArgumentArray() {
-    operation.setLampsToSwitchOn( new LampDefinition[ 1 ] );
-  }
+      public void addLampsToSwitchOnWithNullAsElementOfArgumentArray() {
+        operation.addLampsToSwitchOn( new LampDefinition[ 1 ] );
+      }
 
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsToSwitchOffWithNullAsArgument() {
-    operation.setLampsToSwitchOff( ( LampDefinition[] )null );
-  }
+    public void addLampsToSwitchOffWithNullAsArgument() {
+      operation.addLampsToSwitchOff( ( LampDefinition[] )null );
+    }
   @Test( expected = IllegalArgumentException.class )
-  public void setLampsToSwitchOffWithNullAsElementOfArgumentArray() {
-    operation.setLampsToSwitchOff( new LampDefinition[ 1 ] );
-  }
+    public void addLampsToSwitchOffWithNullAsElementOfArgumentArray() {
+      operation.addLampsToSwitchOff( new LampDefinition[ 1 ] );
+    }
 
   @Test( expected = IllegalArgumentException.class )
   public void addFilterableLampsWithNullAsArgument() {

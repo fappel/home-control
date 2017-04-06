@@ -20,6 +20,7 @@ public class SectionProvider extends BaseEntityProvider<Section, SectionDefiniti
     DINING_AREA,
     BEDROOM,
     BED,
+    BED_SIDE,
     DRESSING_AREA,
     LIVING_ROOM,
     WORK_AREA,
