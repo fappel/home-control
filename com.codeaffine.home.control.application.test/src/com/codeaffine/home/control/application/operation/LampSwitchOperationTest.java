@@ -400,14 +400,14 @@ public class LampSwitchOperationTest {
 
   @Test
   public void operateOnZoneEngagementWithLampDelayTimerAndDelayedExplicitlySwitchedOn() {
-    ActivationSupplier zoneActivationProvider = stubActivationSupplier( LIVING_AREA, HALL );
+    ActivationSupplier zoneActivationSupplier = stubActivationSupplier( LIVING_AREA, HALL );
 
     operation.reset();
     operation.setLampsToSwitchOn( HallCeiling );
-    operation.executeOn( new StatusEvent( zoneActivationProvider ) );
+    operation.executeOn( new StatusEvent( zoneActivationSupplier ) );
     OnOff hallOnOffWhenDelayed = findLamp( HallCeiling ).getOnOffStatus();
     captureTimerCommand().run();
-    operation.executeOn( new StatusEvent( zoneActivationProvider ) );
+    operation.executeOn( new StatusEvent( zoneActivationSupplier ) );
 
     assertThat( hallOnOffWhenDelayed ).isSameAs( OFF );
     assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( ON );
@@ -483,7 +483,7 @@ public class LampSwitchOperationTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsZoneActivationProviderArgument() {
+  public void constructWithNullAsZoneActivationSupplierArgument() {
     new LampSwitchOperation( lampCollector, null, timer );
   }
 

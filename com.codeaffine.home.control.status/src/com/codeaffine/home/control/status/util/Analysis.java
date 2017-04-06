@@ -8,9 +8,11 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import java.util.Optional;
 
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
-import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.supplier.SunPosition;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.status.type.Percent;
 
 public class Analysis {
@@ -18,25 +20,30 @@ public class Analysis {
   private static final SectionDefinition DUMMY_SECTION = WORK_AREA;
 
   private final MotionStatusCalculator motionStatusCalculator;
-  private final ActivationSupplier activationProvider;
-  private final ActivitySupplier activityProvider;
+  private final SunPositionSupplier sunPositionSupplier;
+  private final ActivationSupplier activationSupplier;
+  private final ActivitySupplier activitySupplier;
+
 
   Analysis(
     MotionStatusCalculator motionStatusCalculator,
-    ActivationSupplier activationProvider,
-    ActivitySupplier activityProvider )
+    SunPositionSupplier sunPositionSupplier,
+    ActivationSupplier activationSupplier,
+    ActivitySupplier activitySupplier )
   {
     verifyNotNull( motionStatusCalculator, "motionStatusCalculator" );
-    verifyNotNull( activationProvider, "activationProvider" );
-    verifyNotNull( activityProvider, "activityProvider" );
+    verifyNotNull( sunPositionSupplier, "sunPositionSupplier" );
+    verifyNotNull( activationSupplier, "activationSupplier" );
+    verifyNotNull( activitySupplier, "activitySupplier" );
 
     this.motionStatusCalculator = motionStatusCalculator;
-    this.activationProvider = activationProvider;
-    this.activityProvider = activityProvider;
+    this.sunPositionSupplier = sunPositionSupplier;
+    this.activationSupplier = activationSupplier;
+    this.activitySupplier = activitySupplier;
   }
 
   public Percent getOverallActivity() {
-    return activityProvider.getStatus().getOverallActivity();
+    return activitySupplier.getStatus().getOverallActivity();
   }
 
   public ActivityStatus getOverallActivityStatus() {
@@ -56,7 +63,7 @@ public class Analysis {
   }
 
   public Percent getActivity( SectionDefinition sectionDefinition ) {
-    return activityProvider.getStatus().getSectionActivity( sectionDefinition ).orElse( P_000 );
+    return activitySupplier.getStatus().getSectionActivity( sectionDefinition ).orElse( P_000 );
   }
 
   public ActivityStatus getActivityStatus( SectionDefinition sectionDefinition ) {
@@ -76,7 +83,7 @@ public class Analysis {
   }
 
   public Percent getAllocation( SectionDefinition sectionDefinition ) {
-    return activityProvider.getStatus().getSectionAllocation( sectionDefinition ).orElse( P_000 );
+    return activitySupplier.getStatus().getSectionAllocation( sectionDefinition ).orElse( P_000 );
   }
 
   public AllocationStatus getAllocationStatus( SectionDefinition sectionDefinition ) {
@@ -111,12 +118,32 @@ public class Analysis {
     return isAtMost( sectionDefinition, definition -> getMotionStatus( definition ), motionStatus );
   }
 
+  public SunPosition getSunPosition() {
+    return sunPositionSupplier.getStatus();
+  }
+
+  public SunLightStatus getSunLightStatus() {
+    return SunLightStatus.valueOf( sunPositionSupplier.getStatus() );
+  }
+
+  public boolean isSunLightStatusSameAs( SunLightStatus sunLightStatus ) {
+    return isEqualTo( DUMMY_SECTION, definition -> getSunLightStatus(), sunLightStatus );
+  }
+
+  public boolean isSunLightStatusAtLeast( SunLightStatus sunLightStatus ) {
+    return isAtLeast( DUMMY_SECTION, definition -> getSunLightStatus(), sunLightStatus );
+  }
+
+  public boolean isSunLightStatusAtMost( SunLightStatus sunLightStatus ) {
+    return isAtMost( DUMMY_SECTION, definition -> getSunLightStatus(), sunLightStatus );
+  }
+
   public boolean isZoneActivated( SectionDefinition sectionDefinition ) {
-    return activationProvider.getStatus().isZoneActivated( sectionDefinition );
+    return activationSupplier.getStatus().isZoneActivated( sectionDefinition );
   }
 
   public boolean isAdjacentZoneActivated( SectionDefinition sectionDefinition ) {
-    Optional<Zone> zone = activationProvider.getStatus().getZone( sectionDefinition );
+    Optional<Zone> zone = activationSupplier.getStatus().getZone( sectionDefinition );
     if( zone.isPresent() ) {
       return zone.get().isAdjacentActivated();
     }

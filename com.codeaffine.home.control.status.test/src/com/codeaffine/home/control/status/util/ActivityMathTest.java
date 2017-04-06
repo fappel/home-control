@@ -19,25 +19,25 @@ import com.codeaffine.home.control.status.util.ActivityMath;
 
 public class ActivityMathTest {
 
-  private ActivationSupplier activationProvider;
-  private ActivitySupplier activityProvider;
+  private ActivationSupplier activationSupplier;
+  private ActivitySupplier activitySupplier;
   private AnalysisTestsDoubleHelper bone;
   private ActivityMath activityMath;
 
   @Before
   public void setUp() {
     bone = new AnalysisTestsDoubleHelper();
-    activationProvider = bone.getActivationProvider();
-    activityProvider = bone.getActivityProvider();
+    activationSupplier = bone.getActivationSupplier();
+    activitySupplier = bone.getActivitySupplier();
     activityMath = bone.getActivityMath();
   }
 
   @Test
   public void calculateGeometricMeanOfPathActivityFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathActivityFor( WORK_AREA );
 
@@ -46,10 +46,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateGeometricMeanOfPathActivityForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathActivityFor( WORK_AREA );
 
@@ -58,7 +58,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateGeometricMeanOfPathActivityForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathActivityFor( COOKING_AREA );
 
@@ -67,10 +67,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateGeometricMeanOfPathAllocationFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( WORK_AREA );
 
@@ -79,10 +79,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateGeometricMeanOfPathAllocationForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( WORK_AREA );
 
@@ -91,7 +91,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateGeometricMeanOfPathAllocationForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateGeometricMeanOfPathAllocationFor( COOKING_AREA );
 
@@ -100,10 +100,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathActivityFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( WORK_AREA );
 
@@ -112,10 +112,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathActivityForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( WORK_AREA );
 
@@ -124,10 +124,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathActivityForZeroActivations() {
-    bone.stubActivityProvider( newActivity( P_010 ) );
+    bone.stubActivitySupplier( newActivity( P_010 ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( WORK_AREA );
 
@@ -136,7 +136,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathActivityForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathActivityFor( COOKING_AREA );
 
@@ -145,10 +145,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathAllocationFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
 
@@ -157,10 +157,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathAllocationForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
 
@@ -169,10 +169,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathAllocationForZeroActivations() {
-    bone.stubActivityProvider( newActivity( P_010 ) );
+    bone.stubActivitySupplier( newActivity( P_010 ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( WORK_AREA );
 
@@ -181,7 +181,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateArithmeticMeanOfPathAllocationForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateArithmeticMeanOfPathAllocationFor( COOKING_AREA );
 
@@ -190,10 +190,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathActivityFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathActivityFor( WORK_AREA );
 
@@ -202,10 +202,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathActivityForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathActivityFor( WORK_AREA );
 
@@ -214,7 +214,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathActivityForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathActivityFor( COOKING_AREA );
 
@@ -223,10 +223,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathAllocationFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( WORK_AREA );
 
@@ -235,10 +235,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathAllocationForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( WORK_AREA );
 
@@ -247,7 +247,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMaximumOfPathAllocationForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateMaximumOfPathAllocationFor( COOKING_AREA );
 
@@ -256,10 +256,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathActivityFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathActivityFor( WORK_AREA );
 
@@ -268,10 +268,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathActivityForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathActivityFor( WORK_AREA );
 
@@ -280,7 +280,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathActivityForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathActivityFor( COOKING_AREA );
 
@@ -289,10 +289,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathAllocationFor() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ), $( LIVING_AREA, P_001 ), $( HALL, P_000 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA, HALL );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( WORK_AREA );
 
@@ -301,10 +301,10 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathAllocationForASingleActivation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_009 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( WORK_AREA );
 
@@ -313,7 +313,7 @@ public class ActivityMathTest {
 
   @Test
   public void calculateMinimumOfPathAllocationForNonRelevantSection() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA, LIVING_AREA, HALL ) );
 
     Optional<Percent> actual = activityMath.calculateMinimumOfPathAllocationFor( COOKING_AREA );
 
@@ -361,12 +361,12 @@ public class ActivityMathTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivityProviderArgument() {
-    new ActivityMath( null, activationProvider );
+  public void constructWithNullAsActivitySupplierArgument() {
+    new ActivityMath( null, activationSupplier );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivationProviderArgument() {
-    new ActivityMath( activityProvider, null );
+  public void constructWithNullAsActivationSupplierArgument() {
+    new ActivityMath( activitySupplier, null );
   }
 }

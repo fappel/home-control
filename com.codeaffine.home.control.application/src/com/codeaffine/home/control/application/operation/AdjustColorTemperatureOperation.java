@@ -34,8 +34,8 @@ public class AdjustColorTemperatureOperation implements HomeControlOperation {
 
   @Override
   public void executeOn( StatusEvent event ) {
-    event.getSource( SunPositionSupplier.class ).ifPresent( sunPositionProvider -> {
-      double zenitAngle = sunPositionProvider.getStatus().getZenit();
+    event.getSource( SunPositionSupplier.class ).ifPresent( sunPositionSupplier -> {
+      double zenitAngle = sunPositionSupplier.getStatus().getZenit();
       double temperatureFactor = max( 2.0, ( abs( ( 10 + now().getDayOfYear() ) % 366 - 183 ) / 31 ) );
       double value = min( ( ( zenitAngle + 7 ) * temperatureFactor ), 100.0 );
       Percent colorTemperature = Percent.valueOf( ( int )( 100.0 - max( 0.0, value ) ) );

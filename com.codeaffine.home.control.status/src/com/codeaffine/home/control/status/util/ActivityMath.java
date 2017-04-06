@@ -14,10 +14,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.Activity;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
-import com.codeaffine.home.control.status.supplier.Activation.Zone;
 import com.codeaffine.home.control.status.type.Percent;
 
 class ActivityMath {
@@ -29,17 +29,17 @@ class ActivityMath {
 
   private final BiFunction<Activity, Zone, Optional<Percent>> allocationFinder;
   private final BiFunction<Activity, Zone, Optional<Percent>> activityFinder;
-  private final ActivationSupplier activationProvider;
-  private final ActivitySupplier activityProvider;
+  private final ActivationSupplier activationSupplier;
+  private final ActivitySupplier activitySupplier;
 
-  ActivityMath( ActivitySupplier activityProvider, ActivationSupplier activationProvider ) {
-    verifyNotNull( activationProvider, "activationProvider" );
-    verifyNotNull( activityProvider, "activityProvider" );
+  ActivityMath( ActivitySupplier activitySupplier, ActivationSupplier activationSupplier ) {
+    verifyNotNull( activationSupplier, "activationSupplier" );
+    verifyNotNull( activitySupplier, "activitySupplier" );
 
     this.allocationFinder = ( activity, zone ) -> findSectionAllocation( activity, zone );
     this.activityFinder = ( activity, zone ) -> findSectionActivity( activity, zone );
-    this.activationProvider = activationProvider;
-    this.activityProvider = activityProvider;
+    this.activationSupplier = activationSupplier;
+    this.activitySupplier = activitySupplier;
   }
 
   public Optional<Percent> calculateArithmeticMeanOfPathActivityFor( SectionDefinition sectionDefinition ) {
@@ -91,7 +91,7 @@ class ActivityMath {
   }
 
   private boolean isPresent( SectionDefinition sectionDefinition ) {
-    return activationProvider.getStatus().getZone( sectionDefinition ).isPresent();
+    return activationSupplier.getStatus().getZone( sectionDefinition ).isPresent();
   }
 
   private static Optional<Percent> percentOptionalOf( Integer value) {
@@ -162,8 +162,8 @@ class ActivityMath {
   private Set<BigDecimal> collectZoneActivities(
     SectionDefinition sectionDefinition, BiFunction<Activity, Zone, Optional<Percent>> rateFinder )
   {
-    Activity activity = activityProvider.getStatus();
-    return activationProvider
+    Activity activity = activitySupplier.getStatus();
+    return activationSupplier
       .getStatus()
       .getZone( sectionDefinition )
       .get()

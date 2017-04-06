@@ -1,11 +1,12 @@
 package com.codeaffine.home.control.status.util;
 
-import static com.codeaffine.home.control.status.util.AnalysisTestsDoubleHelper.*;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.type.Percent.*;
 import static com.codeaffine.home.control.status.util.ActivityStatus.*;
 import static com.codeaffine.home.control.status.util.AllocationStatus.*;
+import static com.codeaffine.home.control.status.util.AnalysisTestsDoubleHelper.*;
 import static com.codeaffine.home.control.status.util.MotionStatus.*;
+import static com.codeaffine.home.control.status.util.SunLightStatus.*;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -16,32 +17,29 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.status.supplier.ActivationSupplier;
-import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.supplier.SunPosition;
+import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.status.type.Percent;
-import com.codeaffine.home.control.status.util.ActivityStatus;
-import com.codeaffine.home.control.status.util.AllocationStatus;
-import com.codeaffine.home.control.status.util.Analysis;
-import com.codeaffine.home.control.status.util.MotionStatus;
-import com.codeaffine.home.control.status.util.MotionStatusCalculator;
 
 public class AnalysisTest {
 
   private MotionStatusCalculator motionStatusCalculator;
+  private SunPositionSupplier sunPositionSupplier;
   private AnalysisTestsDoubleHelper bone;
   private Analysis analysis;
 
   @Before
   public void setUp() {
     motionStatusCalculator = mock( MotionStatusCalculator.class );
+    sunPositionSupplier = mock( SunPositionSupplier.class );
     bone = new AnalysisTestsDoubleHelper();
-    analysis = new Analysis( motionStatusCalculator, bone.getActivationProvider(), bone.getActivityProvider() );
+    analysis = newAnalysis();
   }
 
   @Test
   public void getOverallActivity() {
-    bone.stubActivityProvider( newActivity( P_003 ) );
+    bone.stubActivitySupplier( newActivity( P_003 ) );
 
     Percent actual = analysis.getOverallActivity();
 
@@ -50,7 +48,7 @@ public class AnalysisTest {
 
   @Test
   public void getOverallActivityStatus() {
-    bone.stubActivityProvider( newActivity( QUIET.threshold ) );
+    bone.stubActivitySupplier( newActivity( QUIET.threshold ) );
 
     ActivityStatus actual = analysis.getOverallActivityStatus();
 
@@ -59,7 +57,7 @@ public class AnalysisTest {
 
   @Test
   public void isOverallActivityStatusSameAs() {
-    bone.stubActivityProvider( newActivity( QUIET.threshold ) );
+    bone.stubActivitySupplier( newActivity( QUIET.threshold ) );
 
     boolean same = analysis.isOverallActivityStatusSameAs( QUIET );
     boolean larger = analysis.isOverallActivityStatusSameAs( IDLE );
@@ -72,7 +70,7 @@ public class AnalysisTest {
 
   @Test
   public void isOverallActivityStatusAtLeast() {
-    bone.stubActivityProvider( newActivity( QUIET.threshold ) );
+    bone.stubActivitySupplier( newActivity( QUIET.threshold ) );
 
     boolean same = analysis.isOverallActivityStatusAtLeast( QUIET );
     boolean larger = analysis.isOverallActivityStatusAtLeast( IDLE );
@@ -85,7 +83,7 @@ public class AnalysisTest {
 
   @Test
   public void isOverallActivityStatusAtMost() {
-    bone.stubActivityProvider( newActivity( QUIET.threshold ) );
+    bone.stubActivitySupplier( newActivity( QUIET.threshold ) );
 
     boolean same = analysis.isOverallActivityStatusAtMost( QUIET );
     boolean larger = analysis.isOverallActivityStatusAtMost( IDLE );
@@ -98,7 +96,7 @@ public class AnalysisTest {
 
   @Test
   public void getActivity() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, P_003 ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, P_003 ) ) );
 
     Percent actual = analysis.getActivity( WORK_AREA );
 
@@ -107,7 +105,7 @@ public class AnalysisTest {
 
   @Test
   public void getActivityOfSectionThatHasNoActivity() {
-    bone.stubActivityProvider( newActivity( P_003 ) );
+    bone.stubActivitySupplier( newActivity( P_003 ) );
 
     Percent actual = analysis.getActivity( WORK_AREA );
 
@@ -116,7 +114,7 @@ public class AnalysisTest {
 
   @Test
   public void getActivityStatus() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
 
     ActivityStatus actual = analysis.getActivityStatus( WORK_AREA );
 
@@ -125,7 +123,7 @@ public class AnalysisTest {
 
   @Test
   public void isActivityStatusSameAs() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
 
     boolean same = analysis.isActivityStatusSameAs( WORK_AREA, QUIET );
     boolean larger = analysis.isActivityStatusSameAs( WORK_AREA, IDLE );
@@ -138,7 +136,7 @@ public class AnalysisTest {
 
   @Test
   public void isActivityStatusAtLeast() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
 
     boolean same = analysis.isActivityStatusAtLeast( WORK_AREA, QUIET );
     boolean larger = analysis.isActivityStatusAtLeast( WORK_AREA, IDLE );
@@ -151,7 +149,7 @@ public class AnalysisTest {
 
   @Test
   public void isActivityStatusAtMost() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, QUIET.threshold ) ) );
 
     boolean same = analysis.isActivityStatusAtMost( WORK_AREA, QUIET );
     boolean larger = analysis.isActivityStatusAtMost( WORK_AREA, IDLE );
@@ -164,7 +162,7 @@ public class AnalysisTest {
 
   @Test
   public void getAllocation() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, P_003 ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, P_003 ) ) );
 
     Percent actual = analysis.getAllocation( WORK_AREA );
 
@@ -173,7 +171,7 @@ public class AnalysisTest {
 
   @Test
   public void getAllocationOfSectionThatHasNoAllocation() {
-    bone.stubActivityProvider( newActivity( P_003 ) );
+    bone.stubActivitySupplier( newActivity( P_003 ) );
 
     Percent actual = analysis.getAllocation( WORK_AREA );
 
@@ -182,7 +180,7 @@ public class AnalysisTest {
 
   @Test
   public void getAllocationStatus() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
 
     AllocationStatus actual = analysis.getAllocationStatus( WORK_AREA );
 
@@ -191,7 +189,7 @@ public class AnalysisTest {
 
   @Test
   public void isAllocationStatusSameAs() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
 
     boolean same = analysis.isAllocationStatusSameAs( WORK_AREA, RARE );
     boolean larger = analysis.isAllocationStatusSameAs( WORK_AREA, UNUSED );
@@ -204,7 +202,7 @@ public class AnalysisTest {
 
   @Test
   public void isAllocationStatusAtLeast() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
 
     boolean same = analysis.isAllocationStatusAtLeast( WORK_AREA, RARE );
     boolean larger = analysis.isAllocationStatusAtLeast( WORK_AREA, UNUSED );
@@ -217,7 +215,7 @@ public class AnalysisTest {
 
   @Test
   public void isAllocationStatusAtMost() {
-    bone.stubActivityProvider( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
+    bone.stubActivitySupplier( newActivity( P_000, $( WORK_AREA, RARE.threshold ) ) );
 
     boolean same = analysis.isAllocationStatusAtMost( WORK_AREA, RARE );
     boolean larger = analysis.isAllocationStatusAtMost( WORK_AREA, UNUSED );
@@ -272,7 +270,7 @@ public class AnalysisTest {
 
   @Test
   public void isZoneActivated() {
-    bone.stubActivationProvider( bone.createZones( WORK_AREA ) );
+    bone.stubActivationSupplier( bone.createZones( WORK_AREA ) );
 
     boolean actual = analysis.isZoneActivated( WORK_AREA );
 
@@ -283,7 +281,7 @@ public class AnalysisTest {
   public void isAdjacentZoneActivated() {
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     boolean actual = analysis.isAdjacentZoneActivated( WORK_AREA );
 
@@ -292,29 +290,106 @@ public class AnalysisTest {
 
   @Test
   public void isAdjacentZoneActivatedIfZoneIsNotPresent() {
-    bone.stubActivationProvider( emptySet() );
+    bone.stubActivationSupplier( emptySet() );
 
     boolean actual = analysis.isAdjacentZoneActivated( WORK_AREA );
 
     assertThat( actual ).isFalse();
   }
 
+  @Test
+  public void getSunPosition() {
+    stubSunPositionSupplier( 12.0, 14.0 );
+
+    SunPosition actual = analysis.getSunPosition();
+
+    assertThat( actual ).isEqualTo( new SunPosition( 12.0, 14.0 ) );
+  }
+
+  @Test
+  public void getSunLightStatus() {
+    stubSunPositionSupplier( TWILIGHT.threshold );
+
+    SunLightStatus actual = analysis.getSunLightStatus();
+
+    assertThat( actual ).isSameAs( TWILIGHT );
+  }
+
+  @Test
+  public void isSunLightStatusSameAs() {
+    stubSunPositionSupplier( TWILIGHT.threshold );
+
+    boolean same = analysis.isSunLightStatusSameAs( TWILIGHT );
+    boolean larger = analysis.isSunLightStatusSameAs( NIGHT );
+    boolean smaller = analysis.isSunLightStatusSameAs( DAY );
+
+    assertThat( same ).isTrue();
+    assertThat( larger ).isFalse();
+    assertThat( smaller ).isFalse();
+  }
+
+  @Test
+  public void isSunLightStatusAtLeast() {
+    stubSunPositionSupplier( TWILIGHT.threshold );
+
+    boolean same = analysis.isSunLightStatusAtLeast( TWILIGHT );
+    boolean larger = analysis.isSunLightStatusAtLeast( NIGHT );
+    boolean smaller = analysis.isSunLightStatusAtLeast( DAY );
+
+    assertThat( same ).isTrue();
+    assertThat( larger ).isTrue();
+    assertThat( smaller ).isFalse();
+  }
+
+  @Test
+  public void isSunLightStatusAtMost() {
+    stubSunPositionSupplier( TWILIGHT.threshold );
+
+    boolean same = analysis.isSunLightStatusAtMost( TWILIGHT );
+    boolean larger = analysis.isSunLightStatusAtMost( NIGHT );
+    boolean smaller = analysis.isSunLightStatusAtMost( DAY );
+
+    assertThat( same ).isTrue();
+    assertThat( larger ).isFalse();
+    assertThat( smaller ).isTrue();
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsMotionStatusCalculatorArgument() {
-    new Analysis( null, mock( ActivationSupplier.class ), mock( ActivitySupplier.class ) );
+    new Analysis( null, sunPositionSupplier, bone.getActivationSupplier(), bone.getActivitySupplier() );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivationProviderArgument() {
-    new Analysis( mock( MotionStatusCalculator.class ), null, mock( ActivitySupplier.class ) );
+  public void constructWithNullAsSunPositionSupplierArgument() {
+    new Analysis( motionStatusCalculator, null, bone.getActivationSupplier(), bone.getActivitySupplier() );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivityProviderArgument() {
-    new Analysis( mock( MotionStatusCalculator.class ), mock( ActivationSupplier.class ), null );
+  public void constructWithNullAsActivationSupplierArgument() {
+    new Analysis( motionStatusCalculator, sunPositionSupplier, null, bone.getActivitySupplier() );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsActivitySupplierArgument() {
+    new Analysis( motionStatusCalculator, sunPositionSupplier, bone.getActivationSupplier(), null );
   }
 
   private void stubMotionStatusCalculator( SectionDefinition sectionDefinition, MotionStatus motionStatus ) {
     when( motionStatusCalculator.getMotionStatus( sectionDefinition ) ).thenReturn( motionStatus );
+  }
+
+  private void stubSunPositionSupplier( double zenit ) {
+    stubSunPositionSupplier( zenit, 0.0D );
+  }
+
+  private void stubSunPositionSupplier( double zenit, double azimuth ) {
+    when( sunPositionSupplier.getStatus() ).thenReturn( new SunPosition( zenit, azimuth ) );
+  }
+
+  private Analysis newAnalysis() {
+    return new Analysis( motionStatusCalculator,
+                         sunPositionSupplier,
+                         bone.getActivationSupplier(),
+                         bone.getActivitySupplier() );
   }
 }

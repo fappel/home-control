@@ -12,29 +12,29 @@ public class MotionStatusCalculator {
 
   static final int MEAN_DELTA_THRESHOLD = 10;
 
-  private final ActivationSupplier activationProvider;
-  private final ActivitySupplier activityProvider;
+  private final ActivationSupplier activationSupplier;
+  private final ActivitySupplier activitySupplier;
   private final ActivityMath activityMath;
 
-  MotionStatusCalculator( ActivationSupplier activationProvider, ActivitySupplier activityProvider ) {
-    verifyNotNull( activationProvider, "activationProvider" );
-    verifyNotNull( activityProvider, "activityProvider" );
+  MotionStatusCalculator( ActivationSupplier activationSupplier, ActivitySupplier activitySupplier ) {
+    verifyNotNull( activationSupplier, "activationSupplier" );
+    verifyNotNull( activitySupplier, "activitySupplier" );
 
-    this.activityMath = new ActivityMath( activityProvider, activationProvider );
-    this.activationProvider = activationProvider;
-    this.activityProvider = activityProvider;
+    this.activityMath = new ActivityMath( activitySupplier, activationSupplier );
+    this.activationSupplier = activationSupplier;
+    this.activitySupplier = activitySupplier;
   }
 
   public MotionStatus getMotionStatus( SectionDefinition sectionDefinition ) {
     verifyNotNull( sectionDefinition, "sectionDefinition" );
 
     MotionStatus result = EVEN;
-    if( activationProvider.getStatus().isZoneActivated( sectionDefinition ) ) {
+    if( activationSupplier.getStatus().isZoneActivated( sectionDefinition ) ) {
       Percent maximum = activityMath.calculateMaximumOfPathAllocationFor( sectionDefinition ).get();
       Percent geometric = activityMath.calculateGeometricMeanOfPathAllocationFor( sectionDefinition ).get();
       Percent arithmetic = activityMath.calculateArithmeticMeanOfPathAllocationFor( sectionDefinition ).get();
       int delta = arithmetic.intValue() - geometric.intValue();
-      Percent sectionAllocation = activityProvider.getStatus().getSectionAllocation( sectionDefinition ).get();
+      Percent sectionAllocation = activitySupplier.getStatus().getSectionAllocation( sectionDefinition ).get();
       if( sectionAllocation.compareTo( maximum ) == 0 && delta > MEAN_DELTA_THRESHOLD ) {
         result = FOCUSSED;
       }

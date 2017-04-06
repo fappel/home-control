@@ -12,27 +12,27 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
-import com.codeaffine.home.control.status.supplier.Activation.Zone;
 
 public class MotionStatusCalculatorTest {
 
-  private AnalysisTestsDoubleHelper bone;
   private MotionStatusCalculator calculator;
+  private AnalysisTestsDoubleHelper bone;
 
   @Before
   public void setUp() {
     bone = new AnalysisTestsDoubleHelper();
-    calculator = new MotionStatusCalculator( bone.getActivationProvider(), bone.getActivityProvider() );
+    calculator = new MotionStatusCalculator( bone.getActivationSupplier(), bone.getActivitySupplier() );
   }
 
   @Test
   public void getMotionStatus() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_001 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_001 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     MotionStatus actual = calculator.getMotionStatus( WORK_AREA );
 
@@ -41,10 +41,10 @@ public class MotionStatusCalculatorTest {
 
   @Test
   public void getMotionStatusIfMeanDeltaIsTooSmall() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     MotionStatus actual = calculator.getMotionStatus( WORK_AREA );
 
@@ -53,10 +53,10 @@ public class MotionStatusCalculatorTest {
 
   @Test
   public void getMotionStatusIfSectionHasNotMaximumAllocation() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     MotionStatus actual = calculator.getMotionStatus( LIVING_AREA );
 
@@ -65,10 +65,10 @@ public class MotionStatusCalculatorTest {
 
   @Test
   public void getMotionStatusIfSectionIsNotActivated() {
-    bone.stubActivityProvider( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
+    bone.stubActivitySupplier( newActivity( P_010, $( WORK_AREA, P_050 ), $( LIVING_AREA, P_021 ) ) );
     Set<Zone> zones = bone.createZones( WORK_AREA, LIVING_AREA );
     bone.stubAdjacency( WORK_AREA, zones );
-    bone.stubActivationProvider( zones );
+    bone.stubActivationSupplier( zones );
 
     MotionStatus actual = calculator.getMotionStatus( HALL );
 
@@ -81,12 +81,12 @@ public class MotionStatusCalculatorTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivationProviderArgument() {
+  public void constructWithNullAsActivationSupplierArgument() {
     new MotionStatusCalculator( null, mock( ActivitySupplier.class ) );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivityProviderArgument() {
+  public void constructWithNullAsActivitySupplierArgument() {
     new MotionStatusCalculator( mock( ActivationSupplier.class ), null );
   }
 }

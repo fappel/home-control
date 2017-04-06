@@ -131,7 +131,7 @@ public class LampCollectorTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActivationProviderArgument() {
+  public void constructWithNullAsActivationSupplierArgument() {
     new LampCollector( registry, null );
   }
 

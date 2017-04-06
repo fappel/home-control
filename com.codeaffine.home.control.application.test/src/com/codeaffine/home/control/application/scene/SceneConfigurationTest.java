@@ -78,8 +78,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectAtDayTime() {
-    stubActivationProvider( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
-    stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
+    stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -93,8 +93,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectAtNightTime() {
-    stubActivationProvider( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
-    stubSunPositionProvider( new SunPosition( -0.1, 4 ) );
+    stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
+    stubSunPositionSupplier( new SunPosition( -0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -108,8 +108,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithoutActivation() {
-    stubActivationProvider( new Activation( emptySet() ) );
-    stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
+    stubActivationSupplier( new Activation( emptySet() ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -123,8 +123,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithSingleZoneReleaseOnHall() {
-    stubActivationProvider( asStatus( stubZone( stubSection( HALL ), now() ) ) );
-    stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
+    stubActivationSupplier( asStatus( stubZone( stubSection( HALL ), now() ) ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -138,8 +138,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithZoneReleaseOnHallButAdditionalActivation() {
-    stubActivationProvider( asStatus( zoneOf( WORK_AREA ), stubZone( stubSection( HALL ), now() ) ) );
-    stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
+    stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), stubZone( stubSection( HALL ), now() ) ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
 
     Map<Scope, Scene> actual = sceneSelector.select();
 
@@ -153,8 +153,8 @@ public class SceneConfigurationTest {
 
   @Test
   public void selectWithNamedSceneSelection() {
-    stubActivationProvider( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
-    stubSunPositionProvider( new SunPosition( 0.1, 4 ) );
+    stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
     selectNamedScene( NAMED_SCENE );
 
     Map<Scope, Scene> actual = sceneSelector.select();
@@ -167,7 +167,7 @@ public class SceneConfigurationTest {
     assertThat( actual.get( LIVING_ROOM ).getName() ).isEqualTo( context.get( Scene1.class ).getName() );
   }
 
-  private void stubSunPositionProvider( SunPosition sunPosition ) {
+  private void stubSunPositionSupplier( SunPosition sunPosition ) {
     when( sunPositionSupplier.getStatus() ).thenReturn( sunPosition );
   }
 
@@ -175,7 +175,7 @@ public class SceneConfigurationTest {
     return stubZone( stubSection( section ) );
   }
 
-  private void stubActivationProvider( Activation activation ) {
+  private void stubActivationSupplier( Activation activation ) {
     when( activationSupplier.getStatus() ).thenReturn( activation );
   }
 

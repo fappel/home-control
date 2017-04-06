@@ -69,8 +69,8 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
       adjustBrightnessOfLamps();
     } );
 
-    event.getSource( SunPositionSupplier.class ).ifPresent( sunPositionProvider -> {
-      double zenitAngle = sunPositionProvider.getStatus().getZenit();
+    event.getSource( SunPositionSupplier.class ).ifPresent( sunPositionSupplier -> {
+      double zenitAngle = sunPositionSupplier.getStatus().getZenit();
       double brightnessFactor = min( 3.33, max( 2.0, ( abs( ( 10 + now().getDayOfYear() ) % 366 - 183 ) / 51.85 ) ) );
       brightness = Percent.valueOf( ( int )max( brightnessMinimum.intValue(), min( ( ( zenitAngle + 18 ) * brightnessFactor ), 99.0 ) ) );
       adjustBrightnessOfLamps();

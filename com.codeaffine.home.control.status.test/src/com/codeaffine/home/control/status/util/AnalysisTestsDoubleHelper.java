@@ -24,36 +24,36 @@ import com.codeaffine.home.control.status.util.ActivityMath;
 
 class AnalysisTestsDoubleHelper {
 
-  private final ActivationSupplier activationProvider;
-  private final ActivitySupplier activityProvider;
+  private final ActivationSupplier activationSupplier;
+  private final ActivitySupplier activitySupplier;
   private final ActivityMath activityMath;
   private final PathAdjacency adjacency;
 
   AnalysisTestsDoubleHelper() {
     adjacency = mock( PathAdjacency.class );
-    activationProvider = mock( ActivationSupplier.class );
-    activityProvider = mock( ActivitySupplier.class );
-    activityMath = new ActivityMath( activityProvider, activationProvider );
+    activationSupplier = mock( ActivationSupplier.class );
+    activitySupplier = mock( ActivitySupplier.class );
+    activityMath = new ActivityMath( activitySupplier, activationSupplier );
   }
 
   PathAdjacency getAdjacency() {
     return adjacency;
   }
 
-  ActivationSupplier getActivationProvider() {
-    return activationProvider;
+  ActivationSupplier getActivationSupplier() {
+    return activationSupplier;
   }
 
-  ActivitySupplier getActivityProvider() {
-    return activityProvider;
+  ActivitySupplier getActivitySupplier() {
+    return activitySupplier;
   }
 
   ActivityMath getActivityMath() {
     return activityMath;
   }
 
-  void stubActivityProvider( Activity activity ) {
-    when( activityProvider.getStatus() ).thenReturn( activity );
+  void stubActivitySupplier( Activity activity ) {
+    when( activitySupplier.getStatus() ).thenReturn( activity );
   }
 
   Set<Zone> createZones( SectionDefinition ... sectionDefinitions  ) {
@@ -69,8 +69,8 @@ class AnalysisTestsDoubleHelper {
     when( adjacency.isAdjacentActivated( lookup.getZoneEntity() ) ).thenReturn( zones.size() > 1 );
   }
 
-  void stubActivationProvider( Set<Zone> zones ) {
-    when( activationProvider.getStatus() ).thenReturn( new Activation( zones ) );
+  void stubActivationSupplier( Set<Zone> zones ) {
+    when( activationSupplier.getStatus() ).thenReturn( new Activation( zones ) );
   }
 
   static List<Object> $( SectionDefinition sectionDefinition, Percent sectionActivity ) {

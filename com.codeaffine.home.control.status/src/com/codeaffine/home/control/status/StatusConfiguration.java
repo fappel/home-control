@@ -37,13 +37,13 @@ public class StatusConfiguration implements SystemConfiguration {
     Context context = statusSupplierRegistry.getContext();
     statusSupplierRegistry.register( ActivationSupplier.class, ActivationSupplierImpl.class );
     statusSupplierRegistry.register( ActivitySupplier.class, ActivitySupplierImpl.class );
+    statusSupplierRegistry.register( SunPositionSupplier.class, SunPositionSupplierImpl.class );
+    statusSupplierRegistry.register( NamedSceneSupplier.class, NamedSceneSupplierImpl.class );
+    statusSupplierRegistry.register( ComputerStatusSupplier.class, ComputerStatusSupplierImpl.class );
     context.set( MotionStatusCalculator.class, context.create( MotionStatusCalculator.class ) );
     context.set( Analysis.class, context.create( Analysis.class ) );
     context.set( ActivityReportCompiler.class, context.create( ActivityReportCompiler.class ) );
     context.set( ActivityReport.class, context.create( ActivityReport.class ) );
-    statusSupplierRegistry.register( SunPositionSupplier.class, SunPositionSupplierImpl.class );
-    statusSupplierRegistry.register( NamedSceneSupplier.class, NamedSceneSupplierImpl.class );
-    statusSupplierRegistry.register( ComputerStatusSupplier.class, ComputerStatusSupplierImpl.class );
   }
 
   @Override
