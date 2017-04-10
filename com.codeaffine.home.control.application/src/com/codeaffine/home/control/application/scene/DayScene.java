@@ -1,13 +1,17 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
+import static com.codeaffine.home.control.application.operation.LampTimeoutModus.ON;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.util.SunLightStatus.TWILIGHT;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.application.operation.LampSwitchOperation;
+import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.util.Analysis;
 
 public class DayScene implements Scene {
 
@@ -18,10 +22,12 @@ public class DayScene implements Scene {
               BathRoomCeiling,
               HallCeiling );
 
-  private final LampSwitchOperation lampSwitchOperation;
+  private final LampControl lampControl;
+  private final Analysis analysis;
 
-  public DayScene( LampSwitchOperation lampSwitchOperation ) {
-    this.lampSwitchOperation = lampSwitchOperation;
+  DayScene( LampControl lampControl, Analysis analysis ) {
+    this.lampControl = lampControl;
+    this.analysis = analysis;
   }
 
   @Override
@@ -31,6 +37,12 @@ public class DayScene implements Scene {
 
   @Override
   public void prepare() {
-    lampSwitchOperation.setLampFilter( lamp -> DAY_LAMPS.contains( lamp.getDefinition() ) );
+    lampControl.setLampFilter( lamp -> DAY_LAMPS.contains( lamp.getDefinition() ) );
+    if( analysis.isSunLightStatusAtMost( TWILIGHT ) ) {
+      lampControl.setLampTimeoutModus( ON );
+      lampControl.addGroupOfRelatedSections( LIVING_AREA, WORK_AREA );
+      lampControl.addGroupOfRelatedSections( BED, BED_SIDE, DRESSING_AREA );
+      lampControl.addGroupOfRelatedSections( DINING_AREA, COOKING_AREA );
+    }
   }
 }

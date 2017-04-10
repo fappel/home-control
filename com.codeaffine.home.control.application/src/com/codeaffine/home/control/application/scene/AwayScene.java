@@ -19,7 +19,6 @@ public class AwayScene implements Scene {
     this.followUpTimer = followUpTimer;
   }
 
-
   @Override
   public void prepare( Scene previous ) {
     if( previous != this ) {

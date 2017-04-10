@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
 import com.codeaffine.home.control.status.type.OnOff;
+import com.codeaffine.home.control.application.test.AnalysisStub;
 import com.codeaffine.home.control.application.util.LampControl;
 
 public class LivingRoomSceneTest {

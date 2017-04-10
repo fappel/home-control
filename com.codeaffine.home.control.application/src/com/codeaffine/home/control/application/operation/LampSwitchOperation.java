@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
@@ -22,6 +23,7 @@ import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.home.control.status.HomeControlOperation;
 import com.codeaffine.home.control.status.StatusEvent;
 import com.codeaffine.home.control.status.StatusSupplier;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.Activation;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
@@ -33,11 +35,11 @@ public class LampSwitchOperation implements HomeControlOperation {
   static final TimeUnit LAMP_DELAY_TIMEUNIT = SECONDS;
   static final long LAMP_DELAY_TIME = 2L;
 
+  private final LampTimeoutControl lampTimeoutControl;
   private final ActivationSupplier activationSupplier;
   private final Map<Lamp, Activation> delayStatus;
   private final LampCollector lampCollector;
   private final FollowUpTimer followUpTimer;
-  private final Set<Lamp> lampsToSwitchOff;
   private final Set<Lamp> lampsToSwitchOn;
   private final Set<Lamp> filterableLamps;
   private final Set<Lamp> scheduled;
@@ -53,10 +55,10 @@ public class LampSwitchOperation implements HomeControlOperation {
     verifyNotNull( lampCollector, "lampCollector" );
     verifyNotNull( followUpTimer, "followUpTimer" );
 
+    this.lampTimeoutControl = new LampTimeoutControl( activationSupplier, lampCollector );
     this.activationSupplier = activationSupplier;
     this.followUpTimer = followUpTimer;
     this.lampCollector = lampCollector;
-    this.lampsToSwitchOff = new HashSet<>();
     this.lampsToSwitchOn = new HashSet<>();
     this.filterableLamps = new HashSet<>();
     this.delayStatus = new HashMap<>();
@@ -71,6 +73,18 @@ public class LampSwitchOperation implements HomeControlOperation {
                    ActivationSupplier.class,
                    ActivitySupplier.class,
                    ComputerStatusSupplier.class );
+  }
+
+  public void setLampTimeoutModus( LampTimeoutModus timeoutModus ) {
+    verifyNotNull( timeoutModus, "timeoutModus" );
+
+    lampTimeoutControl.setTimeoutModus( timeoutModus );
+  }
+
+  public void addGroupOfRelatedSections( SectionDefinition ... relatedSections ) {
+    verifyNotNull( relatedSections, "relatedSections" );
+
+    lampTimeoutControl.addGroupOfRelatedSections( Stream.of( relatedSections ).collect( toSet() ) );
   }
 
   public void setLampSelectionStrategy( LampSelectionStrategy lampSelectionStrategy ) {
@@ -100,7 +114,7 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void addLampsToSwitchOff( LampDefinition ... lampsToSwitchOff ) {
     verifyNotNull( lampsToSwitchOff, "lampsToSwitchOff" );
 
-    this.lampsToSwitchOff.addAll( mapToLamps( lampsToSwitchOff ) );
+    this.lampTimeoutControl.addLampsToSwitchOff( mapToLamps( lampsToSwitchOff ) );
   }
 
   public void setDelayed( LampDefinition ... delayed ) {
@@ -113,11 +127,11 @@ public class LampSwitchOperation implements HomeControlOperation {
   @Override
   public void reset() {
     filter = lamp -> true;
-    lampsToSwitchOff.clear();
     lampsToSwitchOn.clear();
     filterableLamps.clear();
     delayed.clear();
     delayStatus.clear();
+    lampTimeoutControl.prepare();
     setDelayed( HallCeiling );
     setLampSelectionStrategy( ZONE_ACTIVATION );
   }
@@ -126,21 +140,22 @@ public class LampSwitchOperation implements HomeControlOperation {
   public void executeOn( StatusEvent event ) {
     verifyNotNull( event, "event" );
 
-    Set<Lamp> on = collectLampsToSwitchOn( activationSupplier );
+    lampTimeoutControl.setLampsToSwitchOn( collectLampsToSwitchOn() );
     Collection<Lamp> lamps = lampCollector.collectAllLamps();
+    Set<Lamp> on = lampTimeoutControl.getLampsToSwitchOn();
     Set<Lamp> off = lamps.stream().filter( lamp -> !on.contains( lamp ) ).collect( toSet() );
     on.forEach( lamp -> lamp.setOnOffStatus( ON ) );
     off.forEach( lamp -> lamp.setOnOffStatus( OFF ) );
   }
 
-  private Set<Lamp> collectLampsToSwitchOn( ActivationSupplier activationSupplier ) {
-    Set<Lamp> strategyRelatedLampsToSwitchOn = collectStrategyRelatedLampsToSwitchOncollect();
+  private Set<Lamp> collectLampsToSwitchOn() {
+    Set<Lamp> strategyRelatedLampsToSwitchOn = collectStrategyRelatedLampsToSwitchOn();
     strategyRelatedLampsToSwitchOn.addAll( lampsToSwitchOn );
-    strategyRelatedLampsToSwitchOn.removeAll( lampsToSwitchOff );
+    strategyRelatedLampsToSwitchOn.removeAll( lampTimeoutControl.getLampsToSwitchOff() );
     return filterDelayed( strategyRelatedLampsToSwitchOn, activationSupplier.getStatus() );
   }
 
-  private Set<Lamp> collectStrategyRelatedLampsToSwitchOncollect() {
+  private Set<Lamp> collectStrategyRelatedLampsToSwitchOn() {
     Set<Lamp> collected = new HashSet<>();
     collected.addAll( lampCollector.collect( lampSelectionStrategy ) );
     collected.addAll( filterableLamps );

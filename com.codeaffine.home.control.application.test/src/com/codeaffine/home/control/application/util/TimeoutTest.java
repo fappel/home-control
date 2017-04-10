@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.application.util;
 
+import static com.codeaffine.home.control.application.test.TimeoutHelper.sleep;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -127,13 +128,4 @@ public class TimeoutTest {
   public void executeIfExpiredWithNullAsCommandArgument() {
     timeout.executeIfExpired( null );
   }
-
-  private static void sleep( long millis ) {
-    try {
-      Thread.sleep( millis );
-    } catch( InterruptedException shouldNotHappen ) {
-      throw new IllegalStateException( shouldNotHappen );
-    }
-  }
-
 }

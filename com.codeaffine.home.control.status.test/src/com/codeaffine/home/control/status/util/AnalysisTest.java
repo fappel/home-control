@@ -1,10 +1,10 @@
 package com.codeaffine.home.control.status.util;
 
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper.*;
 import static com.codeaffine.home.control.status.type.Percent.*;
 import static com.codeaffine.home.control.status.util.ActivityStatus.*;
 import static com.codeaffine.home.control.status.util.AllocationStatus.*;
-import static com.codeaffine.home.control.status.util.AnalysisTestsDoubleHelper.*;
 import static com.codeaffine.home.control.status.util.MotionStatus.*;
 import static com.codeaffine.home.control.status.util.SunLightStatus.*;
 import static java.util.Collections.emptySet;
@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper;
 import com.codeaffine.home.control.status.supplier.SunPosition;
 import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.status.type.Percent;
@@ -26,14 +27,14 @@ public class AnalysisTest {
 
   private MotionStatusCalculator motionStatusCalculator;
   private SunPositionSupplier sunPositionSupplier;
-  private AnalysisTestsDoubleHelper bone;
+  private StatusSupplierHelper bone;
   private Analysis analysis;
 
   @Before
   public void setUp() {
     motionStatusCalculator = mock( MotionStatusCalculator.class );
     sunPositionSupplier = mock( SunPositionSupplier.class );
-    bone = new AnalysisTestsDoubleHelper();
+    bone = new StatusSupplierHelper();
     analysis = newAnalysis();
   }
 

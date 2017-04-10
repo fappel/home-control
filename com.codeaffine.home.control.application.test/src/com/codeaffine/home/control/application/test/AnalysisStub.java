@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.application.scene;
+package com.codeaffine.home.control.application.test;
 
 import static org.mockito.Mockito.*;
 
@@ -11,7 +11,7 @@ import com.codeaffine.home.control.status.util.AllocationStatus;
 import com.codeaffine.home.control.status.util.Analysis;
 import com.codeaffine.home.control.status.util.SunLightStatus;
 
-class AnalysisStub {
+public class AnalysisStub {
 
   private final Analysis analysis;
 
@@ -19,35 +19,39 @@ class AnalysisStub {
     analysis = mock( Analysis.class );
   }
 
-  Analysis getStub() {
+  public Analysis getStub() {
     return analysis;
   }
 
-  void stubIsAdjacentZoneActivated( SectionDefinition sectionDefinition, boolean result ) {
+  public void stubIsAdjacentZoneActivated( SectionDefinition sectionDefinition, boolean result ) {
     when( analysis.isAdjacentZoneActivated( sectionDefinition ) ).thenReturn( result );
   }
 
-  void stubIsZoneActivated( SectionDefinition sectionDefinition, boolean result ) {
+  public void stubIsZoneActivated( SectionDefinition sectionDefinition, boolean result ) {
     when( analysis.isZoneActivated( sectionDefinition ) ).thenReturn( result );
   }
 
-  void stubGetActivatedZones( Set<Zone> zones ) {
+  public void stubGetActivatedZones( Set<Zone> zones ) {
     when( analysis.getActivatedZones() ).thenReturn( zones );
   }
 
-  void stubIsOverallActivityStatusAtLeast( ActivityStatus status, boolean result ) {
+  public void stubIsOverallActivityStatusAtLeast( ActivityStatus status, boolean result ) {
     when( analysis.isOverallActivityStatusAtLeast( status ) ).thenReturn( result );
   }
 
-  void stubIsActivityStatusAtLeast( SectionDefinition sectionDefinition, ActivityStatus status, boolean result ) {
+  public void stubIsActivityStatusAtLeast(
+    SectionDefinition sectionDefinition, ActivityStatus status, boolean result )
+  {
     when( analysis.isActivityStatusAtLeast( sectionDefinition, status ) ).thenReturn( result );
   }
 
-  void stubIsAllocationStatusAtLeast( SectionDefinition sectionDefinition, AllocationStatus status, boolean result ) {
+  public void stubIsAllocationStatusAtLeast(
+    SectionDefinition sectionDefinition, AllocationStatus status, boolean result )
+  {
     when( analysis.isAllocationStatusAtLeast( sectionDefinition, status ) ).thenReturn( result );
   }
 
-  void stubIsSunLightStatusAtMost( SunLightStatus status, boolean result ) {
+  public void stubIsSunLightStatusAtMost( SunLightStatus status, boolean result ) {
     when( analysis.isSunLightStatusAtMost( status ) ).thenReturn( result );
   }
 }

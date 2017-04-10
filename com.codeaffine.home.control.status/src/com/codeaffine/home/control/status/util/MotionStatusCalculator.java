@@ -3,6 +3,7 @@ package com.codeaffine.home.control.status.util;
 import static com.codeaffine.home.control.status.util.MotionStatus.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
+import com.codeaffine.home.control.status.internal.util.ActivityMath;
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;

@@ -33,9 +33,9 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     sceneSelector
       .whenStatusOf( GLOBAL, ActivationSupplier.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
         .thenSelect( AwayScene.class )
-      .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> !isNight( position ) )
-        .thenSelect( DayScene.class )
-      .otherwiseSelect( NightScene.class );
+      .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> isNight( position ) )
+        .thenSelect( NightScene.class )
+      .otherwiseSelect( DayScene.class );
 
     sceneSelector
       .whenStatusOf( LIVING_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive() )

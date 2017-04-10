@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.status.util;
 
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper.*;
 import static com.codeaffine.home.control.status.type.Percent.*;
-import static com.codeaffine.home.control.status.util.AnalysisTestsDoubleHelper.*;
 import static com.codeaffine.home.control.status.util.MotionStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -13,17 +13,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 
 public class MotionStatusCalculatorTest {
 
   private MotionStatusCalculator calculator;
-  private AnalysisTestsDoubleHelper bone;
+  private StatusSupplierHelper bone;
 
   @Before
   public void setUp() {
-    bone = new AnalysisTestsDoubleHelper();
+    bone = new StatusSupplierHelper();
     calculator = new MotionStatusCalculator( bone.getActivationSupplier(), bone.getActivitySupplier() );
   }
 

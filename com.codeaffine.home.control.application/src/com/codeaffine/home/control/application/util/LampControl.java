@@ -4,12 +4,15 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampCollector;
+import com.codeaffine.home.control.application.operation.LampSelectionStrategy;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
+import com.codeaffine.home.control.application.operation.LampTimeoutModus;
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 
 public class LampControl {
@@ -59,6 +62,22 @@ public class LampControl {
     verifyNotNull( lampDefinitions, "lampDefinitions" );
 
     lampSwitchOperation.addFilterableLamps( lampDefinitions );
+  }
+
+  public void setLampFilter( Predicate<Lamp> filter ) {
+    lampSwitchOperation.setLampFilter( filter );
+  }
+
+  public void setLampSelectionStrategy( LampSelectionStrategy lampSelectionStrategy ) {
+    lampSwitchOperation.setLampSelectionStrategy( lampSelectionStrategy );
+  }
+
+  public void setLampTimeoutModus( LampTimeoutModus timeoutModus ) {
+    lampSwitchOperation.setLampTimeoutModus( timeoutModus );
+  }
+
+  public void addGroupOfRelatedSections( SectionDefinition ... relatedSections ) {
+    lampSwitchOperation.addGroupOfRelatedSections( relatedSections );
   }
 
   public static LampDefinition[] toDefinitions( Set<Lamp> lamps ) {

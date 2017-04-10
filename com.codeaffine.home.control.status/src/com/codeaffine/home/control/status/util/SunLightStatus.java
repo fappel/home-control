@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import com.codeaffine.home.control.status.supplier.SunPosition;
 
 public enum SunLightStatus {
-  NIGHT( -18.0D ), TWILIGHT ( 0.0D ), DAY ( 90.0D );
+  NIGHT( -6.0D ), TWILIGHT ( 0.0D ), DAY ( 90.0D );
 
   public final double threshold;
 

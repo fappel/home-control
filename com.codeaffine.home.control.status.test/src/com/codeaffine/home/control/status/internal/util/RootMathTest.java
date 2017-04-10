@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.status.util;
+package com.codeaffine.home.control.status.internal.util;
 
 import static java.math.BigDecimal.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.status.util.RootMath;
+import com.codeaffine.home.control.status.internal.util.RootMath;
 
 public class RootMathTest {
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.test.AnalysisStub;
 import com.codeaffine.home.control.application.util.LampControl;
 
 public class BedroomSceneTest {

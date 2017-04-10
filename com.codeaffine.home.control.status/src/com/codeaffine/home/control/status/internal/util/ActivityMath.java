@@ -1,7 +1,7 @@
-package com.codeaffine.home.control.status.util;
+package com.codeaffine.home.control.status.internal.util;
 
+import static com.codeaffine.home.control.status.internal.util.RootMath.nthRootOf;
 import static com.codeaffine.home.control.status.type.Percent.*;
-import static com.codeaffine.home.control.status.util.RootMath.nthRootOf;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.math.RoundingMode.HALF_UP;
 import static java.util.Optional.empty;
@@ -20,7 +20,7 @@ import com.codeaffine.home.control.status.supplier.Activity;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 import com.codeaffine.home.control.status.type.Percent;
 
-class ActivityMath {
+public class ActivityMath {
 
   private static final BigDecimal MINIMUM_IDENTITY = toBigDecimal( P_100.intValue() );
   private static final BigDecimal MAXIMUM_IDENTITY = toBigDecimal( P_000.intValue() );
@@ -32,7 +32,7 @@ class ActivityMath {
   private final ActivationSupplier activationSupplier;
   private final ActivitySupplier activitySupplier;
 
-  ActivityMath( ActivitySupplier activitySupplier, ActivationSupplier activationSupplier ) {
+  public ActivityMath( ActivitySupplier activitySupplier, ActivationSupplier activationSupplier ) {
     verifyNotNull( activationSupplier, "activationSupplier" );
     verifyNotNull( activitySupplier, "activitySupplier" );
 

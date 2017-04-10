@@ -1,10 +1,14 @@
 package com.codeaffine.home.control.application.util;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.DeskUplight;
-import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.WORK_AREA;
+import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ALL;
+import static com.codeaffine.home.control.application.operation.LampTimeoutModus.ON;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
+import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.WORK_AREA;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+
+import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,16 +17,16 @@ import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
 import com.codeaffine.home.control.application.operation.LampCollector;
 import com.codeaffine.home.control.application.operation.LampSwitchOperation;
-import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 
 public class LampControlTest {
 
   private static final SectionDefinition ZONE = WORK_AREA;
   private static final Lamp LAMP = stubLamp( DeskUplight );
 
-  private LampControl control;
   private LampSwitchOperation operation;
+  private LampControl control;
 
   @Before
   public void setUp() {
@@ -66,11 +70,41 @@ public class LampControlTest {
   }
 
   @Test
-      public void setLampsForFiltering() {
-        control.setLampsForFiltering( LAMP.getDefinition() );
-    
-        verify( operation ).addFilterableLamps( LAMP.getDefinition() );
-      }
+  public void setLampsForFiltering() {
+    control.setLampsForFiltering( LAMP.getDefinition() );
+
+    verify( operation ).addFilterableLamps( LAMP.getDefinition() );
+  }
+
+  @Test
+  public void setLampFilter() {
+    Predicate<Lamp> expected = lamp -> true;
+
+    control.setLampFilter( expected );
+
+    verify( operation ).setLampFilter( expected );
+  }
+
+  @Test
+  public void setLampSelectionStrategy() {
+    control.setLampSelectionStrategy( ALL );
+
+    verify( operation ).setLampSelectionStrategy( ALL );
+  }
+
+  @Test
+  public void setLampTimeoutModus() {
+    control.setLampTimeoutModus( ON );
+
+    verify( operation ).setLampTimeoutModus( ON );
+  }
+
+  @Test
+  public void addGroupOfRelatedSections() {
+    control.addGroupOfRelatedSections( WORK_AREA );
+
+    verify( operation ).addGroupOfRelatedSections( WORK_AREA );
+  }
 
   @Test
   public void toDefinitions() {
@@ -130,14 +164,14 @@ public class LampControlTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-      public void setLampsForFilteringWithNullAsLampDefinitionsArgument() {
-        control.setLampsForFiltering( ( LampDefinition[] )null );
-      }
+  public void setLampsForFilteringWithNullAsLampDefinitionsArgument() {
+    control.setLampsForFiltering( ( LampDefinition[] )null );
+  }
 
   @Test( expected = IllegalArgumentException.class )
-      public void setLampsForFilteringWithNullElementInLampDefinitionsArgumentArray() {
-        control.setLampsForFiltering( ( LampDefinition[] )null );
-      }
+  public void setLampsForFilteringWithNullElementInLampDefinitionsArgumentArray() {
+    control.setLampsForFiltering( ( LampDefinition[] )null );
+  }
 
   @Test( expected = IllegalArgumentException.class )
   public void toDefinitionsWithNullAsLampsArgument() {
@@ -153,6 +187,7 @@ public class LampControlTest {
   private static LampCollector stubCollector( EntityDefinition<?> zone, Lamp lamp ) {
     LampCollector result = mock( LampCollector.class );
     when( result.collectZoneLamps( zone ) ).thenReturn( asSet( lamp ) );
+    when( result.collectAllLamps() ).thenReturn( asSet( lamp ) );
     return result;
   }
 }

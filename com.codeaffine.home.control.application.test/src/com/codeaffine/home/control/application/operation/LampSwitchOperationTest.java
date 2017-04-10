@@ -426,6 +426,37 @@ public class LampSwitchOperationTest {
     assertThat( findLamp( HallCeiling ).getOnOffStatus() ).isSameAs( OFF );
   }
 
+  @Test
+  public void operateWithLampTimeoutModusSwitchedOn() {
+    operation.setLampTimeoutModus( LampTimeoutModus.ON );
+
+    stubActivationSupplier( LIVING_AREA, DINING_AREA );
+    operation.reset();
+    operation.executeOn( new StatusEvent( activationSupplier ) );
+    stubActivationSupplier( LIVING_AREA );
+    operation.reset();
+    operation.executeOn( new StatusEvent( activationSupplier ) );
+    OnOff kitchenCeiling = findLamp( KitchenCeiling ).getOnOffStatus();
+
+    assertThat( kitchenCeiling ).isSameAs( ON );
+  }
+
+  @Test
+  public void operateWithLampTimeoutModusSwitchedOnAndGroupOfRelatedSectionsConfigured() {
+    operation.setLampTimeoutModus( LampTimeoutModus.ON );
+    stubActivationSupplier( LIVING_AREA, DINING_AREA );
+    operation.reset();
+    operation.executeOn( new StatusEvent( activationSupplier ) );
+    stubActivationSupplier( LIVING_AREA );
+    operation.reset();
+
+    operation.addGroupOfRelatedSections( LIVING_AREA, DINING_AREA );
+    operation.executeOn( new StatusEvent( activationSupplier ) );
+    OnOff kitchenCeiling = findLamp( KitchenCeiling ).getOnOffStatus();
+
+    assertThat( kitchenCeiling ).isSameAs( OFF );
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void executeOnWithNullAsArgument() {
     operation.executeOn( null );
@@ -451,30 +482,48 @@ public class LampSwitchOperationTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-      public void addLampsToSwitchOnWithNullAsArgument() {
-        operation.addLampsToSwitchOn( ( LampDefinition[] )null );
-      }
-  @Test( expected = IllegalArgumentException.class )
-      public void addLampsToSwitchOnWithNullAsElementOfArgumentArray() {
-        operation.addLampsToSwitchOn( new LampDefinition[ 1 ] );
-      }
+  public void addLampsToSwitchOnWithNullAsArgument() {
+    operation.addLampsToSwitchOn( ( LampDefinition[] )null );
+  }
 
   @Test( expected = IllegalArgumentException.class )
-    public void addLampsToSwitchOffWithNullAsArgument() {
-      operation.addLampsToSwitchOff( ( LampDefinition[] )null );
-    }
+  public void addLampsToSwitchOnWithNullAsElementOfArgumentArray() {
+    operation.addLampsToSwitchOn( new LampDefinition[ 1 ] );
+  }
+
   @Test( expected = IllegalArgumentException.class )
-    public void addLampsToSwitchOffWithNullAsElementOfArgumentArray() {
-      operation.addLampsToSwitchOff( new LampDefinition[ 1 ] );
-    }
+  public void addLampsToSwitchOffWithNullAsArgumentArray() {
+    operation.addLampsToSwitchOff( ( LampDefinition[] )null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void addLampsToSwitchOffWithNullAsElementOfArgumentArray() {
+    operation.addLampsToSwitchOff( new LampDefinition[ 1 ] );
+  }
 
   @Test( expected = IllegalArgumentException.class )
   public void addFilterableLampsWithNullAsArgument() {
     operation.addFilterableLamps( ( LampDefinition[] )null );
   }
+
   @Test( expected = IllegalArgumentException.class )
   public void addFilterableLampsWithNullAsElementOfArgumentArray() {
     operation.addFilterableLamps( new LampDefinition[ 1 ] );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void setLampTimeoutModusWithNullAsTimeoutModusArgument() {
+    operation.setLampTimeoutModus( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void addGroupOfRelatedSectionsWithNullArgumentArray() {
+    operation.addGroupOfRelatedSections( ( SectionDefinition[] )null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void addGroupOfRelatedSectionsWithNullAsElementOfArgumentArray() {
+    operation.addGroupOfRelatedSections( new SectionDefinition[ 1 ] );
   }
 
   @Test( expected = IllegalArgumentException.class )

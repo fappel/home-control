@@ -1,7 +1,7 @@
-package com.codeaffine.home.control.status.util;
+package com.codeaffine.home.control.status.internal.util;
 
-import static com.codeaffine.home.control.status.util.AnalysisTestsDoubleHelper.*;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper.*;
 import static com.codeaffine.home.control.status.type.Percent.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,22 +11,23 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.status.internal.util.ActivityMath;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
+import com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper;
 import com.codeaffine.home.control.status.type.Percent;
-import com.codeaffine.home.control.status.util.ActivityMath;
 
 public class ActivityMathTest {
 
   private ActivationSupplier activationSupplier;
   private ActivitySupplier activitySupplier;
-  private AnalysisTestsDoubleHelper bone;
+  private StatusSupplierHelper bone;
   private ActivityMath activityMath;
 
   @Before
   public void setUp() {
-    bone = new AnalysisTestsDoubleHelper();
+    bone = new StatusSupplierHelper();
     activationSupplier = bone.getActivationSupplier();
     activitySupplier = bone.getActivitySupplier();
     activityMath = bone.getActivityMath();

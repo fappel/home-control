@@ -2,7 +2,7 @@
  * Based on the second answer of
  * http://stackoverflow.com/questions/22695654/computing-the-nth-root-of-p-using-bigdecimals
  */
-package com.codeaffine.home.control.status.util;
+package com.codeaffine.home.control.status.internal.util;
 
 import static com.codeaffine.util.ArgumentVerification.*;
 import static java.math.BigDecimal.*;
