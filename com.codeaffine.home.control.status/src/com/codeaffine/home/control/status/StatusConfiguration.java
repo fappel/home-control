@@ -16,6 +16,7 @@ import com.codeaffine.home.control.status.model.SectionProvider;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
+import com.codeaffine.home.control.status.supplier.HeartBeatSupplier;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
 import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.status.util.Analysis;
@@ -40,6 +41,7 @@ public class StatusConfiguration implements SystemConfiguration {
     statusSupplierRegistry.register( SunPositionSupplier.class, SunPositionSupplierImpl.class );
     statusSupplierRegistry.register( NamedSceneSupplier.class, NamedSceneSupplierImpl.class );
     statusSupplierRegistry.register( ComputerStatusSupplier.class, ComputerStatusSupplierImpl.class );
+    statusSupplierRegistry.register( HeartBeatSupplier.class, HeartBeatSupplier.class );
     context.set( MotionStatusCalculator.class, context.create( MotionStatusCalculator.class ) );
     context.set( Analysis.class, context.create( Analysis.class ) );
     context.set( ActivityReportCompiler.class, context.create( ActivityReportCompiler.class ) );

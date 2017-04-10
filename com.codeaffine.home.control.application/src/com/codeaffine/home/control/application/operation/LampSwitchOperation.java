@@ -28,6 +28,7 @@ import com.codeaffine.home.control.status.supplier.Activation;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
 import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
+import com.codeaffine.home.control.status.supplier.HeartBeatSupplier;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
 
 public class LampSwitchOperation implements HomeControlOperation {
@@ -72,7 +73,8 @@ public class LampSwitchOperation implements HomeControlOperation {
     return asList( NamedSceneSupplier.class,
                    ActivationSupplier.class,
                    ActivitySupplier.class,
-                   ComputerStatusSupplier.class );
+                   ComputerStatusSupplier.class,
+                   HeartBeatSupplier.class );
   }
 
   public void setLampTimeoutModus( LampTimeoutModus timeoutModus ) {
