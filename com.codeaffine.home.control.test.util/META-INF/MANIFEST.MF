@@ -16,4 +16,5 @@ Export-Package: com.codeaffine.home.control.test.util.context,
  com.codeaffine.home.control.test.util.entity,
  com.codeaffine.home.control.test.util.event,
  com.codeaffine.home.control.test.util.logger,
- com.codeaffine.home.control.test.util.status
+ com.codeaffine.home.control.test.util.status,
+ com.codeaffine.home.control.test.util.thread

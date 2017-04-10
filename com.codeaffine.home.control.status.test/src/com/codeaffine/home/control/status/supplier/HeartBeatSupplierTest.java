@@ -3,6 +3,7 @@ package com.codeaffine.home.control.status.supplier;
 import static com.codeaffine.home.control.status.supplier.Messages.STATUS_INFO_HEARTBEAT;
 import static com.codeaffine.home.control.test.util.event.EventBusHelper.captureEvent;
 import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleInfoArgument;
+import static com.codeaffine.home.control.test.util.thread.ThreadHelper.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -29,6 +30,8 @@ public class HeartBeatSupplierTest {
 
   @Test
   public void pulse() {
+    sleep( 10 );
+
     supplier.pulse();
 
     assertThat( captureEvent( eventBus, HeartBeatSupplier.class ) ).hasValue( supplier );

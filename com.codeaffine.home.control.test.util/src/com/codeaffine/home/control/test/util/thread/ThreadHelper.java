@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.application.test;
+package com.codeaffine.home.control.test.util.thread;
 
-public class TimeoutHelper {
+public class ThreadHelper {
 
   public static void sleep( long millis ) {
     try {

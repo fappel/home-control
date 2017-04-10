@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.application.util;
 
-import static com.codeaffine.home.control.application.test.TimeoutHelper.sleep;
+import static com.codeaffine.home.control.test.util.thread.ThreadHelper.sleep;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
