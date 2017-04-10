@@ -6,10 +6,15 @@ import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.status.util.AllocationStatus.FREQUENT;
 import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Set;
 
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.status.Scene;
+import com.codeaffine.home.control.status.supplier.Activation.Zone;
 import com.codeaffine.home.control.status.util.Analysis;
 
 public class BedroomScene implements Scene {
@@ -26,9 +31,21 @@ public class BedroomScene implements Scene {
 
   @Override
   public void prepare() {
-    bedRoomTimeout.setIf( analysis.getActivatedZones().size() > 1 || analysis.isZoneActivated( DRESSING_AREA ) );
+    bedRoomTimeout.setIf( isBedroomHot() );
     bedRoomTimeout.executeIfNotExpired( () -> switchLampsOn() );
     bedRoomTimeout.executeIfExpired( () -> switchLampsOff() );
+  }
+
+  private boolean isBedroomHot() {
+    return collectBedroomActivations().size() > 1 || analysis.isZoneActivated( DRESSING_AREA );
+  }
+
+  private Set<Zone> collectBedroomActivations() {
+    return analysis
+      .getActivatedZones()
+      .stream()
+      .filter( zone -> asList( BED, BED_SIDE, DRESSING_AREA ).contains( zone.getZoneEntity().getDefinition() ) )
+      .collect( toSet() );
   }
 
   private void switchLampsOn() {

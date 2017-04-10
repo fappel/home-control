@@ -16,9 +16,11 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.application.test.AnalysisStub;
 import com.codeaffine.home.control.application.util.LampControl;
+import com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelper;
 
 public class BedroomSceneTest {
 
+  private StatusSupplierHelper statusSupplierHelper;
   private LampControl lampControl;
   private AnalysisStub analysis;
   private BedroomScene scene;
@@ -27,6 +29,7 @@ public class BedroomSceneTest {
   public void setUp() {
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
+    statusSupplierHelper = new StatusSupplierHelper();
     scene = new BedroomScene( lampControl, analysis.getStub() );
   }
 
@@ -145,6 +148,26 @@ public class BedroomSceneTest {
     scene.prepare();
 
     verify( lampControl ).setZoneLampsForFiltering( BED, BED_SIDE, DRESSING_AREA );
+    verifyNoMoreInteractions( lampControl );
+  }
+
+  @Test
+  public void prepareWithMultipleBedroomZoneActivations() {
+    analysis.stubGetActivatedZones( statusSupplierHelper.createZones( BED, BED_SIDE ) );
+
+    scene.prepare();
+
+    verify( lampControl ).setZoneLampsForFiltering( BED, BED_SIDE, DRESSING_AREA );
+    verifyNoMoreInteractions( lampControl );
+  }
+
+  @Test
+  public void prepareWithInsufficientBedroomZoneActivations() {
+    analysis.stubGetActivatedZones( statusSupplierHelper.createZones( BED, WORK_AREA ) );
+
+    scene.prepare();
+
+    verify( lampControl ).switchOffZoneLamps( BED, BED_SIDE, DRESSING_AREA );
     verifyNoMoreInteractions( lampControl );
   }
 

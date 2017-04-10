@@ -56,7 +56,7 @@ public class StatusSupplierHelper {
     when( activitySupplier.getStatus() ).thenReturn( activity );
   }
 
-  public Set<Zone> createZones( SectionDefinition ... sectionDefinitions  ) {
+  public Set<Zone> createZones( SectionDefinition ... sectionDefinitions ) {
     return Stream.of( sectionDefinitions )
       .map( sectionDefinition -> createZone( stubEntity( sectionDefinition ), adjacency ) )
       .collect( toSet() );
