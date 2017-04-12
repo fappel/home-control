@@ -52,8 +52,6 @@ public class LightStatus {
 
   @Override
   public String toString() {
-    return "LightStatus [ " + statusMap + " ]";
+    return "LightStatus [ " + statusMap.toString().replaceAll( "\\{", "" ).replaceAll( "\\}", "" ) + " ]";
   }
-
-
 }
