@@ -27,7 +27,7 @@ public class LightSensorProvider extends BaseEntityProvider<LightSensor, LightSe
   };
 
   public interface LightSensor extends Entity<LightSensorDefinition>, Sensor {
-    int getLightValue();
+    Integer getLightValue();
   }
 
   public LightSensorProvider( Registry registry, SensorControlFactory sensorControlFactory ) {

@@ -41,8 +41,8 @@ class LightSensorImpl implements LightSensor {
   }
 
   @Override
-  public int getLightValue() {
-    return toIntValue( sensorItem.getStatus() );
+  public Integer getLightValue() {
+    return toInteger( sensorItem.getStatus() );
   }
 
   @Override
@@ -64,7 +64,7 @@ class LightSensorImpl implements LightSensor {
   }
 
   private void handleEntityMapping( ChangeEvent<NumberItem, DecimalType> evt ) {
-    sensorControl.notifyAboutSensorStatusChange( Integer.valueOf( toIntValue( evt.getNewStatus() ) ) );
+    sensorControl.notifyAboutSensorStatusChange( toInteger( evt.getNewStatus() ) );
   }
 
   @Override
@@ -76,7 +76,7 @@ class LightSensorImpl implements LightSensor {
     return new LightEvent( this, ( Integer )status, affected );
   }
 
-  private static int toIntValue( Optional<DecimalType> status ) {
-    return status.orElse( INITIAL_LIGHT_VALUE ).intValue();
+  private static Integer toInteger( Optional<DecimalType> status ) {
+    return Integer.valueOf( status.orElse( INITIAL_LIGHT_VALUE ).intValue() );
   }
 }
