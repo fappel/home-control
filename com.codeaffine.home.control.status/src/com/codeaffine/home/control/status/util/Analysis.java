@@ -25,7 +25,6 @@ public class Analysis {
   private final ActivationSupplier activationSupplier;
   private final ActivitySupplier activitySupplier;
 
-
   Analysis(
     MotionStatusCalculator motionStatusCalculator,
     SunPositionSupplier sunPositionSupplier,
