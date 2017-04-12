@@ -12,6 +12,7 @@ import com.codeaffine.home.control.status.internal.report.ActivityReportCompiler
 import com.codeaffine.home.control.status.internal.scene.NamedSceneSupplierImpl;
 import com.codeaffine.home.control.status.internal.sun.SunPositionSupplierImpl;
 import com.codeaffine.home.control.status.model.ActivationSensorProvider;
+import com.codeaffine.home.control.status.model.LightSensorProvider;
 import com.codeaffine.home.control.status.model.SectionProvider;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
 import com.codeaffine.home.control.status.supplier.ActivitySupplier;
@@ -27,6 +28,7 @@ public class StatusConfiguration implements SystemConfiguration {
   @Override
   public void configureEntities( EntityRegistry entityRegistry ) {
     entityRegistry.register( ActivationSensorProvider.class );
+    entityRegistry.register( LightSensorProvider.class );
     entityRegistry.register( SectionProvider.class );
   }
 

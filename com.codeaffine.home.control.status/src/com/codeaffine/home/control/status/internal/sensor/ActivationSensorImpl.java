@@ -16,13 +16,13 @@ import com.codeaffine.home.control.status.model.ActivationSensorProvider.Activat
 import com.codeaffine.home.control.status.type.OnOff;
 import com.codeaffine.home.control.type.OnOffType;
 
-public class ActivationSensorImpl implements ActivationSensor {
+class ActivationSensorImpl implements ActivationSensor {
 
   private final ActivationSensorDefinition definition;
   private final SensorControl sensorControl;
   private final SwitchItem sensorItem;
 
-  public ActivationSensorImpl(
+  ActivationSensorImpl(
     ActivationSensorDefinition definition, SwitchItem sensorItem, SensorControlFactory sensorControlFactory )
   {
     verifyNotNull( sensorControlFactory, "sensorControlFactory" );

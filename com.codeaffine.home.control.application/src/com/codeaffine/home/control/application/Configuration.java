@@ -2,6 +2,7 @@ package com.codeaffine.home.control.application;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensorDefinition.*;
+import static com.codeaffine.home.control.status.model.LightSensorProvider.LightSensorDefinition.*;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static java.util.Arrays.asList;
 
@@ -44,17 +45,17 @@ public class Configuration implements SystemConfiguration {
   @Override
   public void configureFacility( Facility facility ) {
     facility.equip( BEDROOM ).with( BED, BED_SIDE, DRESSING_AREA );
-    facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION );
-    facility.equip( BED_SIDE ).with( BedStand, BedRoomCeiling, BED_SIDE_MOTION );
-    facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION );
+    facility.equip( BED ).with( BedStand, BedRoomCeiling, BED_MOTION, BED_LUX );
+    facility.equip( BED_SIDE ).with( BedStand, BedRoomCeiling, BED_SIDE_MOTION, BED_SIDE_LUX );
+    facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION, DRESSING_AREA_LUX );
     facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
-    facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION );
-    facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION );
-    facility.equip( HALL ).with( HallCeiling, HALL_MOTION );
+    facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION, LIVING_AREA_LUX );
+    facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION, WORK_AREA_LUX );
+    facility.equip( HALL ).with( HallCeiling, HALL_MOTION, HALL_LUX );
     facility.equip( KITCHEN ).with( COOKING_AREA, DINING_AREA );
-    facility.equip( COOKING_AREA ).with( KitchenCeiling, SinkUplight, COOKING_AREA_MOTION );
-    facility.equip( DINING_AREA ).with( KitchenCeiling, SinkUplight, DINING_AREA_MOTION );
-    facility.equip( BATH_ROOM ).with( BathRoomCeiling, BATH_ROOM_MOTION );
+    facility.equip( COOKING_AREA ).with( KitchenCeiling, SinkUplight, COOKING_AREA_MOTION, COOKING_AREA_LUX );
+    facility.equip( DINING_AREA ).with( KitchenCeiling, SinkUplight, DINING_AREA_MOTION, DINING_AREA_LUX );
+    facility.equip( BATH_ROOM ).with( BathRoomCeiling, BATH_ROOM_MOTION, BATH_ROOM_LUX );
   }
 
   @Override
