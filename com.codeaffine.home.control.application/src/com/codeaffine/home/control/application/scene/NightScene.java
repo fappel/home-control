@@ -41,7 +41,6 @@ public class NightScene implements Scene {
   @Override
   public void prepare() {
     lampControl.setLampTimeoutModus( ON );
-
     lampControl.setLampFilter( lamp -> NIGHT_LAMPS.contains( lamp.getDefinition() ) );
     allOnTimeout.setIf(    allOnTimeout.isExpired()
                         && Stream.of( SectionDefinition.values() )
@@ -49,11 +48,11 @@ public class NightScene implements Scene {
                         && analysis.isOverallActivityStatusAtMost( BRISK ) );
     if( !allOnTimeout.isExpired() ) {
       lampControl.setLampSelectionStrategy( ALL );
-      lampControl.addGroupOfRelatedSections( SectionDefinition.values() );
+      lampControl.addGroupOfTimeoutRelatedSections( SectionDefinition.values() );
     } else {
-      lampControl.addGroupOfRelatedSections( LIVING_AREA, WORK_AREA );
-      lampControl.addGroupOfRelatedSections( BED, BED_SIDE, DRESSING_AREA );
-      lampControl.addGroupOfRelatedSections( DINING_AREA, COOKING_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( LIVING_AREA, WORK_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( BED, BED_SIDE, DRESSING_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( DINING_AREA, COOKING_AREA );
     }
   }
 

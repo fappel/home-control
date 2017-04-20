@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.engine.wiring;
 
 import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
+import static com.codeaffine.home.control.engine.preference.PreferencePersistence.ENV_CONFIGURATION_DIRECTORY;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
@@ -11,11 +12,15 @@ import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
@@ -23,6 +28,7 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.engine.preference.PreferencePersistence;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
@@ -39,6 +45,7 @@ import com.codeaffine.home.control.event.Observe;
 import com.codeaffine.home.control.event.Subscribe;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.logger.LoggerFactory;
+import com.codeaffine.home.control.preference.PreferenceModel;
 import com.codeaffine.home.control.status.ControlCenter;
 import com.codeaffine.home.control.status.SceneSelector;
 import com.codeaffine.home.control.status.StatusSupplierRegistry;
@@ -57,6 +64,9 @@ public class SystemWiringTest {
 
   private static final String ITEM_NAME = "itemName";
   private static final long PERIOD = 0;
+
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   private com.codeaffine.util.inject.Context context;
   private SystemConfiguration configuration;
@@ -119,7 +129,8 @@ public class SystemWiringTest {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
+    System.getProperties().put( ENV_CONFIGURATION_DIRECTORY, tempFolder.getRoot().getCanonicalPath() );
     context = new com.codeaffine.util.inject.Context();
     contextFactory = stubContextFactory( context );
     configuration = spy( new Configuration() );
@@ -128,6 +139,11 @@ public class SystemWiringTest {
     stubWithFutureForFixedRateScheduling( executor, scheduledFuture );
     item = mock( NumberItem.class );
     wiring = new SystemWiring( contextFactory, stubRegistry( ITEM_NAME, item ), executor );
+  }
+
+  @After
+  public void tearDown() {
+    System.getProperties().remove( ENV_CONFIGURATION_DIRECTORY );
   }
 
   @Test
@@ -270,6 +286,8 @@ public class SystemWiringTest {
     assertThat( context ).isSameAs( contextCaptor.getValue().get( com.codeaffine.util.inject.Context.class ) );
     assertThat( context.get( EventBus.class ) ).isNotNull();
     assertThat( context.get( LoggerFactory.class ) ).isNotNull();
+    assertThat( context.get( PreferenceModel.class ) ).isNotNull();
+    assertThat( context.get( PreferencePersistence.class ) ).isNotNull();
     assertThat( wiring.getConfiguration() ).isNotNull();
   }
 

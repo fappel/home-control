@@ -6,23 +6,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 public class ReflectionUtil {
 
   public static Object invoke( Method method, Object object, Object... arguments ) {
-    try {
+    return execute( () -> {
       method.setAccessible( true );
       return method.invoke( object, arguments );
-    } catch( InvocationTargetException e ) {
-      Throwable targetException = e.getTargetException();
-      if( targetException instanceof RuntimeException ) {
-        throw ( RuntimeException )targetException;
-      }
-      throw new IllegalStateException( targetException );
-    } catch( IllegalAccessException | IllegalArgumentException shouldNotHappen ) {
-      throw new IllegalStateException( shouldNotHappen );
-    }
+    } );
   }
 
   public static Collection<Method> getAnnotatedMethods( Object object, Class<? extends Annotation> annotationType ) {
@@ -30,5 +23,20 @@ public class ReflectionUtil {
       .filter( method -> method.getAnnotation( annotationType ) != null )
       .map( method  -> method )
       .collect( toSet() );
+  }
+
+  public static Object execute( Callable<?> reflectiveCall ) {
+    try {
+      return reflectiveCall.call();
+    } catch( RuntimeException rte ) {
+      throw rte;
+    } catch( InvocationTargetException ite ) {
+      if( ite.getCause() instanceof RuntimeException ) {
+        throw ( RuntimeException )ite.getCause();
+      }
+      throw new IllegalStateException( ite.getCause() );
+    } catch( Exception shouldNotHappen ) {
+      throw new IllegalStateException( shouldNotHappen );
+    }
   }
 }

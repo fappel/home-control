@@ -76,7 +76,7 @@ public class LampControl {
     lampSwitchOperation.setLampTimeoutModus( timeoutModus );
   }
 
-  public void addGroupOfRelatedSections( SectionDefinition ... relatedSections ) {
+  public void addGroupOfTimeoutRelatedSections( SectionDefinition ... relatedSections ) {
     lampSwitchOperation.addGroupOfRelatedSections( relatedSections );
   }
 

@@ -60,7 +60,7 @@ class ContextAdapter implements Context, com.codeaffine.util.Disposable {
     timer.reset();
   }
 
-  private void initialize( EventBus eventBus, SystemExecutorImpl executor) {
+  private void initialize( EventBus eventBus, SystemExecutorImpl executor ) {
     set( Context.class, this );
     set( EventBus.class, eventBus );
     set( SystemExecutor.class, executor );

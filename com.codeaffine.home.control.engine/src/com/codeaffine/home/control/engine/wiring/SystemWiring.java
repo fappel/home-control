@@ -12,6 +12,8 @@ import com.codeaffine.home.control.engine.entity.EntityRelationProviderImpl;
 import com.codeaffine.home.control.engine.entity.SensorControlFactoryImpl;
 import com.codeaffine.home.control.engine.event.EventBusImpl;
 import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.preference.PreferenceModelImpl;
+import com.codeaffine.home.control.engine.preference.PreferencePersistence;
 import com.codeaffine.home.control.engine.status.ControlCenterImpl;
 import com.codeaffine.home.control.engine.status.StatusProviderRegistryImpl;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
@@ -19,6 +21,7 @@ import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
 import com.codeaffine.home.control.logger.LoggerFactory;
+import com.codeaffine.home.control.preference.PreferenceModel;
 import com.codeaffine.home.control.status.FollowUpTimer;
 import com.codeaffine.util.inject.Context;
 
@@ -74,6 +77,8 @@ public class SystemWiring {
   private void doInitialize() {
     context = contextFactory.create();
     contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
+    contextAdapter.set( PreferenceModel.class, context.create( PreferenceModelImpl.class ) );
+    contextAdapter.set( PreferencePersistence.class, context.create( PreferencePersistence.class ) );
     contextAdapter.set( LoggerFactory.class, contextAdapter.create( LoggerFactoryAdapter.class ) );
     contextAdapter.set( SensorControlFactory.class, contextAdapter.create( SensorControlFactoryImpl.class ) );
     EntityRegistry entityRegistry = contextAdapter.create( EntityRegistryImpl.class );

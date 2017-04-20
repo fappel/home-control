@@ -100,8 +100,8 @@ public class LampControlTest {
   }
 
   @Test
-  public void addGroupOfRelatedSections() {
-    control.addGroupOfRelatedSections( WORK_AREA );
+  public void addGroupOfTimeoutRelatedSections() {
+    control.addGroupOfTimeoutRelatedSections( WORK_AREA );
 
     verify( operation ).addGroupOfRelatedSections( WORK_AREA );
   }

@@ -22,10 +22,12 @@ public class DayScene implements Scene {
               BathRoomCeiling,
               HallCeiling );
 
+  private final LightThresholdUtil lightThresholdUtil;
   private final LampControl lampControl;
   private final Analysis analysis;
 
-  DayScene( LampControl lampControl, Analysis analysis ) {
+  DayScene( LampControl lampControl, Analysis analysis, LightThresholdUtil lightThresholdUtil ) {
+    this.lightThresholdUtil = lightThresholdUtil;
     this.lampControl = lampControl;
     this.analysis = analysis;
   }
@@ -40,9 +42,10 @@ public class DayScene implements Scene {
     lampControl.setLampFilter( lamp -> DAY_LAMPS.contains( lamp.getDefinition() ) );
     if( analysis.isSunLightStatusAtMost( TWILIGHT ) ) {
       lampControl.setLampTimeoutModus( ON );
-      lampControl.addGroupOfRelatedSections( LIVING_AREA, WORK_AREA );
-      lampControl.addGroupOfRelatedSections( BED, BED_SIDE, DRESSING_AREA );
-      lampControl.addGroupOfRelatedSections( DINING_AREA, COOKING_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( LIVING_AREA, WORK_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( BED, BED_SIDE, DRESSING_AREA );
+      lampControl.addGroupOfTimeoutRelatedSections( DINING_AREA, COOKING_AREA );
     }
+    lampControl.switchOffLamps( lightThresholdUtil.collectLampsOfZonesWithEnoughDayLight() );
   }
 }

@@ -10,6 +10,8 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.logger.LoggerFactory;
+import com.codeaffine.home.control.preference.Preference;
+import com.codeaffine.home.control.preference.PreferenceModel;
 import com.codeaffine.util.inject.Context;
 
 public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Object[]> {
@@ -28,9 +30,13 @@ public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Ob
   }
 
   private Object getParameter( Context context, Parameter parameter, Class<?> declaringClass ) {
-    ByName annotation = parameter.getAnnotation( ByName.class );
-    if( annotation != null ) {
-      return getFromRegistry( context, parameter, annotation );
+    Preference preferenceAnnotation = parameter.getType().getAnnotation( Preference.class );
+    if( preferenceAnnotation != null ) {
+      return getFromPreferernceModel( context, parameter.getType() );
+    }
+    ByName byNameAnnotation = parameter.getAnnotation( ByName.class );
+    if( byNameAnnotation != null ) {
+      return getFromRegistry( context, parameter, byNameAnnotation );
     }
     if( parameter.getType().isAssignableFrom( Logger.class ) ) {
       return loggerFactory.getLogger( declaringClass );
@@ -43,5 +49,9 @@ public class InjectionStrategy implements BiFunction<Constructor<?>, Context, Ob
     String itemName = itemByName.value();
     Class itemType = parameter.getType();
     return context.get( Registry.class ).getItem( itemName, itemType );
+  }
+
+  private static Object getFromPreferernceModel( Context context, Class<?> type ) {
+    return context.get( PreferenceModel.class ).get( type );
   }
 }
