@@ -3,6 +3,7 @@ package com.codeaffine.home.control.engine.wiring;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static java.lang.String.format;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import com.codeaffine.home.control.Registry;
@@ -41,11 +42,13 @@ public class SystemWiring {
     this.executor = executor;
   }
 
-  public void initialize( SystemConfiguration configuration ) {
+  public void initialize(
+    SystemConfiguration configuration, Consumer<com.codeaffine.home.control.Context> contextConsumer )
+  {
     verifyNoConfigurationIsLoaded( configuration );
 
     this.configuration = configuration;
-    executor.executeAsynchronously( () -> doInitialize() );
+    executor.executeAsynchronously( () -> doInitialize( contextConsumer ) );
   }
 
   public void reset( SystemConfiguration configuration ) {
@@ -74,7 +77,7 @@ public class SystemWiring {
     dispose();
   }
 
-  private void doInitialize() {
+  private void doInitialize( Consumer<com.codeaffine.home.control.Context> contextConsumer ) {
     context = contextFactory.create();
     contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
     contextAdapter.set( PreferenceModel.class, context.create( PreferenceModelImpl.class ) );
@@ -93,6 +96,7 @@ public class SystemWiring {
     configuration.configureHomeControlOperations( controlCenter );
     configuration.configureSceneSelection( controlCenter );
     configuration.configureSystem( contextAdapter );
+    contextConsumer.accept( contextAdapter );
   }
 
   private void verifyNoConfigurationIsLoaded( SystemConfiguration toLoad ) {

@@ -10,24 +10,37 @@ import com.codeaffine.home.control.logger.Logger;
 
 class SystemLifeCycle {
 
+  private final ComponentAccessServicePublisher componentAccessServicePublisher;
   private final ShutdownDispatcher shutdownDispatcher;
   private final SystemWiring systemWiring;
   private final Logger logger;
 
-  SystemLifeCycle( SystemWiring systemWiring, ShutdownDispatcher shutdownDispatcher ) {
-    this( systemWiring, shutdownDispatcher, new LoggerFactoryAdapter().getLogger( SystemLifeCycle.class ) );
+  SystemLifeCycle(
+    SystemWiring systemWiring,
+    ComponentAccessServicePublisher componentAccessServicePublisher,
+    ShutdownDispatcher shutdownDispatcher )
+  {
+    this( systemWiring, componentAccessServicePublisher, shutdownDispatcher, createLogger() );
   }
 
-  SystemLifeCycle( SystemWiring systemWiring, ShutdownDispatcher shutdownDispatcher, Logger logger ) {
+  SystemLifeCycle(
+    SystemWiring systemWiring,
+    ComponentAccessServicePublisher componentAccessServicePublisher,
+    ShutdownDispatcher shutdownDispatcher,
+    Logger logger )
+  {
+    this.componentAccessServicePublisher = componentAccessServicePublisher;
     this.shutdownDispatcher = shutdownDispatcher;
     this.systemWiring = systemWiring;
     this.logger = logger;
   }
 
   void start( SystemConfiguration configuration ) {
-    systemWiring.initialize( configuration );
+    systemWiring.initialize( configuration, context -> componentAccessServicePublisher.publish( context ) );
     logger.info( INFO_SYSTEM_CONFIGURATION_LOADED, configuration.getClass().getName() );
   }
+
+
 
   void stop( SystemConfiguration configuration ) {
     stopConfiguration( () -> systemWiring.reset( configuration ) );
@@ -38,11 +51,16 @@ class SystemLifeCycle {
   }
 
   private void stopConfiguration( Runnable configurationStopCommand ) {
+    componentAccessServicePublisher.withdraw();
     SystemConfiguration configuration = systemWiring.getConfiguration();
     shutdownDispatcher.dispatch();
     configurationStopCommand.run();
     if( configuration != null ) {
       logger.info( INFO_SYSTEM_CONFIGURATION_UNLOADED, configuration.getClass().getName() );
     }
+  }
+
+  private static Logger createLogger() {
+    return new LoggerFactoryAdapter().getLogger( SystemLifeCycle.class );
   }
 }

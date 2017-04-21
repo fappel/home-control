@@ -15,6 +15,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +61,7 @@ import com.codeaffine.home.control.test.util.status.Scene2;
 import com.codeaffine.home.control.type.DecimalType;
 import com.codeaffine.util.Disposable;
 
+@SuppressWarnings( "rawtypes" )
 public class SystemWiringTest {
 
   private static final String ITEM_NAME = "itemName";
@@ -70,12 +72,12 @@ public class SystemWiringTest {
 
   private com.codeaffine.util.inject.Context context;
   private SystemConfiguration configuration;
+  private Consumer<Context> contextConsumer;
+  private ScheduledFuture scheduledFuture;
   private ContextFactory contextFactory;
   private SystemExecutorImpl executor;
   private SystemWiring wiring;
   private NumberItem item;
-  @SuppressWarnings( "rawtypes" )
-  private ScheduledFuture scheduledFuture;
 
   static class Bean {
 
@@ -131,6 +133,7 @@ public class SystemWiringTest {
   @Before
   public void setUp() throws IOException {
     System.getProperties().put( ENV_CONFIGURATION_DIRECTORY, tempFolder.getRoot().getCanonicalPath() );
+    contextConsumer = spyOfContextConsumer();
     context = new com.codeaffine.util.inject.Context();
     contextFactory = stubContextFactory( context );
     configuration = spy( new Configuration() );
@@ -148,7 +151,7 @@ public class SystemWiringTest {
 
   @Test
   public void initialize() {
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
 
     ArgumentCaptor<Context> contextCaptor = forClass( Context.class );
     verifyInitializationOrder( contextCaptor );
@@ -161,7 +164,7 @@ public class SystemWiringTest {
   public void initializeIfExecutorIsBlocked() {
     blockExecutor( executor );
 
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
 
     verify( contextFactory, never() ).create();
     verify( executor, never() ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
@@ -171,10 +174,10 @@ public class SystemWiringTest {
 
   @Test
   public void initializeTwice() {
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
     SystemConfiguration otherConfiguration = mock( SystemConfiguration.class );
 
-    Throwable actual = thrownBy( () -> wiring.initialize( otherConfiguration ) );
+    Throwable actual = thrownBy( () -> wiring.initialize( otherConfiguration, contextConsumer ) );
 
     assertThat( actual )
       .isInstanceOf( IllegalStateException.class )
@@ -187,7 +190,7 @@ public class SystemWiringTest {
   public void reset() {
     Disposable disposable = mock( Disposable.class );
     context.set( Disposable.class, disposable );
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
 
     wiring.reset( configuration );
 
@@ -201,7 +204,7 @@ public class SystemWiringTest {
   public void resetIfExecutorIsBlocked() {
     Disposable disposable = mock( Disposable.class );
     context.set( Disposable.class, disposable );
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
     blockExecutor( executor );
 
     wiring.reset( configuration );
@@ -213,7 +216,7 @@ public class SystemWiringTest {
 
   @Test
   public void resetIfConfigurationDoesNotMatch() {
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
     SystemConfiguration otherConfiguration = mock( SystemConfiguration.class );
 
     Throwable actual = thrownBy( () -> wiring.reset( otherConfiguration ) );
@@ -229,7 +232,7 @@ public class SystemWiringTest {
   public void dispose() {
     Disposable disposable = mock( Disposable.class );
     context.set( Disposable.class, disposable );
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
 
     wiring.dispose();
 
@@ -248,7 +251,7 @@ public class SystemWiringTest {
 
   @Test
   public void busEventWiring() {
-    wiring.initialize( configuration );
+    wiring.initialize( configuration, contextConsumer );
     Entity<?> expected = mock( Entity.class );
 
     triggerAllocationEvent( expected );
@@ -269,7 +272,7 @@ public class SystemWiringTest {
 
   @SuppressWarnings( "unchecked" )
   private void verifyInitializationOrder( ArgumentCaptor<Context> contextCaptor ) {
-    InOrder order = inOrder( contextFactory, configuration, executor, item );
+    InOrder order = inOrder( contextFactory, configuration, executor, item, contextConsumer );
     order.verify( contextFactory ).create();
     order.verify( configuration ).configureEntities( any( EntityRegistry.class ) );
     order.verify( configuration ).configureFacility( any( Facility.class ) );
@@ -279,6 +282,7 @@ public class SystemWiringTest {
     order.verify( configuration ).configureSystem( contextCaptor.capture() );
     order.verify( item ).addChangeListener( any( ChangeListener.class ) );
     order.verify( executor ).scheduleAtFixedRate( any( Runnable.class ) , anyLong(), anyLong(), any( TimeUnit.class ) );
+    order.verify( contextConsumer ).accept( contextCaptor.getValue() );
     order.verifyNoMoreInteractions();
   }
 
@@ -318,5 +322,10 @@ public class SystemWiringTest {
     Registry result = mock( Registry.class );
     when( result.getItem( itemName, NumberItem.class ) ).thenReturn( numberItem );
     return result;
+  }
+
+  @SuppressWarnings({ "unchecked", "cast" })
+  private static Consumer<Context> spyOfContextConsumer() {
+    return ( Consumer<Context> )mock( Consumer.class );
   }
 }

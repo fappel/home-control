@@ -29,7 +29,8 @@ public class Activator implements BundleActivator {
     shutdownDispatcher = new ShutdownDispatcher();
     executor = createApartmentThreadExecutor();
     SystemWiring systemWiring = createSystemWiring( context, shutdownDispatcher, executor );
-    lifeCycle = new SystemLifeCycle( systemWiring, shutdownDispatcher );
+    ComponentAccessServicePublisher contextServicePublisher = new ComponentAccessServicePublisher( context );
+    lifeCycle = new SystemLifeCycle( systemWiring, contextServicePublisher, shutdownDispatcher );
     logger.info( INFO_SYSTEM_STARTED );
     configurationTracker = trackSystemConfiguration( context, lifeCycle );
   }
