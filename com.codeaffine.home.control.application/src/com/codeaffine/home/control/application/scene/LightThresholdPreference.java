@@ -8,7 +8,7 @@ import com.codeaffine.home.control.status.model.LightSensorProvider.LightSensorD
 
 @Preference
 public interface LightThresholdPreference {
-  @DefaultValue( "{DRESSING_AREA_LUX=70, LIVING_AREA_LUX=90, WORK_AREA_LUX=800, HALL_LUX=20, DINING_AREA_LUX=70, BATH_ROOM_LUX=30}" )
+  @DefaultValue( "{DRESSING_AREA_LUX=70, LIVING_AREA_LUX=95, WORK_AREA_LUX=800, HALL_LUX=20, DINING_AREA_LUX=90, BATH_ROOM_LUX=30}" )
   Map<LightSensorDefinition, Integer> getThreshold();
   void setThreshold( Map<LightSensorDefinition, Integer> value );
 }
