@@ -19,7 +19,7 @@ public class HomeControlAdminService {
     this.componentAccessService = componentAccessService;
   }
 
-  public void unbind() {
-    componentAccessService = null;
+  public void unbind( @SuppressWarnings("unused") ComponentAccessService componentAccessService ) {
+    this.componentAccessService = null;
   }
 }

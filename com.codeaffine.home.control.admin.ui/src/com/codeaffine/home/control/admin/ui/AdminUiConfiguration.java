@@ -22,7 +22,7 @@ public class AdminUiConfiguration implements ApplicationConfiguration {
 
   }
 
-  public void unbind() {
-    adminService = null;
+  public void unbind( @SuppressWarnings("unused") HomeControlAdminService adminService ) {
+    this.adminService = null;
   }
 }
