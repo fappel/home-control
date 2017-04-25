@@ -4,4 +4,5 @@
    <service>
       <provide interface="org.eclipse.rap.rwt.application.ApplicationConfiguration"/>
    </service>
+   <reference bind="bind" cardinality="1..1" interface="com.codeaffine.home.control.admin.HomeControlAdminService" name="HomeControlAdminService" policy="static" unbind="unbind"/>
 </scr:component>

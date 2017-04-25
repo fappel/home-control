@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ComponentAccessServiceMoc">
+   <implementation class="com.codeaffine.home.control.admin.app.mock.ComponentAccessServiceMock"/>
+   <service>
+      <provide interface="com.codeaffine.home.control.ComponentAccessService"/>
+   </service>
+</scr:component>

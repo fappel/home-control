@@ -11,5 +11,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.api.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.status"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.status.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.admin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.admin.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.admin.ui"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.codeaffine.home.control.admin.ui.test"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

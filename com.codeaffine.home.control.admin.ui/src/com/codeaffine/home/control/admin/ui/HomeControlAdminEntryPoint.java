@@ -9,7 +9,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class HomeControlAdminEntryPoint implements EntryPoint {
+import com.codeaffine.home.control.admin.HomeControlAdminService;
+
+class HomeControlAdminEntryPoint implements EntryPoint {
+
+  private final HomeControlAdminService adminService;
+
+  HomeControlAdminEntryPoint( HomeControlAdminService adminService ) {
+    this.adminService = adminService;
+  }
 
   @Override
   public int createUI() {
@@ -19,7 +27,7 @@ public class HomeControlAdminEntryPoint implements EntryPoint {
     shell.setLayout( new FillLayout() );
 
     Label label = new Label( shell, SWT.NONE );
-    label.setText( "Hello Home Control World." );
+    label.setText( adminService.getName() );
 
     shell.open();
     return 0;

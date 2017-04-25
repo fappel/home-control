@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Application Mock
+Bundle-SymbolicName: com.codeaffine.home.control.admin.app.mock
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.codeaffine.home.control.api;bundle-version="1.0.0",
+ com.codeaffine.home.control.test.util;bundle-version="1.0.0"
+Service-Component: OSGI-INF/component-access-service-mock.xml
+Bundle-ActivationPolicy: lazy

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control Admin Tests
+Bundle-SymbolicName: com.codeaffine.home.control.admin.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Fragment-Host: com.codeaffine.home.control.admin;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.11.0",
+ org.assertj.core;bundle-version="3.4.1",
+ org.mockito.mockito-all;bundle-version="1.9.5",
+ com.codeaffine.test.util;bundle-version="0.2.0",
+ junitparams;bundle-version="1.0.3",
+ com.codeaffine.home.control.test.util;bundle-version="1.0.0"

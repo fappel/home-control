@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control Admin
+Bundle-SymbolicName: com.codeaffine.home.control.admin
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.codeaffine.home.control.api;bundle-version="1.0.0",
+ com.codeaffine.util;bundle-version="0.1.0"
+Service-Component: OSGI-INF/home-control-admin-service.xml
+Bundle-ActivationPolicy: lazy
+Export-Package: com.codeaffine.home.control.admin

@@ -13,7 +13,7 @@ import org.junit.Test;
 public class TimeoutTest {
 
   private static final ChronoUnit TIME_UNIT = ChronoUnit.MILLIS;
-  private static final long EXPIRATION_TIME = 10L;
+  private static final long EXPIRATION_TIME = 20L;
 
   private Timeout timeout;
 
@@ -70,9 +70,9 @@ public class TimeoutTest {
 
   @Test
   public void executeIfExpiredIfNotExpired() {
+    Runnable command = mock( Runnable.class );
     timeout.set();
 
-    Runnable command = mock( Runnable.class );
     timeout.executeIfExpired( command );
 
     verify( command, never() ).run();
