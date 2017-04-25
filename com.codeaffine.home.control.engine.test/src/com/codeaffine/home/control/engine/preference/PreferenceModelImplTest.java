@@ -358,6 +358,43 @@ public class PreferenceModelImplTest {
     preferenceModel.get( null );
   }
 
+  @Test
+  public void getAllPreferenceTypes() {
+    preferenceModel.get( MyPreference.class );
+
+    Set<Class<?>> actual = preferenceModel.getAllPreferenceTypes();
+
+    assertThat( actual ).containsExactly( MyPreference.class );
+  }
+
+  @Test
+  public void getAllPreferenceTypesIfModelIsEmpty() {
+    Set<Class<?>> actual = preferenceModel.getAllPreferenceTypes();
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
+  public void getAllPreferenceTypesAgainAfterPreviousCallResultHasBeenAltered() {
+    preferenceModel.get( MyPreference.class );
+
+    Set<Class<?>> first = preferenceModel.getAllPreferenceTypes();
+    first.remove( MyPreference.class );
+    Set<Class<?>> second = preferenceModel.getAllPreferenceTypes();
+
+    assertThat( second ).containsExactly( MyPreference.class );
+  }
+
+  @Test
+  public void getAllPreferenceTypesAndChangeModelAfterwards() {
+    Set<Class<?>> first = preferenceModel.getAllPreferenceTypes();
+    preferenceModel.get( MyPreference.class );
+    Set<Class<?>> second = preferenceModel.getAllPreferenceTypes();
+
+    assertThat( first ).isEmpty();
+    assertThat( second ).containsExactly( MyPreference.class );
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEventBusArgument() {
     new PreferenceModelImpl( null );

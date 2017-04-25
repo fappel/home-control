@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class PreferenceModelImpl implements PreferenceModel {
 
   private final PreferenceTypeValidator preferenceTypeValidator;
   private final Map<String, Map<String,String>> attributes;
-  private final Map<String, Object> preferences;
+  private final Map<Class<?>, Object> preferences;
   private final EventBus eventBus;
   private final Gson gson;
 
@@ -78,8 +79,13 @@ public class PreferenceModelImpl implements PreferenceModel {
   public <T> T get( Class<T> preferenceType ) {
     verifyNotNull( preferenceType, "prefernceType" );
 
-    preferences.computeIfAbsent( preferenceType.getName(), typeName -> createInstance( preferenceType ) );
-    return preferenceType.cast( preferences.get( preferenceType.getName() ) );
+    preferences.computeIfAbsent( preferenceType, type -> createInstance( preferenceType ) );
+    return preferenceType.cast( preferences.get( preferenceType ) );
+  }
+
+  @Override
+  public Set<Class<?>> getAllPreferenceTypes() {
+    return new HashSet<>( preferences.keySet() );
   }
 
   private Object createInstance( Class<?> preferenceType ) {
