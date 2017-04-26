@@ -35,6 +35,6 @@ class ComponentAccessServiceImpl implements ComponentAccessService {
   public void execute( Consumer<ComponentSupplier> command ) {
     ArgumentVerification.verifyNotNull( command, "command" );
 
-    executor.executeAsynchronously( () -> command.accept( supplier ) );
+    executor.execute( () -> command.accept( supplier ) );
   }
 }

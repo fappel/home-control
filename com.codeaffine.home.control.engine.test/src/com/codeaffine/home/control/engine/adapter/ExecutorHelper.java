@@ -16,7 +16,7 @@ public class ExecutorHelper {
     SystemExecutorImpl result = mock( SystemExecutorImpl.class );
     doAnswer( invocation -> performExecute( invocation ) )
       .when( result )
-      .executeAsynchronously( any( Runnable.class ) );
+      .execute( any( Runnable.class ) );
     return result;
   }
 
@@ -27,7 +27,7 @@ public class ExecutorHelper {
   }
 
   public static void blockExecutor( SystemExecutorImpl executor ) {
-    doNothing().when( executor ).executeAsynchronously( any( Runnable.class ) );
+    doNothing().when( executor ).execute( any( Runnable.class ) );
   }
 
   private static Object performExecute( InvocationOnMock invocation ) {

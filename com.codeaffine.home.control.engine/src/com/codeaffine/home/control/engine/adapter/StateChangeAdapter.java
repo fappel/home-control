@@ -28,12 +28,12 @@ class StateChangeAdapter<I extends Item<I, S>, S extends Status>
 
   @Override
   public void stateUpdated( org.eclipse.smarthome.core.items.Item item, State state ) {
-    executor.executeAsynchronously( () -> updateListener.itemUpdated( new UpdateEventImpl<>( itemAdapter, state ) ) );
+    executor.execute( () -> updateListener.itemUpdated( new UpdateEventImpl<>( itemAdapter, state ) ) );
   }
 
   @Override
   public void stateChanged( org.eclipse.smarthome.core.items.Item item, State oldState, State newState ) {
-    executor.executeAsynchronously( () -> changeListener.itemChanged( new ChangeEventImpl<>( itemAdapter, oldState, newState )  ) );
+    executor.execute( () -> changeListener.itemChanged( new ChangeEventImpl<>( itemAdapter, oldState, newState )  ) );
   }
 
   ChangeListener<I,S> getChangeListener() {

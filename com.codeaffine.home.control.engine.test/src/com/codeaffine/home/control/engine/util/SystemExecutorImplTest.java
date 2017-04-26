@@ -3,10 +3,13 @@ package com.codeaffine.home.control.engine.util;
 import static java.util.concurrent.TimeUnit.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -14,8 +17,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.engine.util.SafeRunnable;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.logger.Logger;
 
 public class SystemExecutorImplTest {
@@ -48,25 +49,56 @@ public class SystemExecutorImplTest {
   }
 
   @Test
-    public void executeAsynchronously() {
-      Runnable command = mock( Runnable.class );
-
-      executor.executeAsynchronously( command );
-
-      ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
-      verify( delegate ).execute( captor.capture() );
-      assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
-      captor.getValue().run();
-      verify( command ).run();
-    }
-
-  @Test
-  public void scheduleAtFixedRate() {
+  public void execute() {
     Runnable command = mock( Runnable.class );
 
-    executor.scheduleAtFixedRate( command, INITIAL_DELAY, PERIOD, DAYS );
+    executor.execute( command );
 
     ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+    verify( delegate ).execute( captor.capture() );
+    assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
+    captor.getValue().run();
+    verify( command ).run();
+  }
+
+  @Test
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void submitRunnableTask() {
+    Runnable task = mock( Runnable.class );
+    Future expected = mock( Future.class );
+    when( delegate.submit( task ) ).thenReturn( expected );
+
+    Future<?> actual = executor.submit( task );
+
+    assertThat( actual ).isSameAs( expected );
+    verify( delegate ).submit( task );
+  }
+
+  @Test
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void submitCallableTask() {
+    Callable task = mock( Callable.class );
+    Future expected = mock( Future.class );
+    when( delegate.submit( task ) ).thenReturn( expected );
+
+    Future<?> actual = executor.submit( task );
+
+    assertThat( actual ).isSameAs( expected );
+    verify( delegate ).submit( task );
+  }
+
+  @Test
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void scheduleAtFixedRate() {
+    Runnable command = mock( Runnable.class );
+    ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+    ScheduledFuture expected = mock( ScheduledFuture.class );
+    when( delegate.scheduleAtFixedRate( any( Runnable.class ), eq( INITIAL_DELAY ), eq( PERIOD ), eq( DAYS ) ) )
+      .thenReturn( expected );
+
+    ScheduledFuture<?> actual = executor.scheduleAtFixedRate( command, INITIAL_DELAY, PERIOD, DAYS );
+
+    assertThat( actual ).isSameAs( expected );
     verify( delegate ).scheduleAtFixedRate( captor.capture(), eq( INITIAL_DELAY ), eq( PERIOD ), eq( DAYS ) );
     assertThat( captor.getValue() ).isInstanceOf( SafeRunnable.class );
     captor.getValue().run();
@@ -87,16 +119,16 @@ public class SystemExecutorImplTest {
   }
 
   @Test
-    public void executeAsynchronouslyWithProblem() {
-      Runnable command = mock( Runnable.class );
-      RuntimeException problem = new RuntimeException( PROBLEM_MESSAGE );
-      doThrow( problem ).when( command ).run();
+  public void executeWithProblem() {
+    Runnable command = mock( Runnable.class );
+    RuntimeException problem = new RuntimeException( PROBLEM_MESSAGE );
+    doThrow( problem ).when( command ).run();
 
-      executor.executeAsynchronously( command );
+    executor.execute( command );
 
-      ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
-      verify( delegate ).execute( captor.capture() );
-      captor.getValue().run();
-      verify( logger ).error( PROBLEM_MESSAGE, problem );
-    }
+    ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+    verify( delegate ).execute( captor.capture() );
+    captor.getValue().run();
+    verify( logger ).error( PROBLEM_MESSAGE, problem );
+  }
 }

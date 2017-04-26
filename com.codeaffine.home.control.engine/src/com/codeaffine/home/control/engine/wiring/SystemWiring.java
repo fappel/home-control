@@ -48,13 +48,13 @@ public class SystemWiring {
     verifyNoConfigurationIsLoaded( configuration );
 
     this.configuration = configuration;
-    executor.executeAsynchronously( () -> doInitialize( contextConsumer ) );
+    executor.execute( () -> doInitialize( contextConsumer ) );
   }
 
   public void reset( SystemConfiguration configuration ) {
     verifyToUnloadMatchesLoadedConfiguration( configuration );
 
-    executor.executeAsynchronously( () -> doReset() );
+    executor.execute( () -> doReset() );
   }
 
   public void dispose() {

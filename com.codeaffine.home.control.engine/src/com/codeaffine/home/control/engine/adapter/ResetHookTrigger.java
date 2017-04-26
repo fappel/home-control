@@ -28,16 +28,16 @@ class ResetHookTrigger implements RegistryChangeListener<Item> {
 
   @Override
   public void updated( Item oldElement, Item element ) {
-    executor.executeAsynchronously( () -> resetHooks.forEach( hook -> hook.run() ) );
+    executor.execute( () -> resetHooks.forEach( hook -> hook.run() ) );
   }
 
   @Override
   public void removed( Item element ) {
-    executor.executeAsynchronously( () -> resetHooks.forEach( hook -> hook.run() ) );
+    executor.execute( () -> resetHooks.forEach( hook -> hook.run() ) );
   }
 
   @Override
   public void added( Item element ) {
-    executor.executeAsynchronously( () -> resetHooks.forEach( hook -> hook.run() ) );
+    executor.execute( () -> resetHooks.forEach( hook -> hook.run() ) );
   }
 }

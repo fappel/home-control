@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.engine.util;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +30,18 @@ public class SystemExecutorImpl implements SystemExecutor {
   }
 
   @Override
-  public void executeAsynchronously( Runnable command ) {
+  public void execute( Runnable command ) {
     delegate.execute( wrapCommand( command ) );
+  }
+
+  @Override
+  public Future<?> submit( Runnable task ) {
+    return delegate.submit( task );
+  }
+
+  @Override
+  public <T> Future<T> submit( Callable<T> task ) {
+    return delegate.submit( task );
   }
 
   @Override
