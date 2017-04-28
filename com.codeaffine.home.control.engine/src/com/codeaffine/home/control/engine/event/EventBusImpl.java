@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.engine.event;
 
-import static com.codeaffine.home.control.engine.util.ReflectionUtil.getAnnotatedMethods;
+import static com.codeaffine.home.control.util.reflection.ReflectionUtil.getAnnotatedMethods;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toSet;
 

@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.engine.entity.EntityRegistryImpl;
 import com.codeaffine.home.control.engine.entity.EntityRelationProviderImpl;
 import com.codeaffine.home.control.engine.entity.SensorControlFactoryImpl;
@@ -17,7 +18,6 @@ import com.codeaffine.home.control.engine.preference.PreferenceModelImpl;
 import com.codeaffine.home.control.engine.preference.PreferencePersistence;
 import com.codeaffine.home.control.engine.status.ControlCenterImpl;
 import com.codeaffine.home.control.engine.status.StatusProviderRegistryImpl;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
 import com.codeaffine.home.control.entity.SensorControl.SensorControlFactory;
@@ -29,14 +29,14 @@ import com.codeaffine.util.inject.Context;
 public class SystemWiring {
 
   private final ContextFactory contextFactory;
-  private final SystemExecutorImpl executor;
+  private final SystemExecutor executor;
   private final Registry registry;
 
   private volatile SystemConfiguration configuration;
   private volatile ContextAdapter contextAdapter;
   private volatile Context context;
 
-  public SystemWiring( ContextFactory contextFactory, Registry registry, SystemExecutorImpl executor ) {
+  public SystemWiring( ContextFactory contextFactory, Registry registry, SystemExecutor executor ) {
     this.contextFactory = contextFactory;
     this.registry = registry;
     this.executor = executor;

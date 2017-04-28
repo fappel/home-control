@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.engine.wiring;
 
-import static com.codeaffine.home.control.engine.util.ReflectionUtil.invoke;
 import static com.codeaffine.home.control.engine.wiring.Messages.ERROR_INVALID_PARAMETER_DECLARATION;
+import static com.codeaffine.home.control.util.reflection.ReflectionUtil.invoke;
 import static java.lang.String.format;
 
 import java.lang.reflect.Method;

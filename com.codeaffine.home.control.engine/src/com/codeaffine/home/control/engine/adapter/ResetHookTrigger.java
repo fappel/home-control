@@ -6,14 +6,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.items.Item;
 
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 
 class ResetHookTrigger implements RegistryChangeListener<Item> {
 
   private final Set<Runnable> resetHooks;
-  private final SystemExecutorImpl executor;
+  private final SystemExecutor executor;
 
-  ResetHookTrigger( SystemExecutorImpl executor ) {
+  ResetHookTrigger( SystemExecutor executor ) {
     this.executor = executor;
     this.resetHooks = new CopyOnWriteArraySet<>();
   }

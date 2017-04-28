@@ -6,7 +6,6 @@ import java.util.Set;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.SystemExecutor;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.event.EventBus;
 
 class ContextAdapter implements Context, com.codeaffine.util.Disposable {
@@ -18,7 +17,7 @@ class ContextAdapter implements Context, com.codeaffine.util.Disposable {
   private final TimerWiring timer;
 
   ContextAdapter(
-    com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutorImpl executor, EventBus eventBus )
+    com.codeaffine.util.inject.Context delegate, Registry registry, SystemExecutor executor, EventBus eventBus )
   {
     this.eventWiring = new ItemEventWiring( registry );
     this.timer = new TimerWiring( executor );
@@ -60,7 +59,7 @@ class ContextAdapter implements Context, com.codeaffine.util.Disposable {
     timer.reset();
   }
 
-  private void initialize( EventBus eventBus, SystemExecutorImpl executor ) {
+  private void initialize( EventBus eventBus, SystemExecutor executor ) {
     set( Context.class, this );
     set( EventBus.class, eventBus );
     set( SystemExecutor.class, executor );

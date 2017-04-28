@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.engine.adapter;
 
-import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
+import static com.codeaffine.home.control.test.util.thread.ExecutorHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
@@ -12,9 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.engine.adapter.ItemAdapter;
-import com.codeaffine.home.control.engine.adapter.StateChangeAdapter;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.UpdateEvent;
@@ -27,7 +25,7 @@ public class StateChangeAdapterTest {
   private ChangeListener changeListener;
   private UpdateListener updateListener;
   private ItemAdapter itemAdapter;
-  private SystemExecutorImpl executor;
+  private SystemExecutor executor;
 
   @Before
   public void setUp() {

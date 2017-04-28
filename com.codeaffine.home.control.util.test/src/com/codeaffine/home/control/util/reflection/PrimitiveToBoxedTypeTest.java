@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.engine.preference;
+package com.codeaffine.home.control.util.reflection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,6 +1,6 @@
-package com.codeaffine.home.control.engine.preference;
+package com.codeaffine.home.control.util.reflection;
 
-import static com.codeaffine.home.control.engine.preference.Messages.ERROR_LOADING_GENERIC_PARAMETER;
+import static com.codeaffine.home.control.util.reflection.Messages.ERROR_LOADING_GENERIC_PARAMETER;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -17,22 +17,52 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.preference.AttributeReflectionUtil.NoSuchMethodRuntimeException;
-import com.codeaffine.home.control.preference.DefaultValue;
-import com.codeaffine.home.control.preference.Preference;
+import com.codeaffine.home.control.util.reflection.AttributeReflectionUtil.NoSuchMethodRuntimeException;
 
 public class AttributeReflectionUtilTest {
 
-  @Preference
-  interface TestPreference {
-    @DefaultValue( "{entry}" )
+  interface TestBeanType {
     List<String> getStringList() throws Exception;
     void setStringList( List<String> value ) throws Exception;
   }
 
   @Test
+  public void hasValueOfFactoryMethodMethod() {
+    boolean actual = AttributeReflectionUtil.hasValueOfFactoryMethod( Integer.class );
+
+    assertThat( actual ).isTrue();
+  }
+
+  @Test
+  public void hasValueOfFactoryMethodForSupportedPrimitives() {
+    Class<?> primitive = int[].class.getComponentType();
+
+    boolean actual = AttributeReflectionUtil.hasValueOfFactoryMethod( primitive );
+
+    assertThat( actual ).isTrue();
+  }
+
+  @Test
+  public void hasValueOfFactoryMethodOfTypeWithoutValueOfSupport() {
+    Class<?> someType = Runnable.class;
+
+    boolean actual = AttributeReflectionUtil.hasValueOfFactoryMethod( someType );
+
+    assertThat( actual ).isFalse();
+  }
+
+  @Test
   public void getValueOfFactoryMethod() {
     Method actual = AttributeReflectionUtil.getValueOfFactoryMethod( Integer.class );
+
+    assertThat( actual ).isNotNull();
+  }
+
+  @Test
+  public void getValueOfFactoryMethodForSupportedPrimitives() {
+    Class<?> primitive = int[].class.getComponentType();
+
+    Method actual = AttributeReflectionUtil.getValueOfFactoryMethod( primitive );
 
     assertThat( actual ).isNotNull();
   }
@@ -57,7 +87,7 @@ public class AttributeReflectionUtilTest {
   public void initializeAttribute() throws Exception {
     PropertyDescriptor descriptor = retrievePreferenceAttributeDescriptor();
     List<String> expected = asList( "value1" );
-    TestPreference bean = stubPreferenceWithStringList( expected );
+    TestBeanType bean = stubPreferenceWithStringList( expected );
 
     AttributeReflectionUtil.initializeAttribute( bean, descriptor );
 
@@ -68,7 +98,7 @@ public class AttributeReflectionUtilTest {
   public void initializeAttributeWithRuntimeProblemOnAccessor() throws Exception {
     PropertyDescriptor descriptor = retrievePreferenceAttributeDescriptor();
     RuntimeException expected = new RuntimeException();
-    TestPreference bean = stubPreferenceGetterWithProblem( expected );
+    TestBeanType bean = stubPreferenceGetterWithProblem( expected );
 
     Throwable actual = thrownBy( () -> AttributeReflectionUtil.initializeAttribute( bean, descriptor ) );
 
@@ -79,7 +109,7 @@ public class AttributeReflectionUtilTest {
   public void initializeAttributeWithCheckedProblemOnAccessor() throws Exception {
     PropertyDescriptor descriptor = retrievePreferenceAttributeDescriptor();
     Exception cause = new Exception();
-    TestPreference bean = stubPreferenceGetterWithProblem( cause );
+    TestBeanType bean = stubPreferenceGetterWithProblem( cause );
 
     Throwable actual = thrownBy( () -> AttributeReflectionUtil.initializeAttribute( bean, descriptor ) );
 
@@ -120,7 +150,7 @@ public class AttributeReflectionUtilTest {
     PropertyDescriptor descriptor = retrievePreferenceAttributeDescriptor();
     List<Type> actualTypeArguments = AttributeReflectionUtil.getActualTypeArgumentsOfGenericAttributeType( descriptor );
 
-    Class<?> actual = AttributeReflectionUtil.loadTypeArgument( TestPreference.class, actualTypeArguments.get( 0 ) );
+    Class<?> actual = AttributeReflectionUtil.loadTypeArgument( TestBeanType.class, actualTypeArguments.get( 0 ) );
 
     assertThat( actual ).isSameAs( String.class );
   }
@@ -129,21 +159,21 @@ public class AttributeReflectionUtilTest {
   public void loadTypeArgumentOfUnavailableType() {
     Type unknownType = stubUnknownType();
 
-    Throwable actual = thrownBy( () -> AttributeReflectionUtil.loadTypeArgument( TestPreference.class, unknownType ) );
+    Throwable actual = thrownBy( () -> AttributeReflectionUtil.loadTypeArgument( TestBeanType.class, unknownType ) );
 
     assertThat( actual )
       .isInstanceOf( IllegalStateException.class )
       .hasMessage( format( ERROR_LOADING_GENERIC_PARAMETER, unknownType.getTypeName() ) );
   }
 
-  private static TestPreference stubPreferenceGetterWithProblem( Exception problem ) throws Exception {
-    TestPreference result = mock( TestPreference.class );
+  private static TestBeanType stubPreferenceGetterWithProblem( Exception problem ) throws Exception {
+    TestBeanType result = mock( TestBeanType.class );
     when( result.getStringList() ).thenThrow( problem );
     return result;
   }
 
-  private static TestPreference stubPreferenceWithStringList( List<String> expected ) throws Exception {
-    TestPreference result = mock( TestPreference.class );
+  private static TestBeanType stubPreferenceWithStringList( List<String> expected ) throws Exception {
+    TestBeanType result = mock( TestBeanType.class );
     when( result.getStringList() ).thenReturn( expected );
     return result;
   }
@@ -155,7 +185,7 @@ public class AttributeReflectionUtilTest {
   }
 
   private static PropertyDescriptor retrievePreferenceAttributeDescriptor() throws IntrospectionException {
-    BeanInfo beanInfo = Introspector.getBeanInfo( TestPreference.class );
+    BeanInfo beanInfo = Introspector.getBeanInfo( TestBeanType.class );
     return beanInfo.getPropertyDescriptors()[ 0 ];
   }
 }

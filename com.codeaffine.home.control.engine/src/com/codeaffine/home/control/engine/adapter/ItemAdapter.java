@@ -14,7 +14,7 @@ import org.eclipse.smarthome.core.types.Command;
 
 import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Status;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.ItemListener;
 import com.codeaffine.home.control.event.UpdateListener;
@@ -26,7 +26,7 @@ public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item
   private final ShutdownDispatcher shutdownDispatcher;
   private final EventPublisher eventPublisher;
   private final ItemRegistryAdapter registry;
-  private final SystemExecutorImpl executor;
+  private final SystemExecutor executor;
   private final Class<S> statusType;
   private final String key;
 
@@ -36,7 +36,7 @@ public class ItemAdapter<I extends Item<I, S>, S extends Status> implements Item
                          ItemRegistryAdapter registry,
                          EventPublisher eventPublisher,
                          ShutdownDispatcher shutdownDispatcher,
-                         SystemExecutorImpl executor,
+                         SystemExecutor executor,
                          Class<S> statusType )
   {
     verifyNotNull( key, "key" );

@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.engine.preference;
 
-import static com.codeaffine.home.control.engine.preference.AttributeReflectionUtil.*;
 import static com.codeaffine.home.control.engine.preference.Messages.ERROR_SAVING_MODEL;
-import static com.codeaffine.home.control.engine.preference.PrimitiveToBoxedType.replacePrimitiveTypeByBoxedType;
+import static com.codeaffine.home.control.util.reflection.AttributeReflectionUtil.*;
+import static com.codeaffine.home.control.util.reflection.PrimitiveToBoxedType.replacePrimitiveTypeByBoxedType;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.util.stream.Collectors.*;

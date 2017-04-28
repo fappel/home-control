@@ -5,7 +5,7 @@ import org.eclipse.smarthome.core.types.State;
 
 import com.codeaffine.home.control.Item;
 import com.codeaffine.home.control.Status;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.ItemListener;
 import com.codeaffine.home.control.event.UpdateListener;
@@ -17,9 +17,9 @@ class StateChangeAdapter<I extends Item<I, S>, S extends Status>
   private final ChangeListener<I, S> changeListener;
   private final UpdateListener<I ,S> updateListener;
   private final ItemAdapter<I, S> itemAdapter;
-  private final SystemExecutorImpl executor;
+  private final SystemExecutor executor;
 
-  StateChangeAdapter( ItemAdapter<I, S> itemAdapter, ItemListener<I, S> listener, SystemExecutorImpl executor ) {
+  StateChangeAdapter( ItemAdapter<I, S> itemAdapter, ItemListener<I, S> listener, SystemExecutor executor ) {
     this.changeListener = ensureChangeListener( listener );
     this.updateListener = ensureUpdateListener( listener );
     this.itemAdapter = itemAdapter;

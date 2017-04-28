@@ -12,5 +12,4 @@ class Messages {
   static final String ERROR_UNSUPPORTED_ATTRIBUTE_TYPE = "Preference <%s> has attribute <%s> that uses an unsupported type or an type with unsupported generic parameters <%s>.";
   static final String ERROR_SAVING_MODEL = "Unable to write preferences to output stream.";
   static final String ERROR_CONFIGURATION_DIR_NOT_SET = "'%s' environment variable is not set.";
-  static final String ERROR_LOADING_GENERIC_PARAMETER = "Unable to load generic parameter <%s>";
 }

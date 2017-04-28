@@ -32,7 +32,7 @@ public class ComponentAccessServiceImplTest {
   @Test
   public void execute() {
     service.execute( supplier -> supplier.get( Runnable.class ).run() );
-    sleep( 10 );
+    sleep( 20 );
 
     verify( component ).run();
   }

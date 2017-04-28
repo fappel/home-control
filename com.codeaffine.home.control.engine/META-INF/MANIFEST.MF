@@ -16,9 +16,10 @@ Import-Package: org.eclipse.smarthome.core.common.registry,
  org.osgi.framework,
  org.osgi.util.tracker,
  org.slf4j
-Require-Bundle: com.codeaffine.util,
+Require-Bundle: com.codeaffine.home.control.api;bundle-version="1.0.0",
+ com.codeaffine.home.control.util;bundle-version="1.0.0",
+ com.codeaffine.util,
  com.google.guava;bundle-version="10.0.1",
- com.codeaffine.home.control.api;bundle-version="1.0.0",
  com.google.gson;bundle-version="2.5.0"
 Export-Package: com.codeaffine.home.control.engine.activation,
  com.codeaffine.home.control.engine.adapter,

@@ -1,10 +1,10 @@
 package com.codeaffine.home.control.engine.wiring;
 
-import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
 import static com.codeaffine.home.control.engine.preference.PreferencePersistence.ENV_CONFIGURATION_DIRECTORY;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
+import static com.codeaffine.home.control.test.util.thread.ExecutorHelper.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +29,8 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.engine.preference.PreferencePersistence;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
@@ -75,7 +75,7 @@ public class SystemWiringTest {
   private Consumer<Context> contextConsumer;
   private ScheduledFuture scheduledFuture;
   private ContextFactory contextFactory;
-  private SystemExecutorImpl executor;
+  private SystemExecutor executor;
   private SystemWiring wiring;
   private NumberItem item;
 

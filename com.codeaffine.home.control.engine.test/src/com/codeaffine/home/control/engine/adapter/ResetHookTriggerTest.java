@@ -1,18 +1,17 @@
 package com.codeaffine.home.control.engine.adapter;
 
-import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
+import static com.codeaffine.home.control.test.util.thread.ExecutorHelper.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.adapter.ResetHookTrigger;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 
 public class ResetHookTriggerTest {
 
   private ResetHookTrigger trigger;
-  private SystemExecutorImpl executor;
+  private SystemExecutor executor;
   private Runnable hook;
 
   @Before

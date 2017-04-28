@@ -1,17 +1,17 @@
-package com.codeaffine.home.control.engine.preference;
+package com.codeaffine.home.control.util.reflection;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class PrimitiveToBoxedType {
+public class PrimitiveToBoxedType {
 
   private static final Map<String, Class<?>> PRIMITIVE_TYPE_TO_BOX_TYPE_MAP = createPrimitiveTypeToBoxTypeMap();
 
-  static Class<?> replacePrimitiveTypeByBoxedType( Class<?> returnType ) {
-    if( PRIMITIVE_TYPE_TO_BOX_TYPE_MAP.containsKey( returnType.getName() ) ) {
-      return PRIMITIVE_TYPE_TO_BOX_TYPE_MAP.get( returnType.getName() );
+  public static Class<?> replacePrimitiveTypeByBoxedType( Class<?> type ) {
+    if( PRIMITIVE_TYPE_TO_BOX_TYPE_MAP.containsKey( type.getName() ) ) {
+      return PRIMITIVE_TYPE_TO_BOX_TYPE_MAP.get( type.getName() );
     }
-    return returnType;
+    return type;
   }
 
   private static Map<String, Class<?>> createPrimitiveTypeToBoxTypeMap() {

@@ -10,7 +10,7 @@
 <booleanAttribute key="default" value="true"/>
 <booleanAttribute key="default_auto_start" value="true"/>
 <intAttribute key="default_start_level" value="4"/>
-<stringAttribute key="deselected_workspace_plugins" value="com.codeaffine.home.control.alltests,com.codeaffine.home.control.api.test,com.codeaffine.home.control.application,com.codeaffine.home.control.application.test,com.codeaffine.home.control.engine,com.codeaffine.home.control.engine.test,com.codeaffine.home.control.status,com.codeaffine.home.control.status.test,com.codeaffine.home.control.status.test.util,org.eclipse.smarthome.binding.yahooweather,org.eclipse.smarthome.io.javasound,org.eclipse.smarthome.io.webaudio,org.eclipse.smarthome.ui.paper,org.eclipse.smarthome.voice.mactts,org.eclipse.smarthome.voice.mactts.test"/>
+<stringAttribute key="deselected_workspace_plugins" value="com.codeaffine.home.control.admin.test,com.codeaffine.home.control.admin.ui.test,com.codeaffine.home.control.alltests,com.codeaffine.home.control.api.test,com.codeaffine.home.control.application,com.codeaffine.home.control.application.test,com.codeaffine.home.control.engine,com.codeaffine.home.control.engine.test,com.codeaffine.home.control.status,com.codeaffine.home.control.status.test,com.codeaffine.home.control.status.test.util,com.codeaffine.home.control.util.test,org.eclipse.smarthome.binding.yahooweather,org.eclipse.smarthome.io.javasound,org.eclipse.smarthome.io.webaudio,org.eclipse.smarthome.ui.paper,org.eclipse.smarthome.voice.mactts,org.eclipse.smarthome.voice.mactts.test"/>
 <booleanAttribute key="includeOptional" value="true"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
@@ -27,5 +27,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="com.codeaffine.home.control.admin.app.mock@default:default,com.codeaffine.home.control.admin.test@default:false,com.codeaffine.home.control.admin.ui.test@default:false,com.codeaffine.home.control.admin.ui@default:default,com.codeaffine.home.control.admin@default:default,com.codeaffine.home.control.api@default:default,com.codeaffine.home.control.test.util@default:default"/>
+<stringAttribute key="workspace_bundles" value="com.codeaffine.home.control.admin.app.mock@default:default,com.codeaffine.home.control.admin.ui@default:default,com.codeaffine.home.control.admin@default:default,com.codeaffine.home.control.api@default:default,com.codeaffine.home.control.test.util@default:default,com.codeaffine.home.control.util@default:default"/>
 </launchConfiguration>

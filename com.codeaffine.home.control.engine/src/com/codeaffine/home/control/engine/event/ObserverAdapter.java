@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.engine.event;
 
 import static com.codeaffine.home.control.engine.event.Messages.*;
-import static com.codeaffine.home.control.engine.util.ReflectionUtil.invoke;
+import static com.codeaffine.home.control.util.reflection.ReflectionUtil.invoke;
 import static com.codeaffine.util.ArgumentVerification.verifyCondition;
 import static java.lang.String.format;
 

@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.engine.util;
+package com.codeaffine.home.control.util.reflection;
 
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,15 +10,15 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
-import org.junit.Test;
+import javax.xml.ws.Action;
 
-import com.codeaffine.home.control.event.Subscribe;
+import org.junit.Test;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ReflectionUtilTest {
 
   private static class MyCommand {
-    @Subscribe
+    @Action
     private void execute() {}
   }
 
@@ -73,7 +73,7 @@ public class ReflectionUtilTest {
 
   @Test
   public void getAnnotatedMethod() {
-    Collection<Method> actual = ReflectionUtil.getAnnotatedMethods( new MyCommand(), Subscribe.class );
+    Collection<Method> actual = ReflectionUtil.getAnnotatedMethods( new MyCommand(), Action.class );
 
     assertThat( actual )
       .hasSize( 1 )

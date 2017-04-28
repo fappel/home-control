@@ -10,7 +10,7 @@ import com.codeaffine.home.control.ComponentAccessService;
 import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.SystemExecutor;
 
-class ComponentAccessServiceImpl implements ComponentAccessService {
+public class ComponentAccessServiceImpl implements ComponentAccessService {
 
   private final SystemExecutor executor;
   private final Supplier supplier;
@@ -29,7 +29,7 @@ class ComponentAccessServiceImpl implements ComponentAccessService {
     }
   }
 
-  ComponentAccessServiceImpl( Context delegate ) {
+  public ComponentAccessServiceImpl( Context delegate ) {
     verifyNotNull( delegate, "delegate" );
 
     this.executor = delegate.get( SystemExecutor.class );

@@ -1,11 +1,9 @@
 package com.codeaffine.home.control.engine.preference;
 
-import static com.codeaffine.home.control.engine.preference.AttributeReflectionUtil.*;
 import static com.codeaffine.home.control.engine.preference.Messages.*;
-import static com.codeaffine.home.control.engine.preference.PrimitiveToBoxedType.replacePrimitiveTypeByBoxedType;
+import static com.codeaffine.home.control.util.reflection.AttributeReflectionUtil.*;
 import static com.codeaffine.util.ArgumentVerification.*;
 import static java.beans.Introspector.getBeanInfo;
-import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
@@ -112,17 +110,7 @@ class PreferenceTypeValidator {
     if( String.class == valueType ) {
       return true;
     }
-    return hasValueOfFactory( valueType );
-  }
-
-  private static boolean hasValueOfFactory( Class<?> valueType ) {
-    try {
-      Class<?> type = replacePrimitiveTypeByBoxedType( valueType );
-      Method factoryMethod = getValueOfFactoryMethod( type );
-      return isStatic( factoryMethod.getModifiers() );
-    } catch( Exception ex  ) {
-      return false;
-    }
+    return hasValueOfFactoryMethod( valueType );
   }
 
   private static void verifyAllMethodsAreAttributeAccessors( Class<?> preferenceType, BeanInfo preferenceInfo ) {

@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.engine.adapter;
 
-import static com.codeaffine.home.control.engine.adapter.ExecutorHelper.*;
+import static com.codeaffine.home.control.test.util.thread.ExecutorHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
@@ -17,11 +17,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.engine.adapter.ItemAdapter;
-import com.codeaffine.home.control.engine.adapter.ItemRegistryAdapter;
-import com.codeaffine.home.control.engine.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.engine.adapter.StateChangeAdapter;
-import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
+import com.codeaffine.home.control.SystemExecutor;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.ChangeListener;
 import com.codeaffine.home.control.event.UpdateEvent;
@@ -35,11 +31,11 @@ public class ItemAdapterTest {
 
   private static final String KEY = "key";
 
-  private ShutdownDispatcher shutdownDispatcher;
   private ItemAdapter<ContactItem, OpenClosedType> adapter;
-  private ItemRegistryAdapter registry;
+  private ShutdownDispatcher shutdownDispatcher;
   private EventPublisher eventPublisher;
-  private SystemExecutorImpl executor;
+  private ItemRegistryAdapter registry;
+  private SystemExecutor executor;
   private GenericItem item;
   private Runnable resetHook;
 
