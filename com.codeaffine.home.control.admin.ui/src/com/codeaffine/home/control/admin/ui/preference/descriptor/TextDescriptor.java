@@ -25,7 +25,7 @@ class TextDescriptor implements AttributeDescriptor {
   }
 
   @Override
-  public Object convertToLabel( Object value ) {
+  public Object convertToRepresentationValue( Object value ) {
     verifyNotNull( value, "value" );
 
     return String.valueOf( value );

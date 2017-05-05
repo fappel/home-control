@@ -38,7 +38,7 @@ public class AttributePropertySource implements IPropertySource {
 
     Object attributeValue = info.getAttributeValue( id );
     AttributeDescriptor descriptor = descriptorSupplier.getDescriptor( id );
-    return descriptor.convertToLabel( attributeValue );
+    return descriptor.convertToRepresentationValue( attributeValue );
   }
 
   @Override

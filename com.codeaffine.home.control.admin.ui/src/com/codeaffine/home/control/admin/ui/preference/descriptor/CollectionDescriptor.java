@@ -31,7 +31,7 @@ class CollectionDescriptor implements AttributeDescriptor {
   }
 
   @Override
-  public Object convertToLabel( Object value ) {
+  public Object convertToRepresentationValue( Object value ) {
     return new CollectionValue( objectInfo, attributeInfo, value );
   }
 

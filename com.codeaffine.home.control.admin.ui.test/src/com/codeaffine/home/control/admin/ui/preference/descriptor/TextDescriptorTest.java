@@ -32,15 +32,15 @@ public class TextDescriptorTest {
   }
 
   @Test
-  public void convertToLabel() {
-    Object actual = descriptor.convertToLabel( ATTRIBUTE_VALUE );
+    public void convertToRepresentationValue() {
+    Object actual = descriptor.convertToRepresentationValue( ATTRIBUTE_VALUE );
 
     assertThat( actual ).isEqualTo( ATTRIBUTE_VALUE );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void convertToLabelWithNullAsAttributeValueArgument() {
-    descriptor.convertToLabel( null );
+  public void convertToRepresentationValueWithNullAsAttributeValueArgument() {
+    descriptor.convertToRepresentationValue( null );
   }
 
   @Test

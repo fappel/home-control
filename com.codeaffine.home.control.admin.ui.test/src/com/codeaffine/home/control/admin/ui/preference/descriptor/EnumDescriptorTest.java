@@ -34,15 +34,15 @@ public class EnumDescriptorTest {
   }
 
   @Test
-  public void convertToLabel() {
-    Object actual = descriptor.convertToLabel( TWO );
+  public void convertToRepresentationValue() {
+    Object actual = descriptor.convertToRepresentationValue( TWO );
 
     assertThat( actual ).isEqualTo( TWO.ordinal() );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void convertToLabelWithNullAsAttributeValueArgument() {
-    descriptor.convertToLabel( null );
+  public void convertToRepresentationValueWithNullAsAttributeValueArgument() {
+    descriptor.convertToRepresentationValue( null );
   }
 
   @Test

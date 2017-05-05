@@ -29,37 +29,37 @@ public class BooleanDescriptorTest {
   }
 
   @Test
-  public void convertToLabelOfTrue() {
-    Object actual = descriptor.convertToLabel( Boolean.TRUE );
+  public void convertToRepresentationValueOfTrue() {
+    Object actual = descriptor.convertToRepresentationValue( Boolean.TRUE );
 
     assertThat( actual ).isEqualTo( BooleanDescriptor.LABEL_INDEX_TRUE );
   }
 
   @Test
-  public void convertToLabelOfFalse() {
-    Object actual = descriptor.convertToLabel( Boolean.FALSE );
+  public void convertToRepresentationValueOfFalse() {
+    Object actual = descriptor.convertToRepresentationValue( Boolean.FALSE );
 
     assertThat( actual ).isEqualTo( BooleanDescriptor.LABEL_INDEX_FALSE );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void convertToLabelWithNullAsAttributeValueArgument() {
-    descriptor.convertToLabel( null );
+  public void convertToRepresentationValueWithNullAsAttributeValueArgument() {
+    descriptor.convertToRepresentationValue( null );
   }
 
   @Test
-    public void convertToValueOfFalseSelection() {
-      Object actual = descriptor.convertToValue( Integer.valueOf( BooleanDescriptor.LABEL_INDEX_FALSE ) );
+  public void convertToValueOfFalseSelection() {
+    Object actual = descriptor.convertToValue( Integer.valueOf( BooleanDescriptor.LABEL_INDEX_FALSE ) );
 
-      assertThat( actual ).isSameAs( Boolean.FALSE );
-    }
+    assertThat( actual ).isSameAs( Boolean.FALSE );
+  }
 
   @Test
-    public void convertToValueOfTrueSelection() {
-      Object actual = descriptor.convertToValue( Integer.valueOf( BooleanDescriptor.LABEL_INDEX_TRUE ) );
+  public void convertToValueOfTrueSelection() {
+    Object actual = descriptor.convertToValue( Integer.valueOf( BooleanDescriptor.LABEL_INDEX_TRUE ) );
 
-      assertThat( actual ).isSameAs( Boolean.TRUE );
-    }
+    assertThat( actual ).isSameAs( Boolean.TRUE );
+  }
 
   @Test( expected = IllegalArgumentException.class )
   public void convertToAttributeWithNullAsAttributeValueLabelArgument() {

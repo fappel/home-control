@@ -33,17 +33,17 @@ public class ReadOnlyDescriptorTest {
   }
 
   @Test
-  public void convertToLabel() {
+  public void convertToRepresentationValue() {
     Object attributeValue = new Object();
 
-    Object actual = descriptor.convertToLabel( attributeValue );
+    Object actual = descriptor.convertToRepresentationValue( attributeValue );
 
     assertThat( actual ).isEqualTo( attributeValue.toString() );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void convertToLabelWithNullAsAttributeValueArgument() {
-    descriptor.convertToLabel( null );
+  public void convertToRepresentationValueWithNullAsAttributeValueArgument() {
+    descriptor.convertToRepresentationValue( null );
   }
 
   @Test
@@ -58,9 +58,9 @@ public class ReadOnlyDescriptorTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-    public void convertToValueWithNullAsAttributeValueLabelArgument() {
-      descriptor.convertToValue( null );
-    }
+  public void convertToValueWithNullAsAttributeValueLabelArgument() {
+    descriptor.convertToValue( null );
+  }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsAttributorDescriptorArgument() {

@@ -29,7 +29,7 @@ class EnumDescriptor implements AttributeDescriptor {
   }
 
   @Override
-  public Object convertToLabel( Object value ) {
+  public Object convertToRepresentationValue( Object value ) {
     verifyNotNull( value, "value" );
 
     Class<?> attributeType = attributeInfo.getAttributeType();

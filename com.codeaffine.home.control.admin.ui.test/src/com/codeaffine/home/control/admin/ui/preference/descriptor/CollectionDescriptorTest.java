@@ -41,10 +41,10 @@ public class CollectionDescriptorTest {
   }
 
   @Test
-  public void convertToLabel() {
+  public void convertToRepresentationValue() {
     HashSet<Object> value = new HashSet<>();
 
-    CollectionValue actual = ( CollectionValue )descriptor.convertToLabel( value );
+    CollectionValue actual = ( CollectionValue )descriptor.convertToRepresentationValue( value );
 
     assertThat( actual.getObjectInfo() ).isEqualTo( objectInfo );
     assertThat( actual.getAttributeInfo() ).isEqualTo( attributeInfo );

@@ -30,7 +30,7 @@ class BooleanDescriptor implements AttributeDescriptor {
   }
 
   @Override
-  public Object convertToLabel( Object value ) {
+  public Object convertToRepresentationValue( Object value ) {
     verifyNotNull( value, "value" );
 
     return Integer.valueOf( ( ( Boolean )value ).booleanValue() ? LABEL_INDEX_TRUE : LABEL_INDEX_FALSE );

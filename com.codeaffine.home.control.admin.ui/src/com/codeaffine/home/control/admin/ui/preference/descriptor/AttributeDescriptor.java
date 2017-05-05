@@ -4,6 +4,6 @@ import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescripto
 
 public interface AttributeDescriptor {
   public IPropertyDescriptor createPropertyDescriptor();
-  public Object convertToLabel( Object value );
+  public Object convertToRepresentationValue( Object value );
   public Object convertToValue( Object label );
 }

@@ -59,15 +59,15 @@ public class StandardDescriptorTest {
   }
 
   @Test
-  public void convertToLabel() {
-    Object actual = descriptor.convertToLabel( Integer.valueOf( ATTRIBUTE_VALUE_LABEL ) );
+  public void convertToRepresentationValue() {
+    Object actual = descriptor.convertToRepresentationValue( Integer.valueOf( ATTRIBUTE_VALUE_LABEL ) );
 
     assertThat( actual ).isEqualTo( ATTRIBUTE_VALUE_LABEL );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void convertToLabelWithNullAsAttributeValueArgument() {
-    descriptor.convertToLabel( null );
+  public void convertToRepresentationValueWithNullAsAttributeValueArgument() {
+    descriptor.convertToRepresentationValue( null );
   }
 
   @Test
