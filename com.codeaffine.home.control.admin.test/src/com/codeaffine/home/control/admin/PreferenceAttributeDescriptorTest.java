@@ -1,11 +1,13 @@
 package com.codeaffine.home.control.admin;
 
-import static com.codeaffine.home.control.admin.TestPreference.ATTRIBUTE_NAME;
+import static com.codeaffine.home.control.admin.TestPreference.*;
 import static java.beans.Introspector.getBeanInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -13,37 +15,63 @@ import org.junit.Test;
 
 public class PreferenceAttributeDescriptorTest {
 
-  private PreferenceAttributeDescriptor descriptor;
+  private PreferenceAttributeDescriptor intAttributeDescriptor;
+  private PropertyDescriptor intPropertyDescriptor;
+  private BeanInfo beanInfo;
 
   @Before
   public void setUp() throws IntrospectionException {
-    descriptor = new PreferenceAttributeDescriptor( getPropertyDescriptor( TestPreference.class, ATTRIBUTE_NAME ) );
+    beanInfo = getBeanInfo( TestPreference.class );
+    intPropertyDescriptor = getPropertyDescriptor( TestPreference.class, INT_ATTRIBUTE_NAME );
+    intAttributeDescriptor = new PreferenceAttributeDescriptor( beanInfo, intPropertyDescriptor );
   }
 
   @Test
   public void getAttributeType() {
-    Class<?> actual = descriptor.getAttributeType();
+    Class<?> actual = intAttributeDescriptor.getAttributeType();
 
-    assertThat( actual ).isSameAs( TestPreference.ATTRIBUTE_TYPE );
+    assertThat( actual ).isSameAs( TestPreference.INT_ATTRIBUTE_TYPE );
   }
 
   @Test
   public void getName() {
-    String actual = descriptor.getName();
+    String actual = intAttributeDescriptor.getName();
 
-    assertThat( actual ).isEqualTo( ATTRIBUTE_NAME );
+    assertThat( actual ).isEqualTo( INT_ATTRIBUTE_NAME );
   }
 
   @Test
   public void getDisplayName() {
-    String actual = descriptor.getDisplayName();
+    String actual = intAttributeDescriptor.getDisplayName();
 
-    assertThat( actual ).isEqualTo( ATTRIBUTE_NAME );
+    assertThat( actual ).isEqualTo( INT_ATTRIBUTE_NAME );
+  }
+
+  @Test
+  public void getGenericTypeParametersOfAttributeTypeWithUnparameterizedAttributeType() {
+    List<Class<?>> actual = intAttributeDescriptor.getGenericTypeParametersOfAttributeType();
+
+    assertThat( actual ).isEmpty();
+  }
+
+  @Test
+  public void getGenericTypeParametersOfAttributeType() throws IntrospectionException {
+    PropertyDescriptor mapPropertyDescriptor = getPropertyDescriptor( TestPreference.class, MAP_ATTRIBUTE_NAME );
+    PreferenceAttributeDescriptor descriptor = new PreferenceAttributeDescriptor( beanInfo, mapPropertyDescriptor );
+
+    List<Class<?>> actual = descriptor.getGenericTypeParametersOfAttributeType();
+
+    assertThat( actual ).isEqualTo( MAP_ATTRIBUTE_GENERIC_TYPE_PARAMETERS );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsInfoArgument() {
+    new PreferenceAttributeDescriptor( null, intPropertyDescriptor );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsDescriptorArgument() {
-    new PreferenceAttributeDescriptor( null );
+    new PreferenceAttributeDescriptor( beanInfo, null );
   }
 
   private static PropertyDescriptor getPropertyDescriptor( Class<?> beanClass, String attributeName )

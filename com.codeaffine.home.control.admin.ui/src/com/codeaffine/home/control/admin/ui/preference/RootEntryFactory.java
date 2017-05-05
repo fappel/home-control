@@ -1,24 +1,26 @@
 package com.codeaffine.home.control.admin.ui.preference;
 
-import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetEntry;
+import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
+import com.codeaffine.home.control.admin.ui.preference.source.PropertySourceProviderFactory;
 
 class RootEntryFactory {
 
-  PropertySheetEntry create() {
-    PropertySheetEntry result = new PropertySheetEntry();
-    result.setPropertySourceProvider( object -> getPropertySource( object ) );
-    return result;
+  private final PropertySourceProviderFactory propertySourceProviderFactory;
+
+  RootEntryFactory( PropertySourceProviderFactory propertySourceProviderFactory ) {
+    verifyNotNull( propertySourceProviderFactory, "propertySourceProviderFactory" );
+
+    this.propertySourceProviderFactory = propertySourceProviderFactory;
   }
 
-  private static IPropertySource getPropertySource( Object object ) {
-    if( object instanceof IPropertySource ) {
-      return ( IPropertySource )object;
-    }
-    if( object instanceof PreferenceInfo ) {
-      return new AttributePropertySource( ( PreferenceInfo )object );
-    }
-    return new ValuePropertySource( object );
+  PropertySheetEntry create( ModifyAdapter modifyAdapter ) {
+    verifyNotNull( modifyAdapter, "modifyAdapter" );
+
+    PropertySheetEntry result = new PropertySheetEntry();
+    result.setPropertySourceProvider( propertySourceProviderFactory.create( modifyAdapter ) );
+    return result;
   }
 }

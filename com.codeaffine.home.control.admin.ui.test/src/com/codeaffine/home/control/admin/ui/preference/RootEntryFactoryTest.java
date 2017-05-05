@@ -1,74 +1,60 @@
 package com.codeaffine.home.control.admin.ui.preference;
 
-import static com.codeaffine.home.control.admin.ui.test.AttributeDescriptorHelper.*;
+import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.PreferenceAttributeDescriptor;
-import com.codeaffine.home.control.admin.PreferenceInfo;
 import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.internal.property.IPropertySourceProvider;
 import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetEntry;
+import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
+import com.codeaffine.home.control.admin.ui.preference.source.PropertySourceProviderFactory;
 
 public class RootEntryFactoryTest {
 
-  private static final String VALUE = "value";
-
-  private RootEntryFactory factory;
-
-  @Before
-  public void setUp() {
-    factory = new RootEntryFactory();
-  }
-
   @Test
   public void create() {
-    PropertySheetEntry actual = factory.create();
+    Object bean = new Object();
+    IPropertySource propertySource = mock( IPropertySource.class );
+    ModifyAdapter modifyAdapter = mock( ModifyAdapter.class );
+    IPropertySourceProvider propertySourceProvider = stubPropertySourceProvider( bean, propertySource );
+    PropertySourceProviderFactory providerSourceProviderFactory
+      = stubPropertySourceProviderFactory( modifyAdapter, propertySourceProvider );
+    RootEntryFactory factory = new RootEntryFactory( providerSourceProviderFactory );
 
-    assertThat( actual ).isNotNull();
+    PropertySheetEntry entry = factory.create( modifyAdapter );
+    IPropertySource actual = entry.getPropertySource( bean );
+
+    assertThat( actual ).isSameAs( propertySource );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsPropertySourceProviderFactoryArgument() {
+    new RootEntryFactory( null );
   }
 
   @Test
-  public void getPropertySourceOfReturnedRootEntryForValueObjects() {
-    PropertySheetEntry root = factory.create();
-    Object value = new Object();
+  public void createWithNullAsModifyAdapterArgument() {
+    RootEntryFactory factory = new RootEntryFactory( mock( PropertySourceProviderFactory.class ) );
 
-    IPropertySource actual = root.getPropertySource( value );
+    Throwable actual = thrownBy( () -> factory.create( null ) );
 
-    assertThat( actual )
-      .isInstanceOf( ValuePropertySource.class )
-      .matches( source -> source.getEditableValue() == value );
+    assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
   }
 
-  @Test
-  public void getPropertySourceOfReturnedRootEntryForPropertySources() {
-    PropertySheetEntry root = factory.create();
-    IPropertySource expected = mock( IPropertySource.class );
-
-    IPropertySource actual = root.getPropertySource( expected );
-
-    assertThat( actual ).isSameAs( expected );
+  private static IPropertySourceProvider stubPropertySourceProvider( Object bean, IPropertySource propertySource ) {
+    IPropertySourceProvider result = mock( IPropertySourceProvider.class );
+    when( result.getPropertySource( bean ) ).thenReturn( propertySource );
+    return result;
   }
 
-  @Test
-  public void getPropertySourceOfReturnedRootEntryForPreferenceInfo() {
-    PropertySheetEntry root = factory.create();
-    PreferenceInfo info = stubPreferenceInfo( VALUE, ATTRIBUTE_NAME, String.class );
-
-    IPropertySource actual = root.getPropertySource( info );
-
-    assertThat( actual )
-      .isInstanceOf( AttributePropertySource.class )
-      .matches( source -> source.getPropertyValue( ATTRIBUTE_NAME ).equals( VALUE ) );
-  }
-
-  private static PreferenceInfo stubPreferenceInfo( String value, String attributeName, Class<String> type ) {
-    PreferenceInfo result = mock( PreferenceInfo.class );
-    PreferenceAttributeDescriptor descriptor = stubAttributeDescriptor( type );
-    when( result.getAttributeDescriptor( attributeName ) ).thenReturn( descriptor );
-    when( result.getAttributeValue( attributeName ) ).thenReturn( value );
+  private static PropertySourceProviderFactory stubPropertySourceProviderFactory(
+    ModifyAdapter modifyAdapter, IPropertySourceProvider propertySourceProvider )
+  {
+    PropertySourceProviderFactory result = mock( PropertySourceProviderFactory.class );
+    when( result.create( modifyAdapter ) ).thenReturn( propertySourceProvider );
     return result;
   }
 }

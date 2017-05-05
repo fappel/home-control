@@ -40,14 +40,14 @@ public class PreferenceInfo {
   public List<PreferenceAttributeDescriptor> getAttributeDescriptors() {
     return asList( info.getPropertyDescriptors() )
       .stream()
-      .map( descriptor -> new PreferenceAttributeDescriptor( descriptor ) )
+      .map( descriptor -> new PreferenceAttributeDescriptor( info, descriptor ) )
       .collect( toList() );
   }
 
   public PreferenceAttributeDescriptor getAttributeDescriptor( String attributeName ) {
     verifyNotNull( attributeName, "attributeName" );
 
-    return new PreferenceAttributeDescriptor( getPropertyDescriptor( attributeName ) );
+    return new PreferenceAttributeDescriptor( info, getPropertyDescriptor( attributeName ) );
   }
 
   public void setAttributeValue( String attributeName, Object value ) {

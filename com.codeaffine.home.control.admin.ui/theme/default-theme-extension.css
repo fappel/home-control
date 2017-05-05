@@ -1,0 +1,54 @@
+Button.attributeCellEditorActionBar[PUSH], Button.attributeCellEditorActionBar[ARROW] {
+	border: none;
+	padding: 0px 0px;
+	text-align: center;
+	border-radius: 0px;
+  background-image: none;
+}
+
+CCombo.addElementDialogValueEditor {
+	border-bottom: 1px solid #c3c3c3;
+}
+
+Label.addElementDialogValidationMessage {
+	color: #880000;
+}
+
+Label.applicationName {
+  font: italic 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #c3c3c3; 
+}
+
+Label.bannerSeparator {
+  background-color: #F34F29; 
+}
+
+Label.logo {
+  font: bold 28px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  color: #F34F29;	
+}
+
+Text.addElementDialogValueEditor {
+	border-bottom: 1px solid #c3c3c3;
+	border-right: 1px solid #c3c3c3;
+}
+
+TreeColumn, GridColumn {
+  background-image: none;
+  background-color: #f9f9f9;
+}
+
+TreeColumn:hover, GridColumn:hover {
+  background-image: none;
+  background-color: #f9f9f9;
+}
+
+Shell-Titlebar {
+	font: bold 14px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  background-gradient-color: #ffffff;
+  color: #4a4a4a;
+  background-image: none;
+  text-shadow: none;
+  border-bottom: 1px solid #F34F29
+}

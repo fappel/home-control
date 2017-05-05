@@ -15,12 +15,6 @@ import com.codeaffine.home.control.Status;
 import com.codeaffine.home.control.engine.adapter.ItemAdapter;
 import com.codeaffine.home.control.engine.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.engine.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.engine.item.ContactItemAdapter;
-import com.codeaffine.home.control.engine.item.DimmerItemAdapter;
-import com.codeaffine.home.control.engine.item.ItemAdapterFactory;
-import com.codeaffine.home.control.engine.item.NumberItemAdapter;
-import com.codeaffine.home.control.engine.item.StringItemAdapter;
-import com.codeaffine.home.control.engine.item.SwitchItemAdapter;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.item.ContactItem;
 import com.codeaffine.home.control.item.DimmerItem;
@@ -47,21 +41,18 @@ public class ItemAdapterFactoryTest {
     }
   }
 
-  public static class ItemTypeMappingProvider {
-
-    public static Object[] provideData() {
-      return new Object[] {
-        new ItemTypeMapping( NumberItem.class, NumberItemAdapter.class ),
-        new ItemTypeMapping( SwitchItem.class, SwitchItemAdapter.class ),
-        new ItemTypeMapping( ContactItem.class, ContactItemAdapter.class ),
-        new ItemTypeMapping( DimmerItem.class, DimmerItemAdapter.class ),
-        new ItemTypeMapping( StringItem.class, StringItemAdapter.class )
-      };
-    }
+  public static Object[] provideData() {
+    return new Object[] {
+      new ItemTypeMapping( NumberItem.class, NumberItemAdapter.class ),
+      new ItemTypeMapping( SwitchItem.class, SwitchItemAdapter.class ),
+      new ItemTypeMapping( ContactItem.class, ContactItemAdapter.class ),
+      new ItemTypeMapping( DimmerItem.class, DimmerItemAdapter.class ),
+      new ItemTypeMapping( StringItem.class, StringItemAdapter.class )
+    };
   }
 
   @Test
-  @Parameters( source = ItemTypeMappingProvider.class )
+  @Parameters( source = ItemAdapterFactoryTest.class )
   public void createAdapter( ItemTypeMapping mapEntry ) {
     ItemRegistryAdapter registry = mock( ItemRegistryAdapter.class );
     EventPublisher publisher = mock( EventPublisher.class );

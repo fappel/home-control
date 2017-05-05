@@ -44,24 +44,25 @@ public class PreferenceInfoTest {
     List<PreferenceAttributeDescriptor> actual = info.getAttributeDescriptors();
 
     assertThat( actual )
-      .hasSize( 1 )
-      .allMatch( descriptor -> descriptor.getName().equals( TestPreference.ATTRIBUTE_NAME ) );
+      .hasSize( 2 )
+      .allMatch( descriptor ->    descriptor.getName().equals( TestPreference.INT_ATTRIBUTE_NAME )
+                               || descriptor.getName().equals( TestPreference.MAP_ATTRIBUTE_NAME ) );
   }
 
   @Test
   public void getAttributeDescriptor() {
-    PreferenceAttributeDescriptor actual = info.getAttributeDescriptor( TestPreference.ATTRIBUTE_NAME );
+    PreferenceAttributeDescriptor actual = info.getAttributeDescriptor( TestPreference.INT_ATTRIBUTE_NAME );
 
     assertThat( actual )
-      .matches( descriptor -> descriptor.getAttributeType() == TestPreference.ATTRIBUTE_TYPE )
-      .matches( descriptor -> descriptor.getName().equals( TestPreference.ATTRIBUTE_NAME ) );
+      .matches( descriptor -> descriptor.getAttributeType() == TestPreference.INT_ATTRIBUTE_TYPE )
+      .matches( descriptor -> descriptor.getName().equals( TestPreference.INT_ATTRIBUTE_NAME ) );
   }
 
   @Test
   public void getAttributeValue() {
-    Object actual = info.getAttributeValue( TestPreference.ATTRIBUTE_NAME );
+    Object actual = info.getAttributeValue( TestPreference.INT_ATTRIBUTE_NAME );
 
-    assertThat( actual ).isEqualTo( Integer.valueOf( TestPreference.DEFAULT_VALUE ) );
+    assertThat( actual ).isEqualTo( Integer.valueOf( TestPreference.INT_DEFAULT_VALUE ) );
   }
 
   @Test
@@ -70,7 +71,7 @@ public class PreferenceInfoTest {
     RuntimeException expected = new RuntimeException();
     doThrow( expected ).when( executor ).submit( any( Callable.class ) );
 
-    Throwable actual = thrownBy( () -> info.getAttributeValue( TestPreference.ATTRIBUTE_NAME ) );
+    Throwable actual = thrownBy( () -> info.getAttributeValue( TestPreference.INT_ATTRIBUTE_NAME ) );
 
     assertThat( actual ).isSameAs( expected );
   }
@@ -79,8 +80,8 @@ public class PreferenceInfoTest {
   public void setAttributeValue() {
     int expected = 23;
 
-    info.setAttributeValue( TestPreference.ATTRIBUTE_NAME, expected );
-    int actual = preference.getValue();
+    info.setAttributeValue( TestPreference.INT_ATTRIBUTE_NAME, expected );
+    int actual = preference.getIntValue();
 
     assertThat( actual ).isEqualTo( expected );
   }
@@ -90,7 +91,7 @@ public class PreferenceInfoTest {
     RuntimeException expected = new RuntimeException();
     doThrow( expected ).when( executor ).execute( any( Runnable.class ) );
 
-    Throwable actual = thrownBy( () -> info.setAttributeValue( TestPreference.ATTRIBUTE_NAME, 25 ) );
+    Throwable actual = thrownBy( () -> info.setAttributeValue( TestPreference.INT_ATTRIBUTE_NAME, 25 ) );
 
     assertThat( actual ).isEqualTo( expected );
   }

@@ -32,14 +32,14 @@ public class PreferenceIntrospectionTest {
 
   @Test
   public void getPreferenceInfos() {
-    Integer expected = Integer.valueOf( TestPreference.DEFAULT_VALUE );
+    Integer expected = Integer.valueOf( TestPreference.INT_DEFAULT_VALUE );
 
     Set<PreferenceInfo> actual = introspection.getPreferenceInfos();
 
     assertThat( actual )
       .hasSize( 1 )
       .allMatch( info -> info.getName().equals( TestPreference.class.getName() ) )
-      .allMatch( info -> info.getAttributeValue( TestPreference.ATTRIBUTE_NAME ).equals( expected ) );
+      .allMatch( info -> info.getAttributeValue( TestPreference.INT_ATTRIBUTE_NAME ).equals( expected ) );
   }
 
   @Test( expected = IllegalArgumentException.class )

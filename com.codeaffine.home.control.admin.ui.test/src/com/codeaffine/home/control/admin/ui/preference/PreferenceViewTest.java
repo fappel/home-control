@@ -1,54 +1,75 @@
 package com.codeaffine.home.control.admin.ui.preference;
 
+import static com.codeaffine.home.control.admin.ui.test.DisplayHelper.flushPendingEvents;
+import static com.codeaffine.home.control.admin.ui.test.ObjectInfoHelper.*;
+import static com.codeaffine.home.control.admin.ui.test.PreferenceInfoHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
 
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetEntry;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetViewer;
+import com.codeaffine.home.control.admin.ui.internal.property.IPropertySheetEntry;
+import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
+import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
 
 public class PreferenceViewTest {
 
-  private static final String NAME = "name";
+  private static final String NEW_NAME = "newName";
 
-  private PropertySheetViewer viewer;
-  private PropertySheetEntry root;
+  @Rule
+  public final DisplayHelper displayHelper = new DisplayHelper();
+
   private PreferenceView view;
 
   @Before
   public void setUp() {
-    viewer = mock( PropertySheetViewer.class );
-    root = new PropertySheetEntry();
-    view = new PreferenceView( viewer, stubRootEntryFactory( root ) );
+    view = spy( new PreferenceView( displayHelper.createShell() ) );
   }
 
   @Test
   public void setInput() {
-    ArgumentCaptor<PreferencePropertySource[]> captor = forClass( PreferencePropertySource[].class );
-    PreferenceInfo expected = stubPreferenceInfo( NAME );
+    PreferenceInfo preferenceInfo = stubPreferenceInfo( BEAN_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE );
 
-    view.setInput( new PreferenceInfo[] { expected } );
+    view.setInput( preferenceInfo );
 
-    InOrder order = inOrder( viewer );
-    order.verify( viewer ).setRootEntry( root );
-    order.verify( viewer ).setInput( captor.capture() );
-    order.verifyNoMoreInteractions();
-    assertThat( captor.getValue() )
+    assertThat( getPropertySheetEntries() )
       .hasSize( 1 )
-      .allMatch( propertySource -> propertySource.getPropertyDescriptors().length == 1 )
-      .allMatch( propertySource -> propertySource.getPropertyDescriptors()[ 0 ].getDisplayName().equals( NAME ) )
-      .allMatch( propertySource -> propertySource.getPropertyDescriptors()[ 0 ].getId().equals( NAME ) );
+      .allMatch( entry -> entry.getDisplayName().equals( BEAN_NAME ) );
+    assertThat( getRootItems() )
+      .hasSize( 1 )
+      .allMatch( item -> item.getExpanded() );
+  }
+
+  @Test
+  public void triggerUpdate() {
+    PreferenceInfo preferenceInfo = stubPreferenceInfo( BEAN_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE );
+    view.setInput( preferenceInfo );
+    ModifyAdapter modifyAdapter = captureModifyAdapter();
+
+    stubPreferenceInfoName( preferenceInfo, NEW_NAME );
+    modifyAdapter.triggerUpdate();
+    flushPendingEvents();
+
+    assertThat( getPropertySheetEntries() )
+      .hasSize( 1 )
+      .allMatch( entry -> entry.getDisplayName().equals( NEW_NAME ) );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void createWithNullAsParentArgument() {
+    new PreferenceView( null );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void setInputWithNullAsPreferenceInfosArgumentArray() {
-    view.setInput( null );
+    view.setInput( ( PreferenceInfo[] )null );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -56,15 +77,19 @@ public class PreferenceViewTest {
     view.setInput( new PreferenceInfo[ 1 ] );
   }
 
-  private static PreferenceInfo stubPreferenceInfo( String name ) {
-    PreferenceInfo result = mock( PreferenceInfo.class );
-    when( result.getName() ).thenReturn( name );
-    return result;
+  private IPropertySheetEntry[] getPropertySheetEntries() {
+    IPropertySheetEntry rootEntry = view.getRootEntry();
+    return rootEntry.getChildEntries();
   }
 
-  private static RootEntryFactory stubRootEntryFactory( PropertySheetEntry root ) {
-    RootEntryFactory result = mock( RootEntryFactory.class );
-    when( result.create() ).thenReturn( root );
-    return result;
+  private TreeItem[] getRootItems() {
+    Tree tree = ( Tree )view.getControl();
+    return tree.getItems();
+  }
+
+  private ModifyAdapter captureModifyAdapter() {
+    ArgumentCaptor<ModifyAdapter> captor = forClass( ModifyAdapter.class );
+    verify( view ).createRootEntry( captor.capture() );
+    return captor.getValue();
   }
 }
