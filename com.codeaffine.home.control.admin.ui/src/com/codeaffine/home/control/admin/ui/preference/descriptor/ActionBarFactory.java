@@ -1,9 +1,9 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.viewers.CellEditor;
@@ -16,16 +16,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
-import com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType;
 
-class AttributeCellEditorActionBarFactory {
+class ActionBarFactory {
 
-  void create( Composite parent, CellEditor cellEditor, Set<AttributeAction> actions ) {
+  void create( Composite parent, CellEditor cellEditor, List<AttributeAction> actions ) {
     Control control = cellEditor.getControl();
 
     List<Button> buttons = actions
       .stream()
-      .sorted( ( action1, action2 ) -> action1.getType().compareTo( action2.getType() ) )
       .map( action -> createButton( parent, action ) )
       .collect( toList() );
     buttons.forEach( button -> {
@@ -38,14 +36,14 @@ class AttributeCellEditorActionBarFactory {
     boundsComputer.set( evt -> {
       control.removeListener( SWT.Resize, boundsComputer.get() );
       Rectangle controlBounds = control.getBounds();
-      for( int i = 0; i < buttons.size(); i++ ) {
+      range( 0, buttons.size() ).forEach( i -> {
         Button button = buttons.get( i );
         button.setBounds( controlBounds.x + controlBounds.width - controlBounds.height * ( buttons.size() - i ),
                           controlBounds.y,
                           controlBounds.height,
                           controlBounds.height );
-      }
-      buttons.forEach( button -> button.moveAbove( control ) );
+        button.moveAbove( control );
+      } );
       control.setBounds( controlBounds.x,
                          controlBounds.y,
                          controlBounds.width - controlBounds.height * buttons.size(),
@@ -62,36 +60,11 @@ class AttributeCellEditorActionBarFactory {
   }
 
   private static Button createButton( Composite parent, AttributeAction action ) {
-    Button result = new Button( parent, getStyle( action.getType() ) );
+    ActionPresentation presentation = action.getPresentation( ActionPresentation.class );
+    Button result = new Button( parent, presentation.getStyle() );
     result.setData( RWT.CUSTOM_VARIANT, "attributeCellEditorActionBar" );
-    result.setText( getLabel( action.getType() ) );
+    result.setText( presentation.getLabel() );
     result.addListener( SWT.Selection, evt -> action.run() );
     return result;
-  }
-
-  private static int getStyle( AttributeActionType type ) {
-    switch( type ) {
-      case ADD:
-      case DELETE:
-        return SWT.PUSH;
-      case UP:
-        return SWT.ARROW | SWT.UP;
-      case DOWN:
-        return SWT.ARROW | SWT.DOWN;
-    }
-    throw new IllegalStateException( "Unknow AttributeActionType " + type );
-  }
-
-  private static String getLabel( AttributeActionType type ) {
-    switch( type ) {
-      case ADD:
-        return "+";
-      case DELETE:
-        return "-";
-      case UP:
-      case DOWN:
-        return "";
-    }
-    throw new IllegalStateException( "Unknow AttributeActionType " + type );
   }
 }

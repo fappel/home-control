@@ -1,15 +1,13 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType.DELETE;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.DELETE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
@@ -55,8 +53,8 @@ public class MapObjectInfo implements ObjectInfo {
       }
 
       @Override
-      public Set<AttributeAction> getActions() {
-        return new HashSet<>( asList( new AttributeAction( DELETE, () -> removeMapEntry( attributeId ) ) ) );
+      public List<AttributeAction> getActions() {
+        return asList( new AttributeAction( () -> removeMapEntry( attributeId ), DELETE ) );
       }
 
       private void removeMapEntry( Object attributeId ) {

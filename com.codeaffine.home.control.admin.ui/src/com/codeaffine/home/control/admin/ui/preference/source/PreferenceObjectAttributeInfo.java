@@ -1,14 +1,12 @@
 package com.codeaffine.home.control.admin.ui.preference.source;
 
-import static com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType.ADD;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.ADD;
 import static com.codeaffine.home.control.util.reflection.AttributeReflectionUtil.SUPPORTED_COLLECTION_TYPES;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
@@ -58,11 +56,11 @@ class PreferenceObjectAttributeInfo implements AttributeInfo {
   }
 
   @Override
-  public Set<AttributeAction> getActions() {
+  public List<AttributeAction> getActions() {
     if( SUPPORTED_COLLECTION_TYPES.stream().anyMatch( type -> getAttributeType().isAssignableFrom( type ) ) ) {
-      return new HashSet<>( asList( new AttributeAction( ADD, () -> add() ) ) );
+      return asList( new AttributeAction( () -> add(), ADD ) );
     }
-    return emptySet();
+    return emptyList();
   }
 
   private void add() {

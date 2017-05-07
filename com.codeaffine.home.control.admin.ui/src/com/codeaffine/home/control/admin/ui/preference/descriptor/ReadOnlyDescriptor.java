@@ -21,7 +21,7 @@ class ReadOnlyDescriptor implements AttributeDescriptor {
   @Override
   public IPropertyDescriptor createPropertyDescriptor() {
     PropertyDescriptor descriptor = new PropertyDescriptor( attributeInfo.getName(), attributeInfo.getDisplayName() );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

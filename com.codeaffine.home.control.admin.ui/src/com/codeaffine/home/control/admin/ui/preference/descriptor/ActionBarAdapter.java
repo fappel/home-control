@@ -9,24 +9,24 @@ import org.eclipse.swt.widgets.Composite;
 import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 
-class AttributePropertyDescriptor implements IPropertyDescriptor {
+class ActionBarAdapter implements IPropertyDescriptor {
 
-  private final AttributeCellEditorActionBarFactory cellEditorActionBarFactory;
+  private final ActionBarFactory actionBarFactory;
   private final IPropertyDescriptor delegate;
   private final AttributeInfo info;
 
-  AttributePropertyDescriptor( IPropertyDescriptor delegate, AttributeInfo info ) {
-    this( delegate, info, new AttributeCellEditorActionBarFactory() );
+  ActionBarAdapter( IPropertyDescriptor delegate, AttributeInfo info ) {
+    this( delegate, info, new ActionBarFactory() );
   }
 
-  AttributePropertyDescriptor(
-    IPropertyDescriptor delegate, AttributeInfo info, AttributeCellEditorActionBarFactory cellEditorActionBarFactory )
+  ActionBarAdapter(
+    IPropertyDescriptor delegate, AttributeInfo info, ActionBarFactory actionBarFactory )
   {
-    verifyNotNull( cellEditorActionBarFactory, "cellEditorActionBarFactory" );
+    verifyNotNull( actionBarFactory, "actionBarFactory" );
     verifyNotNull( delegate, "delegate" );
     verifyNotNull( info, "info" );
 
-    this.cellEditorActionBarFactory = cellEditorActionBarFactory;
+    this.actionBarFactory = actionBarFactory;
     this.delegate = delegate;
     this.info = info;
   }
@@ -35,7 +35,7 @@ class AttributePropertyDescriptor implements IPropertyDescriptor {
   public CellEditor createPropertyEditor( Composite parent ) {
     CellEditor result = delegate.createPropertyEditor( parent );
     if( result != null && !info.getActions().isEmpty() ) {
-      cellEditorActionBarFactory.create( parent, result, info.getActions() );
+      actionBarFactory.create( parent, result, info.getActions() );
     }
     return result;
   }

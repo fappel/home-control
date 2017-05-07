@@ -27,7 +27,7 @@ class CollectionDescriptor implements AttributeDescriptor {
     String name = attributeInfo.getName();
     String displayName = attributeInfo.getDisplayName();
     PropertyDescriptor descriptor = new CollectionPropertyDescriptor( name, displayName );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

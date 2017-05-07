@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.source;
 
-import static com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType.ADD;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.ADD;
 import static com.codeaffine.home.control.admin.ui.test.ObjectInfoHelper.*;
 import static com.codeaffine.home.control.admin.ui.test.PreferenceInfoHelper.*;
 import static java.util.Arrays.asList;
@@ -10,7 +10,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import com.codeaffine.home.control.admin.PreferenceAttributeDescriptor;
 import com.codeaffine.home.control.admin.PreferenceInfo;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
+import com.codeaffine.home.control.admin.ui.preference.descriptor.ActionPresentation;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 
@@ -76,11 +76,11 @@ public class PreferenceObjectAttributeInfoTest {
     AttributeInfo attributeInfo
       = createAttributeInfoOfCollectionType( ATTRIBUTE_NAME, asList( "element" ), asList( String.class ) );
 
-    Set<AttributeAction> actual = attributeInfo.getActions();
+    List<AttributeAction> actual = attributeInfo.getActions();
 
     assertThat( actual )
       .hasSize( 1 )
-      .allMatch( action -> action.getType() == ADD );
+      .allMatch( action -> action.getPresentation( ActionPresentation.class ) == ADD );
   }
 
   @Test
@@ -88,7 +88,7 @@ public class PreferenceObjectAttributeInfoTest {
     AttributeInfo attributeInfo = createAttributeInfoOfSimpleType( ATTRIBUTE_NAME, ATTRIBUTE_VALUE );
 
 
-    Set<AttributeAction> actual = attributeInfo.getActions();
+    List<AttributeAction> actual = attributeInfo.getActions();
 
     assertThat( actual ).isEmpty();
   }

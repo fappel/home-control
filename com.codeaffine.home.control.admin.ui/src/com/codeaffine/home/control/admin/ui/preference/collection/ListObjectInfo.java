@@ -1,14 +1,12 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType.*;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
@@ -55,10 +53,10 @@ public class ListObjectInfo implements ObjectInfo {
       }
 
       @Override
-      public Set<AttributeAction> getActions() {
-        return new HashSet<>( asList( new AttributeAction( DELETE, () -> removeListEntry( attributeId ) ),
-                                      new AttributeAction( UP, () -> moveEntryUp( attributeId ) ),
-                                      new AttributeAction( DOWN, () -> moveEntryDown( attributeId ) ) ) );
+      public List<AttributeAction> getActions() {
+        return asList( new AttributeAction( () -> moveListEntryUp( attributeId ), UP ),
+                       new AttributeAction( () -> moveListEntryDown( attributeId ), DOWN ),
+                       new AttributeAction( () -> removeListEntry( attributeId ), DELETE ) ) ;
       }
 
       private void removeListEntry( Object attributeId ) {
@@ -67,7 +65,7 @@ public class ListObjectInfo implements ObjectInfo {
         modifyAdapter.triggerUpdate();
       }
 
-      private void moveEntryDown( Object attributeId ) {
+      private void moveListEntryDown( Object attributeId ) {
         int index = getKeyFor( attributeId );
         if( index < list.size() - 1 ) {
           Object element = list.remove( index );
@@ -77,7 +75,7 @@ public class ListObjectInfo implements ObjectInfo {
         modifyAdapter.triggerUpdate();
       }
 
-      private void moveEntryUp( Object attributeId ) {
+      private void moveListEntryUp( Object attributeId ) {
         int index = getKeyFor( attributeId );
         if( index > 0 ) {
           Object element = list.remove( index );

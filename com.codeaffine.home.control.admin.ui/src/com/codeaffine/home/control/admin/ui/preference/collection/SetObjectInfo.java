@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static com.codeaffine.home.control.admin.ui.preference.info.AttributeActionType.DELETE;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.DELETE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -54,8 +54,8 @@ public class SetObjectInfo implements ObjectInfo {
       }
 
       @Override
-      public Set<AttributeAction> getActions() {
-        return new HashSet<>( asList( new AttributeAction( DELETE, () -> removeElement( attributeId ) ) ) );
+      public List<AttributeAction> getActions() {
+        return asList( new AttributeAction( () -> removeElement( attributeId ), DELETE ) );
       }
 
       private void removeElement( Object attributeId ) {

@@ -21,7 +21,7 @@ class TextDescriptor implements AttributeDescriptor {
     String name = attributeInfo.getName();
     String displayName = attributeInfo.getDisplayName();
     TextPropertyDescriptor descriptor = new TextPropertyDescriptor( name, displayName );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

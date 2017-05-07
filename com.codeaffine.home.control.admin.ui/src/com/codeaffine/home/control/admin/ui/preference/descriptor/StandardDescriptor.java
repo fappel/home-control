@@ -28,7 +28,7 @@ class StandardDescriptor implements AttributeDescriptor {
     String name = attributeInfo.getName();
     TextPropertyDescriptor descriptor = new TextPropertyDescriptor( name, displayName );
     descriptor.setValidator( value -> validate( value ) );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

@@ -1,11 +1,11 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -18,19 +18,19 @@ import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescripto
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 
-public class AttributePropertyDescriptorTest {
+public class ActionBarAdapterTest {
 
-  private AttributeCellEditorActionBarFactory actionBarFactory;
-  private AttributePropertyDescriptor descriptor;
+  private ActionBarFactory actionBarFactory;
   private IPropertyDescriptor delegate;
+  private ActionBarAdapter adapter;
   private AttributeInfo info;
 
   @Before
   public void setUp() {
     delegate = mock( IPropertyDescriptor.class );
     info = mock( AttributeInfo.class );
-    actionBarFactory = mock( AttributeCellEditorActionBarFactory.class );
-    descriptor = new AttributePropertyDescriptor( delegate, info, actionBarFactory );
+    actionBarFactory = mock( ActionBarFactory.class );
+    adapter = new ActionBarAdapter( delegate, info, actionBarFactory );
   }
 
   @Test
@@ -39,7 +39,7 @@ public class AttributePropertyDescriptorTest {
     Composite parent = mock( Composite.class );
     when( delegate.createPropertyEditor( parent ) ).thenReturn( expected );
 
-    CellEditor actual = descriptor.createPropertyEditor( parent );
+    CellEditor actual = adapter.createPropertyEditor( parent );
 
     assertThat( actual ).isSameAs( expected );
   }
@@ -48,11 +48,11 @@ public class AttributePropertyDescriptorTest {
   public void createPropertyEditorIfInfoHasActions() {
     CellEditor editor = mock( CellEditor.class );
     Composite parent = mock( Composite.class );
-    LinkedHashSet<AttributeAction> actions = newLinkedHashSet( mock( AttributeAction.class ) );
+    List<AttributeAction> actions = asList( mock( AttributeAction.class ) );
     when( delegate.createPropertyEditor( parent ) ).thenReturn( editor );
     when( info.getActions() ).thenReturn( actions );
 
-    CellEditor actual = descriptor.createPropertyEditor( parent );
+    CellEditor actual = adapter.createPropertyEditor( parent );
 
     verify( actionBarFactory ).create( parent, editor, actions );
     assertThat( actual ).isSameAs( editor );
@@ -61,10 +61,10 @@ public class AttributePropertyDescriptorTest {
   @Test
   public void createPropertyEditorIfInfoHasActionsButNoEditorIsCreated() {
     Composite parent = mock( Composite.class );
-    LinkedHashSet<AttributeAction> actions = newLinkedHashSet( mock( AttributeAction.class ) );
+    List<AttributeAction> actions = asList( mock( AttributeAction.class ) );
     when( info.getActions() ).thenReturn( actions );
 
-    CellEditor actual = descriptor.createPropertyEditor( parent );
+    CellEditor actual = adapter.createPropertyEditor( parent );
 
     verify( actionBarFactory, never() ).create( any(), any(), any() );
     assertThat( actual ).isNull();
@@ -75,7 +75,7 @@ public class AttributePropertyDescriptorTest {
     String expected = "expected";
     when( delegate.getCategory() ).thenReturn( expected );
 
-    String actual = descriptor.getCategory();
+    String actual = adapter.getCategory();
 
     assertThat( actual ).isEqualTo( expected );
   }
@@ -85,7 +85,7 @@ public class AttributePropertyDescriptorTest {
     String expected = "expected";
     when( delegate.getDescription() ).thenReturn( expected );
 
-    String actual = descriptor.getDescription();
+    String actual = adapter.getDescription();
 
     assertThat( actual ).isEqualTo( expected );
   }
@@ -95,7 +95,7 @@ public class AttributePropertyDescriptorTest {
     String expected = "expected";
     when( delegate.getDisplayName() ).thenReturn( expected );
 
-    String actual = descriptor.getDisplayName();
+    String actual = adapter.getDisplayName();
 
     assertThat( actual ).isEqualTo( expected );
   }
@@ -105,7 +105,7 @@ public class AttributePropertyDescriptorTest {
     String[] expected = new String[] { "expected" };
     when( delegate.getFilterFlags() ).thenReturn( expected );
 
-    String[] actual = descriptor.getFilterFlags();
+    String[] actual = adapter.getFilterFlags();
 
     assertThat( actual ).isEqualTo( expected );
 
@@ -116,7 +116,7 @@ public class AttributePropertyDescriptorTest {
     Object expected = new Object();
     when( delegate.getHelpContextIds() ).thenReturn( expected );
 
-    Object actual = descriptor.getHelpContextIds();
+    Object actual = adapter.getHelpContextIds();
 
     assertThat( actual ).isSameAs( expected );
   }
@@ -126,7 +126,7 @@ public class AttributePropertyDescriptorTest {
     Object expected = new Object();
     when( delegate.getId() ).thenReturn( expected );
 
-    Object actual = descriptor.getId();
+    Object actual = adapter.getId();
 
     assertThat( actual ).isSameAs( expected );
   }
@@ -136,7 +136,7 @@ public class AttributePropertyDescriptorTest {
     ILabelProvider expected = new LabelProvider();
     when( delegate.getLabelProvider() ).thenReturn( expected );
 
-    ILabelProvider actual = descriptor.getLabelProvider();
+    ILabelProvider actual = adapter.getLabelProvider();
 
     assertThat( actual ).isSameAs( expected );
   }
@@ -146,30 +146,30 @@ public class AttributePropertyDescriptorTest {
     IPropertyDescriptor anotherDescriptor = mock( IPropertyDescriptor.class );
     when( delegate.isCompatibleWith( anotherDescriptor ) ).thenReturn( true );
 
-    boolean actual = descriptor.isCompatibleWith( anotherDescriptor );
+    boolean actual = adapter.isCompatibleWith( anotherDescriptor );
 
     assertThat( actual ).isTrue();
   }
 
   @Test
   public void getDelegate() {
-    IPropertyDescriptor actual = descriptor.getDelegate();
+    IPropertyDescriptor actual = adapter.getDelegate();
 
     assertThat( actual ).isSameAs( delegate );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsDelegateArgument() {
-    new AttributePropertyDescriptor( null, info, actionBarFactory );
+    new ActionBarAdapter( null, info, actionBarFactory );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsInfoArgument() {
-    new AttributePropertyDescriptor( delegate, null, actionBarFactory );
+    new ActionBarAdapter( delegate, null, actionBarFactory );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsCellEditorActionBarFactoryArgument() {
-    new AttributePropertyDescriptor( delegate, info, null );
+    new ActionBarAdapter( delegate, info, null );
   }
 }

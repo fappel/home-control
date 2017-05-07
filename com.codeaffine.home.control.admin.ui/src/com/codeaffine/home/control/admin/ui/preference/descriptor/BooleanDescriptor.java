@@ -26,7 +26,7 @@ class BooleanDescriptor implements AttributeDescriptor {
     String name = attributeInfo.getName();
     String displayName = attributeInfo.getDisplayName();
     ComboBoxPropertyDescriptor descriptor = new ComboBoxPropertyDescriptor( name, displayName, SELECTION_LABELS );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

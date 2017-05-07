@@ -25,7 +25,7 @@ class EnumDescriptor implements AttributeDescriptor {
     String name = attributeInfo.getName();
     String displayName = attributeInfo.getDisplayName();
     ComboBoxPropertyDescriptor descriptor = new ComboBoxPropertyDescriptor( name, displayName, getEnumLabels( type ) );
-    return new AttributePropertyDescriptor( descriptor, attributeInfo );
+    return new ActionBarAdapter( descriptor, attributeInfo );
   }
 
   @Override

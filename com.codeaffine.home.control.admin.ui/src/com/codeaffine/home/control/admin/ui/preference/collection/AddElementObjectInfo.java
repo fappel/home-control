@@ -1,9 +1,8 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 
 import java.util.List;
-import java.util.Set;
 
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
@@ -63,8 +62,8 @@ class AddElementObjectInfo implements ObjectInfo {
       }
 
       @Override
-      public Set<AttributeAction> getActions() {
-        return emptySet();
+      public List<AttributeAction> getActions() {
+        return emptyList();
       }
     };
   }

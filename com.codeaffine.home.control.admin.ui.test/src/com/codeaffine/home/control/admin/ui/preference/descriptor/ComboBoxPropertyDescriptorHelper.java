@@ -8,7 +8,7 @@ import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescripto
 class ComboBoxPropertyDescriptorHelper {
 
   static String[] getSelectionValues( IPropertyDescriptor descriptor ) {
-    ILabelProvider labelProvider = ( ( AttributePropertyDescriptor )descriptor ).getLabelProvider();
+    ILabelProvider labelProvider = ( ( ActionBarAdapter )descriptor ).getLabelProvider();
     return ( ( ComboBoxLabelProvider )labelProvider ).getValues();
   }
 }

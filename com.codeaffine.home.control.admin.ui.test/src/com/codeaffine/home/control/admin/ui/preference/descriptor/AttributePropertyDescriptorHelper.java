@@ -9,6 +9,6 @@ class AttributePropertyDescriptorHelper {
   }
 
   static IPropertyDescriptor getDelegate( IPropertyDescriptor descriptor ) {
-    return ( ( AttributePropertyDescriptor )descriptor ).getDelegate();
+    return ( ( ActionBarAdapter )descriptor ).getDelegate();
   }
 }
