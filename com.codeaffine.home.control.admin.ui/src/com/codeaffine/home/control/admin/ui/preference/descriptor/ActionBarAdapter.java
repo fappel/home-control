@@ -35,7 +35,7 @@ class ActionBarAdapter implements IPropertyDescriptor {
   public CellEditor createPropertyEditor( Composite parent ) {
     CellEditor result = delegate.createPropertyEditor( parent );
     if( result != null && !info.getActions().isEmpty() ) {
-      actionBarFactory.create( parent, result, info.getActions() );
+      actionBarFactory.create( result, info.getActions() );
     }
     return result;
   }

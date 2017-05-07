@@ -54,7 +54,7 @@ public class ActionBarAdapterTest {
 
     CellEditor actual = adapter.createPropertyEditor( parent );
 
-    verify( actionBarFactory ).create( parent, editor, actions );
+    verify( actionBarFactory ).create( editor, actions );
     assertThat( actual ).isSameAs( editor );
   }
 
@@ -66,7 +66,7 @@ public class ActionBarAdapterTest {
 
     CellEditor actual = adapter.createPropertyEditor( parent );
 
-    verify( actionBarFactory, never() ).create( any(), any(), any() );
+    verify( actionBarFactory, never() ).create( any(), any() );
     assertThat( actual ).isNull();
   }
 
