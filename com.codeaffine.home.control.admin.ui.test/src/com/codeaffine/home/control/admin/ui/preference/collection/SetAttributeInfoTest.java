@@ -39,7 +39,7 @@ public class SetAttributeInfoTest {
 
   @Test
   public void getAttributeType() {
-    when( setObjectInfo.getElementFor( ATTRIBUTE_NAME ) ).thenReturn( ATTRIBUTE_NAME );
+    when( setObjectInfo.getAttributeValue( ATTRIBUTE_NAME ) ).thenReturn( ATTRIBUTE_NAME );
 
     Class<?> actual = info.getAttributeType();
 
@@ -55,10 +55,10 @@ public class SetAttributeInfoTest {
 
   @Test
   public void getActionsAndInvoke() {
-    List<AttributeAction> actions = info.getActions();
-    actions.forEach( action -> action.run() );
+    List<AttributeAction> actual = info.getActions();
+    actual.forEach( action -> action.run() );
 
-    assertThat( actions )
+    assertThat( actual )
       .allMatch( action -> action.getPresentation( CollectionAttributeActionPresentation.class ) == DELETE );
     verify( setObjectInfo ).removeElement( ATTRIBUTE_NAME );
   }

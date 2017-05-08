@@ -59,6 +59,11 @@ public class SetObjectInfo implements ObjectInfo {
     return new SetAttributeInfo( this, attributeId );
   }
 
+  @Override
+  public Object getEditableValue() {
+    return new HashSet<>( set );
+  }
+
   void removeElement( Object attributeId ) {
     verifyNotNull( attributeId, "attributeId" );
 
@@ -67,17 +72,10 @@ public class SetObjectInfo implements ObjectInfo {
     modifyAdapter.triggerUpdate();
   }
 
-  Object getElementFor( Object attributeId ) {
-    verifyNotNull( attributeId, "attributeId" );
-
+  private Object getElementFor( Object attributeId ) {
     if( attributeId instanceof String ) {
       return set.stream().filter( element -> element.toString().equals( attributeId ) ).findFirst().get();
     }
     return set.stream().filter( element -> element == attributeId ).findFirst().get();
-  }
-
-  @Override
-  public Object getEditableValue() {
-    return new HashSet<>( set );
   }
 }

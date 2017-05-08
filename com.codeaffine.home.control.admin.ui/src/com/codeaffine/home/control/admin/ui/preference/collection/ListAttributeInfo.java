@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.DELETE;
+import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -10,16 +10,16 @@ import java.util.List;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 
-class SetAttributeInfo implements AttributeInfo {
+class ListAttributeInfo implements AttributeInfo {
 
-  private final SetObjectInfo setObjectInfo;
+  private final ListObjectInfo listObjectInfo;
   private final Object attributeId;
 
-  SetAttributeInfo( SetObjectInfo setObjectInfo, Object attributeId ) {
-    verifyNotNull( setObjectInfo, "setObjectInfo" );
+  ListAttributeInfo( ListObjectInfo listObjectInfo, Object attributeId ) {
+    verifyNotNull( listObjectInfo, "listObjectInfo" );
     verifyNotNull( attributeId, "attributeId" );
 
-    this.setObjectInfo = setObjectInfo;
+    this.listObjectInfo = listObjectInfo;
     this.attributeId = attributeId;
   }
 
@@ -35,7 +35,7 @@ class SetAttributeInfo implements AttributeInfo {
 
   @Override
   public Class<?> getAttributeType() {
-    return setObjectInfo.getAttributeValue( attributeId ).getClass();
+    return listObjectInfo.getAttributeValue( attributeId  ).getClass();
   }
 
   @Override
@@ -45,6 +45,8 @@ class SetAttributeInfo implements AttributeInfo {
 
   @Override
   public List<AttributeAction> getActions() {
-    return asList( new AttributeAction( () -> setObjectInfo.removeElement( attributeId ), DELETE ) );
+    return asList( new AttributeAction( () -> listObjectInfo.moveListEntryUp( attributeId ), UP ),
+                   new AttributeAction( () -> listObjectInfo.moveListEntryDown( attributeId ), DOWN ),
+                   new AttributeAction( () -> listObjectInfo.removeListEntry( attributeId ), DELETE ) ) ;
   }
 }

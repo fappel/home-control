@@ -48,6 +48,56 @@ public class SetObjectInfoTest {
   }
 
   @Test
+  public void getAttributeValueWithStringAttributeId() {
+    Object element = new Object() {
+      @Override
+      public String toString() {
+        return ELEMENT_1;
+      }
+    };
+    initialSet.add( element );
+    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
+
+    Object actual = info.getAttributeValue( ELEMENT_1 );
+
+    assertThat( actual ).isSameAs( element );
+  }
+
+  @Test
+  public void getAttributeValueWithObjectAttributeId() {
+    Object element = new Object();
+    initialSet.add( element );
+    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
+
+    Object actual = info.getAttributeValue( element );
+
+    assertThat( actual ).isSameAs( element );
+  }
+
+  @Test
+  public void getAttributeValueWithObjectAttributeIdThatDoesNotExist() {
+    Object element = new Object();
+    initialSet.add( element );
+    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
+
+    Throwable actual = thrownBy( () -> info.getAttributeValue( new Object() ) );
+
+    assertThat( actual ).isInstanceOf( NoSuchElementException.class );
+  }
+
+  @Test
+  public void setAttributeValue() {
+    initialSet.add( ELEMENT_1 );
+    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
+
+    info.setAttributeValue( ELEMENT_1, ELEMENT_2 );
+    Object actual = info.getAttributeValue( ELEMENT_2  );
+
+    assertThat( actual ).isEqualTo( ELEMENT_2 );
+    assertThat( ( Set<?> )info.getEditableValue() ).hasSize( 1 );
+  }
+
+  @Test
   public void getAttributeInfo() {
     initialSet.add( ELEMENT_1 );
     SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
@@ -67,18 +117,6 @@ public class SetObjectInfoTest {
     assertThat( actual )
       .hasSize( 1 )
       .allMatch( attributeInfo -> attributeInfo.getName().equals( ELEMENT_1 ) );
-  }
-
-  @Test
-  public void setAttributeValue() {
-    initialSet.add( ELEMENT_1 );
-    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
-
-    info.setAttributeValue( ELEMENT_1, ELEMENT_2 );
-    Object actual = info.getAttributeValue( ELEMENT_2  );
-
-    assertThat( actual ).isEqualTo( ELEMENT_2 );
-    assertThat( ( Set<?> )info.getEditableValue() ).hasSize( 1 );
   }
 
   @Test
@@ -105,7 +143,7 @@ public class SetObjectInfoTest {
 
     assertThat( actual )
       .isEqualTo( initialSet )
-      .isNotSameAs( initialSet );
+      .isNotEqualTo( toBeChanged );
   }
 
   @Test
@@ -121,44 +159,6 @@ public class SetObjectInfoTest {
     order.verify( objectInfo ).setAttributeValue( eq( ATTRIBUTE_NAME ), eq( emptySet() ) );
     order.verify( modifyAdapter ).triggerUpdate();
     order.verifyNoMoreInteractions();
-  }
-
-  @Test
-  public void getElementWithStringAttributeId() {
-    Object element = new Object() {
-      @Override
-      public String toString() {
-        return ELEMENT_1;
-      }
-    };
-    initialSet.add( element );
-    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
-
-    Object actual = info.getElementFor( ELEMENT_1 );
-
-    assertThat( actual ).isSameAs( element );
-  }
-
-  @Test
-  public void getElementWithObjectAttributeId() {
-    Object element = new Object();
-    initialSet.add( element );
-    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
-
-    Object actual = info.getElementFor( element );
-
-    assertThat( actual ).isSameAs( element );
-  }
-
-  @Test
-  public void getElementWithObjectAttributeIdThatDoesNotExist() {
-    Object element = new Object();
-    initialSet.add( element );
-    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
-
-    Throwable actual = thrownBy( () -> info.getElementFor( new Object() ) );
-
-    assertThat( actual ).isInstanceOf( NoSuchElementException.class );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -194,15 +194,6 @@ public class SetObjectInfoTest {
     SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
 
     Throwable actual = thrownBy( () -> info.getAttributeInfo( null ) );
-
-    assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
-  }
-
-  @Test
-  public void getElementForWithNullAsAttributeIdArgument() {
-    SetObjectInfo info = new SetObjectInfo( collectionValue, modifyAdapter );
-
-    Throwable actual = thrownBy( () -> info.getElementFor( null ) );
 
     assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
   }
