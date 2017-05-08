@@ -2,6 +2,8 @@ package com.codeaffine.home.control.admin.ui.preference.collection;
 
 import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
 import static com.codeaffine.home.control.admin.ui.preference.collection.Messages.*;
+import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.*;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.util.Arrays.*;
@@ -12,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,19 +39,32 @@ import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
 
 class AddElementDialog extends Dialog {
 
-  static final String VALUE = "Value";
-  static final String KEY = "Key";
   private static final int MARGIN = 20;
 
-  private final Map<String, Object> elementValueDefinition;
+  private final Map<String, Object> additionInfo;
   private final CollectionValue collectionValue;
 
   private Button ok;
 
-  AddElementDialog( Shell parent, CollectionValue collectionValue ) {
+  private AddElementDialog( Shell parent, CollectionValue collectionValue ) {
     super( parent );
     this.collectionValue = collectionValue;
-    this.elementValueDefinition = new HashMap<>();
+    this.additionInfo = new HashMap<>();
+  }
+
+  static void open( Shell parent, CollectionValue collectionValue, Consumer<Map<String, Object>> additionCallback ) {
+    verifyNotNull( additionCallback, "additionCallback" );
+    verifyNotNull( collectionValue, "collectionValue" );
+    verifyNotNull( parent, "parent" );
+
+    AddElementDialog dialog = new AddElementDialog( parent, collectionValue );
+    parent.getDisplay().asyncExec( () -> {
+      dialog.open( returnCode -> {
+        if( returnCode == SWT.OK ) {
+          additionCallback.accept( dialog.getAdditionInfo() );
+        }
+      } );
+    } );
   }
 
   @Override
@@ -72,9 +88,9 @@ class AddElementDialog extends Dialog {
     elementGroup.setLayout( fillDefaults().numColumns( 2 ).create() );
 
     List<Class<?>> genericTypeParameters = collectionValue.getAttributeInfo().getGenericTypeParametersOfAttributeType();
-    Queue<String> labels = genericTypeParameters.size() == 2 ? new LinkedList<>( asList( KEY, VALUE ) ) : new LinkedList<>( asList( VALUE ) );
-    elementValueDefinition.clear();
-    labels.forEach( label -> elementValueDefinition.put( label, null ) );
+    Queue<String> labels = genericTypeParameters.size() == 2 ? new LinkedList<>( asList( ADDITION_INFO_KEY, ADDITION_INFO_VALUE ) ) : new LinkedList<>( asList( ADDITION_INFO_VALUE ) );
+    additionInfo.clear();
+    labels.forEach( label -> additionInfo.put( label, null ) );
 
     genericTypeParameters.forEach( elementType -> {
       String elementPartType = labels.poll();
@@ -96,12 +112,12 @@ class AddElementDialog extends Dialog {
         shell.getDisplay().asyncExec( () -> {
           if( editor.getErrorMessage() == null ) {
             validationMessage.setText( "" );
-            elementValueDefinition.put( elementPartType, descriptor.convertToValue( editor.getValue() ) );
+            additionInfo.put( elementPartType, descriptor.convertToValue( editor.getValue() ) );
           } else {
             validationMessage.setText( editor.getErrorMessage() );
-            elementValueDefinition.put( elementPartType, null );
+            additionInfo.put( elementPartType, null );
           }
-          updateOkEnablement( elementValueDefinition );
+          updateOkEnablement( additionInfo );
         } );
       } );
     } );
@@ -121,7 +137,7 @@ class AddElementDialog extends Dialog {
     ok.addListener( SWT.Selection, evt -> handleOkPressed() );
     ok.addListener( SWT.DefaultSelection, evt -> handleOkPressed() );
     GridDataFactory.fillDefaults().grab( true, false ).applyTo( ok );
-    updateOkEnablement( elementValueDefinition );
+    updateOkEnablement( additionInfo );
     shell.setDefaultButton( ok );
 
     shell.pack();
@@ -131,8 +147,8 @@ class AddElementDialog extends Dialog {
     shell.setLocation( new Point( ( displayBounds.width - shell.getSize().x ) / 2, ( displayBounds.height - shell.getSize().y ) / 2 ) );
   }
 
-  public Map<String, Object> getElementValueDefinition() {
-    return elementValueDefinition;
+  private Map<String, Object> getAdditionInfo() {
+    return additionInfo;
   }
 
   private void handleOkPressed() {

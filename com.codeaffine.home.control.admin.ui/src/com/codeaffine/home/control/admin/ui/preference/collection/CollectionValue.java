@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
 
@@ -10,8 +12,12 @@ public class CollectionValue {
   private final Object value;
 
   public CollectionValue( ObjectInfo objectInfo, AttributeInfo attributeInfo, Object value ) {
-    this.objectInfo = objectInfo;
+    verifyNotNull( attributeInfo, "attributeInfo" );
+    verifyNotNull( objectInfo, "objectInfo" );
+    verifyNotNull( value, "value" );
+
     this.attributeInfo = attributeInfo;
+    this.objectInfo = objectInfo;
     this.value = value;
   }
 
