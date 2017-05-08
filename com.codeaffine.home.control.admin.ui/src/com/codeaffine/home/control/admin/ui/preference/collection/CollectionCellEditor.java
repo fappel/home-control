@@ -22,13 +22,6 @@ public class CollectionCellEditor extends CellEditor {
   }
 
   @Override
-  protected void doSetFocus() {
-    if( control != null ) {
-      control.setFocus();
-    }
-  }
-
-  @Override
   protected Object doGetValue() {
     return value;
   }
@@ -37,5 +30,9 @@ public class CollectionCellEditor extends CellEditor {
   protected Control createControl( Composite parent ) {
     control = new Label( parent, SWT.NONE );
     return control;
+  }
+
+  @Override
+  protected void doSetFocus() {
   }
 }
