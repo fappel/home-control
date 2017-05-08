@@ -18,7 +18,7 @@ import org.mockito.InOrder;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 public class ListObjectInfoTest {
 
   private static final String ELEMENT_1 = "element_1";
@@ -123,6 +123,7 @@ public class ListObjectInfoTest {
       .isEqualTo( initialList )
       .isNotSameAs( initialList );
   }
+
   @Test
   public void getEditableValueAndChangeOfReturnedList() {
     initialList.add( ELEMENT_1 );
