@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Collections.emptyList;
 
 import java.util.List;
@@ -10,11 +11,11 @@ import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
 
 class AddElementObjectInfo implements ObjectInfo {
 
-  private static final String ATTRIBUTE_NAME = "Attribute";
-
   private final Class<?> elementType;
 
   public AddElementObjectInfo( Class<?> elementType ) {
+    verifyNotNull( elementType, "elementType" );
+
     this.elementType = elementType;
   }
 
@@ -39,21 +40,23 @@ class AddElementObjectInfo implements ObjectInfo {
 
   @Override
   public AttributeInfo getAttributeInfo( Object attributeId ) {
+    verifyNotNull( attributeId, "attributeId" );
+
     return new AttributeInfo() {
 
       @Override
       public String getName() {
-        return ATTRIBUTE_NAME;
+        return attributeId.toString();
       }
 
       @Override
       public List<Class<?>> getGenericTypeParametersOfAttributeType() {
-        return null;
+        return emptyList();
       }
 
       @Override
       public String getDisplayName() {
-        return ATTRIBUTE_NAME;
+        return attributeId.toString();
       }
 
       @Override
