@@ -1,18 +1,14 @@
 package com.codeaffine.home.control.admin.ui.preference.collection;
 
-import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.DELETE;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toList;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
-
 
 public class SetObjectInfo implements ObjectInfo {
 
@@ -23,6 +19,9 @@ public class SetObjectInfo implements ObjectInfo {
 
   @SuppressWarnings("unchecked")
   public SetObjectInfo( CollectionValue collectionValue, ModifyAdapter modifyAdapter ) {
+    verifyNotNull( collectionValue, "collectionValue" );
+    verifyNotNull( modifyAdapter, "modifyAdapter" );
+
     this.set = new HashSet<>( ( Set<Object>)collectionValue.getValue() );
     this.attributeInfo = collectionValue.getAttributeInfo();
     this.objectInfo = collectionValue.getObjectInfo();
@@ -30,50 +29,17 @@ public class SetObjectInfo implements ObjectInfo {
   }
 
   @Override
-  public AttributeInfo getAttributeInfo( Object attributeId ) {
-    return new AttributeInfo() {
-
-      @Override
-      public String getName() {
-        return attributeId.toString();
-      }
-
-      @Override
-      public String getDisplayName() {
-        return attributeId.toString();
-      }
-
-      @Override
-      public Class<?> getAttributeType() {
-        return getElementFor( attributeId ).getClass();
-      }
-
-      @Override
-      public List<Class<?>> getGenericTypeParametersOfAttributeType() {
-        return emptyList();
-      }
-
-      @Override
-      public List<AttributeAction> getActions() {
-        return asList( new AttributeAction( () -> removeElement( attributeId ), DELETE ) );
-      }
-
-      private void removeElement( Object attributeId ) {
-        set.remove( getElementFor( attributeId  ) );
-        objectInfo.setAttributeValue( attributeInfo.getName(), new HashSet<>( set ) );
-        modifyAdapter.triggerUpdate();
-      }
-    };
-  }
-
-  @Override
   public void setAttributeValue( Object attributeId, Object value ) {
+    verifyNotNull( attributeId, "attributeId" );
+
     set.remove( getElementFor( attributeId ) );
     set.add( value );
   }
 
   @Override
   public Object getAttributeValue( Object attributeId ) {
+    verifyNotNull( attributeId, "attributeId" );
+
     return getElementFor( attributeId );
   }
 
@@ -86,15 +52,32 @@ public class SetObjectInfo implements ObjectInfo {
       .collect( toList() );
   }
 
-  private Object getElementFor( Object attributeId ) {
+  @Override
+  public AttributeInfo getAttributeInfo( Object attributeId ) {
+    verifyNotNull( attributeId, "attributeId" );
+
+    return new SetAttributeInfo( this, attributeId );
+  }
+
+  void removeElement( Object attributeId ) {
+    verifyNotNull( attributeId, "attributeId" );
+
+    set.remove( getElementFor( attributeId  ) );
+    objectInfo.setAttributeValue( attributeInfo.getName(), new HashSet<>( set ) );
+    modifyAdapter.triggerUpdate();
+  }
+
+  Object getElementFor( Object attributeId ) {
+    verifyNotNull( attributeId, "attributeId" );
+
     if( attributeId instanceof String ) {
       return set.stream().filter( element -> element.toString().equals( attributeId ) ).findFirst().get();
     }
-    return attributeId;
+    return set.stream().filter( element -> element == attributeId ).findFirst().get();
   }
 
   @Override
   public Object getEditableValue() {
-    return set;
+    return new HashSet<>( set );
   }
 }

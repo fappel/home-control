@@ -7,7 +7,7 @@ import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 public class ObjectInfoHelper {
 
   public static final Object ATTRIBUTE_VALUE = "attributeValue";
-  public static final String ATTRIBUTE_NAME = "value";
+  public static final String ATTRIBUTE_NAME = "attributeName";
   public static final String BEAN_NAME = "name";
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
