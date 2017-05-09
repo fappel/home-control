@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
+import static com.codeaffine.home.control.admin.ui.Theme.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.CellEditorControlUtil.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.Messages.*;
@@ -59,7 +60,7 @@ class ComponentFactory {
   Label createValidationMessageLabel( Composite parent ) {
     Label result = new Label( parent, WRAP );
     result.setText( "" );
-    result.setData( CUSTOM_VARIANT, "addElementDialogValidationMessage" );
+    result.setData( CUSTOM_VARIANT, CUSTOM_VARIANT_ADD_ELEMENT_DIALOG_VALIDATION_MESSAGE );
     return result;
   }
 
@@ -117,7 +118,7 @@ class ComponentFactory {
     Control result = editor.getControl();
     deactivateEvents( result, FocusOut, DefaultSelection, KeyDown, Traverse );
     result.setVisible( true );
-    result.setData( CUSTOM_VARIANT, "addElementDialogValueEditor" );
+    result.setData( CUSTOM_VARIANT, CUSTOM_VARIANT_ADD_ELEMENT_DIALOG_VALUE_EDITOR );
     setElementPartKey( result, elementPartKey );
     setCellEditor( result, editor );
     setAttributeDescriptor( result, descriptor );

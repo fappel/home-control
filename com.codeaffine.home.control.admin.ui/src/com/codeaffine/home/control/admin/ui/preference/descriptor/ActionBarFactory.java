@@ -1,15 +1,16 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
+import static com.codeaffine.home.control.admin.ui.Theme.CUSTOM_VARIANT_ATTRIBUTE_CELL_EDITOR_ACTION_BAR;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static org.eclipse.rap.rwt.RWT.CUSTOM_VARIANT;
+import static org.eclipse.swt.SWT.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.rap.rwt.RWT;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -45,24 +46,24 @@ class ActionBarFactory {
   private static Button createButton( Composite parent, AttributeAction action ) {
     ActionPresentation presentation = action.getPresentation( ActionPresentation.class );
     Button result = new Button( parent, presentation.getStyle() );
-    result.setData( RWT.CUSTOM_VARIANT, "attributeCellEditorActionBar" );
+    result.setData( CUSTOM_VARIANT, CUSTOM_VARIANT_ATTRIBUTE_CELL_EDITOR_ACTION_BAR );
     result.setText( presentation.getLabel() );
-    result.addListener( SWT.Selection, evt -> action.run() );
+    result.addListener( Selection, evt -> action.run() );
     return result;
   }
 
   private static void wireButtonInstanceRelatedEvents( Control control, List<Button> buttons ) {
     buttons.forEach( button -> {
-      control.addListener( SWT.Dispose, evt -> button.dispose() );
-      button.addListener( SWT.Selection, evt -> buttons.forEach( actionButton -> actionButton.setVisible( false ) ) );
-      button.addListener( SWT.FocusOut, evt -> buttons.forEach( actionButton -> actionButton.setVisible( false ) ) );
+      control.addListener( Dispose, evt -> button.dispose() );
+      button.addListener( Selection, evt -> buttons.forEach( actionButton -> actionButton.setVisible( false ) ) );
+      button.addListener( FocusOut, evt -> buttons.forEach( actionButton -> actionButton.setVisible( false ) ) );
     } );
   }
 
   private static void wireButtonsToControlEvents( Control control, List<Button> buttons ) {
-    control.addListener( SWT.Resize, initializeResizeObserver( control, buttons ).get() );
-    control.addListener( SWT.Show, evt -> buttons.forEach( button -> button.setVisible( true ) ) );
-    control.addListener( SWT.Hide, evt -> adjustButtonVisibiltyOnEditorControlHide( buttons ) );
+    control.addListener( Resize, initializeResizeObserver( control, buttons ).get() );
+    control.addListener( Show, evt -> buttons.forEach( button -> button.setVisible( true ) ) );
+    control.addListener( Hide, evt -> adjustButtonVisibiltyOnEditorControlHide( buttons ) );
   }
 
   private static AtomicReference<Listener> initializeResizeObserver( Control control, List<Button> buttons ) {
@@ -72,9 +73,9 @@ class ActionBarFactory {
   }
 
   private static void handleResize( Control control, List<Button> buttons, AtomicReference<Listener> resizeObserver ) {
-    control.removeListener( SWT.Resize, resizeObserver.get() );
+    control.removeListener( Resize, resizeObserver.get() );
     layoutEditorCell( control, buttons );
-    control.addListener( SWT.Resize, resizeObserver.get() );
+    control.addListener( Resize, resizeObserver.get() );
   }
 
   private static void layoutEditorCell( Control editorControl, List<Button> actionButtons ) {
