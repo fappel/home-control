@@ -136,7 +136,7 @@ public class AddElementDialog extends Dialog {
 
   private void adjustShellBounds() {
     shell.pack();
-    shell.setSize( computeShellSize( shell.getDisplay().getBounds(), shell.getBounds() ) );
+    shell.setSize( computeShellSize( shell.getDisplay().getBounds(), shell.getSize() ) );
     shell.setLocation( computeShellLocation( shell.getDisplay().getBounds(), shell.getSize() ) );
   }
 }

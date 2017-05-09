@@ -89,9 +89,10 @@ class ComponentFactory {
   }
 
   List<Control> createElementGroupContent( Composite parent ) {
+    Queue<String> elementKeyParts = getElementKeyParts();
     return getGenericTypeParameters()
       .stream()
-      .map( elementType -> createElementPartSection( parent, getElementKeyParts(), elementType ) )
+      .map( elementType -> createElementPartSection( parent, elementKeyParts, elementType ) )
       .collect( toList() );
   }
 

@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Display;
 
 class AddElementDialogUtil {
 
-  static Point computeShellSize( Rectangle displayBounds, Rectangle shellBounds ) {
-    return new Point( max( shellBounds.width, displayBounds.width / 2 ), shellBounds.height );
+  static Point computeShellSize( Rectangle displayBounds, Point oldSize ) {
+    return new Point( max( oldSize.x, displayBounds.width / 2 ), oldSize.y );
   }
 
   static Point computeShellLocation( Rectangle displayBounds, Point shellSize ) {
