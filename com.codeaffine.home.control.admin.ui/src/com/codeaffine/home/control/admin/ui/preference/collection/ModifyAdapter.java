@@ -16,10 +16,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.widgets.Shell;
 
+import com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialog;
+
 public class ModifyAdapter {
 
-  static final String ADDITION_INFO_VALUE = "Value";
-  static final String ADDITION_INFO_KEY = "Key";
+  public static final String ADDITION_INFO_VALUE = "Value";
+  public static final String ADDITION_INFO_KEY = "Key";
 
   private final BiConsumer<CollectionValue, Consumer<Map<String, Object>>> additionHandler;
   private final Runnable updateAction;

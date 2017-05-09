@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.admin.ui.preference.collection;
+package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.Collections.emptyList;

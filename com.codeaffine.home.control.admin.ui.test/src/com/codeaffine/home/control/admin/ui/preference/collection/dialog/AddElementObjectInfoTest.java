@@ -1,10 +1,11 @@
-package com.codeaffine.home.control.admin.ui.preference.collection;
+package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementObjectInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 
 public class AddElementObjectInfoTest {
