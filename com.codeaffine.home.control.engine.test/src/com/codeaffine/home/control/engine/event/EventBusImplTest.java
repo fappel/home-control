@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.engine.event.EventBusImpl;
 import com.codeaffine.home.control.event.Subscribe;
 
 public class EventBusImplTest {

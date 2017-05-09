@@ -36,4 +36,17 @@ public class PreferenceEvent {
   public String getAttributeName() {
     return attributeName;
   }
+
+  @Override
+  public String toString() {
+    return "PreferenceEvent [attributeName="
+           + attributeName
+           + ", oldValue="
+           + oldValue
+           + ", newValue="
+           + newValue
+           + ", source="
+           + source
+           + "]";
+  }
 }

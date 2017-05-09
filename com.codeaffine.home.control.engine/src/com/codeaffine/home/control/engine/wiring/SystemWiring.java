@@ -80,8 +80,12 @@ public class SystemWiring {
   private void doInitialize( Consumer<com.codeaffine.home.control.Context> contextConsumer ) {
     context = contextFactory.create();
     contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
-    contextAdapter.set( PreferenceModel.class, context.create( PreferenceModelImpl.class ) );
-    contextAdapter.set( PreferencePersistence.class, context.create( PreferencePersistence.class ) );
+    initializeContext( contextConsumer );
+  }
+
+  private void initializeContext( Consumer<com.codeaffine.home.control.Context> contextConsumer ) {
+    contextAdapter.set( PreferenceModel.class, contextAdapter.create( PreferenceModelImpl.class ) );
+    contextAdapter.set( PreferencePersistence.class, contextAdapter.create( PreferencePersistence.class ) );
     contextAdapter.set( LoggerFactory.class, contextAdapter.create( LoggerFactoryAdapter.class ) );
     contextAdapter.set( SensorControlFactory.class, contextAdapter.create( SensorControlFactoryImpl.class ) );
     EntityRegistry entityRegistry = contextAdapter.create( EntityRegistryImpl.class );

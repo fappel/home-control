@@ -32,6 +32,7 @@ import com.codeaffine.home.control.preference.DefaultValue;
 import com.codeaffine.home.control.preference.PreferenceEvent;
 import com.codeaffine.home.control.preference.PreferenceModel;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class PreferenceModelImpl implements PreferenceModel {
 
@@ -48,7 +49,7 @@ public class PreferenceModelImpl implements PreferenceModel {
     this.preferences = new HashMap<>();
     this.attributes = new HashMap<>();
     this.eventBus = eventBus;
-    this.gson = new Gson();
+    this.gson = new GsonBuilder().setPrettyPrinting().create();
   }
 
   public void load( InputStream in ) {

@@ -40,13 +40,13 @@ public class PreferencePersistenceTest {
   }
 
   @Test
-  public void persistAndRestore() {
+  public void onPersistAndRestore() {
     PreferenceModelImpl model1 = newModel();
     PreferencePersistence persistence1 = new PreferencePersistence( model1 );
     PersistenceTestPreference preference = model1.get( PersistenceTestPreference.class );
     preference.setValue( VALUE );
 
-    persistence1.persist( null );
+    persistence1.onPersist( null );
     PreferenceModelImpl model2 = newModel();
     new PreferencePersistence( model2 );
     int actual = model2.get( PersistenceTestPreference.class ).getValue();

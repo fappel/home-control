@@ -6,6 +6,7 @@ import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.Maps.newHashMap;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -340,6 +341,24 @@ public class PreferenceModelImplTest {
     assertThat( captor.getValue().getNewValue() ).isEqualTo( "newValue" );
     assertThat( captor.getValue().getOldValue() ).isEqualTo( "oldValue" );
     assertThat( captor.getValue().getAttributeName() ).isEqualTo( "stringValue" );
+  }
+
+  @Test
+  public void setAttributeValueWithEventDelegationOnMap() {
+    MyPreference preference = preferenceModel.get( MyPreference.class );
+
+    Map<MyEnum, Integer> initialValue = newHashMap( TWO, INT_VALUE );
+    preference.setMap( initialValue );
+    reset( eventBus );
+    Map<MyEnum, Integer> newValue = newHashMap( ONE, INT_VALUE );
+    preference.setMap( newValue );
+
+    ArgumentCaptor<PreferenceEvent> captor = forClass( PreferenceEvent.class );
+    verify( eventBus ).post( captor.capture() );
+    assertThat( captor.getValue().getSource() ).isSameAs( preference );
+    assertThat( captor.getValue().getNewValue() ).isEqualTo( newValue );
+    assertThat( captor.getValue().getOldValue() ).isEqualTo( initialValue );
+    assertThat( captor.getValue().getAttributeName() ).isEqualTo( "map" );
   }
 
   @Test

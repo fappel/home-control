@@ -29,7 +29,7 @@ public class PreferencePersistence {
   }
 
   @Subscribe
-  void persist( @SuppressWarnings("unused") PreferenceEvent event ) {
+  public void onPersist( @SuppressWarnings("unused") PreferenceEvent event ) {
     saveModel();
   }
 
