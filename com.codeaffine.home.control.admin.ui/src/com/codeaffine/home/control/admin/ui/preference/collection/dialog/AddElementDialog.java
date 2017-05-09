@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
+import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialogUtil.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
-import static java.lang.Math.max;
 import static org.eclipse.jface.layout.GridLayoutFactory.fillDefaults;
 
 import java.util.Collection;
@@ -12,15 +12,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -67,19 +63,11 @@ public class AddElementDialog extends Dialog {
     adjustShellBounds();
   }
 
-  List<Control> getElementEditorControls() {
-    return elementEditorControls;
+  Map<String, Object> getAdditionInfo() {
+    return additionInfo;
   }
 
-  Button getCancelButton() {
-    return cancel;
-  }
-
-  Button getOkButton() {
-    return ok;
-  }
-
-  void putAdditionInfo( String elementPartKey, Object elementValuePart ) {
+  void putAdditionInfoEntry( String elementPartKey, Object elementValuePart ) {
     additionInfo.put( elementPartKey, elementValuePart );
   }
 
@@ -94,6 +82,18 @@ public class AddElementDialog extends Dialog {
 
   void updateControlEnablement() {
     ok.setEnabled( additionInfo.values().stream().allMatch( value -> value != null ) );
+  }
+
+  List<Control> getElementEditorControls() {
+    return elementEditorControls;
+  }
+
+  Button getCancelButton() {
+    return cancel;
+  }
+
+  Button getOkButton() {
+    return ok;
   }
 
   private void prepareAdditionInfo() {
@@ -136,27 +136,5 @@ public class AddElementDialog extends Dialog {
     shell.pack();
     shell.setSize( computeShellSize( shell.getDisplay().getBounds(), shell.getBounds() ) );
     shell.setLocation( computeShellLocation( shell.getDisplay().getBounds(), shell.getSize() ) );
-  }
-
-  Point computeShellLocation( Rectangle displayBounds, Point shellSize ) {
-    int xLocation = ( displayBounds.width - shellSize.x ) / 2;
-    int yLocation = ( displayBounds.height - shellSize.y ) / 2;
-    return new Point( xLocation, yLocation );
-  }
-
-  static Point computeShellSize( Rectangle displayBounds, Rectangle shellBounds ) {
-    return new Point( max( shellBounds.width, displayBounds.width / 2 ), shellBounds.height );
-  }
-
-  static void asyncExec( Runnable runnable ) {
-    Display.getCurrent().asyncExec( runnable );
-  }
-
-  private static void triggerCallback(
-    Consumer<Map<String, Object>> additionCallback, AddElementDialog dialog, int returnCode )
-  {
-    if( returnCode == SWT.OK ) {
-      additionCallback.accept( dialog.additionInfo );
-    }
   }
 }

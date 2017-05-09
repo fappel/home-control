@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
-import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialog.asyncExec;
+import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialogUtil.asyncExec;
 import static org.eclipse.swt.SWT.*;
 
 import org.eclipse.swt.widgets.Control;

@@ -23,10 +23,10 @@ class CellEditorModifiedHandler implements Consumer<Control> {
     if( editor.getErrorMessage() == null ) {
       dialog.setValidationText( "" );
       AttributeDescriptor descriptor = getAttributeDescriptor( editorControl );
-      dialog.putAdditionInfo( getElementPartKey( editorControl ), descriptor.convertToValue( editor.getValue() ) );
+      dialog.putAdditionInfoEntry( getElementPartKey( editorControl ), descriptor.convertToValue( editor.getValue() ) );
     } else {
       dialog.setValidationText( editor.getErrorMessage() );
-      dialog.putAdditionInfo( getElementPartKey( editorControl ), null );
+      dialog.putAdditionInfoEntry( getElementPartKey( editorControl ), null );
     }
     dialog.updateControlEnablement();
   }
