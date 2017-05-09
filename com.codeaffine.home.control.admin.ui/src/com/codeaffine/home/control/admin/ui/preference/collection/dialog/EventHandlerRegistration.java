@@ -8,23 +8,37 @@ import org.eclipse.swt.widgets.Event;
 
 class EventHandlerRegistration {
 
-  static void registerEventHandlers( AddElementDialog dialog ) {
+  static final int KEY_CODE_ESC = 27;
+
+  private final CellEditorModifiedHandler cellEditorModifiedHandler;
+  private final AddElementDialog dialog;
+
+  EventHandlerRegistration( AddElementDialog dialog ) {
+    this( dialog, new CellEditorModifiedHandler( dialog ) );
+  }
+
+  EventHandlerRegistration( AddElementDialog dialog, CellEditorModifiedHandler cellEditorModifiedHandler ) {
+    this.cellEditorModifiedHandler = cellEditorModifiedHandler;
+    this.dialog = dialog;
+  }
+
+  void initialize() {
     dialog.getElementEditorControls().forEach( control -> {
-      control.addListener( KeyDown, evt -> closeShellOnEscapeKey( evt, dialog ) );
-      control.addListener( Modify, evt -> handleCellEditorModified( evt, dialog ) );
+      control.addListener( KeyDown, evt -> closeShellOnEscapeKey( evt ) );
+      control.addListener( Modify, evt -> handleCellEditorModified( evt ) );
     } );
     dialog.getCancelButton().addListener( Selection, evt -> dialog.close( CANCEL ) );
     dialog.getOkButton().addListener( Selection, evt -> dialog.close( OK ) );
     dialog.getOkButton().addListener( DefaultSelection, evt -> dialog.close( OK ) );
   }
 
-  private static void closeShellOnEscapeKey( Event evt, AddElementDialog dialog ) {
-    if( evt.keyCode == 27 ) {
+  private void closeShellOnEscapeKey( Event evt ) {
+    if( evt.keyCode == KEY_CODE_ESC ) {
       dialog.close( CANCEL );
     }
   }
 
-  private static void handleCellEditorModified( Event evt, AddElementDialog dialog ) {
-    asyncExec( () -> new CellEditorModifiedHandler( dialog ).accept( ( Control )evt.widget ) );
+  private void handleCellEditorModified( Event evt ) {
+    asyncExec( () -> cellEditorModifiedHandler.accept( ( Control )evt.widget ) );
   }
 }

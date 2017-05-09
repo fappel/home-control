@@ -26,6 +26,7 @@ public class AddElementDialog extends Dialog {
 
   private static final int MARGIN = 20;
 
+  private final EventHandlerRegistration eventHandlerRegistration;
   private final Map<String, Object> additionInfo;
   private final ComponentFactory factory;
 
@@ -39,8 +40,9 @@ public class AddElementDialog extends Dialog {
 
   AddElementDialog( Shell parent, ComponentFactory componentFactory ) {
     super( parent );
-    this.factory = componentFactory;
+    this.eventHandlerRegistration = new EventHandlerRegistration( this );
     this.additionInfo = new HashMap<>();
+    this.factory = componentFactory;
   }
 
   public static void open( Shell parent, CollectionValue collectionValue, Consumer<Map<String, Object>> callback ) {
@@ -124,7 +126,7 @@ public class AddElementDialog extends Dialog {
   }
 
   private void registerEventHandlers() {
-    EventHandlerRegistration.registerEventHandlers( this );
+    eventHandlerRegistration.initialize();
     ok.getShell().setDefaultButton( ok );
   }
 
