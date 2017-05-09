@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
+import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.*;
 import static com.codeaffine.home.control.admin.ui.test.DisplayHelper.flushPendingEvents;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.swt.SWT.*;
@@ -85,6 +86,13 @@ public class AddElementDialogUtilTest {
     AddElementDialogUtil.triggerCallback( consumer, dialog, CANCEL );
 
     verify( consumer, never() ).accept( any() );
+  }
+
+  @Test
+  public void isValidElementPartKey() {
+    assertThat( AddElementDialogUtil.isValidElementPartKey( ADDITION_INFO_KEY ) ).isTrue();
+    assertThat( AddElementDialogUtil.isValidElementPartKey( ADDITION_INFO_VALUE ) ).isTrue();
+    assertThat( AddElementDialogUtil.isValidElementPartKey( "invalid" ) ).isFalse();
   }
 
   private static AddElementDialog stubDialog( Map<String, Object> additionInfo ) {

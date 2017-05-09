@@ -10,6 +10,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
+
 class AddElementDialogUtil {
 
   static Point computeShellSize( Rectangle displayBounds, Point oldSize ) {
@@ -32,6 +34,11 @@ class AddElementDialogUtil {
     if( returnCode == SWT.OK ) {
       additionCallback.accept( dialog.getAdditionInfo() );
     }
+  }
+
+  static boolean isValidElementPartKey( String elementPartKey ) {
+    return    elementPartKey.equals( ModifyAdapter.ADDITION_INFO_KEY ) 
+           || elementPartKey.equals( ModifyAdapter.ADDITION_INFO_VALUE );
   }
 
 }

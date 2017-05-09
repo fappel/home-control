@@ -2,7 +2,8 @@ package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialogUtil.*;
-import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.Messages.ADD_ELEMENT_DIALOG_INVALID_KEY;
+import static com.codeaffine.util.ArgumentVerification.*;
 import static org.eclipse.jface.layout.GridLayoutFactory.fillDefaults;
 
 import java.util.Collection;
@@ -51,7 +52,7 @@ public class AddElementDialog extends Dialog {
     verifyNotNull( parent, "parent" );
 
     AddElementDialog dialog = new AddElementDialog( parent, new ComponentFactory( collectionValue ) );
-    asyncExec( () -> dialog.open( returnCode -> triggerCallback( callback, dialog, returnCode )) );
+    asyncExec( () -> dialog.open( returnCode -> triggerCallback( callback, dialog, returnCode ) ) );
   }
 
   @Override
@@ -70,6 +71,8 @@ public class AddElementDialog extends Dialog {
   }
 
   void putAdditionInfoEntry( String elementPartKey, Object elementValuePart ) {
+    verifyCondition( isValidElementPartKey( elementPartKey ), ADD_ELEMENT_DIALOG_INVALID_KEY, elementPartKey );
+
     additionInfo.put( elementPartKey, elementValuePart );
   }
 
