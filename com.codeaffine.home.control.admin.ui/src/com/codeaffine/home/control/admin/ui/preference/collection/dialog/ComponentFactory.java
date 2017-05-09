@@ -116,7 +116,7 @@ class ComponentFactory {
     IPropertyDescriptor propertyDescriptor = descriptor.createPropertyDescriptor();
     CellEditor editor = propertyDescriptor.createPropertyEditor( parent );
     Control result = editor.getControl();
-    deactivateEvents( result, FocusOut, DefaultSelection, KeyDown, Traverse );
+    deactivateEventHandler( result, FocusOut, DefaultSelection, KeyDown, Traverse );
     result.setVisible( true );
     result.setData( CUSTOM_VARIANT, CUSTOM_VARIANT_ADD_ELEMENT_DIALOG_VALUE_EDITOR );
     setElementPartKey( result, elementPartKey );

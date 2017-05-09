@@ -40,7 +40,7 @@ class CellEditorControlUtil {
     return getEditorControlData( editorControl, EDITOR_DATA_ATTRIBUTE_DESCRIPTOR, AttributeDescriptor.class );
   }
 
-  static void deactivateEvents( Control editorControl, int ...eventTypes ) {
+  static void deactivateEventHandler( Control editorControl, int ...eventTypes ) {
     stream( eventTypes ).forEach( eventType -> {
       Listener[] listeners = editorControl.getListeners( eventType );
       Stream.of( listeners ).forEach( listener -> editorControl.removeListener( eventType, listener ) );
