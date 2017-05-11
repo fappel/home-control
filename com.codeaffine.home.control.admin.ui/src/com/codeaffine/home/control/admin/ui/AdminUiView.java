@@ -63,16 +63,15 @@ class AdminUiView {
   }
 
   private static Banner createBanner( Composite parent, ActionMap actionMap ) {
-    return newBanner( parent, new FormLayout() )
+    Banner result = newBanner( parent, new FormLayout() )
       .withLogo( "Home Control" )
       .withTitle( "Administration" )
       .withSeparator()
-      .withNavigationBar( actionMap )
-      .layout( banner -> {
-        attach( banner.getLogo() ).toLeft( 20 ).toTop( 10 );
-        attach( banner.getTitle() ).toLeft( 20 ).atTopTo( banner.getLogo(), 3 );
-        attach( banner.getSeparator() ).toLeft().toBottom( 10 ).toRight().withHeight( 1 );
-        attach( banner.getNavigationBar().getControl() ).toTop().toRight( 20 ).atBottomTo( banner.getSeparator() );
-      } );
+      .withNavigationBar( actionMap );
+    attach( result.getLogo() ).toLeft( 20 ).toTop( 10 );
+    attach( result.getTitle() ).toLeft( 20 ).atTopTo( result.getLogo(), 3 );
+    attach( result.getSeparator() ).toLeft().toBottom( 10 ).toRight().withHeight( 1 );
+    attach( result.getNavigationBar().getControl() ).toTop().toRight( 20 ).atBottomTo( result.getSeparator() );
+    return result;
   }
 }

@@ -1,9 +1,11 @@
 package com.codeaffine.home.control.admin.ui.control;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static org.eclipse.swt.SWT.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +18,9 @@ public class NavigationBar {
   private final Composite control;
 
   public NavigationBar( Composite parent, ActionMap actions ) {
+    verifyNotNull( actions, "actions" );
+    verifyNotNull( parent, "parent" );
+
     this.control = new Composite( parent, NONE );
     this.control.setLayout( new FillLayout( HORIZONTAL ) );
     this.items = new ArrayList<>();
@@ -27,11 +32,16 @@ public class NavigationBar {
   }
 
   public void newItem( String label, Object actionId ) {
+    verifyNotNull( actionId, "actionId" );
+    verifyNotNull( label, "label" );
+
     items.add( new NavigationBarItem( this, label, actionId ) );
   }
 
   public void selectItem( Object actionId ) {
-    items.stream().filter( item -> actionId.equals( item.getActionId() ) ).findAny().ifPresent( item -> item.select() );
+    verifyNotNull( actionId, "actionId" );
+
+    findItem( actionId ).ifPresent( item -> item.select() );
   }
 
   Runnable getAction( Object actionId ) {
@@ -44,5 +54,9 @@ public class NavigationBar {
 
   void unselectItems() {
     items.forEach( item -> item.unselect() );
+  }
+
+  private Optional<NavigationBarItem> findItem( Object actionId ) {
+    return items.stream().filter( item -> actionId.equals( item.getActionId() ) ).findAny();
   }
 }

@@ -1,12 +1,14 @@
 package com.codeaffine.home.control.admin.ui.control;
 
 import static com.codeaffine.home.control.admin.ui.Theme.*;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static org.eclipse.rap.rwt.RWT.CUSTOM_VARIANT;
 import static org.eclipse.swt.SWT.Selection;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public class NavigationBarItem {
 
@@ -15,6 +17,10 @@ public class NavigationBarItem {
   private final Button button;
 
   NavigationBarItem( NavigationBar navigationBar, String label, Object actionId ) {
+    verifyNotNull( navigationBar, "navigationBar" );
+    verifyNotNull( actionId, "actionId" );
+    verifyNotNull( label, "label" );
+
     this.button = new Button( ( Composite )navigationBar.getControl(), SWT.PUSH );
     this.navigationBar = navigationBar;
     this.actionId = actionId;
@@ -23,6 +29,10 @@ public class NavigationBarItem {
 
   Object getActionId() {
     return actionId;
+  }
+
+  Control getControl() {
+    return button;
   }
 
   void select() {
