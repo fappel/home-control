@@ -25,7 +25,7 @@ public class ReflectionUtil {
       .collect( toSet() );
   }
 
-  public static Object execute( Callable<?> reflectiveCall ) {
+  public static <T> T execute( Callable<T> reflectiveCall ) {
     try {
       return reflectiveCall.call();
     } catch( RuntimeException rte ) {

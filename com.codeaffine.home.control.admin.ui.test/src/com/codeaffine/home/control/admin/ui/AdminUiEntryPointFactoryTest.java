@@ -8,12 +8,12 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.admin.HomeControlAdminService;
 
-public class HomeControlAdminEntryPointFactoryTest {
+public class AdminUiEntryPointFactoryTest {
 
   @Test
   public void create() {
     HomeControlAdminService adminService = mock( HomeControlAdminService.class );
-    HomeControlAdminEntryPointFactory factory = new HomeControlAdminEntryPointFactory( adminService );
+    AdminUiEntryPointFactory factory = new AdminUiEntryPointFactory( adminService );
 
     EntryPoint actual = factory.create();
 
@@ -22,6 +22,6 @@ public class HomeControlAdminEntryPointFactoryTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsAdminServiceArgument() {
-    new HomeControlAdminEntryPointFactory( null );
+    new AdminUiEntryPointFactory( null );
   }
 }

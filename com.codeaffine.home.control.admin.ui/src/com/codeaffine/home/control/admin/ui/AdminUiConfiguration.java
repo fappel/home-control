@@ -18,15 +18,15 @@ public class AdminUiConfiguration implements ApplicationConfiguration {
   public void configure( Application application ) {
     install( application );
     application.addStyleSheet( DEFAULT_THEME_ID, STANDARD_THEME_EXTRENSION_FILE_LOCATION );
-    application.addEntryPoint( "/admin", new HomeControlAdminEntryPointFactory( adminService ), null );
+    application.addEntryPoint( "/admin", new AdminUiEntryPointFactory( adminService ), null );
   }
 
-  public void bind( HomeControlAdminService adminService ) {
+  public void bindAdminService( HomeControlAdminService adminService ) {
     this.adminService = adminService;
 
   }
 
-  public void unbind( @SuppressWarnings("unused") HomeControlAdminService adminService ) {
+  public void unbindAdminService( @SuppressWarnings("unused") HomeControlAdminService adminService ) {
     this.adminService = null;
   }
 }
