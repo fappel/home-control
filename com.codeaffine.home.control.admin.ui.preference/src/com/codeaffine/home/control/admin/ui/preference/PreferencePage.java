@@ -20,7 +20,7 @@ public class PreferencePage implements Page {
   }
 
   @Override
-  public String getId() {
+  public String getLabel() {
     return "Preferences";
   }
 

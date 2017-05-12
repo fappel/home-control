@@ -33,7 +33,7 @@ public class NavigationBar {
     return control;
   }
 
-  public void newItem( String label, Object actionId ) {
+  public void newItem( Object actionId, String label ) {
     verifyNotNull( actionId, "actionId" );
     verifyNotNull( label, "label" );
 

@@ -2,6 +2,7 @@ package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.control.Banner.newBanner;
 import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
+import static com.codeaffine.home.control.admin.ui.view.UiActions.getFragmentId;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class AdminUiView {
     pages.clear();
   }
 
-  void showPage( String pageId ) {
+  void showPage( Object pageId ) {
     stack.show( pageId );
   }
 
@@ -56,8 +57,8 @@ public class AdminUiView {
 
   private void initializeContent() {
     pages.forEach( page -> {
-      banner.getNavigationBar().newItem( page.getId(), page.getId() );
-      stack.newElement( page.getId(), elementParent -> page.createContent( elementParent ) );
+      banner.getNavigationBar().newItem( page, page.getLabel() );
+      stack.newElement( page, elementParent -> page.createContent( elementParent ) );
     } );
   }
 
@@ -67,12 +68,20 @@ public class AdminUiView {
   }
 
   private void wireEventHandlers() {
-    browser.addBrowserNavigationListener( evt -> banner.getNavigationBar().selectItem( evt.getState() ) );
-    findFirstPage().ifPresent( page -> banner.getNavigationBar().selectItem( page.getId() ) );
+    browser.addBrowserNavigationListener( evt -> selectPage( findPageByFragmentId( evt.getState() ) ) );
+    findFirstPage().ifPresent( page -> selectPage( page ) );
+  }
+
+  private void selectPage( Page page ) {
+    banner.getNavigationBar().selectItem( page );
   }
 
   private Optional<Page> findFirstPage() {
     return pages.stream().findFirst();
+  }
+
+  private Page findPageByFragmentId( String fragment ) {
+    return pages.stream().filter( page -> getFragmentId( page ).equals( fragment ) ).findAny().get();
   }
 
   private static Banner createBanner( Composite parent, ActionSupplier actionSupplier ) {

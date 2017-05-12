@@ -16,7 +16,7 @@ public class ConsolePage implements Page {
   }
 
   @Override
-  public String getId() {
+  public String getLabel() {
     return "Console";
   }
 

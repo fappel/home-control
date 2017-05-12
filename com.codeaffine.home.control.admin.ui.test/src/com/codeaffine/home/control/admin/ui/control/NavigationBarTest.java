@@ -36,7 +36,7 @@ public class NavigationBarTest {
     NavigationBarItem itemSpy = mock( NavigationBarItem.class );
     navigationBar.addItem( itemSpy );
 
-    navigationBar.newItem( "label", ACTION_ID );
+    navigationBar.newItem( ACTION_ID, "label" );
     navigationBar.selectItem( ACTION_ID );
 
     verify( action ).run();
@@ -62,12 +62,12 @@ public class NavigationBarTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void newItemWithNullAsLabelArgument() {
-    navigationBar.newItem( null, ACTION_ID );
+    navigationBar.newItem( ACTION_ID, null );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void newItemWithNullAsActionIdArgument() {
-    navigationBar.newItem( "label", null );
+    navigationBar.newItem( null, "label" );
   }
 
   @Test( expected = IllegalArgumentException.class )

@@ -7,8 +7,12 @@ import com.codeaffine.home.control.admin.ui.api.Page;
 class UiActions {
 
   static void activatePage( Page page, BrowserNavigation navigation, AdminUiView view ) {
-    view.showPage( page.getId() );
+    view.showPage( page );
     page.setFocus();
-    navigation.pushState( page.getId(), page.getId() );
+    navigation.pushState( getFragmentId( page ), page.getLabel() );
+  }
+
+  static String getFragmentId( Page page ) {
+    return page.getLabel();
   }
 }

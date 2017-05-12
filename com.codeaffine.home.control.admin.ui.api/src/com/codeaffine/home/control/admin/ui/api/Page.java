@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public interface Page {
-  String getId();
+  String getLabel();
   Control createContent( Composite parent );
   void setFocus();
   default void dispose() {}

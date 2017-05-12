@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui.view;
 
+import static com.codeaffine.home.control.admin.ui.view.UiActions.activatePage;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.swt.SWT.NONE;
 
@@ -52,11 +53,11 @@ public class ViewContentLifeCycle {
 
   private void mapViewNavigationActions( BrowserNavigation browserNavigation, AdminUiView view, List<Page> pages ) {
     pages.forEach( page -> {
-      actionMap.putAction( page.getId(), () -> UiActions.activatePage( page, browserNavigation, view ) );
+      actionMap.putAction( page, () -> activatePage( page, browserNavigation, view ) );
     } );
   }
 
   private void unmapViewNavigationActions( List<Page> pages ) {
-    pages.forEach( page -> actionMap.removeAction( page.getId() ) );
+    pages.forEach( page -> actionMap.removeAction( page ) );
   }
 }

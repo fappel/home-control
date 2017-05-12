@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui.view;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.rap.rwt.client.service.BrowserNavigation;
@@ -10,26 +11,34 @@ import com.codeaffine.home.control.admin.ui.api.Page;
 
 public class UiActionsTest {
 
-  private static final String ID = "id";
+  private static final String LABEL = "label";
 
   @Test
   public void activatePage() {
-    String id = ID;
     AdminUiView view = mock( AdminUiView.class );
     BrowserNavigation navigation = mock( BrowserNavigation.class );
-    Page page = stubContribution( id );
+    Page page = stubContribution( LABEL );
 
     UiActions.activatePage( page, navigation, view );
 
     InOrder order = inOrder( view, page, navigation );
-    order.verify( view ).showPage( ID );
+    order.verify( view ).showPage( page );
     order.verify( page ).setFocus();
-    order.verify( navigation ).pushState( ID, ID );
+    order.verify( navigation ).pushState( LABEL, LABEL );
+  }
+
+  @Test
+  public void getFragmentId() {
+    Page page = stubContribution( LABEL );
+
+    String actual = UiActions.getFragmentId( page );
+
+    assertThat( actual ).isEqualTo( LABEL );
   }
 
   private static Page stubContribution( String id ) {
     Page result = mock( Page.class );
-    when( result.getId() ).thenReturn( id );
+    when( result.getLabel() ).thenReturn( id );
     return result;
   }
 }
