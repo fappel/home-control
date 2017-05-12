@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 
+import com.codeaffine.home.control.admin.ui.api.ActionSupplier;
+
 public class Banner {
 
   private final Composite control;
@@ -77,11 +79,11 @@ public class Banner {
     return separator;
   }
 
-  public Banner withNavigationBar( ActionMap actions ) {
-    verifyNotNull( actions, "actions" );
+  public Banner withNavigationBar( ActionSupplier actionSupplier ) {
+    verifyNotNull( actionSupplier, "actionSupplier" );
     verifyState( navigationBar == null, ERROR_BANNER_COMPONENT_EXISTS, "navigation bar" );
 
-    navigationBar = new NavigationBar( control, actions );
+    navigationBar = new NavigationBar( control, actionSupplier );
     return this;
   }
 

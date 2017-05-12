@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="Admin UI OSGi Console Page">
+   <implementation class="com.codeaffine.home.control.admin.ui.console.ConsolePageFactory"/>
+   <service>
+      <provide interface="com.codeaffine.home.control.admin.ui.api.PageFactory"/>
+   </service>
+</scr:component>

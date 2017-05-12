@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control OSGi Console UI
+Bundle-SymbolicName: com.codeaffine.home.control.admin.ui.console
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/*.xml
+Require-Bundle: org.eclipse.osgi;bundle-version="3.10.0",
+ com.codeaffine.home.control.util;bundle-version="1.0.0",
+ com.codeaffine.home.control.admin.ui.api;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy

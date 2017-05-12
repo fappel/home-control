@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.codeaffine.home.control.admin.ui.model.ActionMap;
 import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
 
 public class NavigationBarTest {
@@ -55,7 +56,7 @@ public class NavigationBarTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsActionsArgument() {
+  public void constructWithNullAsActionSupplierArgument() {
     new NavigationBar( parent, null );
   }
 

@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.codeaffine.home.control.admin.ui.model.ActionMap;
 import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
 
 public class BannerTest {
@@ -87,7 +88,7 @@ public class BannerTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void withNavigationWithNullAsActionsArgument() {
+  public void withNavigationWithNullAsActionSupplierArgument() {
     banner.withNavigationBar( null );
   }
 

@@ -11,20 +11,22 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.codeaffine.home.control.admin.ui.api.ActionSupplier;
+
 public class NavigationBar {
 
   private final List<NavigationBarItem> items;
-  private final ActionMap actions;
+  private final ActionSupplier actions;
   private final Composite control;
 
-  public NavigationBar( Composite parent, ActionMap actions ) {
-    verifyNotNull( actions, "actions" );
+  public NavigationBar( Composite parent, ActionSupplier actionSupplier ) {
+    verifyNotNull( actionSupplier, "actionSupplier" );
     verifyNotNull( parent, "parent" );
 
     this.control = new Composite( parent, NONE );
     this.control.setLayout( new FillLayout( HORIZONTAL ) );
     this.items = new ArrayList<>();
-    this.actions = actions;
+    this.actions = actionSupplier;
   }
 
   public Control getControl() {
