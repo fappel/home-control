@@ -13,6 +13,6 @@ class UiActions {
   }
 
   static String getFragmentId( Page page ) {
-    return page.getLabel();
+    return page.getLabel().toLowerCase();
   }
 }

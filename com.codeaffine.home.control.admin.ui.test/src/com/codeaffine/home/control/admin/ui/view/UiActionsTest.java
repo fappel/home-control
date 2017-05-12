@@ -11,7 +11,7 @@ import com.codeaffine.home.control.admin.ui.api.Page;
 
 public class UiActionsTest {
 
-  private static final String LABEL = "label";
+  private static final String LABEL = "Label";
 
   @Test
   public void activatePage() {
@@ -24,7 +24,7 @@ public class UiActionsTest {
     InOrder order = inOrder( view, page, navigation );
     order.verify( view ).showPage( page );
     order.verify( page ).setFocus();
-    order.verify( navigation ).pushState( LABEL, LABEL );
+    order.verify( navigation ).pushState( LABEL.toLowerCase(), LABEL );
   }
 
   @Test
@@ -33,7 +33,7 @@ public class UiActionsTest {
 
     String actual = UiActions.getFragmentId( page );
 
-    assertThat( actual ).isEqualTo( LABEL );
+    assertThat( actual ).isEqualTo( LABEL.toLowerCase() );
   }
 
   private static Page stubContribution( String id ) {
