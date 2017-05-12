@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control Admin UI Preference
+Bundle-SymbolicName: com.codeaffine.home.control.admin.ui.preference
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/*.xml
+Require-Bundle: org.eclipse.rap.jface;bundle-version="3.2.0",
+ com.codeaffine.util;bundle-version="0.1.0",
+ com.codeaffine.home.control.util;bundle-version="1.0.0",
+ com.codeaffine.home.control.admin;bundle-version="1.0.0",
+ com.codeaffine.home.control.admin.ui.api;bundle-version="1.0.0",
+ com.codeaffine.home.control.admin.ui.util;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy

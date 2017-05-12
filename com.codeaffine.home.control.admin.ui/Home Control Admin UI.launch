@@ -26,5 +26,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="com.codeaffine.home.control.admin.app.mock@default:default,com.codeaffine.home.control.admin.ui.api@default:default,com.codeaffine.home.control.admin.ui.console@default:default,com.codeaffine.home.control.admin.ui.util@default:default,com.codeaffine.home.control.admin.ui@default:default,com.codeaffine.home.control.admin@default:default,com.codeaffine.home.control.api@default:default,com.codeaffine.home.control.test.util@default:default,com.codeaffine.home.control.util@default:default"/>
+<stringAttribute key="workspace_bundles" value="com.codeaffine.home.control.admin.app.mock@default:default,com.codeaffine.home.control.admin.ui.api@default:default,com.codeaffine.home.control.admin.ui.console@default:default,com.codeaffine.home.control.admin.ui.preference@default:default,com.codeaffine.home.control.admin.ui.util@default:default,com.codeaffine.home.control.admin.ui@default:default,com.codeaffine.home.control.admin@default:default,com.codeaffine.home.control.api@default:default,com.codeaffine.home.control.test.util@default:default,com.codeaffine.home.control.util@default:default"/>
 </launchConfiguration>
