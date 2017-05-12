@@ -2,8 +2,8 @@ package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 
-import com.codeaffine.home.control.admin.ui.internal.property.ComboBoxLabelProvider;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.ComboBoxLabelProvider;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 class ComboBoxPropertyDescriptorHelper {
 

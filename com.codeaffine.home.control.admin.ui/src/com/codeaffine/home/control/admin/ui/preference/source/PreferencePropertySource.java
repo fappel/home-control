@@ -5,9 +5,9 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertyDescriptor;
 
 public class PreferencePropertySource implements IPropertySource {
 

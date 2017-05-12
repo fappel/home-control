@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.control;
 
 import static com.codeaffine.home.control.admin.ui.Theme.*;
-import static com.codeaffine.home.control.admin.ui.test.SWTEventHelper.trigger;
+import static com.codeaffine.home.control.admin.ui.test.util.SWTEventHelper.trigger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.rap.rwt.RWT.CUSTOM_VARIANT;
 import static org.eclipse.swt.SWT.Selection;
@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class NavigationBarItemTest {
 

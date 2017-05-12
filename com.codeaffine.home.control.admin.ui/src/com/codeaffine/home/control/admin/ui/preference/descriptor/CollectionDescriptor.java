@@ -2,12 +2,12 @@ package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertyDescriptor;
 
 class CollectionDescriptor implements AttributeDescriptor {
 

@@ -13,12 +13,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySheetEntry;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetEntry;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetViewer;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
 import com.codeaffine.home.control.admin.ui.preference.source.PreferencePropertySource;
 import com.codeaffine.home.control.admin.ui.preference.source.PropertySourceProviderFactory;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySheetEntry;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertySheetEntry;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertySheetViewer;
 
 public class PreferenceView {
 

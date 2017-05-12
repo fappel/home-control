@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 class AttributePropertyDescriptorHelper {
   

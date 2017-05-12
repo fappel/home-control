@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import com.codeaffine.home.control.admin.ui.preference.descriptor.AttributeDescriptor;
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class CellEditorModifiedHandlerTest {
 

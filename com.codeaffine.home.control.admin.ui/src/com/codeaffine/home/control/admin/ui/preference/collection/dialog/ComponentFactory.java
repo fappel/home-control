@@ -23,11 +23,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.descriptor.AttributeDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.descriptor.AttributeDescriptorSupplier;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 class ComponentFactory {
 

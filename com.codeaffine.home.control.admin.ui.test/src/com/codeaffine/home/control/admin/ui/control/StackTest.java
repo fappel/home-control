@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.control;
 
-import static com.codeaffine.home.control.admin.ui.test.ShellHelper.createDemoShell;
+import static com.codeaffine.home.control.admin.ui.test.util.ShellHelper.createDemoShell;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.swt.SWT.NONE;
@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class StackTest {
 

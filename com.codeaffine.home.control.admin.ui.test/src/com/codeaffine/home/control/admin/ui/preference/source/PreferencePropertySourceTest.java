@@ -7,8 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.preference.source.PreferencePropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 public class PreferencePropertySourceTest {
 

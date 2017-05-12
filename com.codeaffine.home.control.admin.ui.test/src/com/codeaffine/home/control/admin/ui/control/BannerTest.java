@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.control;
 
-import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
-import static com.codeaffine.home.control.admin.ui.test.ShellHelper.createShell;
+import static com.codeaffine.home.control.admin.ui.test.util.ShellHelper.createShell;
+import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.eclipse.swt.layout.FillLayout;
@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.codeaffine.home.control.admin.ui.model.ActionMap;
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class BannerTest {
 

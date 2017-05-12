@@ -6,11 +6,11 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySourceProvider;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertySheetEntry;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
 import com.codeaffine.home.control.admin.ui.preference.source.PropertySourceProviderFactory;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySourceProvider;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertySheetEntry;
 
 public class RootEntryFactoryTest {
 

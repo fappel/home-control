@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.TextPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.TextPropertyDescriptor;
 
 public class TextDescriptorTest {
 

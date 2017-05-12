@@ -3,9 +3,9 @@ package com.codeaffine.home.control.admin.ui.preference.descriptor;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.Boolean.*;
 
-import com.codeaffine.home.control.admin.ui.internal.property.ComboBoxPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.ComboBoxPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 class BooleanDescriptor implements AttributeDescriptor {
 

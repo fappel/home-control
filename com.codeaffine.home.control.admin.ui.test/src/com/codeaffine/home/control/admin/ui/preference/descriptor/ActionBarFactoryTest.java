@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
 import static com.codeaffine.home.control.admin.ui.preference.collection.CollectionAttributeActionPresentation.*;
-import static com.codeaffine.home.control.admin.ui.test.SWTEventHelper.trigger;
+import static com.codeaffine.home.control.admin.ui.test.util.SWTEventHelper.trigger;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class ActionBarFactoryTest {
 

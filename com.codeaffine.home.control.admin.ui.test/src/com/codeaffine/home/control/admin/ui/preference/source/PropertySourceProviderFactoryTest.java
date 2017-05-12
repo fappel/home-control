@@ -16,12 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySourceProvider;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySourceProvider;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
-import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialogUtil.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.Messages.ADD_ELEMENT_DIALOG_INVALID_KEY;
+import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
 import static com.codeaffine.util.ArgumentVerification.*;
 import static org.eclipse.jface.layout.GridLayoutFactory.fillDefaults;
 

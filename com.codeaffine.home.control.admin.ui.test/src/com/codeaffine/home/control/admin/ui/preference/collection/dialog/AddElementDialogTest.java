@@ -2,7 +2,7 @@ package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.ADDITION_INFO_VALUE;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.AddElementDialogUtil.*;
-import static com.codeaffine.home.control.admin.ui.test.DisplayHelper.flushPendingEvents;
+import static com.codeaffine.home.control.admin.ui.test.util.DisplayHelper.flushPendingEvents;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.swt.SWT.OK;
@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class AddElementDialogTest {
 

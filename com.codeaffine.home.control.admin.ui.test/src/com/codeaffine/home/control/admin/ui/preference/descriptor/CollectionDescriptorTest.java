@@ -11,11 +11,11 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 public class CollectionDescriptorTest {
 

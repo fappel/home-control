@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeAction;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 public class ActionBarAdapterTest {
 

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control Admin UI Util
+Bundle-SymbolicName: com.codeaffine.home.control.admin.ui.util
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.rap.rwt;bundle-version="3.2.0",
+ org.eclipse.rap.jface;bundle-version="3.2.0",
+ com.codeaffine.util;bundle-version="0.1.0"
+Export-Package: com.codeaffine.home.control.admin.ui.util.viewer.property,
+ com.codeaffine.home.control.admin.ui.util.widget.layout

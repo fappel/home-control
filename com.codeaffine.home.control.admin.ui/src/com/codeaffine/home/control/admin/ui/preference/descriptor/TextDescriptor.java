@@ -2,9 +2,9 @@ package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.TextPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.TextPropertyDescriptor;
 
 class TextDescriptor implements AttributeDescriptor {
 

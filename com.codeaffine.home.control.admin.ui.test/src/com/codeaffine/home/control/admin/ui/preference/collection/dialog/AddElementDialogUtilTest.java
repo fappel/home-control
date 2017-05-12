@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
 import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.*;
-import static com.codeaffine.home.control.admin.ui.test.DisplayHelper.flushPendingEvents;
+import static com.codeaffine.home.control.admin.ui.test.util.DisplayHelper.flushPendingEvents;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.swt.SWT.*;
 import static org.mockito.Matchers.any;
@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
 
 public class AddElementDialogUtilTest {
 

@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
 
-import com.codeaffine.home.control.admin.ui.internal.property.PropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertyDescriptor;
 
 public class CollectionPropertyDescriptor extends PropertyDescriptor {
 

@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySourceProvider;
 import com.codeaffine.home.control.admin.ui.preference.collection.CollectionValue;
 import com.codeaffine.home.control.admin.ui.preference.collection.ListObjectInfo;
 import com.codeaffine.home.control.admin.ui.preference.collection.MapObjectInfo;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
 import com.codeaffine.home.control.admin.ui.preference.collection.SetObjectInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySourceProvider;
 
 public class PropertySourceProviderFactory {
 

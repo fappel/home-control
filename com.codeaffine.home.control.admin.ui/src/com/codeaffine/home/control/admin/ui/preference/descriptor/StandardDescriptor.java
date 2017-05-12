@@ -8,9 +8,9 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Method;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.TextPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.TextPropertyDescriptor;
 
 class StandardDescriptor implements AttributeDescriptor {
 

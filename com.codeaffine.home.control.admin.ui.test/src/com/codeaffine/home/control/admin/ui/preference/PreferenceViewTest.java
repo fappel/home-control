@@ -1,8 +1,8 @@
 package com.codeaffine.home.control.admin.ui.preference;
 
-import static com.codeaffine.home.control.admin.ui.test.DisplayHelper.flushPendingEvents;
 import static com.codeaffine.home.control.admin.ui.test.ObjectInfoHelper.*;
 import static com.codeaffine.home.control.admin.ui.test.PreferenceInfoHelper.*;
+import static com.codeaffine.home.control.admin.ui.test.util.DisplayHelper.flushPendingEvents;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
@@ -15,9 +15,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySheetEntry;
 import com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter;
-import com.codeaffine.home.control.admin.ui.test.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySheetEntry;
 
 public class PreferenceViewTest {
 

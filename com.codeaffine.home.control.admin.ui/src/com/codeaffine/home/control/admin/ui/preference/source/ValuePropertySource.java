@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.preference.source;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertySource;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertySource;
 
 public class ValuePropertySource implements IPropertySource {
 

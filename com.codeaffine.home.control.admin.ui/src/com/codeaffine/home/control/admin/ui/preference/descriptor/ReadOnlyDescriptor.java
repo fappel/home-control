@@ -4,9 +4,9 @@ import static com.codeaffine.home.control.admin.ui.preference.descriptor.Message
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.lang.String.format;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
-import com.codeaffine.home.control.admin.ui.internal.property.PropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertyDescriptor;
 
 class ReadOnlyDescriptor implements AttributeDescriptor {
 

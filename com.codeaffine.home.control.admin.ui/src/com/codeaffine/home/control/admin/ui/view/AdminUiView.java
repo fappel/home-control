@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.control.Banner.newBanner;
-import static com.codeaffine.home.control.admin.ui.internal.util.FormDatas.attach;
+import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
 
 import java.util.List;
 import java.util.Optional;

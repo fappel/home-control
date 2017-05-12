@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.widgets.Composite;
 
-import com.codeaffine.home.control.admin.ui.internal.property.IPropertyDescriptor;
 import com.codeaffine.home.control.admin.ui.preference.info.AttributeInfo;
+import com.codeaffine.home.control.admin.ui.util.viewer.property.IPropertyDescriptor;
 
 class ActionBarAdapter implements IPropertyDescriptor {
 
