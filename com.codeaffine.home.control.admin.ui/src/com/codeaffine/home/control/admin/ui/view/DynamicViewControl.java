@@ -1,5 +1,7 @@
 package com.codeaffine.home.control.admin.ui.view;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+
 import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.rap.rwt.service.UISession;
 import org.eclipse.swt.widgets.Composite;
@@ -9,35 +11,39 @@ import com.codeaffine.home.control.admin.ui.api.PageFactorySupplier;
 
 public class DynamicViewControl {
 
-  private final ServerPushSession serverPushSession;
   private final PageFactorySupplier pageFactories;
   private final ViewContentLifeCycle lifeCycle;
+  private final ServerPushSession serverPush;
   private final UISession uiSession;
 
-  public DynamicViewControl( ViewContentLifeCycle lifeCycle, PageFactorySupplier pageFactories, UISession uiSession ) {
-    this.serverPushSession = new ServerPushSession();
+  public DynamicViewControl(
+    ViewContentLifeCycle lifeCycle, PageFactorySupplier pageFactories, UISession session, ServerPushSession serverPush )
+  {
+    verifyNotNull( pageFactories, "pageFactories" );
+    verifyNotNull( serverPush, "serverPush" );
+    verifyNotNull( lifeCycle, "lifeCycle" );
+    verifyNotNull( session, "session" );
+
     this.pageFactories = pageFactories;
+    this.serverPush = serverPush;
     this.lifeCycle = lifeCycle;
-    this.uiSession = uiSession;
+    this.uiSession = session;
   }
 
   public void createContent( Composite parent ) {
-    activateServerPush();
+    verifyNotNull( parent, "parent" );
+
+    serverPush.start();
     lifeCycle.createViewContent( parent );
-    registerUpdateHook( parent );
-    ensureViewDisposalAtEndOfSession();
+    Runnable updateHook = registerUpdateHook( parent );
+    ensureCleanupAtEndOfSession( updateHook );
   }
 
-  private void activateServerPush() {
-    serverPushSession.start();
-    uiSession.addUISessionListener( evt -> serverPushSession.stop() );
-  }
-
-  private void registerUpdateHook( Composite parent ) {
+  private Runnable registerUpdateHook( Composite parent ) {
     Display display = parent.getDisplay();
-    Runnable updateHook = () -> display.asyncExec( () -> updateViewContent( parent ) );
-    pageFactories.registerUpdateHook( updateHook );
-    uiSession.addUISessionListener( evt -> pageFactories.deregisterUpdateHook( updateHook ) );
+    Runnable result = () -> display.asyncExec( () -> updateViewContent( parent ) );
+    pageFactories.registerUpdateHook( result );
+    return result;
   }
 
   private void updateViewContent( Composite parent ) {
@@ -46,7 +52,10 @@ public class DynamicViewControl {
     parent.layout();
   }
 
-  private boolean ensureViewDisposalAtEndOfSession() {
-    return uiSession.addUISessionListener( evt -> lifeCycle.disposeViewContent() );
+  private void ensureCleanupAtEndOfSession( Runnable updateHook ) {
+    uiSession.addUISessionListener( evt -> {
+      pageFactories.deregisterUpdateHook( updateHook );
+      lifeCycle.disposeViewContent();
+    } );
   }
 }

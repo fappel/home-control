@@ -7,6 +7,7 @@ import static org.eclipse.swt.SWT.NO_TRIM;
 import java.util.Locale;
 
 import org.eclipse.rap.rwt.application.EntryPoint;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
@@ -44,7 +45,7 @@ class AdminUiEntryPoint implements EntryPoint {
     ActionMap actionMap = new ActionMap();
     AdminUiView view = new AdminUiView( actionMap );
     ViewContentLifeCycle lifeCycle = new ViewContentLifeCycle( view, pageFactories, actionMap );
-    return new DynamicViewControl( lifeCycle, pageFactories, getUISession() );
+    return new DynamicViewControl( lifeCycle, pageFactories, getUISession(), new ServerPushSession() );
   }
 
   private static void showUi( DynamicViewControl dynamicViewControl ) {
