@@ -1,0 +1,21 @@
+.pageSelector {
+	text-decoration: none;
+	color: #4a4a4a; 
+}
+
+.pageSelector:hover { 
+	font-style: italic;
+	text-decoration: underline;
+	color: #4a4a4a;
+}
+
+.pageSelectorSelected {
+	text-decoration: none;
+	color: #ffffff;
+}
+
+.pageSelectorSelected:hover {
+	font-style: italic;
+	text-decoration: underline;
+	color: #ffffff;
+}

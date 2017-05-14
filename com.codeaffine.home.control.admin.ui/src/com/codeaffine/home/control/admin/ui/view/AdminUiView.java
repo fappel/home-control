@@ -2,13 +2,11 @@ package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.control.Banner.newBanner;
 import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
-import static com.codeaffine.home.control.admin.ui.view.UiActions.getFragmentId;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.eclipse.rap.rwt.client.service.BrowserNavigation;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -19,16 +17,14 @@ import com.codeaffine.home.control.admin.ui.control.Stack;
 
 public class AdminUiView {
 
-  private final BrowserNavigation browser;
   private final ActionSupplier actions;
   private final List<Page> pages;
 
   private Banner banner;
   private Stack stack;
 
-  public AdminUiView( ActionSupplier actions, BrowserNavigation browser ) {
+  public AdminUiView( ActionSupplier actions ) {
     this.pages = new CopyOnWriteArrayList<>();
-    this.browser = browser;
     this.actions = actions;
   }
 
@@ -68,7 +64,6 @@ public class AdminUiView {
   }
 
   private void wireEventHandlers() {
-    browser.addBrowserNavigationListener( evt -> selectPage( findPageByFragmentId( evt.getState() ) ) );
     findFirstPage().ifPresent( page -> selectPage( page ) );
   }
 
@@ -78,10 +73,6 @@ public class AdminUiView {
 
   private Optional<Page> findFirstPage() {
     return pages.stream().findFirst();
-  }
-
-  private Page findPageByFragmentId( String fragment ) {
-    return pages.stream().filter( page -> getFragmentId( page ).equals( fragment ) ).findAny().get();
   }
 
   private static Banner createBanner( Composite parent, ActionSupplier actionSupplier ) {

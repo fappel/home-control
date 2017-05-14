@@ -1,13 +1,12 @@
 package com.codeaffine.home.control.admin.ui;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
-import static org.eclipse.rap.rwt.RWT.*;
+import static org.eclipse.rap.rwt.RWT.getUISession;
 import static org.eclipse.swt.SWT.NO_TRIM;
 
 import java.util.Locale;
 
 import org.eclipse.rap.rwt.application.EntryPoint;
-import org.eclipse.rap.rwt.client.service.BrowserNavigation;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
@@ -43,8 +42,8 @@ class AdminUiEntryPoint implements EntryPoint {
 
   private DynamicViewControl prepareView() {
     ActionMap actionMap = new ActionMap();
-    AdminUiView view = new AdminUiView( actionMap, getBrowserNavigation() );
-    ViewContentLifeCycle lifeCycle = new ViewContentLifeCycle( view, pageFactories, actionMap, getBrowserNavigation() );
+    AdminUiView view = new AdminUiView( actionMap );
+    ViewContentLifeCycle lifeCycle = new ViewContentLifeCycle( view, pageFactories, actionMap );
     return new DynamicViewControl( lifeCycle, pageFactories, getUISession() );
   }
 
@@ -59,9 +58,5 @@ class AdminUiEntryPoint implements EntryPoint {
     result.setMaximized( true );
     result.setLayout( layout );
     return result;
-  }
-
-  private static BrowserNavigation getBrowserNavigation() {
-    return getClient().getService( BrowserNavigation.class );
   }
 }

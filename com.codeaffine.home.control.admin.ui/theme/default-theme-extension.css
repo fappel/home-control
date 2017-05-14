@@ -6,38 +6,18 @@ Button.attributeCellEditorActionBar[PUSH], Button.attributeCellEditorActionBar[A
   background-image: none;
 }
 
-Button.pageSelector[PUSH] {
-	border: none;
-	padding: 10px 10px;
-	text-align: center;
-	border-radius: 0px;
-  background-image: none;
+CCombo.addElementDialogValueEditor {
+	border-bottom: 1px solid #c3c3c3;
+}
+
+Composite.pageSelector {
   color: #4a4a4a;
   background-color: #ffffff;
 }
 
-Button.pageSelector[PUSH]:hover {
-	border: none;
-	padding: 10px 10px;
-	text-align: center;
-	border-radius: 0px;
-  background-image: none;
-  color: #ffffff;
-  background-color: #4a4a4a;
-}
-
-Button.pageSelectorSelected[PUSH] {
-	border: none;
-	padding: 10px 10px;
-	text-align: center;
-	border-radius: 0px;
-  background-image: none;
+Composite.pageSelectorSelected {
   color: #ffffff;
   background-color: #F34F29;
-}
-
-CCombo.addElementDialogValueEditor {
-	border-bottom: 1px solid #c3c3c3;
 }
 
 Label.addElementDialogValidationMessage {
@@ -57,6 +37,28 @@ Label.bannerSeparator {
 Label.logo {
   font: bold 28px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
   color: #F34F29;	
+}
+
+Label.pageSelector {
+  border: none;
+  padding: 10px 10px;
+  text-align: center;
+  border-radius: 0px;
+  background-image: none;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  text-shadow: none;
+}
+
+Label.pageSelectorSelected {
+  border: none;
+  padding: 10px 10px;
+  text-align: center;
+  border-radius: 0px;
+  background-image: none;
+  color: #ffffff;
+  background-color: #F34F29;
+  text-shadow: none;
 }
 
 Text.addElementDialogValueEditor {
