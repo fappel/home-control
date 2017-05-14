@@ -2,6 +2,7 @@ package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.control.Banner.newBanner;
 import static com.codeaffine.home.control.admin.ui.util.widget.layout.FormDatas.attach;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ public class AdminUiView {
   private Stack stack;
 
   public AdminUiView( ActionSupplier actions ) {
+    verifyNotNull( actions, "actions" );
+
     this.pages = new CopyOnWriteArrayList<>();
     this.actions = actions;
   }
@@ -34,10 +37,15 @@ public class AdminUiView {
   }
 
   void showPage( Object pageId ) {
+    verifyNotNull( pageId, "pageId" );
+
     stack.show( pageId );
   }
 
   void createContent( Composite parent, List<Page> pages ) {
+    verifyNotNull( parent, "parent" );
+    verifyNotNull( pages, "pages" );
+
     this.pages.addAll( pages );
     parent.setLayout( new FormLayout() );
     createComponents( parent );
