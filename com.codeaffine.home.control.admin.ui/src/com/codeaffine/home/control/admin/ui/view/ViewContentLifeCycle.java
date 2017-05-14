@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.view.UiActions.activatePage;
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.swt.SWT.NONE;
 
@@ -23,6 +24,10 @@ public class ViewContentLifeCycle {
   private final List<Page> pages;
 
   public ViewContentLifeCycle( AdminUiView view, PageFactorySupplier pageFactories, ActionMap actionMap ) {
+    verifyNotNull( pageFactories, "pageFactories" );
+    verifyNotNull( actionMap, "actionMap" );
+    verifyNotNull( view, "view" );
+
     this.viewControl = new AtomicReference<>();
     this.pages = new ArrayList<>();
     this.pageFactories = pageFactories;
@@ -31,6 +36,8 @@ public class ViewContentLifeCycle {
   }
 
   void createViewContent( Composite parent ) {
+    verifyNotNull( parent, "parent" );
+
     pages.addAll( createPages() );
     mapViewNavigationActions( view, pages );
     viewControl.set( new Composite( parent, NONE ) );

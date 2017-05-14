@@ -19,11 +19,17 @@ public class ActionMapTest {
   }
 
   @Test
+  public void initialState() {
+    assertThat( actionMap.isEmpty() ).isTrue();
+  }
+
+  @Test
   public void putAction() {
     actionMap.putAction( ACTION_ID, ACTION );
     Runnable actual = actionMap.getAction( ACTION_ID );
 
     assertThat( actual ).isSameAs( ACTION );
+    assertThat( actionMap.isEmpty() ).isFalse();
   }
 
   @Test
@@ -34,6 +40,7 @@ public class ActionMapTest {
     Throwable actual = thrownBy( () -> actionMap.getAction( ACTION_ID ) );
 
     assertThat( actual ).isInstanceOf( IllegalArgumentException.class );
+    assertThat( actionMap.isEmpty() ).isTrue();
   }
 
   @Test( expected = IllegalArgumentException.class )

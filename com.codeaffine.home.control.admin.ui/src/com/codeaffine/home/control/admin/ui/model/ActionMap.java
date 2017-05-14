@@ -36,4 +36,8 @@ public class ActionMap implements ActionSupplier {
 
     actions.remove( actionId );
   }
+
+  public boolean isEmpty() {
+    return actions.isEmpty();
+  }
 }
