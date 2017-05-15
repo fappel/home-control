@@ -10,10 +10,20 @@ import com.codeaffine.home.control.preference.PreferenceModel;
 public class HomeControlAdminService {
 
   private ComponentAccessService componentAccessService;
+  private final PreferenceProxyFactory preferenceProxyFactory;
+
+  public HomeControlAdminService() {
+    preferenceProxyFactory = new PreferenceProxyFactory();
+  }
 
   public PreferenceIntrospection getPreferenceIntrospection() {
     checkInitialization();
     return componentAccessService.submit( supplier -> newIntrospection( supplier ) );
+  }
+
+  public <T> T getPreference( Class<T> preferenceType ) {
+    checkInitialization();
+    return componentAccessService.submit( supplier -> getPreference( supplier, preferenceType ) );
   }
 
   public void bind( ComponentAccessService componentAccessService ) {
@@ -22,7 +32,9 @@ public class HomeControlAdminService {
     this.componentAccessService = componentAccessService;
   }
 
-  public void unbind( @SuppressWarnings("unused") ComponentAccessService componentAccessService ) {
+  public void unbind( ComponentAccessService componentAccessService ) {
+    verifyNotNull( componentAccessService, "componentAccessService" );
+
     this.componentAccessService = null;
   }
 
@@ -34,5 +46,10 @@ public class HomeControlAdminService {
     if( componentAccessService == null ) {
       throw new IllegalStateException( ERROR_NOT_INITIALIZED );
     }
+  }
+
+  private <T> T getPreference( ComponentSupplier supplier, Class<T> preferenceType ) {
+    T delegate = supplier.get( PreferenceModel.class ).get( preferenceType );
+    return preferenceProxyFactory.create( delegate, preferenceType, componentAccessService );
   }
 }
