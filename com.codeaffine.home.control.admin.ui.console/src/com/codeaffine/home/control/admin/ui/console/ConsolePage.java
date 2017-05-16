@@ -11,8 +11,8 @@ public class ConsolePage implements Page {
 
   private Control control;
 
-  public ConsolePage() {
-    console = new OSGiConsole();
+  public ConsolePage( ConsolePreference preference ) {
+    console = new OSGiConsole( preference );
   }
 
   @Override

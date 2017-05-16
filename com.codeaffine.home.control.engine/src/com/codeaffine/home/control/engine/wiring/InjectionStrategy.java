@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.component.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.logger.LoggerFactory;
 import com.codeaffine.home.control.preference.Preference;

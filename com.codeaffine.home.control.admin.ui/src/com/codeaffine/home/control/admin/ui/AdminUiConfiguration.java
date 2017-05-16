@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.admin.ui;
 
+import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static com.eclipsesource.tabris.TabrisClientInstaller.install;
 import static java.lang.String.format;
 import static org.eclipse.rap.rwt.RWT.DEFAULT_THEME_ID;
@@ -13,6 +14,7 @@ import java.util.Map;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
+import com.codeaffine.home.control.admin.HomeControlAdminService;
 import com.codeaffine.home.control.admin.ui.api.PageFactory;
 import com.codeaffine.home.control.admin.ui.model.PageFactoryList;
 
@@ -24,6 +26,7 @@ public class AdminUiConfiguration implements ApplicationConfiguration {
   private static final String SERVLET_PATH = "/admin";
 
   private final PageFactoryList pageFactoryList;
+  private HomeControlAdminService adminService;
 
   public AdminUiConfiguration() {
     pageFactoryList = new PageFactoryList();
@@ -36,7 +39,19 @@ public class AdminUiConfiguration implements ApplicationConfiguration {
     properties.put( HEAD_HTML, format( STYLE_SHEET_LINK_PATTERN, RESOURCES, STANDARD_THEME_NATIVE ) );
     application.addResource( STANDARD_THEME_NATIVE, location -> getResourceAsStream( location ) );
     application.addStyleSheet( DEFAULT_THEME_ID, STANDARD_THEME_EXTENSION );
-    application.addEntryPoint( SERVLET_PATH, () -> new AdminUiEntryPoint( pageFactoryList ), properties );
+    application.addEntryPoint( SERVLET_PATH, () -> new AdminUiEntryPoint( pageFactoryList, adminService ), properties );
+  }
+
+  public void bindHomeControlAdminService( HomeControlAdminService adminService ) {
+    verifyNotNull( adminService, "adminService" );
+
+    this.adminService = adminService;
+  }
+
+  public void unbindHomeControlAdminService( HomeControlAdminService adminService ) {
+    verifyNotNull( adminService, "adminService" );
+
+    this.adminService = null;
   }
 
   public void addPageFactory( PageFactory pageFactory ) {

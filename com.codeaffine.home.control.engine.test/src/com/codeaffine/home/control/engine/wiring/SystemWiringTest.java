@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.engine.wiring;
 
-import static com.codeaffine.home.control.engine.preference.PreferencePersistence.ENV_CONFIGURATION_DIRECTORY;
+import static com.codeaffine.home.control.engine.component.preference.PreferencePersistence.ENV_CONFIGURATION_DIRECTORY;
 import static com.codeaffine.home.control.engine.wiring.Messages.*;
 import static com.codeaffine.home.control.test.util.entity.MyEntityProvider.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.*;
@@ -30,7 +30,8 @@ import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.Schedule;
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.SystemExecutor;
-import com.codeaffine.home.control.engine.preference.PreferencePersistence;
+import com.codeaffine.home.control.engine.component.preference.PreferencePersistence;
+import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.entity.EntityRelationProvider;
@@ -135,6 +136,7 @@ public class SystemWiringTest {
     System.getProperties().put( ENV_CONFIGURATION_DIRECTORY, tempFolder.getRoot().getCanonicalPath() );
     contextConsumer = spyOfContextConsumer();
     context = new com.codeaffine.util.inject.Context();
+    context.set( BundleDeactivationTracker.class, mock( BundleDeactivationTracker.class ) );
     contextFactory = stubContextFactory( context );
     configuration = spy( new Configuration() );
     scheduledFuture = mock( ScheduledFuture.class );

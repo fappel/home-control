@@ -4,7 +4,7 @@ import static com.codeaffine.home.control.engine.activation.Messages.*;
 
 import com.codeaffine.home.control.SystemConfiguration;
 import com.codeaffine.home.control.engine.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.component.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.engine.wiring.SystemWiring;
 import com.codeaffine.home.control.logger.Logger;
 

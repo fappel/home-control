@@ -8,7 +8,8 @@ import org.junit.Test;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.engine.preference.PreferenceModelImpl;
+import com.codeaffine.home.control.engine.component.preference.PreferenceModelImpl;
+import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.logger.Logger;
@@ -68,9 +69,11 @@ public class InjectionStrategyTest {
   @Before
   public void setUp() {
     registry = mock( Registry.class );
+    EventBus eventBus = mock( EventBus.class );
+    BundleDeactivationTracker bundleDeactivationTracker = mock( BundleDeactivationTracker.class );
     context = new Context( new InjectionStrategy() );
     context.set( Registry.class, registry );
-    context.set( PreferenceModel.class, new PreferenceModelImpl( mock( EventBus.class ) ) );
+    context.set( PreferenceModel.class, new PreferenceModelImpl( eventBus, bundleDeactivationTracker ) );
   }
 
   @Test

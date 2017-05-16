@@ -1,7 +1,9 @@
 package com.codeaffine.home.control.admin.ui.preference.source;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
+import static java.util.stream.Collectors.toMap;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.codeaffine.home.control.admin.PreferenceInfo;
@@ -11,17 +13,22 @@ import com.codeaffine.home.control.admin.ui.util.viewer.property.PropertyDescrip
 
 public class PreferencePropertySource implements IPropertySource {
 
-  private final PreferenceInfo info;
+  private final Map<String, PreferenceInfo> infos;
 
-  public PreferencePropertySource( PreferenceInfo info ) {
-    verifyNotNull( info, "info" );
+  public PreferencePropertySource( PreferenceInfo ... infos ) {
+    verifyNotNull( infos, "infos" );
 
-    this.info = info;
+    this.infos = Stream.of( infos ).collect( toMap( key -> key.getName(), value -> value ) );
+
   }
 
   @Override
   public IPropertyDescriptor[] getPropertyDescriptors() {
-    return Stream.of( new PropertyDescriptor( info.getName(), info.getName() ) ).toArray( IPropertyDescriptor[]::new );
+    return infos
+      .keySet()
+      .stream()
+      .map( attributeName -> new PropertyDescriptor( attributeName, attributeName ) )
+      .toArray( IPropertyDescriptor[]::new );
   }
 
   @Override
@@ -35,7 +42,7 @@ public class PreferencePropertySource implements IPropertySource {
   public Object getPropertyValue( Object id ) {
     verifyNotNull( id, "id" );
 
-    return info;
+    return infos.get( id );
   }
 
   @Override

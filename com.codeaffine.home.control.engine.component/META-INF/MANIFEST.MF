@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Home Control Engine Component
+Bundle-SymbolicName: com.codeaffine.home.control.engine.component
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEAFFINE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.codeaffine.home.control.api;bundle-version="1.0.0",
+ com.codeaffine.home.control.util;bundle-version="1.0.0",
+ com.codeaffine.util,
+ com.google.guava;bundle-version="10.0.1",
+ com.google.gson;bundle-version="2.5.0",
+ org.eclipse.osgi;bundle-version="3.10.2"
+Export-Package: com.codeaffine.home.control.engine.component.event,
+ com.codeaffine.home.control.engine.component.logger,
+ com.codeaffine.home.control.engine.component.preference,
+ com.codeaffine.home.control.engine.component.util
+Import-Package: org.slf4j
+Bundle-ActivationPolicy: lazy

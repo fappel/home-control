@@ -3,8 +3,15 @@ package com.codeaffine.home.control.admin.app.mock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+
 import com.codeaffine.home.control.ComponentAccessService;
 import com.codeaffine.home.control.Context;
+import com.codeaffine.home.control.engine.component.event.EventBusImpl;
+import com.codeaffine.home.control.engine.component.preference.PreferenceModelImpl;
+import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.preference.PreferenceModel;
 import com.codeaffine.home.control.test.util.context.TestContext;
 
@@ -29,8 +36,11 @@ public class ComponentAccessServiceMock implements ComponentAccessService {
 
   public ComponentAccessServiceMock() {
     context = new TestContext();
-    context.set( PreferenceModel.class, new PreferenceModelImpl() );
+    context.set( EventBus.class, context.create( EventBusImpl.class ) );
+    context.set( BundleDeactivationTracker.class, new BundleDeactivationTracker( getBundleContext() ) );
+    context.set( PreferenceModel.class, context.create( PreferenceModelImpl.class ) );
     supplier = new ComponentSupplierImplementation( context );
+    context.get( PreferenceModel.class ).get( MockPreference.class );
   }
 
   @Override
@@ -41,5 +51,9 @@ public class ComponentAccessServiceMock implements ComponentAccessService {
   @Override
   public <T> T submit( Function<ComponentSupplier, T> task ) {
     return task.apply( supplier );
+  }
+
+  private BundleContext getBundleContext() {
+    return FrameworkUtil.getBundle( getClass() ).getBundleContext();
   }
 }

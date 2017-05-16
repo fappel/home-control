@@ -7,6 +7,7 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -18,16 +19,19 @@ import com.codeaffine.home.control.admin.ui.control.Stack;
 
 public class AdminUiView {
 
+  private final AdminUiPreference preference;
   private final ActionSupplier actions;
   private final List<Page> pages;
 
   private Banner banner;
   private Stack stack;
 
-  public AdminUiView( ActionSupplier actions ) {
+  public AdminUiView( ActionSupplier actions, AdminUiPreference preference ) {
+    verifyNotNull( preference, "preference" );
     verifyNotNull( actions, "actions" );
 
     this.pages = new CopyOnWriteArrayList<>();
+    this.preference = preference;
     this.actions = actions;
   }
 
@@ -60,10 +64,20 @@ public class AdminUiView {
   }
 
   private void initializeContent() {
-    pages.forEach( page -> {
+    streamOfPages().forEach( page -> {
       banner.getNavigationBar().newItem( page, page.getLabel() );
       stack.newElement( page, elementParent -> page.createContent( elementParent ) );
     } );
+  }
+
+  private Stream<Page> streamOfPages() {
+    return pages.stream().sorted( ( page1, page2 ) -> compare( page1, page2 ) );
+  }
+
+  private int compare( Page page1, Page page2 ) {
+    int indexOf1 = preference.getPageOrder().indexOf( page1.getLabel() );
+    int indexOf2 = preference.getPageOrder().indexOf( page2.getLabel() );
+    return indexOf1 - indexOf2;
   }
 
   private void layoutComponents() {
@@ -80,7 +94,7 @@ public class AdminUiView {
   }
 
   private Optional<Page> findFirstPage() {
-    return pages.stream().findFirst();
+    return streamOfPages().findFirst();
   }
 
   private static Banner createBanner( Composite parent, ActionSupplier actionSupplier ) {

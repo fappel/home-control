@@ -9,7 +9,7 @@ import org.osgi.framework.BundleContext;
 
 import com.codeaffine.home.control.engine.adapter.ItemRegistryAdapter;
 import com.codeaffine.home.control.engine.adapter.ShutdownDispatcher;
-import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.component.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.engine.util.SystemExecutorImpl;
 import com.codeaffine.home.control.engine.wiring.ContextFactory;
 import com.codeaffine.home.control.engine.wiring.SystemWiring;
@@ -47,7 +47,7 @@ public class Activator implements BundleActivator {
     BundleContext context, ShutdownDispatcher shutdownDispatcher, SystemExecutorImpl executor )
   {
     ItemRegistryAdapter registry = new ItemRegistryAdapter( context, shutdownDispatcher, executor );
-    ContextFactory contextFactory = new SystemContextFactory( registry );
+    ContextFactory contextFactory = new SystemContextFactory( registry, context );
     return new SystemWiring( contextFactory, registry, executor );
   }
 

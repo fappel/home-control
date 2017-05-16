@@ -13,20 +13,25 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 
+import com.codeaffine.home.control.admin.HomeControlAdminService;
 import com.codeaffine.home.control.admin.ui.api.PageFactorySupplier;
 import com.codeaffine.home.control.admin.ui.model.ActionMap;
+import com.codeaffine.home.control.admin.ui.view.AdminUiPreference;
 import com.codeaffine.home.control.admin.ui.view.AdminUiView;
 import com.codeaffine.home.control.admin.ui.view.DynamicViewControl;
 import com.codeaffine.home.control.admin.ui.view.ViewContentLifeCycle;
 
 class AdminUiEntryPoint implements EntryPoint {
 
+  private final HomeControlAdminService adminService;
   private final PageFactorySupplier pageFactories;
 
-  AdminUiEntryPoint( PageFactorySupplier pageFactories ) {
+  AdminUiEntryPoint( PageFactorySupplier pageFactories, HomeControlAdminService adminService ) {
     verifyNotNull( pageFactories, "pageFactories" );
+    verifyNotNull( adminService, "adminService" );
 
     this.pageFactories = pageFactories;
+    this.adminService = adminService;
   }
 
   @Override
@@ -43,7 +48,7 @@ class AdminUiEntryPoint implements EntryPoint {
 
   private DynamicViewControl prepareView() {
     ActionMap actionMap = new ActionMap();
-    AdminUiView view = new AdminUiView( actionMap );
+    AdminUiView view = new AdminUiView( actionMap, adminService.getPreference( AdminUiPreference.class ) );
     ViewContentLifeCycle lifeCycle = new ViewContentLifeCycle( view, pageFactories, actionMap );
     return new DynamicViewControl( lifeCycle, pageFactories, getUISession(), new ServerPushSession() );
   }

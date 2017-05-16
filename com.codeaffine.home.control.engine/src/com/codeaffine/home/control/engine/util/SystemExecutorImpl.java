@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.codeaffine.home.control.SystemExecutor;
-import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.component.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.logger.Logger;
 
 public class SystemExecutorImpl implements SystemExecutor {

@@ -17,6 +17,8 @@ import com.codeaffine.home.control.admin.ui.console.SessionFactory.Session;
 public class OSGiConsole {
 
   private final SessionFactory sessionFactory;
+  private final ConsolePreference preference;
+
   private ConsoleStreamSupplier streamSupplier;
   private ServerPushSession serverPushSession;
   private OutputProcessor outputProcessor;
@@ -24,7 +26,8 @@ public class OSGiConsole {
   private Session session;
   private Text consoleWidget;
 
-  public OSGiConsole() {
+  public OSGiConsole( ConsolePreference preference ) {
+    this.preference = preference;
     sessionFactory = new SessionFactory();
   }
 
@@ -60,7 +63,7 @@ public class OSGiConsole {
     executorService.execute( () -> {
       try {
         session.put( "SCOPE", "equinox:*" );
-        session.put( "prompt", "osgi> " );
+        session.put( "prompt", preference.getPrompt() + " " );
         session.execute( "gosh --login --noshutdown" );
       } catch( Exception e ) {
         throw new IllegalStateException( e );

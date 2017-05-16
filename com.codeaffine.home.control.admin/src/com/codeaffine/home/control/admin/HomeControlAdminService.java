@@ -9,8 +9,10 @@ import com.codeaffine.home.control.preference.PreferenceModel;
 
 public class HomeControlAdminService {
 
-  private ComponentAccessService componentAccessService;
   private final PreferenceProxyFactory preferenceProxyFactory;
+
+  private ComponentAccessService componentAccessService;
+
 
   public HomeControlAdminService() {
     preferenceProxyFactory = new PreferenceProxyFactory();
@@ -38,14 +40,14 @@ public class HomeControlAdminService {
     this.componentAccessService = null;
   }
 
-  private PreferenceIntrospection newIntrospection( ComponentSupplier supplier ) {
-    return new PreferenceIntrospection( supplier.get( PreferenceModel.class ), componentAccessService );
-  }
-
   private void checkInitialization() throws IllegalStateException {
     if( componentAccessService == null ) {
       throw new IllegalStateException( ERROR_NOT_INITIALIZED );
     }
+  }
+
+  private PreferenceIntrospection newIntrospection( ComponentSupplier supplier ) {
+    return new PreferenceIntrospection( supplier.get( PreferenceModel.class ), componentAccessService );
   }
 
   private <T> T getPreference( ComponentSupplier supplier, Class<T> preferenceType ) {

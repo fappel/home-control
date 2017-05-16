@@ -5,10 +5,11 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
-import com.codeaffine.home.control.engine.activation.SystemContextFactory;
+import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.util.inject.Context;
 
@@ -17,7 +18,9 @@ public class SystemContextFactoryTest {
   public static final String ITEM_NAME = "itemName";
 
   private SystemContextFactory factory;
+  private BundleContext bundleContext;
   private Registry registry;
+
 
   static class ItemHandler {
 
@@ -35,7 +38,8 @@ public class SystemContextFactoryTest {
   @Before
   public void setUp() {
     registry = mock( Registry.class );
-    factory = new SystemContextFactory( registry );
+    bundleContext = mock( BundleContext.class );
+    factory = new SystemContextFactory( registry, bundleContext );
   }
 
   @Test
@@ -43,6 +47,7 @@ public class SystemContextFactoryTest {
     Context actual = factory.create();
 
     assertThat( actual.get( Registry.class ) ).isEqualTo( registry );
+    assertThat( actual.get( BundleDeactivationTracker.class ) ).isNotNull();
   }
 
   @Test

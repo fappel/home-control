@@ -4,6 +4,7 @@ import static com.codeaffine.home.control.admin.ui.view.UiActions.activatePage;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import com.codeaffine.home.control.admin.ui.api.Page;
 import com.codeaffine.home.control.admin.ui.model.ActionMap;
@@ -24,6 +26,7 @@ public class AdminUiViewTest {
   @Rule
   public final DisplayHelper displayHelper = new DisplayHelper();
 
+  private AdminUiPreference preference;
   private ActionMap actionMap;
   private AdminUiView view;
   private Shell parent;
@@ -32,7 +35,8 @@ public class AdminUiViewTest {
   public void setUp() {
     parent = displayHelper.createShell();
     actionMap = new ActionMap();
-    view = new AdminUiView( actionMap );
+    preference = mock( AdminUiPreference.class );
+    view = new AdminUiView( actionMap, preference );
     parent.open();
   }
 
@@ -47,6 +51,23 @@ public class AdminUiViewTest {
 
     assertThat( page1.getControl().isVisible() ).isTrue();
     assertThat( page2.getControl().isVisible() ).isFalse();
+  }
+
+  @Test
+  public void createContentWithReversePageOrderPreference() {
+    TestPage page1 = spy( new TestPage( PAGE_1 ) );
+    TestPage page2 = spy( new TestPage( PAGE_2 ) );
+    List<Page> pages = asList( page1, page2 );
+    pages.forEach( page -> actionMap.putAction( page, () -> activatePage( page, view ) ) );
+    when( preference.getPageOrder() ).thenReturn( asList( PAGE_2, PAGE_1 ) );
+
+    view.createContent( parent, pages );
+
+    InOrder order = inOrder( page1, page2 );
+    order.verify( page2 ).createContent( any() );
+    order.verify( page1 ).createContent( any() );
+    assertThat( page1.getControl().isVisible() ).isFalse();
+    assertThat( page2.getControl().isVisible() ).isTrue();
   }
 
   @Test
@@ -77,7 +98,12 @@ public class AdminUiViewTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsActionsArgument() {
-    new AdminUiView( null );
+    new AdminUiView( null, preference );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsPreferenceArgument() {
+    new AdminUiView( actionMap, null );
   }
 
   @Test( expected = IllegalArgumentException.class )

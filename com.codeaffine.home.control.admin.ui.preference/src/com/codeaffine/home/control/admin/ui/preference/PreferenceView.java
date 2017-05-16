@@ -52,12 +52,12 @@ public class PreferenceView {
     return rootEntryFactory.create( modifyAdapter );
   }
 
-  private ModifyAdapter createModifyAdapter( PreferenceInfo[] preferenceInfos ) {
+  private ModifyAdapter createModifyAdapter( PreferenceInfo ... preferenceInfos ) {
     Shell shell = propertySheetViewer.getControl().getShell();
     return new ModifyAdapter( shell, () -> shell.getDisplay().asyncExec( () -> updateViewer( preferenceInfos ) ) );
   }
 
-  private void updateViewer( PreferenceInfo[] preferenceInfos ) {
+  private void updateViewer( PreferenceInfo ... preferenceInfos ) {
     propertySheetViewer.getRootEntry().setValues( adapt( preferenceInfos ) );
   }
 
@@ -66,10 +66,8 @@ public class PreferenceView {
     expand( tree, tree.getItems() );
   }
 
-  private static Object[] adapt( PreferenceInfo[] preferenceInfos ) {
-    return Stream.of( preferenceInfos )
-      .map( info -> new PreferencePropertySource( info ) )
-      .toArray( PreferencePropertySource[]::new );
+  private static Object[] adapt( PreferenceInfo ... preferenceInfos ) {
+    return new Object[] { new PreferencePropertySource( preferenceInfos ) };
   }
 
   private void expand( Tree tree, TreeItem[] items ) {

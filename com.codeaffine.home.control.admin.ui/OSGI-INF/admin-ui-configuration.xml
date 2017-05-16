@@ -5,4 +5,5 @@
       <provide interface="org.eclipse.rap.rwt.application.ApplicationConfiguration"/>
    </service>
    <reference bind="addPageFactory" cardinality="1..n" interface="com.codeaffine.home.control.admin.ui.api.PageFactory" name="PageFactory" policy="dynamic" unbind="removePageFactory"/>
+   <reference bind="bindHomeControlAdminService" cardinality="1..1" interface="com.codeaffine.home.control.admin.HomeControlAdminService" name="HomeControlAdminService" policy="static" unbind="unbindHomeControlAdminService"/>
 </scr:component>

@@ -3,7 +3,7 @@ package com.codeaffine.home.control.engine.activation;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.codeaffine.home.control.engine.logger.LoggerFactoryAdapter;
+import com.codeaffine.home.control.engine.component.logger.LoggerFactoryAdapter;
 import com.codeaffine.home.control.engine.util.SafeRunnable;
 import com.codeaffine.home.control.logger.Logger;
 
