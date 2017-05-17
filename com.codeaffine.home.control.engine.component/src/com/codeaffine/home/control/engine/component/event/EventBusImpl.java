@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.codeaffine.home.control.Context.Disposable;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.event.Subscribe;
 
@@ -17,10 +18,16 @@ public class EventBusImpl implements EventBus, Disposable {
 
   private final Map<Object, Collection<ObserverAdapter>> observers;
   private final com.google.common.eventbus.EventBus eventBus;
+  private final TypeUnloadTracker typeUnloadTracker;
+  private final Map<Object, Runnable> unloadHooks;
 
-  public EventBusImpl() {
-    observers = new HashMap<>();
-    eventBus = new com.google.common.eventbus.EventBus();
+  public EventBusImpl( TypeUnloadTracker typeUnloadTracker ) {
+    verifyNotNull( typeUnloadTracker, "typeUnloadTracker" );
+
+    this.eventBus = new com.google.common.eventbus.EventBus();
+    this.unloadHooks = new HashMap<>();
+    this.observers = new HashMap<>();
+    this.typeUnloadTracker = typeUnloadTracker;
   }
 
   @Override
@@ -41,9 +48,10 @@ public class EventBusImpl implements EventBus, Disposable {
     verifyNotNull( eventObserver, "eventObserver" );
 
     Collection<ObserverAdapter> adapters = adapt( eventObserver );
-    if( !adapters.isEmpty() ) {
+    if( !adapters.isEmpty() && !observers.containsKey( eventObserver ) ) {
       observers.put( eventObserver, adapters );
       adapters.forEach( adapter -> eventBus.register( adapter ) );
+      typeUnloadTracker.registerUnloadHook( eventObserver.getClass(), getUnloadHook( eventObserver ) );
     }
   }
 
@@ -55,6 +63,7 @@ public class EventBusImpl implements EventBus, Disposable {
     if( removed != null ) {
       removed.forEach( adapter -> eventBus.unregister( adapter ) );
     }
+    removeUnloadHook( eventObserver );
   }
 
   private static Set<ObserverAdapter> adapt( Object eventObserver ) {
@@ -62,5 +71,18 @@ public class EventBusImpl implements EventBus, Disposable {
       .stream()
       .map( method -> new ObserverAdapter( method, eventObserver ) )
       .collect( toSet() );
+  }
+
+  private Runnable getUnloadHook( Object eventObserver ) {
+    Runnable result = () -> unregister( eventObserver );
+    unloadHooks.put( eventObserver, result );
+    return result;
+  }
+
+  private void removeUnloadHook( Object eventObserver ) {
+    Runnable hook = unloadHooks.remove( eventObserver );
+    if( hook != null ) {
+      typeUnloadTracker.unregisterUnloadHook( eventObserver.getClass(), hook );
+    }
   }
 }

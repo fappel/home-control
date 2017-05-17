@@ -10,7 +10,6 @@ import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.BundleEvent.*;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.junit.Before;
@@ -21,8 +20,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Version;
-
-import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
 
 @SuppressWarnings( "unchecked" )
 public class BundleDeactivationTrackerTest {
@@ -47,63 +44,63 @@ public class BundleDeactivationTrackerTest {
   }
 
   @Test
-  public void deactivateBundleWithRegisteredHook() {
+  public void unloadBundleWithRegisteredHook() {
     Bundle bundle = stubBundle( BUNDLE_ID_1, ACTIVE );
     stubBundleSupplier( ClassOfBundle1.class, bundle );
     AtomicReference<Class<?>> expected = new AtomicReference<>();
 
-    tracker.registerDeactivationHook( ClassOfBundle1.class, classOfBundle -> expected.set( classOfBundle ) );
+    tracker.registerUnloadHook( ClassOfBundle1.class, () -> expected.set( ClassOfBundle1.class ) );
     bundleListener.bundleChanged( new BundleEvent( STOPPING, bundle ) );
 
     assertThat( expected.get() ).isSameAs( ClassOfBundle1.class );
   }
 
   @Test
-  public void registerMultipleDeativationHooksForTheSameClassOfABundle() {
+  public void registerMultipleUnloadsHooksForTheSameClassOfABundle() {
     Bundle bundle = stubBundle( BUNDLE_ID_1, ACTIVE );
     stubBundleSupplier( ClassOfBundle1.class, bundle );
-    Consumer<Class<ClassOfBundle1>> hook1 = mock( Consumer.class );
-    Consumer<Class<ClassOfBundle1>> hook2 = mock( Consumer.class );
+    Runnable hook1 = mock( Runnable.class );
+    Runnable hook2 = mock( Runnable.class );
 
-    tracker.registerDeactivationHook( ClassOfBundle1.class, hook1 );
-    tracker.registerDeactivationHook( ClassOfBundle1.class, hook2 );
+    tracker.registerUnloadHook( ClassOfBundle1.class, hook1 );
+    tracker.registerUnloadHook( ClassOfBundle1.class, hook2 );
     bundleListener.bundleChanged( new BundleEvent( STOPPING, bundle ) );
 
-    verify( hook1 ).accept( ClassOfBundle1.class );
-    verify( hook2 ).accept( ClassOfBundle1.class );
+    verify( hook1 ).run();
+    verify( hook2 ).run();
   }
 
   @Test
-  public void registerMultipleDeativationHooksForDifferenctClassesOfABundle() {
+  public void registerMultipleUnloadHooksForDifferenctClassesOfABundle() {
     Bundle bundle = stubBundle( BUNDLE_ID_1, ACTIVE );
     stubBundleSupplier( ClassOfBundle1.class, bundle );
-    Consumer<Class<ClassOfBundle1>> hook1 = mock( Consumer.class );
-    tracker.registerDeactivationHook( ClassOfBundle1.class, hook1 );
+    Runnable hook1 = mock( Runnable.class );
+    tracker.registerUnloadHook( ClassOfBundle1.class, hook1 );
     stubBundleSupplier( ClassOfBundle2.class, bundle );
-    Consumer<Class<ClassOfBundle2>> hook2 = mock( Consumer.class );
-    tracker.registerDeactivationHook( ClassOfBundle2.class, hook2 );
+    Runnable hook2 = mock( Runnable.class );
+    tracker.registerUnloadHook( ClassOfBundle2.class, hook2 );
 
     bundleListener.bundleChanged( new BundleEvent( STOPPING, bundle ) );
 
-    verify( hook1 ).accept( ClassOfBundle1.class );
-    verify( hook2 ).accept( ClassOfBundle2.class );
+    verify( hook1 ).run();
+    verify( hook2 ).run();
   }
 
   @Test
-  public void registerDeativationHooksForClassesOfDifferentBundles() {
+  public void registerUnloadHooksForClassesOfDifferentBundles() {
     Bundle bundle1 = stubBundle( BUNDLE_ID_1, ACTIVE );
     stubBundleSupplier( ClassOfBundle1.class, bundle1 );
-    Consumer<Class<ClassOfBundle1>> hook1 = mock( Consumer.class );
-    tracker.registerDeactivationHook( ClassOfBundle1.class, hook1 );
+    Runnable hook1 = mock( Runnable.class );
+    tracker.registerUnloadHook( ClassOfBundle1.class, hook1 );
     Bundle bundle2 = stubBundle( BUNDLE_ID_2, ACTIVE );
     stubBundleSupplier( ClassOfBundle2.class, bundle2 );
-    Consumer<Class<ClassOfBundle2>> hook2 = mock( Consumer.class );
-    tracker.registerDeactivationHook( ClassOfBundle2.class, hook2 );
+    Runnable hook2 = mock( Runnable.class );
+    tracker.registerUnloadHook( ClassOfBundle2.class, hook2 );
 
     bundleListener.bundleChanged( new BundleEvent( STOPPING, bundle1 ) );
 
-    verify( hook1 ).accept( ClassOfBundle1.class );
-    verify( hook2, never() ).accept( ClassOfBundle2.class );
+    verify( hook1 ).run();
+    verify( hook2, never() ).run();
   }
 
   @Test
@@ -112,7 +109,7 @@ public class BundleDeactivationTrackerTest {
     stubBundleSupplier( ClassOfBundle1.class, bundle );
     AtomicReference<Class<?>> expected = new AtomicReference<>();
 
-    tracker.registerDeactivationHook( ClassOfBundle1.class, classOfBundle -> expected.set( classOfBundle ) );
+    tracker.registerUnloadHook( ClassOfBundle1.class, () -> expected.set( ClassOfBundle1.class ) );
     bundleListener.bundleChanged( new BundleEvent( STOPPING, bundle ) );
     expected.set( null );
     bundleListener.bundleChanged( new BundleEvent( STOPPED, bundle ) );
@@ -128,9 +125,9 @@ public class BundleDeactivationTrackerTest {
   public void deactivateBundleWithRegisteredHookOfInactiveBundle() {
     Bundle bundle = stubBundle( BUNDLE_ID_1, INSTALLED );
     stubBundleSupplier( ClassOfBundle1.class, bundle );
-    Consumer<Class<ClassOfBundle1>> hook = mock( Consumer.class );
+    Runnable hook = mock( Runnable.class );
 
-    Throwable actual = thrownBy( () -> tracker.registerDeactivationHook( ClassOfBundle1.class, hook ) );
+    Throwable actual = thrownBy( () -> tracker.registerUnloadHook( ClassOfBundle1.class, hook ) );
 
     assertThat( actual )
       .isInstanceOf( IllegalArgumentException.class )
@@ -152,13 +149,23 @@ public class BundleDeactivationTrackerTest {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerDeactivationHookWithNullAsClassOfBundleArgument() {
-    tracker.registerDeactivationHook( null, mock( Consumer.class ) );
+  public void registerUnloadHookWithNullAsTypeArgument() {
+    tracker.registerUnloadHook( null, mock( Runnable.class ) );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void registerDeactivationHookWithNullAsDeactivationHookArgument() {
-    tracker.registerDeactivationHook( ClassOfBundle1.class, null );
+  public void registerUnloadHookWithNullAsUnloadHookArgument() {
+    tracker.registerUnloadHook( ClassOfBundle1.class, null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void unregisterUnloadHookWithNullAsTypeArgument() {
+    tracker.unregisterUnloadHook( null, mock( Runnable.class ) );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void unregisterUnloadHookWithNullAsUnloadHookArgument() {
+    tracker.unregisterUnloadHook( ClassOfBundle1.class, null );
   }
 
   private static Bundle stubBundle( long bundleId, int state ) {

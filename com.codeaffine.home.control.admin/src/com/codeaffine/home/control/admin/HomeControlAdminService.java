@@ -5,6 +5,7 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.ComponentAccessService;
 import com.codeaffine.home.control.ComponentAccessService.ComponentSupplier;
+import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.preference.PreferenceModel;
 
 public class HomeControlAdminService {
@@ -24,8 +25,24 @@ public class HomeControlAdminService {
   }
 
   public <T> T getPreference( Class<T> preferenceType ) {
+    verifyNotNull( preferenceType, "preferenceType" );
     checkInitialization();
+
     return componentAccessService.submit( supplier -> getPreference( supplier, preferenceType ) );
+  }
+
+  public void registerEventObserver( Object eventObserver ) {
+    verifyNotNull( eventObserver, "eventObserver" );
+    checkInitialization();
+
+    componentAccessService.execute( supplier -> supplier.get( EventBus.class ).register( eventObserver ) );
+  }
+
+  public void unregisterEventObserver( Object eventObserver ) {
+    verifyNotNull( eventObserver, "eventObserver" );
+    checkInitialization();
+
+    componentAccessService.execute( supplier -> supplier.get( EventBus.class ).unregister( eventObserver ) );
   }
 
   public void bind( ComponentAccessService componentAccessService ) {

@@ -8,13 +8,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import com.codeaffine.home.control.admin.ui.api.PageFactorySupplier;
+import com.codeaffine.home.control.event.Subscribe;
+import com.codeaffine.home.control.preference.PreferenceEvent;
 
 public class DynamicViewControl {
+
+  static final String PREFERENCE_ATTRIBUTE_PAGE_ORDER = "pageOrder";
 
   private final PageFactorySupplier pageFactories;
   private final ViewContentLifeCycle lifeCycle;
   private final ServerPushSession serverPush;
   private final UISession uiSession;
+
+  private Runnable updateHook;
 
   public DynamicViewControl(
     ViewContentLifeCycle lifeCycle, PageFactorySupplier pageFactories, UISession session, ServerPushSession serverPush )
@@ -35,8 +41,19 @@ public class DynamicViewControl {
 
     serverPush.start();
     lifeCycle.createViewContent( parent );
-    Runnable updateHook = registerUpdateHook( parent );
+    updateHook = registerUpdateHook( parent );
     ensureCleanupAtEndOfSession( updateHook );
+  }
+
+  @Subscribe
+  void onPreferenceChange( PreferenceEvent event ) {
+    verifyNotNull( event, "event" );
+
+    if(    event.getSource() instanceof AdminUiPreference
+        && event.getAttributeName().equals( PREFERENCE_ATTRIBUTE_PAGE_ORDER ) )
+    {
+      updateHook.run();
+    }
   }
 
   private Runnable registerUpdateHook( Composite parent ) {

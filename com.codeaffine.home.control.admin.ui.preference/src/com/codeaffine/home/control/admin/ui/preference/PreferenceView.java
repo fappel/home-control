@@ -58,7 +58,9 @@ public class PreferenceView {
   }
 
   private void updateViewer( PreferenceInfo ... preferenceInfos ) {
-    propertySheetViewer.getRootEntry().setValues( adapt( preferenceInfos ) );
+    if( !propertySheetViewer.getControl().isDisposed() ) {
+      propertySheetViewer.getRootEntry().setValues( adapt( preferenceInfos ) );
+    }
   }
 
   private void expandViewerItems() {

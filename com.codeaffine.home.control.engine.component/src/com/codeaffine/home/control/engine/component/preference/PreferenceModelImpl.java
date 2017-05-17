@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.preference.DefaultValue;
 import com.codeaffine.home.control.preference.PreferenceEvent;
@@ -37,22 +37,22 @@ import com.google.gson.GsonBuilder;
 
 public class PreferenceModelImpl implements PreferenceModel {
 
-  private final BundleDeactivationTracker bundleDeactivationTracker;
   private final PreferenceTypeValidator preferenceTypeValidator;
   private final Map<String, Map<String,String>> attributes;
+  private final TypeUnloadTracker typeUnloadTracker;
   private final Map<Class<?>, Object> preferences;
   private final EventBus eventBus;
   private final Gson gson;
 
-  public PreferenceModelImpl( EventBus eventBus, BundleDeactivationTracker bundleDeactivationTracker ) {
-    verifyNotNull( bundleDeactivationTracker, "bundleDeactivationNotifier" );
+  public PreferenceModelImpl( EventBus eventBus, TypeUnloadTracker typeUnloadTracker ) {
+    verifyNotNull( typeUnloadTracker, "typeUnloadTracker" );
     verifyNotNull( eventBus, "eventBus" );
 
     this.preferenceTypeValidator = new PreferenceTypeValidator();
     this.gson = new GsonBuilder().setPrettyPrinting().create();
     this.preferences = new HashMap<>();
     this.attributes = new HashMap<>();
-    this.bundleDeactivationTracker = bundleDeactivationTracker;
+    this.typeUnloadTracker = typeUnloadTracker;
     this.eventBus = eventBus;
   }
 
@@ -84,7 +84,7 @@ public class PreferenceModelImpl implements PreferenceModel {
   public <T> T get( Class<T> preferenceType ) {
     verifyNotNull( preferenceType, "prefernceType" );
 
-    bundleDeactivationTracker.registerDeactivationHook( preferenceType, type -> preferences.remove( type  ) );
+    typeUnloadTracker.registerUnloadHook( preferenceType, () -> preferences.remove( preferenceType ) );
     preferences.computeIfAbsent( preferenceType, type -> createInstance( preferenceType ) );
     return preferenceType.cast( preferences.get( preferenceType ) );
   }

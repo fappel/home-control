@@ -2,15 +2,20 @@ package com.codeaffine.home.control.engine.component.event;
 
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.engine.component.event.EventBusImpl;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.event.Subscribe;
 
 public class EventBusImplTest {
 
+  private TypeUnloadTracker typeUnloadTracker;
   private EventBusImpl eventBus;
 
   static class Event {}
@@ -19,9 +24,11 @@ public class EventBusImplTest {
   static class EventObserver {
 
     Event event;
+    int eventCount;
 
     @Subscribe public void handle( Event event ) {
       this.event = event;
+      this.eventCount++;
     }
   }
 
@@ -61,7 +68,8 @@ public class EventBusImplTest {
 
   @Before
   public void setUp() {
-    eventBus = new EventBusImpl();
+    typeUnloadTracker = mock( TypeUnloadTracker.class );
+    eventBus = new EventBusImpl( typeUnloadTracker );
   }
 
   @Test
@@ -73,6 +81,20 @@ public class EventBusImplTest {
     eventBus.post( expected );
 
     assertThat( observer.event ).isSameAs( expected );
+    assertThat( observer.eventCount ).isEqualTo( 1 );
+  }
+
+  @Test
+  public void processWithRedundantObserverRegistration() {
+    EventObserver observer = new EventObserver();
+    Event expected = new Event();
+    eventBus.register( observer );
+
+    eventBus.register( observer );
+    eventBus.post( expected );
+
+    assertThat( observer.event ).isSameAs( expected );
+    assertThat( observer.eventCount ).isEqualTo( 1 );
   }
 
   @Test
@@ -120,11 +142,13 @@ public class EventBusImplTest {
     EventObserver observer = new EventObserver();
     Event expected = new Event();
     eventBus.register( observer );
+    Runnable hook = captureTypeUnloadHook();
 
     eventBus.unregister( observer );
     eventBus.post( expected );
 
     assertThat( observer.event ).isNull();
+    verify( typeUnloadTracker ).unregisterUnloadHook( EventObserver.class, hook );
   }
 
   @Test
@@ -132,12 +156,14 @@ public class EventBusImplTest {
     EventObserver observer = new EventObserver();
     Event expected = new Event();
     eventBus.register( observer );
+    Runnable hook = captureTypeUnloadHook();
 
     eventBus.unregister( observer );
     eventBus.unregister( observer );
     eventBus.post( expected );
 
     assertThat( observer.event ).isNull();
+    verify( typeUnloadTracker ).unregisterUnloadHook( EventObserver.class, hook );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -164,8 +190,30 @@ public class EventBusImplTest {
     assertThat( actual ).isNull();
   }
 
+  @Test
+  public void deactivationOfEventObserverClassProvidingBundle() {
+    EventObserver observer = new EventObserver();
+    eventBus.register( observer );
+
+    captureTypeUnloadHook().run();
+    eventBus.post( new Event() );
+
+    assertThat( observer.event ).isNull();
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void postWithNullArgument() {
     eventBus.post( null );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsTypeUnloadTracker() {
+    new EventBusImpl( null );
+  }
+
+  private Runnable captureTypeUnloadHook() {
+    ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+    verify( typeUnloadTracker ).registerUnloadHook( eq( EventObserver.class ), captor.capture() );
+    return captor.getValue();
   }
 }

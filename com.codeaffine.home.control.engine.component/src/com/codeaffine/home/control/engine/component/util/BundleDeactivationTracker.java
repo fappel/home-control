@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.osgi.framework.Bundle;
@@ -17,10 +16,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.FrameworkUtil;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public class BundleDeactivationTracker {
+public class BundleDeactivationTracker implements TypeUnloadTracker {
 
-  private final Map<Long, Map<Class<?>, Set<Consumer>>> listeners;
+  private final Map<Long, Map<Class<?>, Set<Runnable>>> listeners;
   private final Function<Class<?>, Bundle> bundleSupplier;
 
   public BundleDeactivationTracker( BundleContext context ) {
@@ -36,15 +34,29 @@ public class BundleDeactivationTracker {
     context.addBundleListener( evt -> handleBundleEvent( evt ) );
   }
 
-  public <T> void registerDeactivationHook( Class<T> classOfBundle, Consumer<Class<T>> deactivationHook ) {
-    verifyNotNull( deactivationHook, "deactivationHook" );
-    verifyNotNull( classOfBundle, "classOfBundle" );
-    verifyBundleOfClassIsActive( classOfBundle, getBundle( classOfBundle ) );
+  @Override
+  public void unregisterUnloadHook( Class<?> type, Runnable unloadHook ) {
+    verifyNotNull( unloadHook, "unloadHook" );
+    verifyNotNull( type, "type" );
 
-    ensureIdToClassMapStructure( classOfBundle );
-    Map<Class<?>, Set<Consumer>> map = listeners.get( getBundleId( getBundle( classOfBundle ) ) );
-    ensureClassToHookSetStructure( classOfBundle, map );
-    map.get( classOfBundle ).add( deactivationHook );
+    if( listeners.containsKey( getBundleId( getBundle( type ) ) ) ) {
+      Map<Class<?>, Set<Runnable>> map = listeners.get( getBundleId( getBundle( type ) ) );
+      if( map.containsKey( type ) ) {
+        map.get( type ).remove( unloadHook );
+      }
+    }
+  }
+
+  @Override
+  public void registerUnloadHook( Class<?> type, Runnable unloadHook ) {
+    verifyNotNull( unloadHook, "unloadHook" );
+    verifyNotNull( type, "type" );
+    verifyBundleOfClassIsActive( type, getBundle( type ) );
+
+    ensureIdToClassMapStructure( type );
+    Map<Class<?>, Set<Runnable>> map = listeners.get( getBundleId( getBundle( type ) ) );
+    ensureClassToHookSetStructure( type, map );
+    map.get( type ).add( unloadHook );
   }
 
   private void handleBundleEvent( BundleEvent evt ) {
@@ -63,8 +75,8 @@ public class BundleDeactivationTracker {
 
   private void executeAndRemoveDeactivationHooks( BundleEvent evt ) {
     Long key = getBundleId( evt.getBundle() );
-    Map<Class<?>, Set<Consumer>> handlerMap = listeners.get( key );
-    handlerMap.keySet().forEach( clazz -> handlerMap.get( clazz ).forEach( hook -> hook.accept( clazz ) ) );
+    Map<Class<?>, Set<Runnable>> handlerMap = listeners.get( key );
+    handlerMap.keySet().forEach( clazz -> handlerMap.get( clazz ).forEach( hook -> hook.run() ) );
     listeners.remove( key );
   }
 
@@ -84,12 +96,12 @@ public class BundleDeactivationTracker {
 
   private <T> void ensureIdToClassMapStructure( Class<T> classOfBundle ) {
     if( !listeners.containsKey( getBundleId( getBundle( classOfBundle ) ) ) ) {
-      Map<Class<?>, Set<Consumer>> map = new HashMap<>();
+      Map<Class<?>, Set<Runnable>> map = new HashMap<>();
       listeners.put( getBundleId( getBundle( classOfBundle ) ), map );
     }
   }
 
-  private static <T> void ensureClassToHookSetStructure( Class<T> classOfBundle, Map<Class<?>, Set<Consumer>> map ) {
+  private static <T> void ensureClassToHookSetStructure( Class<T> classOfBundle, Map<Class<?>, Set<Runnable>> map ) {
     if( !map.containsKey( classOfBundle ) ) {
       map.put( classOfBundle, new HashSet<>() );
     }

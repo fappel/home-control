@@ -11,6 +11,7 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.engine.component.event.EventBusImpl;
 import com.codeaffine.home.control.engine.component.preference.PreferenceModelImpl;
 import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.preference.PreferenceModel;
 import com.codeaffine.home.control.test.util.context.TestContext;
@@ -36,8 +37,8 @@ public class ComponentAccessServiceMock implements ComponentAccessService {
 
   public ComponentAccessServiceMock() {
     context = new TestContext();
+    context.set( TypeUnloadTracker.class, new BundleDeactivationTracker( getBundleContext() ) );
     context.set( EventBus.class, context.create( EventBusImpl.class ) );
-    context.set( BundleDeactivationTracker.class, new BundleDeactivationTracker( getBundleContext() ) );
     context.set( PreferenceModel.class, context.create( PreferenceModelImpl.class ) );
     supplier = new ComponentSupplierImplementation( context );
     context.get( PreferenceModel.class ).get( MockPreference.class );

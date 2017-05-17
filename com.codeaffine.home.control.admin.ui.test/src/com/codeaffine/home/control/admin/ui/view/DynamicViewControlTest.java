@@ -2,6 +2,8 @@ package com.codeaffine.home.control.admin.ui.view;
 
 import static com.codeaffine.home.control.admin.ui.test.util.DisplayHelper.flushPendingEvents;
 import static com.codeaffine.home.control.admin.ui.test.util.ShellHelper.createShell;
+import static com.codeaffine.home.control.admin.ui.view.DynamicViewControl.PREFERENCE_ATTRIBUTE_PAGE_ORDER;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.any;
@@ -23,6 +25,7 @@ import org.mockito.InOrder;
 
 import com.codeaffine.home.control.admin.ui.api.PageFactorySupplier;
 import com.codeaffine.home.control.admin.ui.test.util.DisplayHelper;
+import com.codeaffine.home.control.preference.PreferenceEvent;
 
 public class DynamicViewControlTest {
 
@@ -35,7 +38,6 @@ public class DynamicViewControlTest {
   private ServerPushSession serverPush;
   private UISession session;
   private Shell parent;
-
 
   @Before
   public void setUp() {
@@ -58,8 +60,7 @@ public class DynamicViewControlTest {
 
   @Test
   public void runUpdateHook() {
-    Listener listener = mock( Listener.class );
-    registerResizeObserver( listener );
+    Listener listener = registerResizeObserver( mock( Listener.class ) );
     dynamicViewControl.createContent( parent );
 
     captureUpdateHook().run();
@@ -72,10 +73,49 @@ public class DynamicViewControlTest {
     order.verifyNoMoreInteractions();
   }
 
-  private void registerResizeObserver( Listener listener ) {
-    parent.setBounds( 10, 20, 300, 200 );
-    Composite layoutHook = new Composite( parent, SWT.NONE );
-    layoutHook.addListener( SWT.Resize, listener );
+  @Test
+  public void onPreferenceChange() {
+    Listener listener = registerResizeObserver( mock( Listener.class ) );
+    AdminUiPreference preference = mock( AdminUiPreference.class );
+    dynamicViewControl.createContent( parent );
+
+    dynamicViewControl.onPreferenceChange( newEvent( preference, PREFERENCE_ATTRIBUTE_PAGE_ORDER ) );
+    flushPendingEvents();
+
+    InOrder order = inOrder( lifeCycle, listener );
+    order.verify( lifeCycle ).disposeViewContent();
+    order.verify( lifeCycle ).createViewContent( parent );
+    order.verify( listener ).handleEvent( any() );
+    order.verifyNoMoreInteractions();
+  }
+
+  @Test
+  public void onPreferenceChangeOfUnrelatedEventType() {
+    Listener listener = registerResizeObserver( mock( Listener.class ) );
+    AdminUiPreference preference = mock( AdminUiPreference.class );
+    dynamicViewControl.createContent( parent );
+    reset( lifeCycle );
+
+    dynamicViewControl.onPreferenceChange( newEvent( preference, "unrelated attribute name" ) );
+    flushPendingEvents();
+
+    verify( lifeCycle, never() ).disposeViewContent();
+    verify( lifeCycle, never() ).createViewContent( parent );
+    verify( listener, never() ).handleEvent( any() );
+  }
+
+  @Test
+  public void onPreferenceChangeOfUnrelatedEventAttribute() {
+    Listener listener = registerResizeObserver( mock( Listener.class ) );
+    dynamicViewControl.createContent( parent );
+    reset( lifeCycle );
+
+    dynamicViewControl.onPreferenceChange( newEvent( new Object(), PREFERENCE_ATTRIBUTE_PAGE_ORDER ) );
+    flushPendingEvents();
+
+    verify( lifeCycle, never() ).disposeViewContent();
+    verify( lifeCycle, never() ).createViewContent( parent );
+    verify( listener, never() ).handleEvent( any() );
   }
 
   @Test
@@ -117,6 +157,19 @@ public class DynamicViewControlTest {
   public void createContentWithNullAsParentArgument() {
     dynamicViewControl.createContent( null );
   }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void onPreferenceChangeWithNullAsEventArgument() {
+    dynamicViewControl.onPreferenceChange( null );
+  }
+
+  private Listener registerResizeObserver( Listener listener ) {
+    parent.setBounds( 10, 20, 300, 200 );
+    Composite layoutHook = new Composite( parent, SWT.NONE );
+    layoutHook.addListener( SWT.Resize, listener );
+    return listener;
+  }
+
   private Runnable captureUpdateHook() {
     ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
     verify( pageFactories ).registerUpdateHook( captor.capture() );
@@ -127,5 +180,9 @@ public class DynamicViewControlTest {
     ArgumentCaptor<UISessionListener> captor = forClass( UISessionListener.class );
     verify( session ).addUISessionListener( captor.capture() );
     return captor.getValue();
+  }
+
+  private static PreferenceEvent newEvent( Object source, String attribute ) {
+    return new PreferenceEvent( source, attribute, null, emptyList() );
   }
 }

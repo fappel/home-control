@@ -53,10 +53,16 @@ class AdminUiEntryPoint implements EntryPoint {
     return new DynamicViewControl( lifeCycle, pageFactories, getUISession(), new ServerPushSession() );
   }
 
-  private static void showUi( DynamicViewControl dynamicViewControl ) {
+  private void showUi( DynamicViewControl dynamicViewControl ) {
+    observeAdminUiPreferenceChanges( dynamicViewControl );
     Shell shell = createShell( new FillLayout() );
     dynamicViewControl.createContent( shell );
     shell.open();
+  }
+
+  private void observeAdminUiPreferenceChanges( DynamicViewControl dynamicViewControl ) {
+    adminService.registerEventObserver( dynamicViewControl );
+    getUISession().addUISessionListener( evt -> adminService.unregisterEventObserver( dynamicViewControl ) );
   }
 
   private static Shell createShell( Layout layout ) {

@@ -62,6 +62,22 @@ public class PreferenceViewTest {
       .allMatch( entry -> entry.getDisplayName().equals( NEW_NAME ) );
   }
 
+  @Test
+  public void triggerUpdateIfViewControlIsDisposed() {
+    PreferenceInfo preferenceInfo = stubPreferenceInfo( BEAN_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE );
+    view.setInput( preferenceInfo );
+    ModifyAdapter modifyAdapter = captureModifyAdapter();
+    view.getControl().dispose();
+
+    stubPreferenceInfoName( preferenceInfo, NEW_NAME );
+    modifyAdapter.triggerUpdate();
+    flushPendingEvents();
+
+    assertThat( getPropertySheetEntries() )
+      .hasSize( 1 )
+      .allMatch( entry -> entry.getDisplayName().equals( BEAN_NAME ) );
+  }
+
   @Test( expected = IllegalArgumentException.class )
   public void createWithNullAsParentArgument() {
     new PreferenceView( null );

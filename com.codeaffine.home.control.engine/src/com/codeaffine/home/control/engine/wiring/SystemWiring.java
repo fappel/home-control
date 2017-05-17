@@ -79,7 +79,7 @@ public class SystemWiring {
 
   private void doInitialize( Consumer<com.codeaffine.home.control.Context> contextConsumer ) {
     context = contextFactory.create();
-    contextAdapter = new ContextAdapter( context, registry, executor, new EventBusImpl() );
+    contextAdapter = new ContextAdapter( context, registry, executor, context.create( EventBusImpl.class ) );
     initializeContext( contextConsumer );
   }
 

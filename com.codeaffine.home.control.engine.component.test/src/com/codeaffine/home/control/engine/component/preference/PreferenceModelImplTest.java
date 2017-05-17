@@ -20,13 +20,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.preference.DefaultValue;
 import com.codeaffine.home.control.preference.Preference;
@@ -51,7 +50,7 @@ public class PreferenceModelImplTest {
   private static final boolean BOOLEAN_VALUE = true;
   private static final int INT_VALUE = 10;
 
-  private BundleDeactivationTracker bundleDeactivationTracker;
+  private TypeUnloadTracker typeUnloadTracker;
   private PreferenceModelImpl preferenceModel;
   private EventBus eventBus;
 
@@ -121,8 +120,8 @@ public class PreferenceModelImplTest {
   @Before
   public void setUp() {
     eventBus = mock( EventBus.class );
-    bundleDeactivationTracker = mock( BundleDeactivationTracker.class );
-    preferenceModel = new PreferenceModelImpl( eventBus, bundleDeactivationTracker );
+    typeUnloadTracker = mock( TypeUnloadTracker.class );
+    preferenceModel = new PreferenceModelImpl( eventBus, typeUnloadTracker );
   }
 
   @Test
@@ -438,11 +437,11 @@ public class PreferenceModelImplTest {
   }
 
   @Test
-  public void deactivateBundleOfPreferenceClass() {
+  public void unloadPreferenceClass() {
     preferenceModel.get( MyPreference.class );
-    Consumer<Class<MyPreference>> deactivationHook = captureBundleDeativationHook();
+    Runnable deactivationHook = captureUnloadHook();
 
-    deactivationHook.accept( MyPreference.class );
+    deactivationHook.run();
     Set<Class<?>> actual = preferenceModel.getAllPreferenceTypes();
 
     assertThat( actual ).isEmpty();
@@ -450,11 +449,11 @@ public class PreferenceModelImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEventBusArgument() {
-    new PreferenceModelImpl( null, bundleDeactivationTracker );
+    new PreferenceModelImpl( null, typeUnloadTracker );
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsBundleDeactivationTrackerArgument() {
+  public void constructWithNullAsTypeUnloadTrackerArgument() {
     new PreferenceModelImpl( eventBus, null );
   }
 
@@ -490,7 +489,7 @@ public class PreferenceModelImplTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     preferenceModel.save( out );
     ByteArrayInputStream in = new ByteArrayInputStream( out.toByteArray() );
-    PreferenceModelImpl otherModel = new PreferenceModelImpl( eventBus, bundleDeactivationTracker );
+    PreferenceModelImpl otherModel = new PreferenceModelImpl( eventBus, typeUnloadTracker );
     otherModel.load( in );
     MyPreference otherPreferenceInstance = otherModel.get( MyPreference.class );
 
@@ -533,10 +532,9 @@ public class PreferenceModelImplTest {
     preferenceModel.save( null );
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  private Consumer<Class<MyPreference>> captureBundleDeativationHook() {
-    ArgumentCaptor<Consumer> captor = forClass( Consumer.class );
-    verify( bundleDeactivationTracker ).registerDeactivationHook( eq( MyPreference.class ), captor.capture() );
+  private Runnable captureUnloadHook() {
+    ArgumentCaptor<Runnable> captor = forClass( Runnable.class );
+    verify( typeUnloadTracker ).registerUnloadHook( eq( MyPreference.class ), captor.capture() );
     return captor.getValue();
   }
 

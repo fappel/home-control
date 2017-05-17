@@ -10,6 +10,7 @@ import org.osgi.framework.BundleContext;
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.Registry;
 import com.codeaffine.home.control.engine.component.util.BundleDeactivationTracker;
+import com.codeaffine.home.control.engine.component.util.TypeUnloadTracker;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.util.inject.Context;
 
@@ -47,7 +48,7 @@ public class SystemContextFactoryTest {
     Context actual = factory.create();
 
     assertThat( actual.get( Registry.class ) ).isEqualTo( registry );
-    assertThat( actual.get( BundleDeactivationTracker.class ) ).isNotNull();
+    assertThat( actual.get( TypeUnloadTracker.class ) ).isInstanceOf( BundleDeactivationTracker.class );
   }
 
   @Test
