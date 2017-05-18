@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.collection.dialog;
 
-import static com.codeaffine.home.control.admin.ui.Theme.*;
+import static com.codeaffine.home.control.admin.ui.api.Theme.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.ModifyAdapter.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.CellEditorControlUtil.*;
 import static com.codeaffine.home.control.admin.ui.preference.collection.dialog.Messages.*;

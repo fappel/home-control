@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.preference.descriptor;
 
-import static com.codeaffine.home.control.admin.ui.Theme.CUSTOM_VARIANT_ATTRIBUTE_CELL_EDITOR_ACTION_BAR;
+import static com.codeaffine.home.control.admin.ui.api.Theme.CUSTOM_VARIANT_ATTRIBUTE_CELL_EDITOR_ACTION_BAR;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;

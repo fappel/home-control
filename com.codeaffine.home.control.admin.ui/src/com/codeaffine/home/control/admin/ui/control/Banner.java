@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.control;
 
-import static com.codeaffine.home.control.admin.ui.Theme.*;
+import static com.codeaffine.home.control.admin.ui.api.Theme.*;
 import static com.codeaffine.home.control.admin.ui.control.Messages.ERROR_BANNER_COMPONENT_EXISTS;
 import static com.codeaffine.home.control.admin.ui.control.StateVerification.verifyState;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;

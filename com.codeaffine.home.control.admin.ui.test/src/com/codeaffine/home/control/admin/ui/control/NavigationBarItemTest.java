@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.control;
 
-import static com.codeaffine.home.control.admin.ui.Theme.*;
+import static com.codeaffine.home.control.admin.ui.api.Theme.*;
 import static com.codeaffine.home.control.admin.ui.test.util.SWTEventHelper.trigger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.rap.rwt.RWT.CUSTOM_VARIANT;

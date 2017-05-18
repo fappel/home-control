@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.admin.ui;
+package com.codeaffine.home.control.admin.ui.api;
 
 public class Theme {
   public static final String CUSTOM_VARIANT_ADD_ELEMENT_DIALOG_VALIDATION_MESSAGE = "addElementDialogValidationMessage";

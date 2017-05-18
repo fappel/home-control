@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.admin.ui.control;
 
-import static com.codeaffine.home.control.admin.ui.Theme.*;
+import static com.codeaffine.home.control.admin.ui.api.Theme.*;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import org.eclipse.swt.SWT;
