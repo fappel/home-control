@@ -5,7 +5,6 @@ import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.swt.SWT.NONE;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,9 +18,9 @@ public class ViewContentLifeCycle {
 
   private final AtomicReference<Composite> viewControl;
   private final PageFactorySupplier pageFactories;
+  private final PageStorage pageStorage;
   private final ActionMap actionMap;
   private final AdminUiView view;
-  private final List<Page> pages;
 
   public ViewContentLifeCycle( AdminUiView view, PageFactorySupplier pageFactories, ActionMap actionMap ) {
     verifyNotNull( pageFactories, "pageFactories" );
@@ -29,7 +28,7 @@ public class ViewContentLifeCycle {
     verifyNotNull( view, "view" );
 
     this.viewControl = new AtomicReference<>();
-    this.pages = new ArrayList<>();
+    this.pageStorage = new PageStorage();
     this.pageFactories = pageFactories;
     this.actionMap = actionMap;
     this.view = view;
@@ -38,17 +37,17 @@ public class ViewContentLifeCycle {
   void createViewContent( Composite parent ) {
     verifyNotNull( parent, "parent" );
 
-    pages.addAll( createPages() );
-    mapViewNavigationActions( view, pages );
+    pageStorage.register( createPages() );
+    mapViewNavigationActions( view, pageStorage.getPages() );
     viewControl.set( new Composite( parent, NONE ) );
-    view.createContent( viewControl.get(), pages );
+    view.createContent( viewControl.get(), pageStorage.getPages() );
   }
 
   void disposeViewContent() {
     view.dispose();
     viewControl.get().dispose();
-    unmapViewNavigationActions( pages );
-    pages.clear();
+    unmapViewNavigationActions( pageStorage.getPages() );
+    pageStorage.clear();
   }
 
   private List<Page> createPages() {

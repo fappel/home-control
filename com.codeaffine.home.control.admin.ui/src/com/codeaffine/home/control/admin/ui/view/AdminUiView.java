@@ -75,8 +75,8 @@ public class AdminUiView {
   }
 
   private int compare( Page page1, Page page2 ) {
-    int indexOf1 = preference.getPageOrder().indexOf( page1.getLabel() );
-    int indexOf2 = preference.getPageOrder().indexOf( page2.getLabel() );
+    int indexOf1 = preference.getPageOrder().indexOf( PageOrderValue.valueOf( page1.getLabel() ) );
+    int indexOf2 = preference.getPageOrder().indexOf( PageOrderValue.valueOf( page2.getLabel() ) );
     return indexOf1 - indexOf2;
   }
 

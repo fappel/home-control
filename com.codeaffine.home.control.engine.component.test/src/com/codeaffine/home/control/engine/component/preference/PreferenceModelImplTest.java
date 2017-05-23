@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.engine.component.preference;
 
 import static com.codeaffine.home.control.engine.component.preference.Messages.*;
+import static com.codeaffine.home.control.engine.component.preference.MyPreferenceValue.*;
 import static com.codeaffine.home.control.engine.component.preference.PreferenceModelImplTest.MyEnum.*;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
@@ -47,6 +48,7 @@ public class PreferenceModelImplTest {
   private static final String DEFAULT_SET_VALUE = "{ONE}";
   private static final String DEFAULT_MY_ENUM_VALUE = "ONE";
   private static final String DEFAULT_EMPTY_COLLECTION = "{}";
+  private static final String DEFAULT_MY_PREFERENCE_VALUE = VALUE_TWO_REPRESENTATION;
   private static final boolean BOOLEAN_VALUE = true;
   private static final int INT_VALUE = 10;
 
@@ -103,6 +105,9 @@ public class PreferenceModelImplTest {
     @DefaultValue( DEFAULT_EMPTY_COLLECTION )
     Map<MyEnum, Integer> getEmptyDefaultMap();
     void setEmptyDefaultMap( Map<MyEnum, Integer> value );
+    @DefaultValue( DEFAULT_MY_PREFERENCE_VALUE )
+    MyPreferenceValue getMyPreferenceValue();
+    void setMyPreferenceValue( MyPreferenceValue value );
   }
 
   @Preference
@@ -206,6 +211,16 @@ public class PreferenceModelImplTest {
     assertThat( actual )
       .isNotSameAs( expected )
       .isEqualTo( expected );
+  }
+
+  @Test
+  public void setAndGetOfPreferenceValueImplementations() {
+    MyPreference preference = preferenceModel.get( MyPreference.class );
+
+    preference.setMyPreferenceValue( VALUE_ONE );
+    MyPreferenceValue actual = preference.getMyPreferenceValue();
+
+    assertThat( actual ).isEqualTo( VALUE_ONE );
   }
 
   @Test
@@ -328,6 +343,15 @@ public class PreferenceModelImplTest {
     MyEnum actual = preference.getMyEnumValue();
 
     assertThat( actual ).isEqualTo( ONE );
+  }
+
+  @Test
+  public void getPreferenceValueImplementationIfNotSet() {
+    MyPreference preference = preferenceModel.get( MyPreference.class );
+
+    MyPreferenceValue actual = preference.getMyPreferenceValue();
+
+    assertThat( actual ).isEqualTo( VALUE_TWO );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -485,6 +509,7 @@ public class PreferenceModelImplTest {
     preference.setIntValue( INT_VALUE );
     preference.setBooleanValue( BOOLEAN_VALUE );
     preference.setMyEnumValue( ONE );
+    preference.setMyPreferenceValue( VALUE_ONE );
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     preferenceModel.save( out );
@@ -497,6 +522,7 @@ public class PreferenceModelImplTest {
     assertThat( otherPreferenceInstance.getIntValue() ).isEqualTo( INT_VALUE );
     assertThat( otherPreferenceInstance.isBooleanValue() ).isTrue();
     assertThat( otherPreferenceInstance.getMyEnumValue() ).isSameAs( ONE );
+    assertThat( otherPreferenceInstance.getMyPreferenceValue() ).isSameAs( VALUE_ONE );
   }
 
   @Test

@@ -4,6 +4,7 @@ import static com.codeaffine.home.control.util.reflection.AttributeReflectionUti
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
 
 import com.codeaffine.home.control.admin.ui.preference.info.ObjectInfo;
+import com.codeaffine.home.control.preference.PreferenceValue;
 
 public class AttributeDescriptorSupplier {
 
@@ -24,6 +25,9 @@ public class AttributeDescriptorSupplier {
     }
     if( String.class == type ) {
       return new TextDescriptor( info.getAttributeInfo( attributeId ) );
+    }
+    if( PreferenceValue.class.isAssignableFrom( type ) ) {
+      return new PreferenceValueDescriptor( info.getAttributeInfo( attributeId ) );
     }
     if( type.isEnum() ) {
       return new EnumDescriptor( info.getAttributeInfo( attributeId ) );

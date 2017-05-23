@@ -102,10 +102,7 @@ public class ViewContentLifeCycleTest {
     return captor.getValue();
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  private List<Page> capturePages() {
-    ArgumentCaptor<List> captor = forClass( List.class );
-    verify( view ).createContent( any(), captor.capture() );
-    return captor.getValue();
+  private static List<Page> capturePages() {
+    return new PageStorage().getPages();
   }
 }

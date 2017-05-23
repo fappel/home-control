@@ -101,6 +101,16 @@ public class AttributeDescriptorSupplierTest {
   }
 
   @Test
+  public void getDescriptorForPreferenceValueType() {
+    stubPreferenceInfoWithDescriptor( ATTRIBUTE_NAME, TestPreferenceValue.class );
+
+
+    AttributeDescriptor actual = supplier.getDescriptor( ATTRIBUTE_NAME );
+
+    assertThat( actual ).isInstanceOf( PreferenceValueDescriptor.class );
+  }
+
+  @Test
   public void getDescriptorForUnsupportedTypes() {
     stubPreferenceInfoWithDescriptor( ATTRIBUTE_NAME, Object.class );
 

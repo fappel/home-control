@@ -8,6 +8,6 @@ import com.codeaffine.home.control.preference.Preference;
 @Preference
 public interface AdminUiPreference {
   @DefaultValue( "{}" )
-  List<String> getPageOrder();
-  void setPageOrder( List<String> pageOrder );
+  List<PageOrderValue> getPageOrder();
+  void setPageOrder( List<PageOrderValue> pageOrder );
 }

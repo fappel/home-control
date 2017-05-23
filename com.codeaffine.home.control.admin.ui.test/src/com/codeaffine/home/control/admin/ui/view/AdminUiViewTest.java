@@ -3,7 +3,9 @@ package com.codeaffine.home.control.admin.ui.view;
 import static com.codeaffine.home.control.admin.ui.view.UiActions.activatePage;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -59,7 +61,7 @@ public class AdminUiViewTest {
     TestPage page2 = spy( new TestPage( PAGE_2 ) );
     List<Page> pages = asList( page1, page2 );
     pages.forEach( page -> actionMap.putAction( page, () -> activatePage( page, view ) ) );
-    when( preference.getPageOrder() ).thenReturn( asList( PAGE_2, PAGE_1 ) );
+    when( preference.getPageOrder() ).thenReturn( asPageOrderValues( PAGE_2, PAGE_1 ) );
 
     view.createContent( parent, pages );
 
@@ -119,5 +121,9 @@ public class AdminUiViewTest {
   @Test( expected = IllegalArgumentException.class )
   public void createContentWithNullAsPagesArgument() {
     view.createContent( parent, null );
+  }
+
+  private static List<PageOrderValue> asPageOrderValues( String ... pageLabels ) {
+    return asList( pageLabels ).stream().map( page -> PageOrderValue.valueOf( page ) ).collect( toList() );
   }
 }
