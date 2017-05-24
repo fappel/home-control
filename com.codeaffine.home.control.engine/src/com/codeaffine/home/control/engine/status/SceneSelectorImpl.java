@@ -43,7 +43,7 @@ public class SceneSelectorImpl implements SceneSelector {
     Map<Scope, Scene> oldSelection = selection;
     selection = evaluate();
     if( oldSelection == null || !oldSelection.equals( selection ) ) {
-      logger.info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( selection ) );
+      logger.debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( selection ) );
     }
     return new HashMap<>( selection );
   }

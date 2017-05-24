@@ -13,11 +13,11 @@ import java.util.Optional;
 import com.codeaffine.home.control.application.lamp.LampProvider;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.status.type.OnOff;
-import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.type.OnOff;
+import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
@@ -164,7 +164,7 @@ public class LampImpl implements Lamp {
         brightnessBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       }
       setUpdateTimestamp( now() );
-      logger.info( LAMP_SWITCH_PATTERN, getDefinition(), newOnOffStatus );
+      logger.debug( LAMP_SWITCH_PATTERN, getDefinition(), newOnOffStatus );
     }
   }
 
@@ -177,7 +177,7 @@ public class LampImpl implements Lamp {
       brightnessItem.updateStatus( value );
       brightnessBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
-      logger.info( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
+      logger.debug( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), newBrightness );
     }
   }
 
@@ -190,7 +190,7 @@ public class LampImpl implements Lamp {
       colorTemperatureItem.updateStatus( value );
       colorTemperatureBuffer = Optional.of( value );
       setUpdateTimestamp( now() );
-      logger.info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
+      logger.debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), newColorTemperature );
     }
   }
 
@@ -201,7 +201,7 @@ public class LampImpl implements Lamp {
   }
 
   private void synchronize() {
-    logger.info( LAMP_OUT_OF_SYNC_PATTERN, getDefinition(), createSyncStatus() );
+    logger.debug( LAMP_OUT_OF_SYNC_PATTERN, getDefinition(), createSyncStatus() );
     if( brightnessBuffer.isPresent() ) {
       brightnessItem.updateStatus( brightnessBuffer.get() );
     }
@@ -217,18 +217,18 @@ public class LampImpl implements Lamp {
       colorTemperatureItem.updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       colorTemperatureBuffer = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
       colorTemperatureStatus = Optional.of( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
-      logger.info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), DEFAULT_COLOR_TEMPERATURE );
+      logger.debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, getDefinition(), DEFAULT_COLOR_TEMPERATURE );
     }
     if( !brightnessItem.getStatus().isPresent() ) {
       brightnessItem.updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
       brightnessBuffer = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
       brightnessStatus = Optional.of( DEFAULT_BRIGHTNESS_INTERNAL );
-      logger.info( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), DEFAULT_BRIGHTNESS );
+      logger.debug( LAMP_SET_BRIGHTNESS_PATTERN, getDefinition(), DEFAULT_BRIGHTNESS );
     }
     if( !onOffItem.getStatus().isPresent() ) {
       onOffItem.updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
       onOffBuffer = Optional.of( DEFAULT_ON_OFF_STATE_INTERNAL );
-      logger.info( LAMP_SWITCH_PATTERN, getDefinition(), DEFAULT_ON_OFF_STATE );
+      logger.debug( LAMP_SWITCH_PATTERN, getDefinition(), DEFAULT_ON_OFF_STATE );
     }
   }
 }

@@ -51,7 +51,7 @@ public class Configuration implements SystemConfiguration {
     facility.equip( DRESSING_AREA ).with( BedStand, BedRoomCeiling, DRESSING_AREA_MOTION, DRESSING_AREA_LUX );
     facility.equip( LIVING_ROOM ).with( LIVING_AREA, WORK_AREA );
     facility.equip( LIVING_AREA ).with( FanLight1, FanLight2, ChimneyUplight, WindowUplight, LIVING_AREA_MOTION, LIVING_AREA_LUX );
-    facility.equip( WORK_AREA ).with( DeskUplight, ChimneyUplight, WORK_AREA_MOTION, WORK_AREA_LUX );
+    facility.equip( WORK_AREA ).with( DeskUplight, WORK_AREA_MOTION, WORK_AREA_LUX );
     facility.equip( HALL ).with( HallCeiling, HALL_MOTION, HALL_LUX );
     facility.equip( KITCHEN ).with( COOKING_AREA, DINING_AREA );
     facility.equip( COOKING_AREA ).with( KitchenCeiling, SinkUplight, COOKING_AREA_MOTION, DINING_AREA_LUX );

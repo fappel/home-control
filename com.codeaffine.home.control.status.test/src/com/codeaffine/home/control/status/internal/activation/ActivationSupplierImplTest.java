@@ -1,13 +1,13 @@
 package com.codeaffine.home.control.status.internal.activation;
 
-import static com.codeaffine.home.control.status.internal.activation.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl.*;
 import static com.codeaffine.home.control.status.internal.activation.Messages.*;
+import static com.codeaffine.home.control.status.internal.activation.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.status.type.OnOff.*;
 import static com.codeaffine.home.control.test.util.entity.SensorHelper.stubSensor;
-import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleInfoArgument;
+import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleDebugArgument;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
@@ -28,7 +28,6 @@ import com.codeaffine.home.control.entity.Sensor;
 import com.codeaffine.home.control.event.EventBus;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.StatusEvent;
-import com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl;
 import com.codeaffine.home.control.status.model.ActivationEvent;
 import com.codeaffine.home.control.status.supplier.Activation;
 import com.codeaffine.home.control.status.supplier.ActivationSupplier;
@@ -58,7 +57,7 @@ public class ActivationSupplierImplTest {
     supplier.engagedZonesChanged( newEvent( ON, ZONE_1 ) );
 
     verifyEventBusNotification();
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
   }
 
   @Test
@@ -79,7 +78,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> zone.isAdjacentActivated() );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
   }
 
   @Test
@@ -114,7 +113,7 @@ public class ActivationSupplierImplTest {
     assertThat( actual.getAllZones() )
       .allMatch( zone -> !zone.isAdjacentActivated() )
       .allMatch( zone -> zone.getReleaseTime().isPresent() );
-    assertThat( captureLoggerInfoArgument() ).contains( ZONE_1.toString(), RELEASED_TAG );
+    assertThat( captureLoggerDebugArgument() ).contains( ZONE_1.toString(), RELEASED_TAG );
     verifyEventBusNotification();
   }
 
@@ -131,7 +130,7 @@ public class ActivationSupplierImplTest {
     assertThat( actual.getAllZones() )
       .allMatch( zone -> !zone.isAdjacentActivated() )
       .allMatch( zone -> !zone.getReleaseTime().isPresent() );
-    assertThat( captureLoggerInfoArgument() ).isEqualTo( "[ Zone1 ]" );
+    assertThat( captureLoggerDebugArgument() ).isEqualTo( "[ Zone1 ]" );
     verifyEventBusNotification();
   }
 
@@ -146,7 +145,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
-    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerDebugArgument().split( "\\|" ) ) )
       .allMatch( info -> !info.contains( "," ) )
       .allMatch( info -> info.contains( RELEASED_TAG ) && info.contains( "Zone1" ) || info.contains( "Zone3" ) )
       .hasSize( 2 );
@@ -182,7 +181,7 @@ public class ActivationSupplierImplTest {
     Activation actual = supplier.getStatus();
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
-    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) ).hasSize( 1 );
+    assertThat( asList( captureLoggerDebugArgument().split( "\\|" ) ) ).hasSize( 1 );
   }
 
   @Test
@@ -238,7 +237,7 @@ public class ActivationSupplierImplTest {
     Activation actual = supplier.getStatus();
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 <released> ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 <released> ]" );
   }
 
   @Test
@@ -252,7 +251,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( activation -> activation.isAdjacentActivated() );
-    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerDebugArgument().split( "\\|" ) ) )
       .allMatch( info -> !info.contains( "," ) )
       .allMatch( info -> info.contains( RELEASED_TAG ) && info.contains( "Zone1" ) || info.contains( "Zone2" ) )
       .hasSize( 2 );
@@ -266,7 +265,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
   }
 
   @Test
@@ -279,7 +278,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone2 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone2 ]" );
   }
 
   @Test
@@ -292,7 +291,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> zone.isAdjacentActivated() );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1, Zone2 ]" );
   }
 
   @Test
@@ -307,7 +306,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
-    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerDebugArgument().split( "\\|" ) ) )
       .allMatch( info -> !info.contains( "," ) )
       .allMatch( info -> !info.contains( RELEASED_TAG ) )
       .allMatch( info -> info.contains( "Zone1" ) || info.contains( "Zone3" ) )
@@ -360,7 +359,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_3 ) );
     assertThat( actual.getAllZones() ).allMatch( zone -> !zone.isAdjacentActivated() );
-    assertThat( asList( captureLoggerInfoArgument().split( "\\|" ) ) )
+    assertThat( asList( captureLoggerDebugArgument().split( "\\|" ) ) )
       .allMatch( info -> !info.contains( "," ) )
       .allMatch( info -> info.contains( "Zone1" ) || info.contains( "Zone3" ) )
       .hasSize( 2 );
@@ -382,7 +381,7 @@ public class ActivationSupplierImplTest {
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1, ZONE_2 ) );
     assertThat( actual.getAllZones() ).allMatch( activation -> activation.isAdjacentActivated() );
-    verify( logger, never() ).info( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), ( Object )anyObject() );
+    verify( logger, never() ).debug( eq( ZONE_ACTIVATION_STATUS_CHANGED_INFO ), ( Object )anyObject() );
   }
 
   @Test
@@ -399,7 +398,7 @@ public class ActivationSupplierImplTest {
     Activation actual = supplier.getStatus();
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 ]" );
   }
 
   @Test
@@ -414,7 +413,7 @@ public class ActivationSupplierImplTest {
     Activation actual = supplier.getStatus();
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_3 ) );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone3 ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone3 ]" );
   }
 
   @Test
@@ -431,7 +430,7 @@ public class ActivationSupplierImplTest {
     Activation actual = supplier.getStatus();
 
     assertThat( toZoneEntitySet( actual ) ).isEqualTo( $( ZONE_1 ) );
-    verify( logger ).info( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 <released> ]" );
+    verify( logger ).debug( ZONE_ACTIVATION_STATUS_CHANGED_INFO, "[ Zone1 <released> ]" );
   }
 
   @Test
@@ -463,8 +462,8 @@ public class ActivationSupplierImplTest {
     assertThat( event.getValue().getSource( ActivationSupplier.class ) ).hasValue( supplier );
   }
 
-  private String captureLoggerInfoArgument() {
-    return ( String )captureSingleInfoArgument( logger, ZONE_ACTIVATION_STATUS_CHANGED_INFO );
+  private String captureLoggerDebugArgument() {
+    return ( String )captureSingleDebugArgument( logger, ZONE_ACTIVATION_STATUS_CHANGED_INFO );
   }
 
   @SafeVarargs

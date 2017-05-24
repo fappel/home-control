@@ -69,7 +69,7 @@ public class SunPositionSupplierImplTest {
     assertThat( supplier.getStatus().getAzimuth() )
       .isGreaterThanOrEqualTo( 0.0 )
       .isLessThanOrEqualTo( 360.0 );
-    verify( logger ).info( SUN_POSITION_STATUS_INFO_PATTERN, supplier.getStatus() );
+    verify( logger ).debug( SUN_POSITION_STATUS_INFO_PATTERN, supplier.getStatus() );
   }
 
   @Test
@@ -81,7 +81,7 @@ public class SunPositionSupplierImplTest {
     supplier.calculate( createPointInTime( now ) );
 
     verify( eventBus, times( 1 ) ).post( any( StatusEvent.class ) );
-    verify( logger, times( 1 ) ).info( eq( SUN_POSITION_STATUS_INFO_PATTERN ), ( Object )anyObject() );
+    verify( logger, times( 1 ) ).debug( eq( SUN_POSITION_STATUS_INFO_PATTERN ), ( Object )anyObject() );
   }
 
   @Test( expected = IllegalArgumentException.class )

@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.internal.lamp;
 
-import static com.codeaffine.home.control.application.internal.lamp.LampItemHelper.stubItem;
 import static com.codeaffine.home.control.application.internal.lamp.LampImpl.*;
+import static com.codeaffine.home.control.application.internal.lamp.LampItemHelper.stubItem;
 import static com.codeaffine.home.control.application.internal.lamp.Messages.*;
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BathRoomCeiling;
 import static com.codeaffine.home.control.status.type.Percent.*;
@@ -18,12 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import com.codeaffine.home.control.application.internal.lamp.LampImpl;
-import com.codeaffine.home.control.status.type.OnOff;
-import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.item.DimmerItem;
 import com.codeaffine.home.control.item.SwitchItem;
 import com.codeaffine.home.control.logger.Logger;
+import com.codeaffine.home.control.status.type.OnOff;
+import com.codeaffine.home.control.status.type.Percent;
 import com.codeaffine.home.control.type.OnOffType;
 import com.codeaffine.home.control.type.PercentType;
 
@@ -68,7 +67,7 @@ public class LampImplTest {
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
+    order.verify( logger ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
   }
 
@@ -81,7 +80,7 @@ public class LampImplTest {
     InOrder order = inOrder( onOffItem, colorTemperatureItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
+    order.verify( logger ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -95,7 +94,7 @@ public class LampImplTest {
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.ON );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
+    order.verify( logger ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.ON );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -111,7 +110,7 @@ public class LampImplTest {
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( eq( LAMP_SWITCH_PATTERN ), eq( lamp.getDefinition() ), any( OnOffType.class ) );
+    verify( logger, never() ).debug( eq( LAMP_SWITCH_PATTERN ), eq( lamp.getDefinition() ), any( OnOffType.class ) );
   }
 
   @Test
@@ -124,7 +123,7 @@ public class LampImplTest {
     InOrder order = inOrder( onOffItem, brightnessItem, logger );
     order.verify( onOffItem ).updateStatus( OnOffType.OFF );
     order.verify( brightnessItem ).updateStatus( ZERO );
-    order.verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.OFF );
+    order.verify( logger ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), OnOff.OFF );
     order.verifyNoMoreInteractions();
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
   }
@@ -151,7 +150,7 @@ public class LampImplTest {
 
     InOrder order = inOrder( brightnessItem, logger );
     order.verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
-    order.verify( logger ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
+    order.verify( logger ).debug( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
   }
 
   @Test
@@ -162,7 +161,7 @@ public class LampImplTest {
     lamp.setBrightness( BRIGHTNESS );
 
     verify( brightnessItem, never() ).updateStatus( BRIGHTNESS_OF_ITEM );
-    verify( logger, never() ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
+    verify( logger, never() ).debug( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), BRIGHTNESS );
   }
 
   @Test
@@ -196,7 +195,7 @@ public class LampImplTest {
 
     InOrder order = inOrder( colorTemperatureItem, logger );
     order.verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    order.verify( logger ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
+    order.verify( logger ).debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
@@ -207,7 +206,7 @@ public class LampImplTest {
     lamp.setColorTemperature( COLOR_TEMPERATURE );
 
     verify( colorTemperatureItem, never() ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
+    verify( logger, never() ).debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), COLOR_TEMPERATURE );
   }
 
   @Test
@@ -243,10 +242,10 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( DEFAULT_ON_OFF_STATE_INTERNAL );
     verify( brightnessItem ).updateStatus( DEFAULT_BRIGHTNESS_INTERNAL );
     verify( colorTemperatureItem ).updateStatus( DEFAULT_COLOR_TEMPERATURE_INTERNAL );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
-    verify( logger ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
-    verify( logger ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
-    verify( logger ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
+    verify( logger ).debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
+    verify( logger ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
   }
 
   @Test
@@ -262,10 +261,11 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
-    verify( logger, never() ).info( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
-    verify( logger, never() ).info( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
-    verify( logger, never() ).info( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).debug( LAMP_SET_BRIGHTNESS_PATTERN, lamp.getDefinition(), DEFAULT_BRIGHTNESS );
+    verify( logger, never() ).debug( LAMP_SWITCH_PATTERN, lamp.getDefinition(), DEFAULT_ON_OFF_STATE );
+    verify( logger, never() )
+      .debug( LAMP_SET_COLOR_TEMPERATURE_PATTERN, lamp.getDefinition(), DEFAULT_COLOR_TEMPERATURE );
   }
 
   @Test
@@ -277,7 +277,7 @@ public class LampImplTest {
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -293,7 +293,7 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, times( 2 ) ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -308,7 +308,7 @@ public class LampImplTest {
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem ).updateStatus( BRIGHTNESS_OF_ITEM );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -322,7 +322,7 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -335,7 +335,7 @@ public class LampImplTest {
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -351,7 +351,7 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, times( 2 ) ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -366,7 +366,7 @@ public class LampImplTest {
     verify( onOffItem, never() ).updateStatus( any( OnOffType.class ) );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem ).updateStatus( COLOR_TEMPERATURE_OF_ITEM );
-    verify( logger, never() ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger, never() ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -380,7 +380,7 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -395,7 +395,7 @@ public class LampImplTest {
     verify( onOffItem, times( 2 ) ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test
@@ -409,7 +409,7 @@ public class LampImplTest {
     verify( onOffItem ).updateStatus( OnOffType.ON );
     verify( brightnessItem, never() ).updateStatus( any( PercentType.class ) );
     verify( colorTemperatureItem, never() ).updateStatus( any( PercentType.class ) );
-    verify( logger ).info( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
+    verify( logger ).debug( LAMP_OUT_OF_SYNC_PATTERN, lamp.getDefinition(), expectedSyncState );
   }
 
   @Test

@@ -55,7 +55,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -72,7 +72,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
   }
 
   @Test
@@ -89,7 +89,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene2.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
 
   }
 
@@ -106,7 +106,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene2.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -122,7 +122,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -140,7 +140,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene2.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -157,7 +157,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene2.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -173,7 +173,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -189,7 +189,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
 
   }
 
@@ -206,7 +206,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -223,7 +223,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( actual ) );
   }
 
   @Test
@@ -243,7 +243,7 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
   }
 
 
@@ -263,13 +263,13 @@ public class SceneSelectorImplTest {
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene1.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( first ) );
     assertThat( second )
       .isNotEqualTo( first )
       .hasSize( 1 )
       .containsKey( GLOBAL )
       .containsValue( context.get( Scene2.class ) );
-    verify( logger ).info( INFO_SELECTED_SCENES, computeSelectedScenesInfo( second ) );
+    verify( logger ).debug( INFO_SELECTED_SCENES, computeSelectedScenesInfo( second ) );
   }
 
   @Test

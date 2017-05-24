@@ -4,7 +4,7 @@ import static com.codeaffine.home.control.status.internal.computer.ComputerStatu
 import static com.codeaffine.home.control.status.internal.computer.Messages.INFO_COMPUTER_ACTIVITY_STATUS;
 import static com.codeaffine.home.control.status.type.OnOff.*;
 import static com.codeaffine.home.control.test.util.event.EventBusHelper.captureEvent;
-import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleInfoArgument;
+import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleDebugArgument;
 import static com.codeaffine.home.control.type.DecimalType.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.*;
@@ -67,7 +67,7 @@ public class ComputerStatusSupplierImplTest {
     OnOff actual = statusSupplier.getStatus();
 
     assertThat( actual ).isSameAs( OFF );
-    verify( logger, never() ).info( eq( INFO_COMPUTER_ACTIVITY_STATUS ), ( Object )anyObject() );
+    verify( logger, never() ).debug( eq( INFO_COMPUTER_ACTIVITY_STATUS ), ( Object )anyObject() );
     verify( eventBus, never() ).post( any() );
   }
 
@@ -91,7 +91,7 @@ public class ComputerStatusSupplierImplTest {
     OnOff actual = statusSupplier.getStatus();
 
     assertThat( actual ).isSameAs( ON );
-    verify( logger, never() ).info( eq( INFO_COMPUTER_ACTIVITY_STATUS ), ( Object )anyObject() );
+    verify( logger, never() ).debug( eq( INFO_COMPUTER_ACTIVITY_STATUS ), ( Object )anyObject() );
     verify( eventBus, never() ).post( any() );
   }
 
@@ -106,7 +106,7 @@ public class ComputerStatusSupplierImplTest {
   }
 
   private Object captureInfoArgument() {
-    return captureSingleInfoArgument( logger, INFO_COMPUTER_ACTIVITY_STATUS );
+    return captureSingleDebugArgument( logger, INFO_COMPUTER_ACTIVITY_STATUS );
   }
 
   @SuppressWarnings("unchecked")

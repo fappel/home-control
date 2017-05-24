@@ -47,7 +47,7 @@ public class StatusSupplierCoreTest {
     assertThat( actual ).isSameAs( TWO );
     verify( eventBus ).post( captor.capture() );
     assertThat( captor.getValue().getSource( MyStatusSupplier.class ) ).hasValue( statusSupplier );
-    verify( logger ).info( STATUS_INFO_PATTERN, TWO );
+    verify( logger ).debug( STATUS_INFO_PATTERN, TWO );
   }
 
   @Test
@@ -60,7 +60,7 @@ public class StatusSupplierCoreTest {
     assertThat( actual ).isSameAs( TWO );
     verify( eventBus ).post( captor.capture() );
     assertThat( captor.getValue().getSource( MyStatusSupplier.class ) ).hasValue( statusSupplier );
-    verify( logger ).info( STATUS_INFO_PATTERN, TWO );
+    verify( logger ).debug( STATUS_INFO_PATTERN, TWO );
   }
 
   @Test
@@ -72,7 +72,7 @@ public class StatusSupplierCoreTest {
     assertThat( actual ).isSameAs( TWO );
     verify( eventBus ).post( captor.capture() );
     assertThat( captor.getValue().getSource( MyStatusSupplier.class ) ).hasValue( statusSupplier );
-    verify( logger ).info( STATUS_INFO_PATTERN, TWO.toString().toLowerCase() );
+    verify( logger ).debug( STATUS_INFO_PATTERN, TWO.toString().toLowerCase() );
   }
 
   @Test
@@ -85,7 +85,7 @@ public class StatusSupplierCoreTest {
     assertThat( actual ).isSameAs( TWO );
     verify( eventBus ).post( captor.capture() );
     assertThat( captor.getValue().getSource( MyStatusSupplier.class ) ).hasValue( statusSupplier );
-    verify( logger ).info( STATUS_INFO_PATTERN, TWO.toString().toLowerCase() );
+    verify( logger ).debug( STATUS_INFO_PATTERN, TWO.toString().toLowerCase() );
   }
 
   @Test( expected = IllegalArgumentException.class )

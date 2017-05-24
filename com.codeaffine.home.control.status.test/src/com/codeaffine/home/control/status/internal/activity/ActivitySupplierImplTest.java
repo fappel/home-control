@@ -152,7 +152,7 @@ public class ActivitySupplierImplTest {
       .hasSectionAllocation( BATH_ROOM, P_000 )
       .hasNoOtherSectionAllocationThanFor( BED, BATH_ROOM );
     verify( eventBus, never() ).post( any( StatusEvent.class ) );
-    verify( logger, never() ).info( anyString(), eq( actual ) );
+    verify( logger, never() ).debug( anyString(), eq( actual ) );
   }
 
   @Test
@@ -172,7 +172,7 @@ public class ActivitySupplierImplTest {
       .hasNoOtherSectionAllocationThanFor( BED, BATH_ROOM );
     assertThat( dryRun ).isGreaterThan( 0 );
     verify( eventBus, never() ).post( any( StatusEvent.class ) );
-    verify( logger, never() ).info( anyString(), eq( actual ) );
+    verify( logger, never() ).debug( anyString(), eq( actual ) );
   }
 
   @Test
@@ -225,7 +225,7 @@ public class ActivitySupplierImplTest {
 
   private void verifyEventNotification() {
     assertThat( captureEvent( eventBus, ActivitySupplier.class ) ).hasValue( activitySupplier );
-    verify( logger ).info( INFO_ACTIVITY_RATE, activitySupplier.getStatus() );
+    verify( logger ).debug( INFO_ACTIVITY_RATE, activitySupplier.getStatus() );
   }
 
   private static void stubActivationSensorAsEngaged( ActivationSensor sensor ) {

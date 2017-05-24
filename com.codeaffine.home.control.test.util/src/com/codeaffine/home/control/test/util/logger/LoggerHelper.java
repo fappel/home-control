@@ -18,9 +18,9 @@ public class LoggerHelper {
     return result;
   }
 
-  public static Object captureSingleInfoArgument( Logger logger, String infoMessage ) {
+  public static Object captureSingleDebugArgument( Logger logger, String debugMessage ) {
     ArgumentCaptor<String> captor = forClass( String.class );
-    verify( logger ).info( eq( infoMessage ), captor.capture() );
+    verify( logger ).debug( eq( debugMessage ), captor.capture() );
     return captor.getValue();
   }
 }

@@ -43,7 +43,7 @@ public class StatusSupplierCore<S> implements StatusSupplier<S> {
     if( !newStatus.equals( status ) ) {
       status = newStatus;
       eventBus.post( new StatusEvent( statusSupplier ) );
-      logger.info( statusInfoPattern, statusInfoArgumentSupplier.apply( newStatus ) );
+      logger.debug( statusInfoPattern, statusInfoArgumentSupplier.apply( newStatus ) );
     }
   }
 

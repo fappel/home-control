@@ -4,7 +4,7 @@ import static com.codeaffine.home.control.status.internal.light.Messages.INFO_ME
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.BED;
 import static com.codeaffine.home.control.test.util.entity.EntityHelper.stubEntity;
 import static com.codeaffine.home.control.test.util.event.EventBusHelper.captureEvent;
-import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleInfoArgument;
+import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleDebugArgument;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -54,7 +54,7 @@ public class LightStatusSupplierImplTest {
     supplier.onLightStatusChange( newEvent( LIGHT_VALUE, SECTION ) );
 
     assertThat( captureEvent( eventBus, LightStatusSupplier.class ) ).hasValue( supplier );
-    assertThat( captureSingleInfoArgument( logger, INFO_MESSAGE_LIGHT_STATUS ) ).isEqualTo( expected );
+    assertThat( captureSingleDebugArgument( logger, INFO_MESSAGE_LIGHT_STATUS ) ).isEqualTo( expected );
     assertThat( supplier.getStatus() ).isEqualTo( expected );
   }
 

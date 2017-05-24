@@ -20,7 +20,6 @@ import com.codeaffine.home.control.item.StringItem;
 import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
-import com.codeaffine.home.control.status.internal.scene.NamedSceneSupplierImpl;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier.NamedSceneConfiguration;
 import com.codeaffine.home.control.test.util.context.TestContext;
@@ -63,7 +62,7 @@ public class NamedSceneSupplierImplTest {
     assertThat( actual ).hasValue( supplier );
     assertThat( supplier.getStatus().getSceneType() ).isSameAs( Scene1.class );
     assertThat( supplier.getStatus().isActive() ).isTrue();
-    verify( logger ).info( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
+    verify( logger ).debug( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
   }
 
   @Test
@@ -77,7 +76,7 @@ public class NamedSceneSupplierImplTest {
     assertThat( actual ).hasValue( supplier );
     assertThat( supplier.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( supplier.getStatus().isActive() ).isFalse();
-    verify( logger ).info( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
+    verify( logger ).debug( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
   }
 
   @Test
@@ -87,7 +86,7 @@ public class NamedSceneSupplierImplTest {
     assertThat( supplier.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( supplier.getStatus().isActive() ).isFalse();
     verify( eventBus, never() ).post( any() );
-    verify( logger, never() ).info( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
+    verify( logger, never() ).debug( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
   }
 
   @Test
@@ -104,7 +103,7 @@ public class NamedSceneSupplierImplTest {
     assertThat( supplier.getStatus().getSceneType() ).isSameAs( EmptyScene.class );
     assertThat( supplier.getStatus().isActive() ).isFalse();
     verify( eventBus, never() ).post( any() );
-    verify( logger, never() ).info( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
+    verify( logger, never() ).debug( INFO_NAMED_SCENE_SELECTION, supplier.getStatus() );
   }
 
   @Test( expected = IllegalArgumentException.class )

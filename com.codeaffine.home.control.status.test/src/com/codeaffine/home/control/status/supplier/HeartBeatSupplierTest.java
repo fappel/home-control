@@ -2,7 +2,7 @@ package com.codeaffine.home.control.status.supplier;
 
 import static com.codeaffine.home.control.status.supplier.Messages.STATUS_INFO_HEARTBEAT;
 import static com.codeaffine.home.control.test.util.event.EventBusHelper.captureEvent;
-import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleInfoArgument;
+import static com.codeaffine.home.control.test.util.logger.LoggerHelper.captureSingleDebugArgument;
 import static com.codeaffine.home.control.test.util.thread.ThreadHelper.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -35,7 +35,7 @@ public class HeartBeatSupplierTest {
     supplier.pulse();
 
     assertThat( captureEvent( eventBus, HeartBeatSupplier.class ) ).hasValue( supplier );
-    assertThat( captureSingleInfoArgument( logger, STATUS_INFO_HEARTBEAT ) ).isInstanceOf( LocalDateTime.class );
+    assertThat( captureSingleDebugArgument( logger, STATUS_INFO_HEARTBEAT ) ).isInstanceOf( LocalDateTime.class );
   }
 
   @Test( expected = IllegalArgumentException.class )
