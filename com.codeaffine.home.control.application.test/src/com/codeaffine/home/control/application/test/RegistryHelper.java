@@ -15,16 +15,20 @@ import org.mockito.invocation.InvocationOnMock;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
-import com.codeaffine.home.control.status.model.SectionProvider.Section;
-import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
-import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensor;
-import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensorDefinition;
-import com.codeaffine.home.control.status.type.OnOff;
 import com.codeaffine.home.control.entity.EntityProvider.Entity;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
+import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensor;
+import com.codeaffine.home.control.status.model.ActivationSensorProvider.ActivationSensorDefinition;
+import com.codeaffine.home.control.status.model.LightSensorProvider.LightSensor;
+import com.codeaffine.home.control.status.model.LightSensorProvider.LightSensorDefinition;
+import com.codeaffine.home.control.status.model.SectionProvider.Section;
+import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
+import com.codeaffine.home.control.status.type.OnOff;
 
 public class RegistryHelper {
+
+  static final Integer DEFAULT_LIGHT_SENSOR_VALUE = Integer.valueOf( 50 );
 
   public static Set<Lamp> stubLamps( LampDefinition ... definitions ) {
     return Stream.of( definitions ).map( definition -> stubLamp( definition ) ).collect( toSet() );
@@ -47,34 +51,86 @@ public class RegistryHelper {
   public static Section stubSection( SectionDefinition sectionDefinition ) {
     Section result = mock( Section.class );
     when( result.getDefinition() ).thenReturn( sectionDefinition );
+    when( result.toString() ).thenReturn( sectionDefinition.name() );
     return result;
   }
 
-  public static ActivationSensor stubActivationSensor( ActivationSensorDefinition motionSensorDefinition ) {
+  public static Set<ActivationSensor> stubActivationSensors( ActivationSensorDefinition ... definitions ) {
+    return Stream.of( definitions ).map( definition -> stubActivationSensor( definition ) ).collect( toSet() );
+  }
+
+  public static ActivationSensor stubActivationSensor( ActivationSensorDefinition activationSensorDefinition ) {
     ActivationSensor result = mock( ActivationSensor.class );
-    when( result.getDefinition() ).thenReturn( motionSensorDefinition );
+    when( result.getDefinition() ).thenReturn( activationSensorDefinition );
+    when( result.toString() ).thenReturn( activationSensorDefinition.name() );
+    return result;
+  }
+
+  public static Set<LightSensor> stubLightSensors( LightSensorDefinition ... definitions ) {
+    return Stream.of( definitions ).map( definition -> stubLightSensor( definition ) ).collect( toSet() );
+  }
+
+  public static LightSensor stubLightSensor( LightSensorDefinition lightSensorDefinition ) {
+    LightSensor result = mock( LightSensor.class );
+    when( result.getDefinition() ).thenReturn( lightSensorDefinition );
+    when( result.getLightValue() ).thenReturn( DEFAULT_LIGHT_SENSOR_VALUE );
+    when( result.toString() ).thenReturn( lightSensorDefinition.name() );
     return result;
   }
 
   public static EntityRegistry stubRegistry(
-    Collection<Section> sections, Collection<Lamp> lamps, Collection<ActivationSensor> motionSensors )
+    Collection<Section> sections,
+    Collection<Lamp> lamps,
+    Collection<ActivationSensor> activationSensors,
+    Collection<LightSensor> lightSensors )
   {
     Set<Entity<?>> all = new HashSet<>( sections );
     all.addAll( lamps );
-    all.addAll( motionSensors );
+    all.addAll( activationSensors );
+    all.addAll( lightSensors );
     EntityRegistry result = mock( EntityRegistry.class );
     when( result.findAll() ).thenReturn( all );
     when( result.findByDefinitionType( SectionDefinition.class ) ).thenReturn( sections );
     when( result.findByDefinitionType( LampDefinition.class ) ).thenReturn( lamps );
-    when( result.findByDefinitionType( ActivationSensorDefinition.class ) ).thenReturn( motionSensors );
+    when( result.findByDefinitionType( ActivationSensorDefinition.class ) ).thenReturn( activationSensors );
+    when( result.findByDefinitionType( LightSensorDefinition.class ) ).thenReturn( lightSensors );
     when( result.findByDefinition( any( EntityDefinition.class ) ) )
       .thenAnswer( invocation -> doFindByDefinition( all, invocation.getArguments()[ 0 ] ) );
     return result;
   }
 
-  public static void equipWithActivationSensor( Section section, ActivationSensor motionSensor ) {
-    when( section.getChildren() ).thenReturn( ( asList( motionSensor ) ) );
-    when( section.getChildren( ActivationSensorDefinition.class ) ).thenReturn( asList( motionSensor ) );
+  public static void equipWithLightSensor(
+    EntityRegistry registryStub, SectionDefinition sectionDefinition, LightSensorDefinition definition )
+  {
+    LightSensor sensor = getLightSensor( registryStub, definition );
+    equipWithLightSensor( registryStub.findByDefinition( sectionDefinition ), sensor );
+  }
+
+  private static LightSensor getLightSensor( EntityRegistry registryStub, LightSensorDefinition definition ) {
+    return registryStub.findByDefinition( definition );
+  }
+
+  public static void equipWithLightSensor( Section section, LightSensor lightSensor ) {
+    when( section.getChildren() ).thenReturn( ( asList( lightSensor ) ) );
+    when( section.getChildren( LightSensorDefinition.class ) ).thenReturn( asList( lightSensor ) );
+  }
+
+  public static void equipWithActivationSensor(
+    EntityRegistry registryStub, SectionDefinition sectionDefinition, ActivationSensorDefinition definition )
+  {
+    ActivationSensor sensor = getActivationSensor( registryStub, definition );
+    equipWithActivationSensor( registryStub.findByDefinition( sectionDefinition ), sensor );
+  }
+
+  private static ActivationSensor getActivationSensor(
+    EntityRegistry registryStub, ActivationSensorDefinition definition )
+  {
+    return registryStub.findByDefinition( definition );
+  }
+
+  public static void equipWithActivationSensor( Section section, ActivationSensor activationSensor ) {
+    when( section.getChildren() ).thenReturn( ( asList( activationSensor ) ) );
+    when( section.getChildren( ActivationSensorDefinition.class ) ).thenReturn( asList( activationSensor ) );
   }
 
   public static void equipWithLamp(

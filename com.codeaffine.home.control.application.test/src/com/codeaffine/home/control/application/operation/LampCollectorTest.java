@@ -175,7 +175,7 @@ public class LampCollectorTest {
   static EntityRegistry stubRegistry() {
     Set<Lamp> lamps = stubLamps( KitchenCeiling, HallCeiling, DeskUplight, WindowUplight );
     Set<Section> rooms = stubSections( DINING_AREA, HALL, LIVING_AREA );
-    EntityRegistry result = RegistryHelper.stubRegistry( rooms, lamps, emptySet() );
+    EntityRegistry result = RegistryHelper.stubRegistry( rooms, lamps, emptySet(), emptySet() );
     equipWithLamp( result, DINING_AREA, KitchenCeiling );
     equipWithLamp( result, HALL, HallCeiling );
     equipWithLamp( result, LIVING_AREA, DeskUplight, WindowUplight );
