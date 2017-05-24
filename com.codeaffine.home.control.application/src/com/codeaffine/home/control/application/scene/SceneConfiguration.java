@@ -27,6 +27,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
   public void configureNamedScenes( Map<String, Class<? extends Scene>> nameToSceneTypeMapping ) {
     nameToSceneTypeMapping.put( "ALL_OFF", AllLightsOffScene.class );
     nameToSceneTypeMapping.put( "HOME_CINEMA", HomeCinemaScene.class );
+    nameToSceneTypeMapping.put( "YOGA", YogaScene.class );
   }
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
