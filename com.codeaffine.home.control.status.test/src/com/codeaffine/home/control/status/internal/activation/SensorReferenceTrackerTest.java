@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.status.internal.activation;
 
+import static com.codeaffine.home.control.status.internal.activation.PreferenceUtil.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.status.type.OnOff.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,7 +141,7 @@ public class SensorReferenceTrackerTest {
   }
 
   private Path addOrReplaceInNewPath( Zone ... zones ) {
-    Path result = new Path();
+    Path result = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
     Stream.of( zones ).forEach( zone  -> result.addOrReplace( zone ) );
     paths.add( result );
     return result;

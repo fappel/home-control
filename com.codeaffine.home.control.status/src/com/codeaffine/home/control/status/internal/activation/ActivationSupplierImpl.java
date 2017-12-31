@@ -32,18 +32,21 @@ public class ActivationSupplierImpl implements ActivationSupplier {
 
   static final long IN_PATH_RELEASES_EXPIRATION_TIME = 10L;
   static final long RELEASE_TIMEOUT_INTERVAL = 20L;
-  static final long PATH_EXPIRED_TIMEOUT = 60L;
 
   private final ExpiredInPathReleaseSkimmer expiredInPathReleaseSkimmer;
   private final SensorReferenceTracker sensorReferenceTracker;
+  private final ActivationSupplierPreference preference;
   private final ExpiredPathsSkimmer expiredPathsSkimmer;
   private final StatusSupplierCore<Activation> core;
   private final PathAdjacency adjacency;
   private final ZoneUtil zoneUtil;
   private final Set<Path> paths;
 
-  public ActivationSupplierImpl( AdjacencyDefinition adjacencyDefinition, EventBus eventBus, Logger logger ) {
+  public ActivationSupplierImpl(
+    AdjacencyDefinition adjacencyDefinition, EventBus eventBus, Logger logger, ActivationSupplierPreference preference )
+  {
     verifyNotNull( adjacencyDefinition, "adjacencyDefinition" );
+    verifyNotNull( preference, "preference" );
     verifyNotNull( eventBus, "eventBus" );
     verifyNotNull( logger, "logger" );
 
@@ -54,6 +57,7 @@ public class ActivationSupplierImpl implements ActivationSupplier {
     this.adjacency = new PathAdjacency( adjacencyDefinition, paths );
     this.expiredPathsSkimmer = new ExpiredPathsSkimmer( paths );
     this.zoneUtil = new ZoneUtil( adjacency );
+    this.preference = preference;
     setTimeSupplier( () -> now() );
   }
 
@@ -110,7 +114,7 @@ public class ActivationSupplierImpl implements ActivationSupplier {
 
   private void ensureDiscretePath( Zone zone ) {
     if( paths.isEmpty() || !isRelatedToActivatedZones( zone.getZoneEntity() ) ) {
-      paths.add( new Path() );
+      paths.add( new Path( preference ) );
     }
   }
 

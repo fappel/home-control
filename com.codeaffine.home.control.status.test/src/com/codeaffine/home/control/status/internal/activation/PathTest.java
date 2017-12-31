@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.status.internal.activation;
 
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
-import static com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl.PATH_EXPIRED_TIMEOUT;
+import static com.codeaffine.home.control.status.internal.activation.PreferenceUtil.*;
 import static com.codeaffine.home.control.status.internal.activation.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.test.util.lang.EqualsTester.newInstance;
@@ -26,7 +26,7 @@ public class PathTest {
 
   @Before
   public void setUp() {
-    path = new Path();
+    path = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ));
   }
 
   @Test
@@ -154,7 +154,7 @@ public class PathTest {
   @Test
   public void isExpired() {
     path.addOrReplace( createReleasedZone( ZONE_1 ) );
-    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
 
     boolean actual = path.isExpired();
 
@@ -165,7 +165,7 @@ public class PathTest {
   public void isExpiredIfMultipleReleaseZoneActivationsExist() {
     path.addOrReplace( createReleasedZone( ZONE_1 ) );
     path.addOrReplace( createReleasedZone( ZONE_2 ) );
-    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
 
     boolean actual = path.isExpired();
 
@@ -176,7 +176,7 @@ public class PathTest {
   public void isExpiredIfAdditionalZoneActivationsExist() {
     path.addOrReplace( createReleasedZone( ZONE_1 ) );
     path.addOrReplace( createZone( ZONE_2 ) );
-    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
 
     boolean actual = path.isExpired();
 
@@ -186,7 +186,7 @@ public class PathTest {
   @Test
   public void isExpiredIfReleasedZoneActivationIsNotExpired() {
     path.addOrReplace( createReleasedZone( ZONE_1 ) );
-    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT - 1 ) );
+    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS - 1 ) );
 
     boolean actual = path.isExpired();
 
@@ -196,7 +196,7 @@ public class PathTest {
   @Test
   public void isExpiredIfZoneActivationIsNotReleased() {
     path.addOrReplace( createZone( ZONE_1 ) );
-    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
 
     boolean actual = path.isExpired();
 
@@ -272,7 +272,8 @@ public class PathTest {
   public void equalsAndHashCode() {
     EqualsTester<Path> tester = newInstance( path );
     tester.assertImplementsEqualsAndHashCode();
-    tester.assertEqual( new Path(), new Path() );
+    tester.assertEqual( new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) ),
+                        new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) ) );
     tester.assertEqual( createPath( createZone( ZONE_1 ) ), createPath( createZone( ZONE_1 ) ) );
     Zone releasedZone = createReleasedZone( ZONE_1 );
     tester.assertEqual( createPath( releasedZone ), createPath( releasedZone ) );
@@ -285,7 +286,7 @@ public class PathTest {
   }
 
   private static Path createPath( Zone zone ) {
-    Path result = new Path();
+    Path result = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
     result.addOrReplace( zone );
     return result;
   }

@@ -3,6 +3,7 @@ package com.codeaffine.home.control.status.internal.activation;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl.*;
 import static com.codeaffine.home.control.status.internal.activation.Messages.*;
+import static com.codeaffine.home.control.status.internal.activation.PreferenceUtil.*;
 import static com.codeaffine.home.control.status.internal.activation.TimeoutHelper.waitALittle;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.status.type.OnOff.*;
@@ -49,7 +50,8 @@ public class ActivationSupplierImplTest {
     adjacency.link( ZONE_DEFINITION_1, ZONE_DEFINITION_2 ).link( ZONE_DEFINITION_2, ZONE_DEFINITION_3 );
     eventBus = mock( EventBus.class );
     logger = mock( Logger.class );
-    supplier = new ActivationSupplierImpl( adjacency, eventBus, logger );
+    ActivationSupplierPreference preference = stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS );
+    supplier = new ActivationSupplierImpl( adjacency, eventBus, logger, preference );
   }
 
   @Test
@@ -408,7 +410,7 @@ public class ActivationSupplierImplTest {
     supplier.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
 
     reset( logger );
-    supplier.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    supplier.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
     supplier.releaseTimeouts();
     Activation actual = supplier.getStatus();
 
@@ -425,7 +427,7 @@ public class ActivationSupplierImplTest {
     supplier.engagedZonesChanged( newEvent( OFF, ZONE_1 ) );
 
     reset( logger );
-    supplier.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) );
+    supplier.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) );
     supplier.releaseTimeouts();
     Activation actual = supplier.getStatus();
 
@@ -443,17 +445,22 @@ public class ActivationSupplierImplTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsAdjacencyDefinitionArgument() {
-    new ActivationSupplierImpl( null, eventBus, logger );
+    new ActivationSupplierImpl( null, eventBus, logger, stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsEventBusDefinitionArgument() {
-    new ActivationSupplierImpl( adjacency, null, logger );
+    new ActivationSupplierImpl( adjacency, null, logger, stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsLoggerDefinitionArgument() {
-    new ActivationSupplierImpl( adjacency, eventBus, null );
+    new ActivationSupplierImpl( adjacency, eventBus, null, stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsPreferenceArgument() {
+    new ActivationSupplierImpl( adjacency, eventBus, logger, null );
   }
 
   private void verifyEventBusNotification() {

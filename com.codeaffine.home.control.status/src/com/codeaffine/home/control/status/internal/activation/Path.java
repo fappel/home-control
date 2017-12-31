@@ -1,6 +1,5 @@
 package com.codeaffine.home.control.status.internal.activation;
 
-import static com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl.PATH_EXPIRED_TIMEOUT;
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toSet;
 
@@ -18,11 +17,13 @@ import com.codeaffine.home.control.status.supplier.Activation.Zone;
 
 class Path {
 
+  private final ActivationSupplierPreference preference;
   private final List<Zone> activations;
 
   private Supplier<LocalDateTime> timeSupplier;
 
-  Path() {
+  Path( ActivationSupplierPreference preference ) {
+    this.preference = preference;
     this.activations = new LinkedList<>();
     this.timeSupplier = () -> now();
   }
@@ -55,7 +56,7 @@ class Path {
   boolean isExpired() {
     return activations.size() == 1
         && activations.get( 0 ).getReleaseTime().isPresent()
-        && activations.get( 0 ).getReleaseTime().get().plusSeconds( PATH_EXPIRED_TIMEOUT )
+        && activations.get( 0 ).getReleaseTime().get().plusSeconds( preference.getPathExpiredTimeoutInSeconds() )
              .isBefore( timeSupplier.get() );
   }
 

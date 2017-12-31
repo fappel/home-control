@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.status.internal.activation;
 
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
+import static com.codeaffine.home.control.status.internal.activation.PreferenceUtil.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -174,7 +175,8 @@ public class PathAdjacencyTest {
 
   @Test
   public void isAdjacentToMoreThanOneActivationIfPathIsEmpty() {
-    boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_2, new Path() );
+    Path path = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
+    boolean actual = pathAdjacency.isAdjacentToMoreThanOneActivation( ZONE_2, path );
 
     assertThat( actual ).isFalse();
   }
@@ -218,7 +220,7 @@ public class PathAdjacencyTest {
   @Test
   public void isRelatedOnReleasedButNewPathAwaitsInsert() {
     Path path = addOrReplaceInNewPath( createReleasedZone( ZONE_1 ), createReleasedZone( ZONE_2 ) );
-    paths.add( new Path() );
+    paths.add( new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) ) );
 
     boolean actual = pathAdjacency.isRelated( ZONE_3, path );
 
@@ -298,7 +300,7 @@ public class PathAdjacencyTest {
   }
 
   private Path addOrReplaceInNewPath( ZoneImpl ... activations ) {
-    Path result = new Path();
+    Path result = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
     Stream.of( activations ).forEach( activation  -> result.addOrReplace( activation ) );
     paths.add( result );
     return result;

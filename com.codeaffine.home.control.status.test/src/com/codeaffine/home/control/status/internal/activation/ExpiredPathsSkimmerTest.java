@@ -1,6 +1,6 @@
 package com.codeaffine.home.control.status.internal.activation;
 
-import static com.codeaffine.home.control.status.internal.activation.ActivationSupplierImpl.PATH_EXPIRED_TIMEOUT;
+import static com.codeaffine.home.control.status.internal.activation.PreferenceUtil.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,8 +12,6 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.codeaffine.home.control.status.internal.activation.ExpiredPathsSkimmer;
-import com.codeaffine.home.control.status.internal.activation.Path;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
 
 public class ExpiredPathsSkimmerTest {
@@ -31,7 +29,7 @@ public class ExpiredPathsSkimmerTest {
   public void execute() {
     addOrReplaceInNewPath( createReleasedZone( ZONE_3 ) );
     Path survivor = addOrReplaceInNewPath( createZone( ZONE_1 ) );
-    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
+    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) ) );
 
     skimmer.execute();
 
@@ -49,7 +47,7 @@ public class ExpiredPathsSkimmerTest {
     TimeoutHelper.waitALittle();
     Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
-    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
+    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) ) );
 
     skimmer.execute();
 
@@ -67,7 +65,7 @@ public class ExpiredPathsSkimmerTest {
     Zone zone2 = createReleasedZone( ZONE_2 );
     Path path1 = addOrReplaceInNewPath( zone1 );
     Path path2 = addOrReplaceInNewPath( zone2 );
-    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
+    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) ) );
 
     skimmer.execute();
 
@@ -83,7 +81,7 @@ public class ExpiredPathsSkimmerTest {
     Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
     addOrReplaceInNewPath( zone3Activation );
-    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
+    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) ) );
 
     skimmer.execute();
 
@@ -99,7 +97,7 @@ public class ExpiredPathsSkimmerTest {
   public void executeIfOnlyOneExpiredPathExists() {
     Zone expectedSurvivorZone = createReleasedZone( ZONE_1 );
     Path survivor = addOrReplaceInNewPath( expectedSurvivorZone );
-    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT + 1 ) ) );
+    paths.forEach( path -> path.setTimeSupplier( () -> now().plusSeconds( PATH_EXPIRED_TIMEOUT_IN_SECONDS + 1 ) ) );
 
     skimmer.execute();
 
@@ -112,7 +110,7 @@ public class ExpiredPathsSkimmerTest {
   }
 
   private Path addOrReplaceInNewPath( Zone ... zones ) {
-    Path result = new Path();
+    Path result = new Path( stubPreference( PATH_EXPIRED_TIMEOUT_IN_SECONDS ) );
     Stream.of( zones ).forEach( zone  -> result.addOrReplace( zone ) );
     paths.add( result );
     return result;
