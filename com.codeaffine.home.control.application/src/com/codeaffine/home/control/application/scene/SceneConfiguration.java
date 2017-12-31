@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.HomeScope.*;
+import static com.codeaffine.home.control.application.scene.HomeScope.BATH_ROOM;
 import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
@@ -28,34 +29,50 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     nameToSceneTypeMapping.put( "ALL_OFF", AllLightsOffScene.class );
     nameToSceneTypeMapping.put( "HOME_CINEMA", HomeCinemaScene.class );
     nameToSceneTypeMapping.put( "YOGA", YogaScene.class );
+    nameToSceneTypeMapping.put( "BED", BedScene.class );
+    nameToSceneTypeMapping.put( "COOKING", CookingScene.class );
+    nameToSceneTypeMapping.put( "DESK", DeskScene.class );
+    nameToSceneTypeMapping.put( "BATHROOM", BathroomScene.class );
   }
 
   public void configureSceneSelection( SceneSelector sceneSelector ) {
     sceneSelector
-      .whenStatusOf( GLOBAL, ActivationSupplier.class ).matches( activation -> singleZoneReleaseOn( activation, HALL ) )
+      .whenStatusOf( GLOBAL, NamedSceneSupplier.class ).matches( selection -> selection.isActive( GLOBAL ) )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType( GLOBAL ) )
+      .otherwiseWhenStatusOf( ActivationSupplier.class )
+        .matches( activation -> singleZoneReleaseOn( activation, HALL ) )
         .thenSelect( AwayScene.class )
       .otherwiseWhenStatusOf( SunPositionSupplier.class ).matches( position -> isNight( position ) )
         .thenSelect( NightScene.class )
       .otherwiseSelect( DayScene.class );
 
     sceneSelector
-      .whenStatusOf( LIVING_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive() )
-        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType() )
+      .whenStatusOf( LIVING_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive( LIVING_ROOM ) )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType( LIVING_ROOM ) )
       .otherwiseWhenStatusOf( ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, WORK_AREA, LIVING_AREA ) )
         .thenSelect( LivingRoomScene.class )
-      .otherwiseSelect( NamedSceneSupplier.class, status -> status.getSceneType() );
+      .otherwiseSelect( NamedSceneSupplier.class, status -> status.getSceneType( LIVING_ROOM ) );
 
     sceneSelector
-      .whenStatusOf( KITCHEN, ActivationSupplier.class )
+      .whenStatusOf( KITCHEN, NamedSceneSupplier.class ).matches( selection -> selection.isActive( KITCHEN ) )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType( KITCHEN ) )
+      .otherwiseWhenStatusOf( ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, COOKING_AREA, DINING_AREA ) )
         .thenSelect( KitchenScene.class )
       .otherwiseSelect( EmptyScene.class );
 
     sceneSelector
-      .whenStatusOf( BED_ROOM, ActivationSupplier.class )
+      .whenStatusOf( BED_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive( BED_ROOM ) )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType( BED_ROOM ) )
+      .otherwiseWhenStatusOf( ActivationSupplier.class )
         .matches( activation -> hasAnyZoneActivationsOf( activation, BED, BED_SIDE, DRESSING_AREA ) )
         .thenSelect( BedroomScene.class )
+      .otherwiseSelect( EmptyScene.class );
+
+    sceneSelector
+      .whenStatusOf( BATH_ROOM, NamedSceneSupplier.class ).matches( selection -> selection.isActive( BATH_ROOM ) )
+        .thenSelect( NamedSceneSupplier.class, status -> status.getSceneType( BATH_ROOM ) )
       .otherwiseSelect( EmptyScene.class );
   }
 

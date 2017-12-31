@@ -13,7 +13,10 @@ public class HomeScope implements Scope {
   static final int KITCHEN_ORDINAL = ordinalCount++;
   static final String LIVING_ROOM_NAME = "LIVING_ROOM";
   static final int LIVING_ROOM_ORDINAL = ordinalCount++;
+  static final String BATH_ROOM_NAME = "BATH";
+  static final int BATH_ROOM_ORDINAL = ordinalCount++;
 
+  public final static HomeScope BATH_ROOM = new HomeScope( BATH_ROOM_NAME, BATH_ROOM_ORDINAL );
   public final static HomeScope LIVING_ROOM = new HomeScope( LIVING_ROOM_NAME, LIVING_ROOM_ORDINAL );
   public final static HomeScope BED_ROOM = new HomeScope( BED_ROOM_NAME, BED_ROOM_ORDINAL );
   public final static HomeScope KITCHEN = new HomeScope( KITCHEN_NAME, KITCHEN_ORDINAL );
@@ -43,6 +46,6 @@ public class HomeScope implements Scope {
   }
 
   public static HomeScope[] values() {
-    return new HomeScope[] { GLOBAL, BED_ROOM, KITCHEN, LIVING_ROOM };
+    return new HomeScope[] { GLOBAL, BED_ROOM, KITCHEN, LIVING_ROOM, BATH_ROOM };
   }
 }

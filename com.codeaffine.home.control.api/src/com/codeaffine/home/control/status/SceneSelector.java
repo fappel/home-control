@@ -36,7 +36,7 @@ public interface SceneSelector {
 
   <S> NodeCondition<S> whenStatusOf( Scope scope, Class<? extends StatusSupplier<S>> statusProviderType );
 
-  static <T extends Scene> T loadScene( Context context, Class<T> sceneType ) {
+  public static <T extends Scene> T loadScene( Context context, Class<T> sceneType ) {
     verifyNotNull( sceneType, "sceneType" );
     verifyNotNull( context, "context" );
 

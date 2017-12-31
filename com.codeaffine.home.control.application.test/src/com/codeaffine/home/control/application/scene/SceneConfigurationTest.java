@@ -5,6 +5,7 @@ import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
+import static com.codeaffine.home.control.status.supplier.NamedSceneSupplier.SCENE_UNSELECT_SUFFIX;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
 import static java.time.LocalDateTime.now;
@@ -37,7 +38,6 @@ import com.codeaffine.home.control.status.supplier.SunPosition;
 import com.codeaffine.home.control.status.supplier.SunPositionSupplier;
 import com.codeaffine.home.control.status.test.util.supplier.NamedSceneSupplierTestProvider;
 import com.codeaffine.home.control.test.util.context.TestContext;
-import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.type.StringType;
 
 public class SceneConfigurationTest {
@@ -51,11 +51,24 @@ public class SceneConfigurationTest {
   private SceneSelectorImpl sceneSelector;
   private TestContext context;
 
+  static class SceneWithScopeLivingRoom implements Scene {
+
+    @Override
+    public Optional<Scope> getScope() {
+      return Optional.of( LIVING_ROOM );
+    }
+
+    @Override
+    public String getName() {
+      return getClass().getSimpleName();
+    }
+  }
+
   static class TestNamedSceneConfiguration implements NamedSceneConfiguration {
 
     @Override
     public void configureNamedScenes( Map<String, Class<? extends Scene>> nameToSceneTypeMapping ) {
-      nameToSceneTypeMapping.put( NAMED_SCENE, Scene1.class );
+      nameToSceneTypeMapping.put( NAMED_SCENE, SceneWithScopeLivingRoom.class );
     }
   }
 
@@ -165,7 +178,26 @@ public class SceneConfigurationTest {
       .containsEntry( BED_ROOM, context.get( BedroomScene.class ) )
       .containsEntry( KITCHEN, context.get( KitchenScene.class ) )
       .containsEntry( GLOBAL, context.get( DayScene.class ) );
-    assertThat( actual.get( LIVING_ROOM ).getName() ).isEqualTo( context.get( Scene1.class ).getName() );
+    assertThat( actual.get( LIVING_ROOM ).getName() )
+      .isEqualTo( context.get( SceneWithScopeLivingRoom.class ).getName() );
+  }
+
+  @Test
+  public void selectWithUnselectionOfSelectedNamedScene() {
+    stubActivationSupplier( asStatus( zoneOf( WORK_AREA ), zoneOf( DINING_AREA ), zoneOf( BED ) ) );
+    stubSunPositionSupplier( new SunPosition( 0.1, 4 ) );
+    selectNamedScene( NAMED_SCENE );
+    selectNamedScene( NAMED_SCENE + SCENE_UNSELECT_SUFFIX );
+
+    Map<Scope, Scene> actual = sceneSelector.select();
+
+    assertThat( actual )
+      .hasSize( HOME_SCOPE_VALUE_COUNT )
+      .containsEntry( BED_ROOM, context.get( BedroomScene.class ) )
+      .containsEntry( KITCHEN, context.get( KitchenScene.class ) )
+      .containsEntry( GLOBAL, context.get( DayScene.class ) );
+    assertThat( actual.get( LIVING_ROOM ).getName() )
+      .isEqualTo( context.get( LivingRoomScene.class ).getName() );
   }
 
   private void stubSunPositionSupplier( SunPosition sunPosition ) {

@@ -14,6 +14,7 @@ public class HomeScopeTest {
     assertThat( HomeScope.GLOBAL.getName() ).isNotEqualTo( HomeScope.LIVING_ROOM.getName() );
     assertThat( HomeScope.GLOBAL.getName() ).isNotEqualTo( HomeScope.KITCHEN.getName() );
     assertThat( HomeScope.GLOBAL.getName() ).isNotEqualTo( HomeScope.BED_ROOM.getName() );
+    assertThat( HomeScope.GLOBAL.getName() ).isNotEqualTo( HomeScope.BATH_ROOM.getName() );
     assertThat( HomeScope.GLOBAL.getOrdinal() ).isEqualTo( HomeScope.GLOBAL_ORDINAL );
   }
 
@@ -23,6 +24,7 @@ public class HomeScopeTest {
     assertThat( HomeScope.BED_ROOM.getName() ).isNotEqualTo( HomeScope.KITCHEN.getName() );
     assertThat( HomeScope.BED_ROOM.getName() ).isNotEqualTo( HomeScope.LIVING_ROOM.getName() );
     assertThat( HomeScope.BED_ROOM.getName() ).isNotEqualTo( HomeScope.GLOBAL.getName() );
+    assertThat( HomeScope.BED_ROOM.getName() ).isNotEqualTo( HomeScope.BATH_ROOM.getName() );
     assertThat( HomeScope.BED_ROOM.getOrdinal() ).isEqualTo( HomeScope.BED_ROOM_ORDINAL );
   }
 
@@ -32,6 +34,7 @@ public class HomeScopeTest {
     assertThat( HomeScope.KITCHEN.getName() ).isNotEqualTo( HomeScope.LIVING_ROOM.getName() );
     assertThat( HomeScope.KITCHEN.getName() ).isNotEqualTo( HomeScope.BED_ROOM.getName() );
     assertThat( HomeScope.KITCHEN.getName() ).isNotEqualTo( HomeScope.GLOBAL.getName() );
+    assertThat( HomeScope.KITCHEN.getName() ).isNotEqualTo( HomeScope.BATH_ROOM.getName() );
     assertThat( HomeScope.KITCHEN.getOrdinal() ).isEqualTo( HomeScope.KITCHEN_ORDINAL );
   }
 
@@ -41,7 +44,18 @@ public class HomeScopeTest {
     assertThat( HomeScope.LIVING_ROOM.getName() ).isNotEqualTo( HomeScope.GLOBAL.getName() );
     assertThat( HomeScope.LIVING_ROOM.getName() ).isNotEqualTo( HomeScope.KITCHEN.getName() );
     assertThat( HomeScope.LIVING_ROOM.getName() ).isNotEqualTo( HomeScope.BED_ROOM.getName() );
+    assertThat( HomeScope.LIVING_ROOM.getName() ).isNotEqualTo( HomeScope.BATH_ROOM.getName() );
     assertThat( HomeScope.LIVING_ROOM.getOrdinal() ).isEqualTo( HomeScope.LIVING_ROOM_ORDINAL );
+  }
+
+  @Test
+  public void bathRoom() {
+    assertThat( HomeScope.BATH_ROOM.getName() ).isEqualTo( HomeScope.BATH_ROOM_NAME );
+    assertThat( HomeScope.BATH_ROOM.getName() ).isNotEqualTo( HomeScope.GLOBAL.getName() );
+    assertThat( HomeScope.BATH_ROOM.getName() ).isNotEqualTo( HomeScope.KITCHEN.getName() );
+    assertThat( HomeScope.BATH_ROOM.getName() ).isNotEqualTo( HomeScope.BED_ROOM.getName() );
+    assertThat( HomeScope.BATH_ROOM.getName() ).isNotEqualTo( HomeScope.LIVING_ROOM.getName() );
+    assertThat( HomeScope.BATH_ROOM.getOrdinal() ).isEqualTo( HomeScope.BATH_ROOM_ORDINAL );
   }
 
   @Test
@@ -50,18 +64,27 @@ public class HomeScopeTest {
     assertThat( HomeScope.GLOBAL.compareTo( HomeScope.BED_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.GLOBAL.compareTo( HomeScope.KITCHEN ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.GLOBAL.compareTo( HomeScope.LIVING_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.GLOBAL.compareTo( HomeScope.BATH_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.BED_ROOM.compareTo( HomeScope.GLOBAL ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.BED_ROOM.compareTo( HomeScope.BED_ROOM ) ).isEqualTo( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.BED_ROOM.compareTo( HomeScope.KITCHEN ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.BED_ROOM.compareTo( HomeScope.LIVING_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BED_ROOM.compareTo( HomeScope.BATH_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.KITCHEN.compareTo( HomeScope.GLOBAL ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.KITCHEN.compareTo( HomeScope.BED_ROOM ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.KITCHEN.compareTo( HomeScope.KITCHEN ) ).isEqualTo( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.KITCHEN.compareTo( HomeScope.LIVING_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.KITCHEN.compareTo( HomeScope.BATH_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.LIVING_ROOM.compareTo( HomeScope.GLOBAL ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.LIVING_ROOM.compareTo( HomeScope.BED_ROOM ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.LIVING_ROOM.compareTo( HomeScope.KITCHEN ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
     assertThat( HomeScope.LIVING_ROOM.compareTo( HomeScope.LIVING_ROOM ) ).isEqualTo( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.LIVING_ROOM.compareTo( HomeScope.BATH_ROOM ) ).isLessThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BATH_ROOM.compareTo( HomeScope.GLOBAL ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BATH_ROOM.compareTo( HomeScope.BED_ROOM ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BATH_ROOM.compareTo( HomeScope.KITCHEN ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BATH_ROOM.compareTo( HomeScope.LIVING_ROOM ) ).isGreaterThan( ZERO_SIGNIFIER_OF_EQUAL );
+    assertThat( HomeScope.BATH_ROOM.compareTo( HomeScope.BATH_ROOM ) ).isEqualTo( ZERO_SIGNIFIER_OF_EQUAL );
   }
 
   @Test
@@ -69,6 +92,10 @@ public class HomeScopeTest {
     HomeScope[] actual = HomeScope.values();
 
     assertThat( actual )
-      .containsExactly( HomeScope.GLOBAL, HomeScope.BED_ROOM, HomeScope.KITCHEN, HomeScope.LIVING_ROOM );
+      .containsExactly( HomeScope.GLOBAL,
+                        HomeScope.BED_ROOM,
+                        HomeScope.KITCHEN,
+                        HomeScope.LIVING_ROOM,
+                        HomeScope.BATH_ROOM );
   }
 }

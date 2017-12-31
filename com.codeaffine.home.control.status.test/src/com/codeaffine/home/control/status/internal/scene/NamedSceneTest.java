@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.status.supplier;
+package com.codeaffine.home.control.status.internal.scene;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.codeaffine.home.control.status.EmptyScene;
-import com.codeaffine.home.control.status.supplier.NamedScene;
+import com.codeaffine.home.control.status.internal.scene.NamedScene;
 import com.codeaffine.home.control.test.util.context.TestContext;
 import com.codeaffine.home.control.test.util.status.Scene1;
 import com.codeaffine.home.control.test.util.status.Scene2;

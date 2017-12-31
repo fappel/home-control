@@ -1,4 +1,4 @@
-package com.codeaffine.home.control.status.supplier;
+package com.codeaffine.home.control.status.internal.scene;
 
 import static com.codeaffine.home.control.status.SceneSelector.loadScene;
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
@@ -7,17 +7,14 @@ import com.codeaffine.home.control.Context;
 import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 
-public class NamedScene {
+class NamedScene {
 
   private final Class<? extends Scene> sceneType;
   private final Context context;
 
-  public NamedScene( Context context, Class<? extends Scene> sceneType ) {
-    verifyNotNull( sceneType, "sceneType" );
-    verifyNotNull( context, "context" );
-
-    this.context = context;
-    this.sceneType = sceneType;
+  NamedScene( Context context, Class<? extends Scene> sceneType ) {
+    this.context = verifyNotNull( context, "context" );
+    this.sceneType = verifyNotNull( sceneType, "sceneType" );
   }
 
   public boolean isActive() {

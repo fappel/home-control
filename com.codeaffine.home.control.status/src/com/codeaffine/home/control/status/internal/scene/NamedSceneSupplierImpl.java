@@ -1,5 +1,6 @@
 package com.codeaffine.home.control.status.internal.scene;
 
+import static com.codeaffine.home.control.status.SceneSelector.loadScene;
 import static com.codeaffine.home.control.status.internal.scene.Messages.*;
 import static com.codeaffine.util.ArgumentVerification.*;
 
@@ -15,17 +16,17 @@ import com.codeaffine.home.control.logger.Logger;
 import com.codeaffine.home.control.status.EmptyScene;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.StatusSupplierCore;
-import com.codeaffine.home.control.status.supplier.NamedScene;
+import com.codeaffine.home.control.status.supplier.NamedSceneSelection;
 import com.codeaffine.home.control.status.supplier.NamedSceneSupplier;
 import com.codeaffine.home.control.type.StringType;
 
 public class NamedSceneSupplierImpl implements NamedSceneSupplier {
 
-  private final StatusSupplierCore<NamedScene> statusProviderCore;
+  private final StatusSupplierCore<NamedSceneSelection> statusProviderCore;
   private final Map<String, Class<? extends Scene>> namedScenes;
   private final Context context;
 
-  private NamedScene nameScene;
+  private final NamedSceneSelectionImpl selection;
 
   public NamedSceneSupplierImpl(
     Context context, NamedSceneConfiguration configuration, EventBus eventBus, Logger logger )
@@ -35,8 +36,8 @@ public class NamedSceneSupplierImpl implements NamedSceneSupplier {
     verifyNotNull( context, "context" );
     verifyNotNull( logger, "logger" );
 
-    this.nameScene = new NamedScene( context, EmptyScene.class );
-    this.statusProviderCore = new StatusSupplierCore<>( eventBus, nameScene, this, logger );
+    this.selection = new NamedSceneSelectionImpl( context );
+    this.statusProviderCore = new StatusSupplierCore<>( eventBus, selection.copy(), this, logger );
     this.namedScenes = configure( configuration );
     this.context = context;
   }
@@ -50,16 +51,35 @@ public class NamedSceneSupplierImpl implements NamedSceneSupplier {
     statusProviderCore.updateStatus( () -> selectScene( sceneName ), INFO_NAMED_SCENE_SELECTION );
   }
 
-  private NamedScene selectScene( String sceneName ) {
-    verifyCondition( namedScenes.containsKey( sceneName ), ERROR_SCENE_NOT_FOUND, sceneName, namedScenes.keySet() );
+  private NamedSceneSelection selectScene( String sceneName ) {
+    verifyCondition( isValidName( sceneName ), ERROR_SCENE_NOT_FOUND, sceneName, namedScenes.keySet() );
 
-    nameScene = new NamedScene( context, namedScenes.get( sceneName ) );
-    return nameScene;
+    NamedScene nameScene = new NamedScene( context, namedScenes.get( getSceneName( sceneName ) ) );
+    Scene scene = loadScene( context, nameScene.getSceneType() );
+    if( sceneName.equals( OFF ) ) {
+      selection.unselectAll();
+    } else if( namedScenes.containsKey( sceneName ) ) {
+      selection.select( scene.getScope().orElse( DEFAULT_SCOPE ), nameScene );
+    } else {
+      selection.unselect( scene.getScope().orElse( DEFAULT_SCOPE ) );
+    }
+    return selection.copy();
   }
 
   @Override
-  public NamedScene getStatus() {
-    return nameScene;
+  public NamedSceneSelection getStatus() {
+    return selection.copy();
+  }
+
+  private boolean isValidName( String sceneName ) {
+    return namedScenes.containsKey( getSceneName( sceneName ));
+  }
+
+  private static String getSceneName( String sceneName ) {
+    if( sceneName.endsWith( SCENE_UNSELECT_SUFFIX ) ) {
+      return sceneName.substring( 0, sceneName.length() - SCENE_UNSELECT_SUFFIX.length() );
+    }
+    return sceneName;
   }
 
   private static Map<String, Class<? extends Scene>> configure( NamedSceneConfiguration configuration ) {
