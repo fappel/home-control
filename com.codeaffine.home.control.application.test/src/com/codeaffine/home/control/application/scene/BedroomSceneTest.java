@@ -2,12 +2,14 @@ package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BedStand;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.stubZone;
 import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.status.util.AllocationStatus.FREQUENT;
 import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +32,7 @@ public class BedroomSceneTest {
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
     statusSupplierHelper = new StatusSupplierHelper();
-    scene = new BedroomScene( lampControl, analysis.getStub() );
+    scene = new BedroomScene( lampControl, analysis.getStub(), stubBedroomScenePreference() );
   }
 
   @Test
@@ -176,5 +178,9 @@ public class BedroomSceneTest {
     String actual = scene.getName();
 
     assertThat( actual ).isEqualTo( BedroomScene.class.getSimpleName() );
+  }
+
+  private static BedroomScenePreference stubBedroomScenePreference() {
+    return stubPreference( 20L, SECONDS, BedroomScenePreference.class );
   }
 }

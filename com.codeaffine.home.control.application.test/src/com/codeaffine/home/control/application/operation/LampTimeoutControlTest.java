@@ -3,10 +3,11 @@ package com.codeaffine.home.control.application.operation;
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.*;
 import static com.codeaffine.home.control.application.operation.LampTimeoutModus.ON;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubLamp;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.test.util.thread.ThreadHelper.sleep;
-import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.*;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -29,6 +30,7 @@ public class LampTimeoutControlTest {
   private static final Lamp LAMP_BED_STAND = stubLamp( BedStand );
   private static final long EXPIRATION_TIME_IN_MILLIS = 10L;
 
+  private LampSwitchOperationPreference preference;
   private ActivationSupplier activationSupplier;
   private LampTimeoutControl timeoutControl;
   private StatusSupplierHelper stubHelper;
@@ -39,7 +41,9 @@ public class LampTimeoutControlTest {
     stubHelper = new StatusSupplierHelper();
     activationSupplier = stubHelper.getActivationSupplier();
     lampCollector = mock( LampCollector.class );
-    timeoutControl = new LampTimeoutControl( activationSupplier, lampCollector );
+    preference = mock( LampSwitchOperationPreference.class );
+    preference = stubPreference( 30L, SECONDS, LampSwitchOperationPreference.class );
+    timeoutControl = new LampTimeoutControl( activationSupplier, lampCollector, preference );
   }
 
   @Test
@@ -76,7 +80,7 @@ public class LampTimeoutControlTest {
     stubHelper.stubActivationSupplier( emptySet() );
     timeoutControl.setTimeoutModus( ON );
 
-    timeoutControl.setTimeoutSupplier( () -> new Timeout() );
+    timeoutControl.setTimeoutSupplier( () -> new Timeout( stubPreference( 1L, MINUTES ) ) );
     timeoutControl.setLampsToSwitchOn( asSet( LAMP_WINDOW_UPLIGHT ) );
     timeoutControl.setLampsToSwitchOn( asSet( LAMP_BED_STAND ) );
     Set<Lamp> actual = timeoutControl.getLampsToSwitchOn();
@@ -88,7 +92,8 @@ public class LampTimeoutControlTest {
   public void getLampsToSwitchOnWithExpiredLampTimeoutAfterChangeOfSwitchOnSet() {
     stubHelper.stubActivationSupplier( emptySet() );
     timeoutControl.setTimeoutModus( ON );
-    timeoutControl.setTimeoutSupplier( () -> LampTimeoutControl.createHotTimeout( EXPIRATION_TIME_IN_MILLIS, MILLIS ) );
+    stubPreference( preference, EXPIRATION_TIME_IN_MILLIS, MILLIS );
+    timeoutControl.setTimeoutSupplier( () -> LampTimeoutControl.createHotTimeout( preference ) );
     timeoutControl.setLampsToSwitchOn( asSet( LAMP_WINDOW_UPLIGHT ) );
     timeoutControl.setLampsToSwitchOn( asSet( LAMP_BED_STAND ) );
 

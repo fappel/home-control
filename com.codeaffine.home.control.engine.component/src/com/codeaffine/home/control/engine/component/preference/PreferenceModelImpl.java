@@ -159,9 +159,22 @@ public class PreferenceModelImpl implements PreferenceModel {
     String attributeName = descriptor.get().getName();
     Object oldValue = restoreOldValue( type, values, descriptor, attributeName );
     Object newValue = args[ 0 ];
-    values.put( attributeName, verifyNotNull( newValue, attributeName ).toString() );
+    String value = verifyNotNull( newValue, attributeName ).toString();
+    storeAttributeEnumSafe( type, values, descriptor, attributeName, value );
     if( !newValue.equals( oldValue ) ) {
       eventBus.post( new PreferenceEvent( source, attributeName, oldValue, newValue ) );
+    }
+  }
+
+  private static  void storeAttributeEnumSafe(
+    Class<?> type, Map<String, String> values, Optional<PropertyDescriptor> descriptor, String attribute, String value )
+  {
+    try {
+      values.put( attribute, value );
+      readValue( type, values, descriptor );
+    } catch (IllegalArgumentException iae ) {
+      // workaround for uppercase enums with lowercase mixed case name attribute value
+      values.put( attribute, value.toUpperCase() );
     }
   }
 

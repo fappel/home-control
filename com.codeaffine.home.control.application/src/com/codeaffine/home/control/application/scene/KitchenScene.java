@@ -13,6 +13,7 @@ import com.codeaffine.home.control.status.util.AllocationStatus;
 import com.codeaffine.home.control.status.util.Analysis;
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.application.util.Timeout;
+import com.codeaffine.home.control.application.util.TimeoutPreference;
 import com.codeaffine.home.control.status.Scene;
 
 class KitchenScene implements Scene {
@@ -28,13 +29,13 @@ class KitchenScene implements Scene {
   private final List<SectionDefinition> zonesToSwitchOn;
   private final List<SectionDefinition> zonesForFiltering;
 
-  KitchenScene( LampControl lampControl, Analysis analysis ) {
+  KitchenScene( LampControl lampControl, Analysis analysis, TimeoutPreference preference ) {
     this.lampControl = lampControl;
     this.analysis = analysis;
     this.zonesForFiltering = new ArrayList<>( 2 );
     this.zonesToSwitchOn = new ArrayList<>( 2 );
-    this.cookingAreaTimeout = new Timeout();
-    this.diningAreaTimeout = new Timeout();
+    this.cookingAreaTimeout = new Timeout(preference);
+    this.diningAreaTimeout = new Timeout(preference);
   }
 
   @Override

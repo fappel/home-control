@@ -4,9 +4,11 @@ import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefi
 import static com.codeaffine.home.control.application.operation.LampSelectionStrategy.ZONE_ACTIVATION;
 import static com.codeaffine.home.control.application.operation.LampSwitchOperation.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.*;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.stubZone;
 import static com.codeaffine.home.control.status.type.OnOff.*;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
@@ -37,6 +39,7 @@ import com.codeaffine.home.control.status.type.OnOff;
 
 public class LampSwitchOperationTest {
 
+  private LampSwitchOperationPreference preference;
   private ActivationSupplier activationSupplier;
   private LampSwitchOperation operation;
   private LampCollector lampCollector;
@@ -49,7 +52,8 @@ public class LampSwitchOperationTest {
     timer = mock( FollowUpTimer.class );
     activationSupplier = mock( ActivationSupplier.class );
     lampCollector = new LampCollector( registry, activationSupplier );
-    operation = new LampSwitchOperation( lampCollector, activationSupplier, timer );
+    preference = stubPreference( 30L, SECONDS, LampSwitchOperationPreference.class );
+    operation = new LampSwitchOperation( lampCollector, activationSupplier, timer, preference );
   }
 
   @Test
@@ -528,17 +532,22 @@ public class LampSwitchOperationTest {
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsLampCollectorArgument() {
-    new LampSwitchOperation( null, activationSupplier, timer );
+    new LampSwitchOperation( null, activationSupplier, timer, preference );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsZoneActivationSupplierArgument() {
-    new LampSwitchOperation( lampCollector, null, timer );
+    new LampSwitchOperation( lampCollector, null, timer, preference );
   }
 
   @Test( expected = IllegalArgumentException.class )
   public void constructWithNullAsFollowUpTimerArgument() {
-    new LampSwitchOperation( lampCollector, activationSupplier, null );
+    new LampSwitchOperation( lampCollector, activationSupplier, null, preference );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void constructWithNullAsPreferenceArgument() {
+    new LampSwitchOperation( lampCollector, activationSupplier, timer, null );
   }
 
   private Runnable captureTimerCommand() {

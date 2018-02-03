@@ -50,13 +50,17 @@ public class LampSwitchOperation implements HomeControlOperation {
   private Predicate<Lamp> filter;
 
   LampSwitchOperation(
-    LampCollector lampCollector, ActivationSupplier activationSupplier, FollowUpTimer followUpTimer )
+    LampCollector lampCollector,
+    ActivationSupplier activationSupplier,
+    FollowUpTimer followUpTimer,
+    LampSwitchOperationPreference preference )
   {
     verifyNotNull( activationSupplier, "activationSupplier" );
     verifyNotNull( lampCollector, "lampCollector" );
     verifyNotNull( followUpTimer, "followUpTimer" );
+    verifyNotNull( preference, "preference" );
 
-    this.lampTimeoutControl = new LampTimeoutControl( activationSupplier, lampCollector );
+    this.lampTimeoutControl = new LampTimeoutControl( activationSupplier, lampCollector, preference );
     this.activationSupplier = activationSupplier;
     this.followUpTimer = followUpTimer;
     this.lampCollector = lampCollector;

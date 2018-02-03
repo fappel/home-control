@@ -3,7 +3,6 @@ package com.codeaffine.home.control.application.operation;
 import static com.codeaffine.home.control.application.operation.LampTimeoutModus.*;
 import static java.util.stream.Collectors.toSet;
 
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.util.Timeout;
+import com.codeaffine.home.control.application.util.TimeoutPreference;
 import com.codeaffine.home.control.entity.EntityProvider.EntityDefinition;
 import com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition;
 import com.codeaffine.home.control.status.supplier.Activation.Zone;
@@ -30,10 +30,12 @@ class LampTimeoutControl {
   private Supplier<Timeout> timeoutSupplier;
   private LampTimeoutModus timeoutModus;
 
-  LampTimeoutControl( ActivationSupplier activationSupplier, LampCollector lampCollector ) {
+  LampTimeoutControl(
+    ActivationSupplier activationSupplier, LampCollector lampCollector, LampSwitchOperationPreference preference )
+  {
     this.activationSupplier = activationSupplier;
     this.lampCollector = lampCollector;
-    this.timeoutSupplier = () -> createHotTimeout( 30L, ChronoUnit.SECONDS );
+    this.timeoutSupplier = () -> createHotTimeout( preference );
     this.keepLampsAliveTimeouts = new HashMap<>();
     this.lampsToSwitchOff = new HashSet<>();
     this.relatedSections = new HashSet<>();
@@ -144,8 +146,8 @@ class LampTimeoutControl {
     return timeoutModus == ON;
   }
 
-  static Timeout createHotTimeout( long expirationTimeInMillis, ChronoUnit timeunit ) {
-    Timeout result = new Timeout( expirationTimeInMillis, timeunit );
+  static Timeout createHotTimeout( TimeoutPreference preference ) {
+    Timeout result = new Timeout( preference );
     result.set();
     return result;
   }

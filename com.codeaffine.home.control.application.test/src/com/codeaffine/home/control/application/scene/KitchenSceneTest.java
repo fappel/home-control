@@ -1,9 +1,11 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.KitchenScene.*;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.status.util.AllocationStatus.UNUSED;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +25,7 @@ public class KitchenSceneTest {
   public void setUp() {
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
-    scene = new KitchenScene( lampControl, analysis.getStub() );
+    scene = new KitchenScene( lampControl, analysis.getStub(), stubPreference( 1L, MINUTES ) );
   }
 
   @Test

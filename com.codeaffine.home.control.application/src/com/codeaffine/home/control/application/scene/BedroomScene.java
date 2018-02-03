@@ -5,7 +5,6 @@ import static com.codeaffine.home.control.status.model.SectionProvider.SectionDe
 import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.status.util.AllocationStatus.FREQUENT;
 import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
@@ -23,10 +22,10 @@ public class BedroomScene implements Scene {
   private final Timeout bedRoomTimeout;
   private final Analysis analysis;
 
-  public BedroomScene( LampControl lampControl, Analysis analysis ) {
+  public BedroomScene( LampControl lampControl, Analysis analysis, BedroomScenePreference preference ) {
     this.lampControl = lampControl;
     this.analysis = analysis;
-    this.bedRoomTimeout = new Timeout( 20L, SECONDS );
+    this.bedRoomTimeout = new Timeout( preference );
   }
 
   @Override

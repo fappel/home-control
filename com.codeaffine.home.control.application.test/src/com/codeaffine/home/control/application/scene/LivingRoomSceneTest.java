@@ -1,8 +1,10 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.scene.LivingRoomScene.*;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.type.OnOff.*;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -13,6 +15,7 @@ import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
 import com.codeaffine.home.control.status.type.OnOff;
 import com.codeaffine.home.control.application.test.AnalysisStub;
 import com.codeaffine.home.control.application.util.LampControl;
+import com.codeaffine.home.control.application.util.TimeoutPreference;
 
 public class LivingRoomSceneTest {
 
@@ -26,7 +29,8 @@ public class LivingRoomSceneTest {
     computerStatusSupplier = mock( ComputerStatusSupplier.class );
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
-    scene = new LivingRoomScene( lampControl, computerStatusSupplier, analysis.getStub() );
+    TimeoutPreference preference = stubPreference( 1L, MINUTES );
+    scene = new LivingRoomScene( lampControl, computerStatusSupplier, analysis.getStub(), preference );
   }
 
   @Test

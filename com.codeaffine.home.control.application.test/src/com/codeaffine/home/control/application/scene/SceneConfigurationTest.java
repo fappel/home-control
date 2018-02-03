@@ -4,11 +4,13 @@ import static com.codeaffine.home.control.application.scene.HomeScope.*;
 import static com.codeaffine.home.control.application.scene.HomeScope.KITCHEN;
 import static com.codeaffine.home.control.application.scene.HomeScope.LIVING_ROOM;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.supplier.NamedSceneSupplier.SCENE_UNSELECT_SUFFIX;
 import static com.codeaffine.home.control.status.test.util.supplier.ActivationHelper.*;
 import static com.codeaffine.home.control.status.util.SunLightStatus.NIGHT;
 import static java.time.LocalDateTime.now;
+import static java.time.temporal.ChronoUnit.*;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codeaffine.home.control.application.util.TimeoutPreference;
 import com.codeaffine.home.control.engine.status.SceneSelectorImpl;
 import com.codeaffine.home.control.event.ChangeEvent;
 import com.codeaffine.home.control.event.EventBus;
@@ -86,6 +89,9 @@ public class SceneConfigurationTest {
     context.set( ActivitySupplier.class, activitySupplier );
     context.set( NamedSceneConfiguration.class, new TestNamedSceneConfiguration() );
     context.set( NamedSceneSupplier.class, namedSceneSupplierFactory.get() );
+    context.set( NightScenePreference.class, stubPreference( 2L, MINUTES, NightScenePreference.class ) );
+    context.set( BedroomScenePreference.class, stubPreference( 20L, SECONDS, BedroomScenePreference.class ) );
+    context.set( TimeoutPreference.class, stubPreference( 2L, MINUTES ) );
     sceneSelector = new SceneSelectorImpl( context, mock( Logger.class ) );
     new SceneConfiguration().configureSceneSelection( sceneSelector );
   }

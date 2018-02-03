@@ -90,10 +90,10 @@ public class Activity {
   }
 
   private String provideActivityAndAllocationDataFor( SectionDefinition sectionDefinition ) {
-    return sectionDefinition
-         + "="
-        + sectionActivities.get( sectionDefinition )
-        + "/"
-        + sectionAllocations.get( sectionDefinition );
+    return   sectionDefinition
+           + "="
+           + sectionActivities.get( sectionDefinition )
+           + "/"
+           + sectionAllocations.get( sectionDefinition );
   }
 }

@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -108,6 +109,9 @@ public class PreferenceModelImplTest {
     @DefaultValue( DEFAULT_MY_PREFERENCE_VALUE )
     MyPreferenceValue getMyPreferenceValue();
     void setMyPreferenceValue( MyPreferenceValue value );
+    @DefaultValue( "SECONDS" )
+    ChronoUnit getChronoUnit();
+    void setChronoUnit( ChronoUnit value );
   }
 
   @Preference
@@ -343,6 +347,15 @@ public class PreferenceModelImplTest {
     MyEnum actual = preference.getMyEnumValue();
 
     assertThat( actual ).isEqualTo( ONE );
+  }
+
+  @Test
+  public void getChronoUnitIfNotSet() {
+    MyPreference preference = preferenceModel.get( MyPreference.class );
+
+    ChronoUnit actual = preference.getChronoUnit();
+
+    assertThat( actual ).isSameAs( ChronoUnit.SECONDS );
   }
 
   @Test

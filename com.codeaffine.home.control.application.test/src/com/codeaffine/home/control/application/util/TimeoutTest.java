@@ -1,7 +1,7 @@
 package com.codeaffine.home.control.application.util;
 
+import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.test.util.thread.ThreadHelper.sleep;
-import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -15,11 +15,13 @@ public class TimeoutTest {
   private static final ChronoUnit TIME_UNIT = ChronoUnit.MILLIS;
   private static final long EXPIRATION_TIME = 20L;
 
+  private TimeoutPreference preference;
   private Timeout timeout;
 
   @Before
   public void setUp() {
-    timeout = new Timeout( EXPIRATION_TIME, TIME_UNIT );
+    preference = stubPreference( EXPIRATION_TIME, TIME_UNIT );
+    timeout = new Timeout( preference );
   }
 
   @Test
@@ -55,6 +57,20 @@ public class TimeoutTest {
     sleep( EXPIRATION_TIME * 2 );
 
     assertThat( timeout.isExpired() ).isTrue();
+  }
+
+  @Test
+  public void expireIfPreferenceSettingsChange() {
+    stubPreference( preference, EXPIRATION_TIME * 4, TIME_UNIT );
+    timeout.set();
+
+    sleep( EXPIRATION_TIME * 2 );
+    boolean expiredWithOldSetting = timeout.isExpired();
+    sleep( EXPIRATION_TIME * 8 );
+    boolean expiredWithNewSetting = timeout.isExpired();
+
+    assertThat( expiredWithOldSetting ).isFalse();
+    assertThat( expiredWithNewSetting ).isTrue();
   }
 
   @Test
@@ -107,16 +123,6 @@ public class TimeoutTest {
     sleep( EXPIRATION_TIME * 4 / 5 );
 
     assertThat( timeout.isExpired() ).isFalse();
-  }
-
-  @Test( expected = IllegalArgumentException.class )
-  public void constructWithNullAsTimeUnitArgument() {
-    new Timeout( 1L, null );
-  }
-
-  @Test( expected = IllegalArgumentException.class )
-  public void constructWithExpirationTimeArgumentBelowLowerBound() {
-    new Timeout( Timeout.LOWER_BOUND - 1L, MILLIS );
   }
 
   @Test( expected = IllegalArgumentException.class )

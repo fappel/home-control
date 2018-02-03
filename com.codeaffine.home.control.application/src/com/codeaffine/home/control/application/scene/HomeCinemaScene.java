@@ -7,6 +7,7 @@ import static com.codeaffine.home.control.status.model.SectionProvider.SectionDe
 import java.util.Optional;
 
 import com.codeaffine.home.control.application.util.LampControl;
+import com.codeaffine.home.control.application.util.TimeoutPreference;
 import com.codeaffine.home.control.status.SceneSelector.Scope;
 import com.codeaffine.home.control.status.supplier.ComputerStatusSupplier;
 import com.codeaffine.home.control.status.util.Analysis;
@@ -15,8 +16,13 @@ public class HomeCinemaScene extends LivingRoomSceneBase {
 
   private final LampControl lampControl;
 
-  public HomeCinemaScene( LampControl lampControl, ComputerStatusSupplier computerStatusSupplier, Analysis analysis ) {
-    super( computerStatusSupplier, analysis );
+  public HomeCinemaScene(
+    LampControl lampControl,
+    ComputerStatusSupplier computerStatusSupplier,
+    Analysis analysis,
+    TimeoutPreference preference )
+  {
+    super( computerStatusSupplier, analysis, preference );
     this.lampControl = lampControl;
   }
 

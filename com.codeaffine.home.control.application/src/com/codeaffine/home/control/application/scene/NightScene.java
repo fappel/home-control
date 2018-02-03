@@ -6,7 +6,6 @@ import static com.codeaffine.home.control.application.operation.LampTimeoutModus
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.util.ActivityStatus.BRISK;
 import static com.codeaffine.home.control.status.util.MotionStatus.FOCUSSED;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
@@ -32,8 +31,8 @@ public class NightScene implements Scene {
   private final Timeout allOnTimeout;
   private final Analysis analysis;
 
-  NightScene( Analysis analysis, LampControl lampControl ) {
-    this.allOnTimeout = new Timeout( 2L, MINUTES );
+  NightScene( Analysis analysis, LampControl lampControl, NightScenePreference preference ) {
+    this.allOnTimeout = new Timeout( preference );
     this.lampControl = lampControl;
     this.analysis = analysis;
   }
