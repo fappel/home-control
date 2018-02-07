@@ -1,0 +1,22 @@
+Openhab Backup
+==============
+
+
+Device of SD-CARD:
+==================
+
+diskutil list
+-> find diskX where X is number of SD Card device
+
+Backup Creation:
+===============
+
+sudo dd bs=4m if=/dev/diskX of=/Volumes/My\ Passport\ for\ Mac/openHABian-Date.img
+
+
+Restoration from Backup:
+=======================
+
+diskutil umountDisk /dev/diskX
+sudo newfs_msdos -F 16 /dev/diskX
+sudo dd bs=4m if=/Volumes/My\ Passport\ for\ Mac/openHABian-Date.img of=/dev/diskX

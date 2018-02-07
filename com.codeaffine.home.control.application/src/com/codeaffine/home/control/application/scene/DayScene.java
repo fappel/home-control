@@ -7,8 +7,10 @@ import static com.codeaffine.home.control.status.util.SunLightStatus.TWILIGHT;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.operation.LampTimeoutModus;
 import com.codeaffine.home.control.application.util.LampControl;
 import com.codeaffine.home.control.status.Scene;
 import com.codeaffine.home.control.status.util.Analysis;
@@ -23,13 +25,17 @@ public class DayScene implements Scene {
               HallCeiling );
 
   private final LightThresholdUtil lightThresholdUtil;
+  private final DayScenePreference preference;
   private final LampControl lampControl;
   private final Analysis analysis;
 
-  DayScene( LampControl lampControl, Analysis analysis, LightThresholdUtil lightThresholdUtil ) {
+  DayScene(
+    LampControl lampControl, Analysis analysis, LightThresholdUtil lightThresholdUtil, DayScenePreference preference )
+  {
     this.lightThresholdUtil = lightThresholdUtil;
     this.lampControl = lampControl;
     this.analysis = analysis;
+    this.preference = preference;
   }
 
   @Override
@@ -41,11 +47,23 @@ public class DayScene implements Scene {
   public void prepare() {
     lampControl.setLampFilter( lamp -> DAY_LAMPS.contains( lamp.getDefinition() ) );
     if( analysis.isSunLightStatusAtMost( TWILIGHT ) ) {
-      lampControl.setLampTimeoutModus( ON );
-      lampControl.addGroupOfTimeoutRelatedSections( LIVING_AREA, WORK_AREA );
-      lampControl.addGroupOfTimeoutRelatedSections( BED, BED_SIDE, DRESSING_AREA );
-      lampControl.addGroupOfTimeoutRelatedSections( DINING_AREA, COOKING_AREA );
+      configureLampTimeouts( () -> preference.getLampTimeoutModusNight() );
+    } else {
+      configureLampTimeouts( () -> preference.getLampTimeoutModusDay() );
     }
     lampControl.switchOffLamps( lightThresholdUtil.collectLampsOfZonesWithEnoughDayLight() );
+  }
+
+  private void configureLampTimeouts( Supplier<LampTimeoutModus> modusSupplier ) {
+    lampControl.setLampTimeoutModus( modusSupplier.get() );
+    if( modusSupplier.get() == ON ) {
+      configureTimeoutRelatedSections();
+    }
+  }
+
+  private void configureTimeoutRelatedSections() {
+    lampControl.addGroupOfTimeoutRelatedSections( LIVING_AREA, WORK_AREA );
+    lampControl.addGroupOfTimeoutRelatedSections( BED, BED_SIDE, DRESSING_AREA );
+    lampControl.addGroupOfTimeoutRelatedSections( DINING_AREA, COOKING_AREA );
   }
 }

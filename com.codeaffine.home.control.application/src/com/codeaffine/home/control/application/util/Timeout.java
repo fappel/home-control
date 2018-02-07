@@ -14,8 +14,10 @@ public class Timeout {
   private LocalDateTime lastActivation;
 
   public Timeout( TimeoutPreference preference ) {
-    this.preference = preference;
+    verifyNotNull( preference, "preference" );
+
     this.lastActivation = now().minus( preference.getExpirationTime() * 2, preference.getTimeUnit() );
+    this.preference = preference;
   }
 
   public void set() {

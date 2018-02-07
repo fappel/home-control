@@ -27,6 +27,7 @@ public class NightScene implements Scene {
               BathRoomCeiling,
               HallCeiling );
 
+  private final NightScenePreference preference;
   private final LampControl lampControl;
   private final Timeout allOnTimeout;
   private final Analysis analysis;
@@ -34,12 +35,19 @@ public class NightScene implements Scene {
   NightScene( Analysis analysis, LampControl lampControl, NightScenePreference preference ) {
     this.allOnTimeout = new Timeout( preference );
     this.lampControl = lampControl;
+    this.preference = preference;
     this.analysis = analysis;
   }
 
   @Override
   public void prepare() {
-    lampControl.setLampTimeoutModus( ON );
+    lampControl.setLampTimeoutModus( preference.getLampTimeoutModusNight() );
+    if( preference.getLampTimeoutModusNight() == ON ) {
+      configureLampTimeouts();
+    }
+  }
+
+  private void configureLampTimeouts() {
     lampControl.setLampFilter( lamp -> NIGHT_LAMPS.contains( lamp.getDefinition() ) );
     allOnTimeout.setIf(    allOnTimeout.isExpired()
                         && Stream.of( SectionDefinition.values() )

@@ -31,7 +31,9 @@ class LampTimeoutControl {
   private LampTimeoutModus timeoutModus;
 
   LampTimeoutControl(
-    ActivationSupplier activationSupplier, LampCollector lampCollector, LampSwitchOperationPreference preference )
+    ActivationSupplier activationSupplier,
+    LampCollector lampCollector,
+    LampSwitchOperationPreference preference )
   {
     this.activationSupplier = activationSupplier;
     this.lampCollector = lampCollector;

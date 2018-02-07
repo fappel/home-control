@@ -34,8 +34,8 @@ class KitchenScene implements Scene {
     this.analysis = analysis;
     this.zonesForFiltering = new ArrayList<>( 2 );
     this.zonesToSwitchOn = new ArrayList<>( 2 );
-    this.cookingAreaTimeout = new Timeout(preference);
-    this.diningAreaTimeout = new Timeout(preference);
+    this.cookingAreaTimeout = new Timeout( preference );
+    this.diningAreaTimeout = new Timeout( preference );
   }
 
   @Override
