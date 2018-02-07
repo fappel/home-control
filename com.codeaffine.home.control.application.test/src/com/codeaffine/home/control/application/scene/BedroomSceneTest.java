@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BedStand;
+import static com.codeaffine.home.control.application.scene.BedroomScenePreference.SleepModus.*;
 import static com.codeaffine.home.control.application.test.RegistryHelper.stubSection;
 import static com.codeaffine.home.control.application.util.TimeoutPreferenceHelper.stubPreference;
 import static com.codeaffine.home.control.engine.entity.Sets.asSet;
@@ -23,6 +24,7 @@ import com.codeaffine.home.control.status.test.util.supplier.StatusSupplierHelpe
 public class BedroomSceneTest {
 
   private StatusSupplierHelper statusSupplierHelper;
+  private BedroomScenePreference preference;
   private LampControl lampControl;
   private AnalysisStub analysis;
   private BedroomScene scene;
@@ -32,7 +34,8 @@ public class BedroomSceneTest {
     lampControl = mock( LampControl.class );
     analysis = new AnalysisStub();
     statusSupplierHelper = new StatusSupplierHelper();
-    scene = new BedroomScene( lampControl, analysis.getStub(), stubBedroomScenePreference() );
+    preference = stubBedroomScenePreference();
+    scene = new BedroomScene( lampControl, analysis.getStub(), preference );
   }
 
   @Test
@@ -141,6 +144,15 @@ public class BedroomSceneTest {
   }
 
   @Test
+  public void prepareIfRoomIsButAutomaticIsOff() {
+    when( preference.getSleepModus() ).thenReturn( MANUAL );
+
+    scene.prepare();
+
+    verify( lampControl, never() ).switchOffZoneLamps( BED, BED_SIDE, DRESSING_AREA );
+  }
+
+  @Test
   public void prepareIfPreviouslyHotRoomGetsColdWithinTimeout() {
     analysis.stubIsZoneActivated( DRESSING_AREA, true );
     scene.prepare();
@@ -181,6 +193,8 @@ public class BedroomSceneTest {
   }
 
   private static BedroomScenePreference stubBedroomScenePreference() {
-    return stubPreference( 20L, SECONDS, BedroomScenePreference.class );
+    BedroomScenePreference result = stubPreference( 20L, SECONDS, BedroomScenePreference.class );
+    when( result.getSleepModus() ).thenReturn( AUTOMATIC );
+    return result;
   }
 }

@@ -30,6 +30,7 @@ public class SceneConfiguration implements NamedSceneConfiguration {
     nameToSceneTypeMapping.put( "HOME_CINEMA", HomeCinemaScene.class );
     nameToSceneTypeMapping.put( "YOGA", YogaScene.class );
     nameToSceneTypeMapping.put( "BED", BedScene.class );
+    nameToSceneTypeMapping.put( "SLEEP", SleepScene.class );
     nameToSceneTypeMapping.put( "COOKING", CookingScene.class );
     nameToSceneTypeMapping.put( "DESK", DeskScene.class );
     nameToSceneTypeMapping.put( "BATHROOM", BathroomScene.class );

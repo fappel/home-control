@@ -1,6 +1,7 @@
 package com.codeaffine.home.control.application.scene;
 
 import static com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition.BedStand;
+import static com.codeaffine.home.control.application.scene.BedroomScenePreference.SleepModus.MANUAL;
 import static com.codeaffine.home.control.status.model.SectionProvider.SectionDefinition.*;
 import static com.codeaffine.home.control.status.util.ActivityStatus.LIVELY;
 import static com.codeaffine.home.control.status.util.AllocationStatus.FREQUENT;
@@ -18,14 +19,16 @@ import com.codeaffine.home.control.status.util.Analysis;
 
 public class BedroomScene implements Scene {
 
+  private final BedroomScenePreference preference;
   private final LampControl lampControl;
   private final Timeout bedRoomTimeout;
   private final Analysis analysis;
 
   public BedroomScene( LampControl lampControl, Analysis analysis, BedroomScenePreference preference ) {
-    this.lampControl = lampControl;
-    this.analysis = analysis;
     this.bedRoomTimeout = new Timeout( preference );
+    this.lampControl = lampControl;
+    this.preference = preference;
+    this.analysis = analysis;
   }
 
   @Override
@@ -36,7 +39,9 @@ public class BedroomScene implements Scene {
   }
 
   private boolean isBedroomHot() {
-    return collectBedroomActivations().size() > 1 || analysis.isZoneActivated( DRESSING_AREA );
+    return    preference.getSleepModus() == MANUAL
+           || collectBedroomActivations().size() > 1
+           || analysis.isZoneActivated( DRESSING_AREA );
   }
 
   private Set<Zone> collectBedroomActivations() {

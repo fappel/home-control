@@ -9,6 +9,10 @@ import com.codeaffine.home.control.preference.Preference;
 @Preference
 public interface BedroomScenePreference extends TimeoutPreference {
 
+  enum SleepModus {
+    MANUAL, AUTOMATIC
+  }
+
   @Override
   @DefaultValue( "20" )
   long getExpirationTime();
@@ -20,4 +24,8 @@ public interface BedroomScenePreference extends TimeoutPreference {
   ChronoUnit getTimeUnit();
   @Override
   void setTimeUnit( ChronoUnit value );
+
+  @DefaultValue( "AUTOMATIC" )
+  SleepModus getSleepModus();
+  void setSleepModus( SleepModus value );
 }
