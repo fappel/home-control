@@ -5,12 +5,18 @@ import static com.codeaffine.home.control.type.OnOffType.ON;
 import static java.lang.Math.*;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.codeaffine.home.control.ByName;
 import com.codeaffine.home.control.application.lamp.LampProvider.Lamp;
 import com.codeaffine.home.control.application.lamp.LampProvider.LampDefinition;
+import com.codeaffine.home.control.application.util.Timeout;
 import com.codeaffine.home.control.entity.EntityProvider.EntityRegistry;
 import com.codeaffine.home.control.item.NumberItem;
 import com.codeaffine.home.control.item.SwitchItem;
@@ -27,6 +33,9 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
 
   private static final int BRIGHTNESS_DEFAULT = 50;
 
+  private final Map<LampDefinition, Percent> minimumBrightnessPerLamp;
+  private final AdjustBrightnessOperationPreference preference;
+  private final Timeout activityThresholdRelease;
   private final EntityRegistry entityRegistry;
   private final SwitchItem autoBrightness;
   private final NumberItem brightnessItem;
@@ -39,26 +48,22 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
 
   public AdjustBrightnessOperation( EntityRegistry entityRegistry,
                                     @ByName( "autoBrightness" ) SwitchItem autoBrightnessSwitch,
-                                    @ByName( "brightness" ) NumberItem brightnessItem )
+                                    @ByName( "brightness" ) NumberItem brightnessItem,
+                                    AdjustBrightnessOperationPreference preference )
   {
+    this.activityThresholdRelease = new Timeout( preference );
+    this.minimumBrightnessPerLamp = new HashMap<>();
     this.entityRegistry = entityRegistry;
     this.autoBrightness = autoBrightnessSwitch;
     this.brightnessItem = brightnessItem;
+    this.preference = preference;
     this.brightnessMinimum = P_001;
     this.brightness = P_100;
     reset();
   }
 
-  public void setActivityThreshold( Percent activityThreshold ) {
-    this.activityThreshold = activityThreshold;
-  }
-
-  public void setBrightnessMiniumumBelowThreshold( Percent brightnessMiniumumBelowThreshold ) {
-    this.brightnessMiniumumBelowThreshold = brightnessMiniumumBelowThreshold;
-  }
-
-  public void setBrightnessMinimumAboveThreshold( Percent brightnessMinimumAboveThreshold ) {
-    this.brightnessMinimumAboveThreshold = brightnessMinimumAboveThreshold;
+  public void adjustLampMiniumBrightness( LampDefinition lampDefinition, Percent lampMinimumBrightness ) {
+    minimumBrightnessPerLamp.put( lampDefinition, lampMinimumBrightness );
   }
 
   @Override
@@ -68,17 +73,21 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
 
   @Override
   public void reset() {
-    activityThreshold = P_050;
-    brightnessMinimumAboveThreshold = P_020;
-    brightnessMiniumumBelowThreshold = P_001;
+    activityThreshold = preference.getActivityThreshold();
+    brightnessMinimumAboveThreshold = preference.getBrightnessMinimumAboveThreshold();
+    brightnessMiniumumBelowThreshold = preference.getBrightnessMinimumBelowThreshold();
+    minimumBrightnessPerLamp.clear();
   }
 
   @Override
   public void executeOn( StatusEvent event ) {
     event.getSource( ActivitySupplier.class ).ifPresent( activity -> {
       brightnessMinimum = brightnessMiniumumBelowThreshold;
-      if( activity.getStatus().getOverallActivity().compareTo( activityThreshold ) > 1 ) {
+      if(    !activityThresholdRelease.isExpired()
+          || activity.getStatus().getOverallActivity().compareTo( activityThreshold ) > 1 )
+      {
         brightnessMinimum = brightnessMinimumAboveThreshold;
+        activityThresholdRelease.set();
       }
     } );
 
@@ -112,7 +121,28 @@ public class AdjustBrightnessOperation implements HomeControlOperation {
   }
 
   private void adjustBrightnessOfLamps( Percent brightness ) {
+    filterLampsForGeneralBrightnessAdjustment().forEach( lamp -> lamp.setBrightness( brightness ) );
+    if( isAutoBrightnessOn() ) {
+      minimumBrightnessPerLamp.entrySet().forEach( entry -> adjustBrightnessForLampEntry( brightness, entry ) );
+    }
+  }
+
+  private List<Lamp> filterLampsForGeneralBrightnessAdjustment() {
     Collection<Lamp> lamps = entityRegistry.findByDefinitionType( LampDefinition.class );
-    lamps.forEach( lamp -> lamp.setBrightness( brightness ) );
+    return lamps
+      .stream()
+      .filter( lamp -> !isAutoBrightnessOn() || !minimumBrightnessPerLamp.keySet().contains( lamp.getDefinition() ) )
+      .collect( toList() );
+  }
+
+  private void adjustBrightnessForLampEntry( Percent brightness, Entry<LampDefinition, Percent> entry ) {
+    entityRegistry.findByDefinition( entry.getKey() ).setBrightness( maximum( entry.getValue(), brightness ) );
+  }
+
+  private static Percent maximum( Percent value1, Percent value2 ) {
+    if( value1.intValue() > value2.intValue() ) {
+      return value1;
+    }
+    return value2;
   }
 }

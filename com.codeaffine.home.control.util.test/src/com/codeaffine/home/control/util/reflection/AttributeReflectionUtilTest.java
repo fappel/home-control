@@ -1,8 +1,10 @@
 package com.codeaffine.home.control.util.reflection;
 
+import static com.codeaffine.home.control.util.reflection.AttributeReflectionUtilTest.TestEnum.ONE;
 import static com.codeaffine.home.control.util.reflection.Messages.ERROR_LOADING_GENERIC_PARAMETER;
 import static com.codeaffine.test.util.lang.ThrowableCaptor.thrownBy;
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -13,6 +15,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,9 +24,20 @@ import com.codeaffine.home.control.util.reflection.AttributeReflectionUtil.NoSuc
 
 public class AttributeReflectionUtilTest {
 
+  private static final String UNKNOWN_ENUM_CONSTANT = "unknown";
+
   interface TestBeanType {
     List<String> getStringList() throws Exception;
     void setStringList( List<String> value ) throws Exception;
+  }
+
+  enum TestEnum {
+    ONE, TWO;
+
+    @Override
+    public String toString() {
+      return name() + "-valueOfPrevention-";
+    }
   }
 
   @Test
@@ -81,6 +95,31 @@ public class AttributeReflectionUtilTest {
     Object actual = AttributeReflectionUtil.invokeArgumentFactoryMethod( Integer.class, () -> "12" );
 
     assertThat( actual ).isEqualTo( Integer.valueOf( 12 ) );
+  }
+
+  @Test
+  public void invokeArgumentFactoryMethodForEnumWithParticularToStringImplementation() {
+    Object actual = AttributeReflectionUtil.invokeArgumentFactoryMethod( TestEnum.class, () -> ONE.toString() );
+
+    assertThat( actual ).isSameAs( ONE );
+  }
+
+  @Test
+  public void invokeArgumentFactoryMethodForEnumWithParticularToStringImplementationWithUpperCaseEnumConstant() {
+    Object actual
+      = AttributeReflectionUtil.invokeArgumentFactoryMethod( ChronoUnit.class, () -> DAYS.toString().toUpperCase() );
+
+    assertThat( actual ).isSameAs( DAYS );
+  }
+
+  @Test
+  public void invokeArgumentFactoryMethodForEnumWithParticularToStringImplementationOfUnknownConstantValue() {
+    Throwable actual = thrownBy(
+      () -> AttributeReflectionUtil.invokeArgumentFactoryMethod( TestEnum.class, () -> UNKNOWN_ENUM_CONSTANT ) );
+
+    assertThat( actual )
+      .isInstanceOf( IllegalArgumentException.class )
+      .hasMessageContaining( UNKNOWN_ENUM_CONSTANT );
   }
 
   @Test

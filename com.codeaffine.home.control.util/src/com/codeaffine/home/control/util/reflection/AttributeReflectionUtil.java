@@ -6,6 +6,7 @@ import static com.codeaffine.home.control.util.reflection.ReflectionUtil.execute
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 
 import java.beans.PropertyDescriptor;
@@ -74,7 +75,21 @@ public class AttributeReflectionUtil {
 
   public static Object invokeArgumentFactoryMethod( Class<?> destinationType, Supplier<String> valueAsStringSupplier ) {
     Method argumentFactoryMethod = getValueOfFactoryMethod( destinationType );
-    return invokeArgumentFactory( argumentFactoryMethod, valueAsStringSupplier );
+    Object result = null;
+    if(destinationType.isEnum()) {
+      result = findEnumValue( destinationType, valueAsStringSupplier );
+    }
+    if( isNull( result ) ) {
+      result = invokeArgumentFactory( argumentFactoryMethod, valueAsStringSupplier );
+    }
+    return result;
+  }
+
+  private static Object findEnumValue( Class<?> destinationType, Supplier<String> valueAsStringSupplier ) {
+    return Stream.of( destinationType.getEnumConstants() )
+        .filter( constant -> constant.toString().equals( valueAsStringSupplier.get() ) )
+        .findAny()
+        .orElse( null );
   }
 
   private static Object invokeArgumentFactory( Method argumentFactoryMethod, Supplier<String> valueAsStringSupplier ) {

@@ -22,12 +22,12 @@ class KitchenScene implements Scene {
   static final AllocationStatus COOKING_AREA_ALLOCATION_THRESHOLD = FREQUENT;
   static final ActivityStatus DINING_AREA_OVERALL_ACTIVITY_THRESHOLD = LIVELY;
 
+  private final List<SectionDefinition> zonesForFiltering;
+  private final List<SectionDefinition> zonesToSwitchOn;
   private final Timeout cookingAreaTimeout;
   private final Timeout diningAreaTimeout;
   private final LampControl lampControl;
   private final Analysis analysis;
-  private final List<SectionDefinition> zonesToSwitchOn;
-  private final List<SectionDefinition> zonesForFiltering;
 
   KitchenScene( LampControl lampControl, Analysis analysis, TimeoutPreference preference ) {
     this.lampControl = lampControl;
