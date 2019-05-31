@@ -1,7 +1,6 @@
 package com.codeaffine.home.control.admin.ui;
 
 import static com.codeaffine.util.ArgumentVerification.verifyNotNull;
-import static com.eclipsesource.tabris.TabrisClientInstaller.install;
 import static java.lang.String.format;
 import static org.eclipse.rap.rwt.RWT.DEFAULT_THEME_ID;
 import static org.eclipse.rap.rwt.application.ApplicationRunner.RESOURCES;
@@ -34,7 +33,6 @@ public class AdminUiConfiguration implements ApplicationConfiguration {
 
   @Override
   public void configure( Application application ) {
-    install( application );
     Map<String, String> properties = new HashMap<String, String>();
     properties.put( HEAD_HTML, format( STYLE_SHEET_LINK_PATTERN, RESOURCES, STANDARD_THEME_NATIVE ) );
     application.addResource( STANDARD_THEME_NATIVE, location -> getResourceAsStream( location ) );
